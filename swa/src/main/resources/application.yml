@@ -1,0 +1,18 @@
+spring:
+  profiles.include: 'secrets'
+  datasource:
+    driver-class: org.mariadb.jdbc.Driver
+    url: "jdbc:mariadb://localhost:3306/swa"
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+  mvc:
+    static-path-pattern: '/**'
+
+  resources:
+    static-locations: 'classpath:/static/'
+
+server:
+  port: 3000
