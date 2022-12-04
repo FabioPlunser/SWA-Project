@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -16,7 +17,12 @@ import java.util.UUID;
 @Table(name = "Cards")
 public class Card implements Serializable {
 
+    public Card(String frontText, String backText, boolean isFlipped, Deck deck) {
+        this(UUID.randomUUID(), frontText, backText, isFlipped, deck);
+    }
+
     @Id
+    // @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "CardId", nullable = false)
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID cardId;
@@ -36,7 +42,10 @@ public class Card implements Serializable {
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     private boolean isFlipped;
 
-    // TODO: Create Deck Reference
+    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "deckId", nullable = false)
+    @JsonIgnore
+    private Deck deck;
 
     @Override
     public String toString() {

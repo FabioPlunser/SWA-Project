@@ -1,11 +1,14 @@
 package at.ac.uibk.swa.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,13 +19,32 @@ import java.util.UUID;
 @Table(name = "Decks")
 public class Deck implements Serializable {
 
+    public Deck(
+            String name, String description, Customer customer,
+            boolean isPublished, boolean isBlocked, boolean isDeleted
+    ) {
+        this.deckId = UUID.randomUUID();
+        this.name = name;
+        this.description = description;
+        this.customer = customer;
+        this.isPublished = isPublished;
+        this.isBlocked = isBlocked;
+        this.isDeleted = isDeleted;
+        this.cards = new ArrayList<>();
+    }
+
+    public Deck(String name, String description, Customer customer) {
+        this(name, description, customer, false, false, false);
+    }
+
     @Id
+    // @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "DeckId", nullable = false)
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID deckId;
 
     @Setter
-    @Column(name = "Name", nullable = false, unique = true)
+    @Column(name = "Name", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String name;
 
@@ -46,7 +68,16 @@ public class Deck implements Serializable {
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     private boolean isDeleted;
 
-    // TODO: Create User and Card Reference
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "customerId", nullable = false)
+    private Customer customer;
+
+    @Setter
+    @JsonIgnore
+    @Builder.Default
+    // TODO: Do we need FetchType.EAGER? For the tests using H2 it seems so
+    @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.EAGER)
+    private List<Card> cards = new ArrayList<>();
 
     @Override
     public String toString() {

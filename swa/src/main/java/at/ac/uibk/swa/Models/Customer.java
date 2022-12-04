@@ -1,15 +1,14 @@
 package at.ac.uibk.swa.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -25,10 +24,12 @@ public class Customer implements Serializable {
     }
 
     public Customer(String username, String email, String passwdHash, boolean isAdmin) {
-        this(UUID.randomUUID(), username, email, passwdHash, isAdmin, UUID.randomUUID());
+        this(UUID.randomUUID(), username, email, passwdHash, isAdmin, UUID.randomUUID(),
+                new ArrayList<>(), new ArrayList<>());
     }
 
     @Id
+    // @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "CustomerId", nullable = false)
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID customerId;
@@ -59,7 +60,17 @@ public class Customer implements Serializable {
     @JsonIgnore
     private UUID token;
 
-    // TODO: Create Decks and "Deck Reference" Reference
+    @Setter
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.EAGER)
+    private List<Deck> decks = new ArrayList<>();
+
+    @Setter
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "customer", orphanRemoval = true)
+    private List<DeckReference> deckReferences = new ArrayList<>();
 
     @Override
     public String toString() {

@@ -18,11 +18,14 @@ import java.util.UUID;
 public class DeckReference implements Serializable {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "DeckId", nullable = false)
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID deckId;
 
-    // TODO: Add Creator Reference
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "customerId", nullable = false)
+    private Customer customer;
 
     @Override
     public boolean equals(Object obj) {
