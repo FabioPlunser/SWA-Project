@@ -28,11 +28,17 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
     public Authentication attemptAuthentication(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse
-    ) throws AuthenticationException, IOException, ServletException
+    ) throws AuthenticationException
     {
         Optional<String> authHeader = Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION)); //Authorization: Bearer TOKEN
+
         if (authHeader.isPresent()) {
-            UUID token = UUID.fromString(authHeader.get().substring("Bearer".length()).trim());
+            UUID token;
+            try {
+                token = UUID.fromString(authHeader.get().substring("Bearer".length()).trim());
+            } catch (Exception e) {
+                throw new BadCredentialsException("Misformed Token");
+            }
             Authentication requestAuthentication = new UsernamePasswordAuthenticationToken(token, token);
             return getAuthenticationManager().authenticate(requestAuthentication);
         }
