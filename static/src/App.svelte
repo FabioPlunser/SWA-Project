@@ -1,0 +1,22 @@
+<script lang="ts">
+	import Nav from './lib/components/nav.svelte';
+	import Deck from './lib/components/deck.svelte';
+  	import { onMount } from "svelte";
+	import { redirect } from "./lib/utils/redirect";
+	import {loggedIN} from "./lib/stores/loggedIn";
+</script>
+
+<!-- This site is index -> deck overview -->
+<svelte:head>
+	<link rel="icon" type="image/png" href="../static/882998.png"/>
+	<title>Decks overview</title>
+</svelte:head>
+
+<Nav title="Decks overview"/>
+<main class="m-20">
+	<div class="grid grid-cols-4 gap-4">
+		{#each  [...Array(20).keys()] as i}
+			<Deck title="Deck {i}" description="Description" learned={i} NotLearned={i*3}/>
+		{/each}
+	</div>
+</main>
