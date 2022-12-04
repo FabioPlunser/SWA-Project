@@ -13,6 +13,7 @@ unit-test-job:   # This job runs in the test stage.
   stage: test    
   script:
     - echo "Running unit tests..."
+    - cd swa
     - mvn test
   allow_failure: true
   only:
