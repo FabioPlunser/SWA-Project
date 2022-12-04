@@ -21,21 +21,28 @@ public class Card implements Serializable {
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID cardId;
 
+    @Setter
     @Column(name = "FrontText", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String frontText;
 
+    @Setter
     @Column(name = "BackText", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String backText;
 
+    @Setter
     @Column(name = "IsFlipped", nullable = false)
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     private boolean isFlipped;
 
+    // TODO: Create Deck Reference
+
     @Override
     public String toString() {
-        return String.format("Card: %s - %s", this.frontText, this.backText);
+        String f = !isFlipped ? this.frontText : this.backText;
+        String b =  isFlipped ? this.frontText : this.backText;
+        return String.format("Card: %s - %s", f, b);
     }
 
     @Override

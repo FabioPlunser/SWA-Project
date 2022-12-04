@@ -1,6 +1,10 @@
 package at.ac.uibk.swa.Models;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -16,12 +20,20 @@ import java.util.UUID;
 @Table(name = "Customers")
 public class Customer implements Serializable {
 
+    public Customer(String username, String email, String passwdHash) {
+        this(username, email, passwdHash, false);
+    }
+
+    public Customer(String username, String email, String passwdHash, boolean isAdmin) {
+        this(UUID.randomUUID(), username, email, passwdHash, isAdmin, UUID.randomUUID());
+    }
+
     @Id
     @Column(name = "CustomerId", nullable = false)
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID customerId;
 
-    @Column(name = "Username", nullable = false)
+    @Column(name = "Username", nullable = false, unique = true)
     @Setter
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String username;
@@ -41,10 +53,13 @@ public class Customer implements Serializable {
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     private boolean isAdmin;
 
-    @Column(name = "Token", nullable = true)
+    @Column(name = "Token", nullable = true, unique = true)
     @Setter
     @JdbcTypeCode(SqlTypes.UUID)
+    @JsonIgnore
     private UUID token;
+
+    // TODO: Create Decks and "Deck Reference" Reference
 
     @Override
     public String toString() {

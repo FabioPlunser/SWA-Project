@@ -21,27 +21,32 @@ public class Deck implements Serializable {
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID deckId;
 
-    @Column(name = "Name", nullable = false)
+    @Setter
+    @Column(name = "Name", nullable = false, unique = true)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String name;
 
+    @Setter
     @Column(name = "Description", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String description;
 
+    @Setter
     @Column(name = "IsPublished", nullable = false)
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     private boolean isPublished;
 
+    @Setter
     @Column(name = "IsBlocked", nullable = false)
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     private boolean isBlocked;
 
+    @Setter
     @Column(name = "IsDeleted", nullable = false)
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     private boolean isDeleted;
 
-    // TODO: Add Field for Creator
+    // TODO: Create User and Card Reference
 
     @Override
     public String toString() {
