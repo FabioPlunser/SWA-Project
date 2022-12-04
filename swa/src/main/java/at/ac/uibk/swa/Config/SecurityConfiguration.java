@@ -13,7 +13,6 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfiguration {
 
     private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
