@@ -47,14 +47,16 @@ public class CustomerService {
         return  Optional.empty();
     }
 
-    public void logout(UUID token) {
+    public boolean logout(UUID token) {
         Optional<Customer> optionalUser = customerRepository.findByToken(token);
         if(optionalUser.isPresent()){
             Customer customer = optionalUser.get();
             // Delete the Token on Logout
             customer.setToken(null);
             customerRepository.save(customer);
+            return true;
         }
+        return false;
     }
 
     public boolean save(Customer customer) {

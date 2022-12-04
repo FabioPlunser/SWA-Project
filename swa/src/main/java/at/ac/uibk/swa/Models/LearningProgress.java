@@ -29,7 +29,7 @@ public class LearningProgress {
     private UUID cardId;
 
     @Setter
-    @Column(name = "Interval", nullable = false)
+    @Column(name = "InterVal", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int interval;
 
