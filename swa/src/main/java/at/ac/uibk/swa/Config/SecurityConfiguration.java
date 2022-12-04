@@ -12,8 +12,22 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+/**
+ * <p>
+ *     Class for configuring the Authentication Process of the Web-Server.
+ * </p>
+ * <p>
+ *     All API-Paths (except for "/api/login") are secured using an Authentication Token.
+ * </p>
+ * <p>
+ *     The Front-End can fetch a Token from "/api/login" using a User's username and password-Hash.
+ * </p>
+ * <p>
+ *     This Token can then be used in the Authentication Header as a Bearer Token to authenticate
+ *     the user for the API.
+ * </p>
+ */
 @Configuration
-@EnableWebSecurity
 public class SecurityConfiguration {
 
     private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
@@ -38,21 +52,25 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // Use the custom AuthenticationProvider and AuthenticationFilter
                 .authenticationProvider(provider)
                 .addFilterBefore(authenticationFilter(http), AnonymousAuthenticationFilter.class)
+                // Specify which Routes/Endpoints should be protected and which ones should be accessible to everyone.
                 .authorizeHttpRequests((auth) ->
                     auth
                             // Anyone should be able to login (alias for getting a Token
-                            .requestMatchers("/api/login", "/token").permitAll()
+                            .requestMatchers("/api/login", "/api/register", "/token").permitAll()
                             // Only allow authenticated Users to use the API
-                            .requestMatchers("/api/**").authenticated()
+                            .requestMatchers(PROTECTED_URLS).authenticated()
                             // Permit everyone to get the static resources
                             .requestMatchers("/**").permitAll()
                 )
+                // Disable CORS, CSRF as well as the default Web Security Login and Logout Pages.
                 .csrf().disable()
                 .cors().disable()
                 .formLogin().disable()
                 .logout().disable();
+
         return http.build();
     }
 
@@ -60,7 +78,6 @@ public class SecurityConfiguration {
     AuthenticationFilter authenticationFilter(HttpSecurity http) throws Exception {
         final AuthenticationFilter filter = new AuthenticationFilter(PROTECTED_URLS);
         filter.setAuthenticationManager(authManager(http));
-        //filter.setAuthenticationSuccessHandler(successHandler());
         return filter;
     }
 }

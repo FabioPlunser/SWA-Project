@@ -18,6 +18,17 @@ import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+/**
+ * <p>
+ * Class responsible for getting the Authentication Token from the Request.
+ * </p>
+ * <p>
+ * The Token is the then passed onto the AuthenticationProvider.
+ * </p>
+ *
+ * @see at.ac.uibk.swa.Config.AuthenticationProvider
+ * @see AbstractAuthenticationProcessingFilter
+ */
 public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     AuthenticationFilter(final RequestMatcher requiresAuth) {
@@ -30,15 +41,21 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
             HttpServletResponse httpServletResponse
     ) throws AuthenticationException
     {
-        Optional<String> authHeader = Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION)); //Authorization: Bearer TOKEN
+        // Get the Authorization Header
+        Optional<String> authHeader = Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION));
 
+        // Check that an Authorization Header was sent.
         if (authHeader.isPresent()) {
+            // Get the Token from the Header.
+            String bearerToken = authHeader.get().substring("Bearer".length()).trim();
             UUID token;
+            // Try to parse the Header
             try {
-                token = UUID.fromString(authHeader.get().substring("Bearer".length()).trim());
+                token = UUID.fromString(bearerToken);
             } catch (Exception e) {
                 throw new BadCredentialsException("Misformed Token");
             }
+            // If the Token is a valid UUID then pass it onto the AuthenticationFilter
             Authentication requestAuthentication = new UsernamePasswordAuthenticationToken(token, token);
             return getAuthenticationManager().authenticate(requestAuthentication);
         }
@@ -50,7 +67,9 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
             final HttpServletRequest request, final HttpServletResponse response,
             final FilterChain chain, final Authentication authResult
     ) throws IOException, ServletException {
+        // If the user was successfully authenticated, store it in the Security Context.
         SecurityContextHolder.getContext().setAuthentication(authResult);
+        // Continue running the Web Security Filter Chain.
         chain.doFilter(request, response);
     }
 }

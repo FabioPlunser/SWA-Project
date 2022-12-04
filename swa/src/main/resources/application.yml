@@ -2,11 +2,11 @@ spring:
   profiles.include: 'secrets'
   datasource:
     driver-class: org.mariadb.jdbc.Driver
-    url: "jdbc:mariadb://localhost:3306/swa"
+    url: "jdbc:mariadb://mariadb.fabioplunser.com/swa"
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
 
   mvc:
     static-path-pattern: '/**'
