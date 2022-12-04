@@ -14,6 +14,17 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * <p>
+ *     Class responsible for checking that the Session Token exists for the
+ *     given User.
+ * </p>
+ * <p>
+ *     The Token is provided by the AuthenticationFilter.
+ * </p>
+ *
+ * @see AuthenticationFilter
+ */
 @Component
 public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
@@ -24,15 +35,14 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
     protected void additionalAuthenticationChecks(
             UserDetails userDetails,
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-    ) {
-        //
-    }
+    ) {}
 
     @Override
     protected UserDetails retrieveUser(
             String userName, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
     ) {
-        // TODO: The Credentials should be the UUID returned by the AuthenticationFilter
+        // TODO: The Credentials should be the UUID returned by the AuthenticationFilter.
+        // TODO: Also send a username and check that the Token is associated with the user?
         Object oToken = usernamePasswordAuthenticationToken.getCredentials();
         String sToken = oToken.toString();
         UUID token;
@@ -43,8 +53,10 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
             throw new AuthenticationCredentialsNotFoundException("Invalid Token: " + sToken);
         }
 
+        // Try to find the User with the given Session Token
         Optional<Customer> maybeCustomer = loginService.findByToken(token);
         if (maybeCustomer.isPresent()) {
+            // If the Customer was found, successfully authenticate them by returning to the AuthenticationFilter.
             Customer customer = maybeCustomer.get();
             return new User(
                     customer.getUsername(), customer.getPasswdHash(),
