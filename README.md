@@ -1,26 +1,40 @@
+# Memory learning platform  
+Dev [![pipeline status](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/badges/dev/pipeline.svg)](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/commits/dev) 
+Main [![pipeline status](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/badges/main/pipeline.svg)](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/-/commits/main) 
+# Description
+This is a platform for learning with specific memory techniques. It is a web application that allows users to create and share decks of cards. Each card has a question and an answer. The user can then use the platform to study the cards. The platform has a built-in scheduler that will show the user cards at the right time. The platform is built with Spring Boot and Svelte.
 
-# Task
+# Usage
+To run the project, use the following command:
+```bash
+mvn spring-boot:run
+``` 
+# Development
+## Frontend
+The frontend is built with Svelte. Please note that this requiers a working node.js installation.
 
-The Goal of this Project is to create a
-**TODO** using a [Three-tier architecture](https://www.ibm.com/cloud/learn/three-tier-architecture).
+To start the frontend, use the following command:
+```bash
+cd static 
+npm i 
+npm run dev 
+```
+With npm run dev, the frontend will be served on https://localhost:5173. 
 
-# Project Structure
+Their you can see the live changes you make to the frontend.
 
-The Project is built as a [Three-tier architecture](https://www.ibm.com/cloud/learn/three-tier-architecture).
+Please note that the different pages of the frontend are only reachable 
+with example localhost:5173/login<span style="color: red">/</span>.<br/>
+The second slash is important, otherwise the page will not be found.
+Once the whole application runs and the backend serves the front end, this is not necessary anymore.
 
-![Three-tier diagram](/../media/Schichtendiagram.drawio.svg)
+## Backend
+The backend is built with Spring Boot.
+It's main purpose is to serve the frontend and to provide an API for the frontend to communicate with the database.
 
-## Persistence Tier
+It's easiest to use IntelliJ for development. <br/>
+It will download all the dependencies automatically.
 
-The Persistence Tier is automatically created using
-[JDBC](https://docs.oracle.com/javase/tutorial/jdbc/basics/index.html)
 
-## Application Tier
-
-The Application Tier is written in **pure Java**.
-
-## Presentation Tier
-
-The Presentation Tier consists of a *[Spring Web](https://docs.spring.io/spring-boot/docs/current/reference/html/web.html) Server* that serves Webpages created using *[Svelte](https://svelte.dev/)*.
-
-The *Svelte-Webpages* request and display data from the Server using **RESTful Endpoints**.
+# Contributing
+Only members of the group can contribute to this project.
