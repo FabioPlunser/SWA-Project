@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.Controllers;
 
-import at.ac.uibk.swa.Models.Permission;
+import at.ac.uibk.swa.Models.Permissions.Permission;
 import at.ac.uibk.swa.Models.Person;
 import at.ac.uibk.swa.Models.RestResponses.CreatedUserResponse;
 import at.ac.uibk.swa.Models.RestResponses.ListResponse;

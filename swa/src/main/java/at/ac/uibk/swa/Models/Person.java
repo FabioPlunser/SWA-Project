@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.Models;
 
+import at.ac.uibk.swa.Models.Permissions.Permission;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;

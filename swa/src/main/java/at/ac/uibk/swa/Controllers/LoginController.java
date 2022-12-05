@@ -3,6 +3,7 @@ package at.ac.uibk.swa.Controllers;
 import at.ac.uibk.swa.Models.RestResponses.*;
 import at.ac.uibk.swa.Service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +28,7 @@ public class LoginController {
      * @param password The password of the User to create the Token for.
      * @return A Token if the user credentials are correct, otherwise an error.
      */
-    @PostMapping({"/api/login", "/token", "/login"})
+    @PostMapping({"/api/login", "/token"})
     public RestResponse getToken(
             @RequestParam("username") final String username,
             @RequestParam("password") final String password
@@ -44,11 +45,15 @@ public class LoginController {
      * Endpoint for the Front-End to logout.
      * This deletes the Authentication Token stored in the database.
      *
-     * @return A Token if the user credentials are correct, otherwise an error.
+     * @return A Message saying whether the Logout was successful or not.
      */
     @PostMapping("/api/logout")
-    public RestResponse deleteToken() {
-        UUID token = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public RestResponse deleteToken() throws Exception {
+        Authentication context = SecurityContextHolder.getContext().getAuthentication();
+        if (!context.isAuthenticated())
+            throw new Exception("Cannot delete Token of unauthenticated User!");
+
+        UUID token = (UUID) context.getDetails();
 
         if (!personService.logout(token))
             return new MessageResponse(false, "No matching Token!");
