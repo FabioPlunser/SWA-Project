@@ -67,14 +67,4 @@ public class PersonService {
             throw e;
         }
     }
-
-    public boolean update(Person person) {
-        return 1 == this.personRepository.update(
-                person.getUsername(),
-                person.getEmail(),
-                person.getPasswdHash(),
-                person.isAdmin(),
-                person.getCustomerId()
-        );
-    }
 }

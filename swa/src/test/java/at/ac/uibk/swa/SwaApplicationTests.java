@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,7 +35,7 @@ class SwaApplicationTests {
 
     @Test
     public void TestRetrievingUserFromToken() {
-        Person person = new Person("tokenTest", "def", "ghi", false);
+        Person person = new Person("tokenTest", "def", "ghi", false, new ArrayList<>());
 
         assertEquals(true, personService.save(person));
 
@@ -49,7 +50,7 @@ class SwaApplicationTests {
 
     @Test
     public void TestCreatingDeck() {
-        Person person = new Person("deckTest", "def", "ghi", false);
+        Person person = new Person("deckTest", "def", "ghi", false, new ArrayList<>());
 
         Deck deck = new Deck("Deck1", "abcd", person);
         Card card = new Card("Front", "Back", false, deck);

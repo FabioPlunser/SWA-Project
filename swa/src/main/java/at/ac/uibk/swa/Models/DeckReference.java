@@ -11,7 +11,6 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
 public class DeckReference implements Serializable {
 
     @Id

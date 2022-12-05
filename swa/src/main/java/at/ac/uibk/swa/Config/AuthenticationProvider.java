@@ -61,7 +61,7 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
             return new User(
                     person.getUsername(), person.getPasswdHash(),
                     true, true, true, true,
-                    AuthorityUtils.createAuthorityList(person.isAdmin() ? "ADMIN" : "USER")
+                    AuthorityUtils.createAuthorityList((String[]) person.getPermissions().toArray())
             );
         }
 

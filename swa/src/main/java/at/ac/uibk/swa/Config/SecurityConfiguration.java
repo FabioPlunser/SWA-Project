@@ -31,7 +31,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class SecurityConfiguration {
 
     private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
-            new AntPathRequestMatcher("/api/**")
+            new AntPathRequestMatcher("/api/**", "/admin/**")
     );
 
     private AuthenticationProvider provider;
@@ -58,10 +58,11 @@ public class SecurityConfiguration {
                 // Specify which Routes/Endpoints should be protected and which ones should be accessible to everyone.
                 .authorizeHttpRequests((auth) ->
                     auth
-                            // Anyone should be able to login (alias for getting a Token
-                            .requestMatchers("/api/login", "/api/register", "/token").permitAll()
+                            // TODO: Secure "/admin/**"-Pages
                             // Only allow authenticated Users to use the API
                             .requestMatchers(PROTECTED_URLS).authenticated()
+                            // Anyone should be able to login (alias for getting a Token)
+                            .requestMatchers("/api/login", "/api/register", "/token").permitAll()
                             // Permit everyone to get the static resources
                             .requestMatchers("/**").permitAll()
                 )

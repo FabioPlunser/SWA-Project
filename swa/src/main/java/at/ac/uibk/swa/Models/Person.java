@@ -19,13 +19,9 @@ import java.util.UUID;
 @Table(name = "Persons")
 public class Person implements Serializable {
 
-    public Person(String username, String email, String passwdHash) {
-        this(username, email, passwdHash, false);
-    }
-
-    public Person(String username, String email, String passwdHash, boolean isAdmin) {
+    public Person(String username, String email, String passwdHash, boolean isAdmin, List<Permission> permissions) {
         this(UUID.randomUUID(), username, email, passwdHash, isAdmin, UUID.randomUUID(),
-                new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>(), permissions);
     }
 
     @Id
@@ -63,14 +59,22 @@ public class Person implements Serializable {
     @Setter
     @JsonIgnore
     @Builder.Default
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.EAGER)
     private List<Deck> decks = new ArrayList<>();
 
     @Setter
     @JsonIgnore
     @Builder.Default
-    @OneToMany(mappedBy = "customer", orphanRemoval = true)
+    @OneToMany(mappedBy = "person", orphanRemoval = true)
     private List<DeckReference> deckReferences = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "PersonPermissions",
+            joinColumns=@JoinColumn(name = "customerId")
+    )
+    @Column(name="Permission")
+    private List<Permission> Permissions;
 
     @Override
     public String toString() {
