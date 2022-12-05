@@ -15,14 +15,23 @@
         }
     ];
 
-    async function getAllUsers(){
-        // console.log("get all users");
-        return users;
+    onMount(async () => {
+        //TODO fetch users from backend
+        // const response = await fetch("/api/users");
+        // const data = await response.json();
+        // users = data;
+    });
+
+    function deleateUser(){
+        for (let i = 0; i < users.length; i++) {
+            if (users[i].username == "user") {
+                users = users.slice(i, 1);
+                console.log("deleated user");
+            }
+        }
     }
 
-    let data = getAllUsers();
 
-    
 </script>
 
 <svelte:head>
@@ -31,13 +40,11 @@
 </svelte:head>
 
 <Nav title="Admin"/>
-<main class="m-20 mx-auto">
+<main class="m-20 flex-justify-center">
     <div class="flex justify-center">
         <button class="btn btn-primary">Create New User</button>
     </div>
-    {#await data}
-        <p>Waiting</p>
-    {:then users}
+    {#key users}
         {#each users as user}
             <div class="flex justify-center m-2">
                 <div class="form-control mx-2">
@@ -59,8 +66,10 @@
                     </label>
                 </div>
                 <button class="btn btn-secondary mx-2">Edit</button>
-                <button class="btn btn-info mx-2">Delete</button>
+                <button class="btn btn-info mx-2" on:click={deleateUser}>Delete</button>
             </div>
         {/each} 
-    {/await}
+    {/key}
+
+
 </main>
