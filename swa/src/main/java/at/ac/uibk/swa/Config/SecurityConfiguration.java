@@ -59,10 +59,10 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((auth) ->
                     auth
                             // TODO: Secure "/admin/**"-Pages
-                            // Only allow authenticated Users to use the API
-                            .requestMatchers(PROTECTED_URLS).authenticated()
                             // Anyone should be able to login (alias for getting a Token)
                             .requestMatchers("/api/login", "/api/register", "/token").permitAll()
+                            // Only allow authenticated Users to use the API
+                            .requestMatchers(PROTECTED_URLS).authenticated()
                             // Permit everyone to get the static resources
                             .requestMatchers("/**").permitAll()
                 )

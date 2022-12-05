@@ -65,7 +65,7 @@ public class PersonService {
             this.personRepository.save(person);
             return true;
         } catch (Exception e) {
-            throw e;
+            return false;
         }
     }
 }
