@@ -6,12 +6,12 @@
     /**
      * Id for modal must be unique
      */
-   export let uniqueModalId = "title";
+   export let uniqueModalQualifier = "title";
 
     let modal;
 
     function handleDispatch() {
-        console.log("Send data of " + uniqueModalId + " to server");
+        console.log("Send data of " + uniquuniqueModalQualifiereModalId + " to server");
     }
     const previously_focused = typeof document !== 'undefined' && document.activeElement;
 	if (previously_focused) {
@@ -23,12 +23,12 @@
 </script>
 
 
-<input type="checkbox" id="{uniqueModalId}" class="modal-toggle"/>
-	<label for="{uniqueModalId}" id="modal-background" class="modal cursor-pointe" on:click={close}>
+<input type="checkbox" id="{uniqueModalQualifier}" class="modal-toggle"/>
+	<label for="{uniqueModalQualifier}" id="modal-background" class="modal cursor-pointe" on:click={close}>
 		<label class="modal-box relative overflow-auto" id="modal" bind:this={modal}>
             <slot/>
             <div class="modal-action">
-                <label for="{uniqueModalId}" class="btn btn-primary" autofocus on:click={close}>Close</label>
+                <label for="{uniqueModalQualifier}" class="btn btn-primary" autofocus on:click={close}>Close</label>
             </div>
     </label>
 </label>
