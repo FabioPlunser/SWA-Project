@@ -43,15 +43,7 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
     ) {
         // TODO: The Credentials should be the UUID returned by the AuthenticationFilter.
         // TODO: Also send a username and check that the Token is associated with the user?
-        Object oToken = usernamePasswordAuthenticationToken.getCredentials();
-        String sToken = oToken.toString();
-        UUID token;
-
-        try {
-            token = UUID.fromString(sToken);
-        } catch (Exception e) {
-            throw new AuthenticationCredentialsNotFoundException("Invalid Token: " + sToken);
-        }
+        UUID token = (UUID) usernamePasswordAuthenticationToken.getCredentials();
 
         // Try to find the User with the given Session Token
         Optional<Person> maybePerson = loginService.findByToken(token);
@@ -61,10 +53,11 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
             return new User(
                     person.getUsername(), person.getPasswdHash(),
                     true, true, true, true,
-                    AuthorityUtils.createAuthorityList((String[]) person.getPermissions().toArray())
+                    AuthorityUtils.createAuthorityList(person
+                            .getPermissions().stream().map(x -> x.toString()).toArray(String[]::new))
             );
         }
 
-        throw new AuthenticationCredentialsNotFoundException("Cannot find user with authentication token=" + sToken);
+        throw new AuthenticationCredentialsNotFoundException("Cannot find user with authentication token=" + token.toString());
     }
 }
