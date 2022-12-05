@@ -2,12 +2,9 @@ package at.ac.uibk.swa.Models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
 
 @Getter
 @Entity
@@ -25,7 +22,7 @@ public class DeckReference implements Serializable {
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "customerId", nullable = false)
-    private Customer customer;
+    private Person person;
 
     @Override
     public String toString() {

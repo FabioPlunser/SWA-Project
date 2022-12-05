@@ -1,19 +1,15 @@
 package at.ac.uibk.swa.Controllers;
 
-import at.ac.uibk.swa.Models.Customer;
-import at.ac.uibk.swa.Service.CustomerService;
+import at.ac.uibk.swa.Service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 public class RedirectController {
 
     @Autowired
-    private CustomerService customerService;
+    private PersonService personService;
 
     @GetMapping("/")
     public ModelAndView index() {

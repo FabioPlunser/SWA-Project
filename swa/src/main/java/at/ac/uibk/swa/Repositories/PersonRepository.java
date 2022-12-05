@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.Repositories;
 
-import at.ac.uibk.swa.Models.Customer;
+import at.ac.uibk.swa.Models.Person;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -9,13 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CustomerRepository extends CrudRepository<Customer, UUID> {
+public interface PersonRepository extends CrudRepository<Person, UUID> {
     @Override
-    Iterable<Customer> findAll();
+    Iterable<Person> findAll();
 
-    Optional<Customer> findByToken(UUID token);
+    Optional<Person> findByToken(UUID token);
 
-    Optional<Customer> findByUsernameAndPasswdHash(String username, String passwdHash);
+    Optional<Person> findByUsernameAndPasswdHash(String username, String passwdHash);
 
     @Transactional
     @Modifying

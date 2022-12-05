@@ -1,10 +1,10 @@
 package at.ac.uibk.swa.Controllers;
 
-import at.ac.uibk.swa.Models.Customer;
+import at.ac.uibk.swa.Models.Person;
 import at.ac.uibk.swa.Models.RestResponses.CreatedUserResponse;
 import at.ac.uibk.swa.Models.RestResponses.MessageResponse;
 import at.ac.uibk.swa.Models.RestResponses.RestResponse;
-import at.ac.uibk.swa.Service.CustomerService;
+import at.ac.uibk.swa.Service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @Autowired
-    private CustomerService customerService;
+    private PersonService personService;
 
 
     /**
@@ -35,9 +35,9 @@ public class UserController {
             @RequestParam("password") final String password,
             @RequestParam("email") final String email
     ) {
-        Customer customer = new Customer(username, email, password, false);
-        if (customerService.save(customer))
-            return new CreatedUserResponse(username, customer.getCustomerId());
+        Person person = new Person(username, email, password, false);
+        if (personService.save(person))
+            return new CreatedUserResponse(username, person.getCustomerId());
         return new MessageResponse(false, "Could not create User - Username already exists!");
     }
 
@@ -50,7 +50,7 @@ public class UserController {
      * @param isAdmin Whether the new User should have Admin-Rights.
      * @return A RestResponse indicating whether the user could be created or not.
      */
-    @PostMapping("/api/createUser")
+    @PostMapping("/createUser")
     @PreAuthorize("hasAuthority('ADMIN')")
     public RestResponse createUser(
             @RequestParam("username") final String username,
@@ -58,9 +58,9 @@ public class UserController {
             @RequestParam("email") final String email,
             @RequestParam("isAdmin") final boolean isAdmin
     ) {
-        Customer customer = new Customer(username, email, password, isAdmin);
-        if (customerService.save(customer))
-            return new CreatedUserResponse(username, customer.getCustomerId());
+        Person person = new Person(username, email, password, isAdmin);
+        if (personService.save(person))
+            return new CreatedUserResponse(username, person.getCustomerId());
         return new MessageResponse(false, "Could not create User - Username already exists!");
     }
 

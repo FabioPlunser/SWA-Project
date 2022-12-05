@@ -20,21 +20,21 @@ import java.util.UUID;
 public class Deck implements Serializable {
 
     public Deck(
-            String name, String description, Customer customer,
+            String name, String description, Person person,
             boolean isPublished, boolean isBlocked, boolean isDeleted
     ) {
         this.deckId = UUID.randomUUID();
         this.name = name;
         this.description = description;
-        this.customer = customer;
+        this.person = person;
         this.isPublished = isPublished;
         this.isBlocked = isBlocked;
         this.isDeleted = isDeleted;
         this.cards = new ArrayList<>();
     }
 
-    public Deck(String name, String description, Customer customer) {
-        this(name, description, customer, false, false, false);
+    public Deck(String name, String description, Person person) {
+        this(name, description, person, false, false, false);
     }
 
     @Id
@@ -70,7 +70,7 @@ public class Deck implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "customerId", nullable = false)
-    private Customer customer;
+    private Person person;
 
     @Setter
     @JsonIgnore

@@ -16,14 +16,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "Customers")
-public class Customer implements Serializable {
+@Table(name = "Persons")
+public class Person implements Serializable {
 
-    public Customer(String username, String email, String passwdHash) {
+    public Person(String username, String email, String passwdHash) {
         this(username, email, passwdHash, false);
     }
 
-    public Customer(String username, String email, String passwdHash, boolean isAdmin) {
+    public Person(String username, String email, String passwdHash, boolean isAdmin) {
         this(UUID.randomUUID(), username, email, passwdHash, isAdmin, UUID.randomUUID(),
                 new ArrayList<>(), new ArrayList<>());
     }
@@ -79,7 +79,7 @@ public class Customer implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Customer u)
+        if (obj instanceof Person u)
             return u.customerId == this.customerId;
 
         return false;

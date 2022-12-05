@@ -1,7 +1,7 @@
 package at.ac.uibk.swa.Config;
 
-import at.ac.uibk.swa.Models.Customer;
-import at.ac.uibk.swa.Service.CustomerService;
+import at.ac.uibk.swa.Models.Person;
+import at.ac.uibk.swa.Service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,7 +29,7 @@ import java.util.UUID;
 public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
-    CustomerService loginService;
+    PersonService loginService;
 
     @Override
     protected void additionalAuthenticationChecks(
@@ -54,14 +54,14 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
         }
 
         // Try to find the User with the given Session Token
-        Optional<Customer> maybeCustomer = loginService.findByToken(token);
-        if (maybeCustomer.isPresent()) {
+        Optional<Person> maybePerson = loginService.findByToken(token);
+        if (maybePerson.isPresent()) {
             // If the Customer was found, successfully authenticate them by returning to the AuthenticationFilter.
-            Customer customer = maybeCustomer.get();
+            Person person = maybePerson.get();
             return new User(
-                    customer.getUsername(), customer.getPasswdHash(),
+                    person.getUsername(), person.getPasswdHash(),
                     true, true, true, true,
-                    AuthorityUtils.createAuthorityList(customer.isAdmin() ? "ADMIN" : "USER")
+                    AuthorityUtils.createAuthorityList(person.isAdmin() ? "ADMIN" : "USER")
             );
         }
 

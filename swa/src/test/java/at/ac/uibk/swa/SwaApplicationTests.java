@@ -1,10 +1,10 @@
 package at.ac.uibk.swa;
 
 import at.ac.uibk.swa.Models.Card;
-import at.ac.uibk.swa.Models.Customer;
+import at.ac.uibk.swa.Models.Person;
 import at.ac.uibk.swa.Models.Deck;
 import at.ac.uibk.swa.Service.CardService;
-import at.ac.uibk.swa.Service.CustomerService;
+import at.ac.uibk.swa.Service.PersonService;
 import at.ac.uibk.swa.Service.DeckService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SwaApplicationTests {
 
     @Autowired
-    private CustomerService customerService;
+    private PersonService personService;
     @Autowired
     private DeckService deckService;
     @Autowired
@@ -34,36 +34,36 @@ class SwaApplicationTests {
 
     @Test
     public void TestRetrievingUserFromToken() {
-        Customer customer = new Customer("tokenTest", "def", "ghi", false);
+        Person person = new Person("tokenTest", "def", "ghi", false);
 
-        assertEquals(true, customerService.save(customer));
+        assertEquals(true, personService.save(person));
 
-        Optional<UUID> oToken = customerService.login(customer.getUsername(), customer.getPasswdHash());
+        Optional<UUID> oToken = personService.login(person.getUsername(), person.getPasswdHash());
         assertTrue(oToken.isPresent());
         UUID token = oToken.get();
 
-        Optional<Customer> oCustomer = customerService.findByToken(token);
+        Optional<Person> oCustomer = personService.findByToken(token);
         assertTrue(oCustomer.isPresent());
-        assertEquals(customer.getCustomerId(), oCustomer.get().getCustomerId());
+        assertEquals(person.getCustomerId(), oCustomer.get().getCustomerId());
     }
 
     @Test
     public void TestCreatingDeck() {
-        Customer customer = new Customer("deckTest", "def", "ghi", false);
+        Person person = new Person("deckTest", "def", "ghi", false);
 
-        Deck deck = new Deck("Deck1", "abcd", customer);
+        Deck deck = new Deck("Deck1", "abcd", person);
         Card card = new Card("Front", "Back", false, deck);
 
-        assertEquals(true, customerService.save(customer));
+        assertEquals(true, personService.save(person));
         assertEquals(true, deckService.save(deck));
         assertEquals(true, cardService.save(card));
 
-        customer = customerService.findByToken(customerService.login(customer.getUsername(), customer.getPasswdHash()).get()).get();
+        person = personService.findByToken(personService.login(person.getUsername(), person.getPasswdHash()).get()).get();
 
-        assertEquals(deck.getDeckId(), customer.getDecks().get(0).getDeckId());
-        assertEquals(1, customer.getDecks().size());
+        assertEquals(deck.getDeckId(), person.getDecks().get(0).getDeckId());
+        assertEquals(1, person.getDecks().size());
 
-        assertEquals(card.getCardId(), customer.getDecks().get(0).getCards().get(0).getCardId());
-        assertEquals(1, customer.getDecks().get(0).getCards().size());
+        assertEquals(card.getCardId(), person.getDecks().get(0).getCards().get(0).getCardId());
+        assertEquals(1, person.getDecks().get(0).getCards().size());
     }
 }
