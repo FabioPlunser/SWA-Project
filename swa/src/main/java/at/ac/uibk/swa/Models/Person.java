@@ -20,8 +20,8 @@ import java.util.UUID;
 @Table(name = "Persons")
 public class Person implements Serializable {
 
-    public Person(String username, String email, String passwdHash, boolean isAdmin, List<Permission> permissions) {
-        this(UUID.randomUUID(), username, email, passwdHash, isAdmin, UUID.randomUUID(),
+    public Person(String username, String email, String passwdHash, List<Permission> permissions) {
+        this(UUID.randomUUID(), username, email, passwdHash, UUID.randomUUID(),
                 new ArrayList<>(), new ArrayList<>(), permissions);
     }
 
@@ -45,11 +45,6 @@ public class Person implements Serializable {
     @Setter
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String passwdHash;
-
-    @Column(name = "IsAdmin", nullable = false)
-    @Setter
-    @JdbcTypeCode(SqlTypes.BOOLEAN)
-    private boolean isAdmin;
 
     @Column(name = "Token", nullable = true, unique = true)
     @Setter
@@ -75,7 +70,7 @@ public class Person implements Serializable {
             joinColumns=@JoinColumn(name = "customerId")
     )
     @Column(name="Permission")
-    private List<Permission> Permissions;
+    private List<Permission> permissions;
 
     @Override
     public String toString() {
