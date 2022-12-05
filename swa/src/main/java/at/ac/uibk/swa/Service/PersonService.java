@@ -5,6 +5,7 @@ import at.ac.uibk.swa.Repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -15,7 +16,7 @@ public class PersonService {
     @Autowired
     PersonRepository personRepository;
 
-    public Iterable<Person> getCustomers() {
+    public List<Person> getPersons() {
         return personRepository.findAll();
     }
 

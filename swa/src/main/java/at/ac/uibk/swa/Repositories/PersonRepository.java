@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface PersonRepository extends CrudRepository<Person, UUID> {
     @Override
-    Iterable<Person> findAll();
+    List<Person> findAll();
 
     Optional<Person> findByToken(UUID token);
 

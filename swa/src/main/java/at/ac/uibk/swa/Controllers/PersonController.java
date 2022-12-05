@@ -3,6 +3,7 @@ package at.ac.uibk.swa.Controllers;
 import at.ac.uibk.swa.Models.Permission;
 import at.ac.uibk.swa.Models.Person;
 import at.ac.uibk.swa.Models.RestResponses.CreatedUserResponse;
+import at.ac.uibk.swa.Models.RestResponses.ListResponse;
 import at.ac.uibk.swa.Models.RestResponses.MessageResponse;
 import at.ac.uibk.swa.Models.RestResponses.RestResponse;
 import at.ac.uibk.swa.Service.PersonService;
@@ -22,7 +23,6 @@ public class PersonController {
 
     @Autowired
     private PersonService personService;
-
 
     /**
      * User Registration Endpoint for Users to create an Account by themselves.
@@ -68,4 +68,9 @@ public class PersonController {
         return new MessageResponse(false, "Could not create User - Username already exists!");
     }
 
+    @PostMapping("/api/getAllUsers")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public RestResponse getAllUsers() {
+        return new ListResponse<Person>(personService.getPersons());
+    }
 }

@@ -46,7 +46,7 @@ public class LoginController {
      *
      * @return A Token if the user credentials are correct, otherwise an error.
      */
-    @PostMapping({"/api/logout", "/logout"})
+    @PostMapping("/api/logout")
     public RestResponse deleteToken() {
         UUID token = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
