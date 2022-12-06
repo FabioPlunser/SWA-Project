@@ -2,48 +2,17 @@
     // TODO implement login locig and page redirection
     import favicon from "/favicon.png";
     import { redirect } from "../lib/utils/redirect";
-
-    let token = "";
+    import { formFetch } from "../lib/utils/formFetch";
+    import { token } from "../lib/stores/token";
     async function handleSubmit (e){
-		// getting the action url
-		const formdata = new FormData(e.target);
-
-        var requestOptions = {
-            method: 'POST',
-            header: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-            },
-            body: formdata,
-        };
-        fetch("/api/login", requestOptions)
-        .then(response => response.json())
-        .then(result => {console.log(result); token = result.token})
-        .catch(error => console.log('error', error))
-        
+        let res = await formFetch(e);
+        if(!res.success){
+            alert(res.message);
+            return;
+        }
+        $token = res.token;
 	}
-    $: console.log("token: " + token);
-    
-    
-    async function getAllUsers(){
-        var requestOptions = {
-            method: 'POST',
-            header: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-                'Authorization': `Bearer ${token}`
-            },
-        };
-        fetch("/api/getAllUsers", requestOptions)
-        .then(response => response.json())
-        .then(result => console.log(result))
-        .catch(error => console.log('error', error))
-    } 
-    // let token = "ed899ec7-81d5-4a6f-95d8-4b102e5d3173";
+    $: if($token.length > 30) redirect("");
 </script>
 
 <svelte:head>
@@ -76,6 +45,4 @@
             </div>
         </form>
     </div>
-
-    <button class="btn" on:click={getAllUsers}></button>
 </main>

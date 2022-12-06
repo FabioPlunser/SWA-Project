@@ -1,13 +1,12 @@
 <script lang="ts">
     export let title = "";
-    import { loggedIN } from "../stores/loggedIn";
+    import favicon from "/favicon.png";
     import { redirect } from "../utils/redirect";
+    import { token } from "../stores/token";
     function handleLogout(){
-      console.log("logout");
-        $loggedIN = false;
+        $token = null;
         redirect("login");
     }
-    import favicon from "/favicon.png";
 </script>
 
 <div class="flex p-2 justify-center bg-slate-900 w-full rounded-none justiy-center shadow-2xl top-0 fixed z-10">
