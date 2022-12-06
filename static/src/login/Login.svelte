@@ -1,19 +1,22 @@
 <script lang="ts">
     // TODO implement login locig and page redirection
-    import Nav from "../lib/components/nav.svelte";
-    import {loggedIN} from "../lib/stores/loggedIn";
-    let username = 'user';
-    let password = 'user';
-    function login(){
-        if(username == 'user' && password == 'user'){
-            loggedIN.set(true);
-            window.location.href = '/';
+    import favicon from "/favicon.png";
+    import { redirect } from "../lib/utils/redirect";
+    import { formFetch } from "../lib/utils/formFetch";
+    import { token } from "../lib/stores/token";
+    async function handleSubmit (e){
+        let res = await formFetch(e);
+        if(!res.success){
+            alert(res.message);
+            return;
         }
-    }
+        $token = res.token;
+	}
+    $: if($token.length > 30) redirect("");
 </script>
 
 <svelte:head>
-	<link rel="icon" type="image/png" href="../static/882998.png"/>
+	<link rel="icon" type="image/png" href={favicon}/>
 	<title>Login</title>
 </svelte:head>
 
@@ -21,22 +24,25 @@
 <main class="flex justify-center items-center mx-auto h-screen text-white">
     <div class="rounded-xl shadow-2xl bg-slate-900 max-w-fit p-10">
         <h1 class="underline text-2xl mx-auto flex justify-center p-2">Login</h1>
-        <div class="form-control">
-            <label class="input-group">
-              <span>Username</span>
-              <input type="text" bind:value={username} placeholder="Max" class="input input-bordered" />
-            </label>
-        </div>
-        <br class="pt-4"/>
-        <div class="form-control">
-            <label class="input-group">
-              <span>Password</span>
-              <input type="text" bind:value={password} placeholder="1234" class="input input-bordered" />
-            </label>
-        </div>
-        <div class="flex justify-between pt-4">
-            <button on:click={login} class="btn btn-primary">Login</button>
-            <button class="btn btn-primary">Register</button>
-        </div>
+        <form method="POST" action="/api/login" on:submit|preventDefault={handleSubmit}>
+            <div class="form-control">
+                <label class="input-group">
+                  <span>Username</span>
+                  <input name="username" required type="text" placeholder="Max" class="input input-bordered" />
+                </label>
+            </div>
+            <br class="pt-4"/>
+            <br class="pt-4"/>
+            <div class="form-control">
+                <label class="input-group">
+                  <span>Password</span>
+                  <input name="password" required type="password" placeholder="1234" class="input input-bordered" />
+                </label>
+            </div>
+            <div class="flex justify-between pt-4">
+                <button type="submit" class="btn btn-primary">Login</button>
+                <button class="btn btn-primary" on:click={()=>redirect("register")}>Register</button>
+            </div>
+        </form>
     </div>
 </main>

@@ -1,16 +1,15 @@
 package at.ac.uibk.swa.Config;
 
+import at.ac.uibk.swa.Models.Permissions.Permission;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.web.util.matcher.*;
 
 /**
  * <p>
@@ -28,10 +27,21 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * </p>
  */
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
-    private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
-            new AntPathRequestMatcher("/api/**")
+    private static final RequestMatcher PUBLIC_API_ROUTES = new OrRequestMatcher(
+            new AntPathRequestMatcher("/api/login"),
+            new AntPathRequestMatcher("/api/register"),
+            new AntPathRequestMatcher("/token")
+    );
+
+    private static final RequestMatcher PROTECTED_ROUTES = new AndRequestMatcher(
+            new OrRequestMatcher(
+                    new AntPathRequestMatcher("/api/**"),
+                    new AntPathRequestMatcher("/admin/**")
+            ),
+            new NegatedRequestMatcher(PUBLIC_API_ROUTES)
     );
 
     private AuthenticationProvider provider;
@@ -58,10 +68,11 @@ public class SecurityConfiguration {
                 // Specify which Routes/Endpoints should be protected and which ones should be accessible to everyone.
                 .authorizeHttpRequests((auth) ->
                     auth
-                            // Anyone should be able to login (alias for getting a Token
+                            // Anyone should be able to log in (alias for getting a Token)
                             .requestMatchers("/api/login", "/api/register", "/token").permitAll()
                             // Only allow authenticated Users to use the API
-                            .requestMatchers(PROTECTED_URLS).authenticated()
+                            .requestMatchers("/api/**").authenticated()
+                            .requestMatchers("/admin/**").hasAuthority(Permission.ADMIN.toString())
                             // Permit everyone to get the static resources
                             .requestMatchers("/**").permitAll()
                 )
@@ -76,7 +87,7 @@ public class SecurityConfiguration {
 
     @Bean
     AuthenticationFilter authenticationFilter(HttpSecurity http) throws Exception {
-        final AuthenticationFilter filter = new AuthenticationFilter(PROTECTED_URLS);
+        final AuthenticationFilter filter = new AuthenticationFilter(PROTECTED_ROUTES);
         filter.setAuthenticationManager(authManager(http));
         return filter;
     }

@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.Models;
 
+import at.ac.uibk.swa.Models.Permissions.Permission;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,16 +17,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "Customers")
-public class Customer implements Serializable {
+@Table(name = "Persons")
+public class Person implements Serializable {
 
-    public Customer(String username, String email, String passwdHash) {
-        this(username, email, passwdHash, false);
+    public Person(String username, String email, String passwdHash, UUID token, List<Permission> permissions) {
+        this(UUID.randomUUID(), username, email, passwdHash, token,
+                new ArrayList<>(), new ArrayList<>(), permissions);
     }
 
-    public Customer(String username, String email, String passwdHash, boolean isAdmin) {
-        this(UUID.randomUUID(), username, email, passwdHash, isAdmin, UUID.randomUUID(),
-                new ArrayList<>(), new ArrayList<>());
+    public Person(String username, String email, String passwdHash, List<Permission> permissions) {
+        this(UUID.randomUUID(), username, email, passwdHash, null,
+                new ArrayList<>(), new ArrayList<>(), permissions);
     }
 
     @Id
@@ -49,11 +51,6 @@ public class Customer implements Serializable {
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String passwdHash;
 
-    @Column(name = "IsAdmin", nullable = false)
-    @Setter
-    @JdbcTypeCode(SqlTypes.BOOLEAN)
-    private boolean isAdmin;
-
     @Column(name = "Token", nullable = true, unique = true)
     @Setter
     @JdbcTypeCode(SqlTypes.UUID)
@@ -63,14 +60,22 @@ public class Customer implements Serializable {
     @Setter
     @JsonIgnore
     @Builder.Default
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.EAGER)
     private List<Deck> decks = new ArrayList<>();
 
     @Setter
     @JsonIgnore
     @Builder.Default
-    @OneToMany(mappedBy = "customer", orphanRemoval = true)
+    @OneToMany(mappedBy = "person", orphanRemoval = true)
     private List<DeckReference> deckReferences = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "PersonPermissions",
+            joinColumns=@JoinColumn(name = "customerId")
+    )
+    @Column(name="Permission")
+    private List<Permission> permissions;
 
     @Override
     public String toString() {
@@ -79,7 +84,7 @@ public class Customer implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Customer u)
+        if (obj instanceof Person u)
             return u.customerId == this.customerId;
 
         return false;

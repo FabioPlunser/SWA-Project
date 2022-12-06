@@ -15,7 +15,7 @@ public class SwaErrorController implements ErrorController {
     public RestResponse handleError(HttpServletRequest request) {
         // TODO: This is hardly human readable if they get redirected to a invalid Endpoint
         //       => There has to be a way to check which stage failed (Auth or Endpoint or Exception)
-        return new MessageResponse(false, "The specified Website does not exist!");
+        return new MessageResponse(false, "Could not find Endpoint!");
         /*
         Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
         Exception exception = (Exception) request.getAttribute("javax.servlet.error.exception");

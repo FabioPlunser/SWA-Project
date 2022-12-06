@@ -1,14 +1,15 @@
 <script lang="ts">
 	import Nav from './lib/components/nav.svelte';
 	import Deck from './lib/components/deck.svelte';
-  	import { onMount } from "svelte";
 	import { redirect } from "./lib/utils/redirect";
-	import {loggedIN} from "./lib/stores/loggedIn";
+	import { token } from "./lib/stores/token";
+
+	$: if($token.length < 30) redirect("login");
 </script>
 
 <!-- This site is index -> deck overview -->
 <svelte:head>
-	<link rel="icon" type="image/png" href="../static/882998.png"/>
+	<link rel="icon" type="image/png" href="/favicon.png"/>
 	<title>Decks overview</title>
 </svelte:head>
 
