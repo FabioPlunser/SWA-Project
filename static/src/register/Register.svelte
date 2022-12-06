@@ -1,7 +1,5 @@
 <script lang="ts">
-    // TODO implement login locig and page redirection
     import favicon from "/favicon.png";
-    import { redirect } from "../lib/utils/redirect";
     import { formFetch } from "../lib/utils/formFetch";
     import { token } from "../lib/stores/token";
     async function handleSubmit (e){
@@ -12,19 +10,18 @@
         }
         $token = res.token;
 	}
-    $: if($token.length > 30) redirect("");
 </script>
 
 <svelte:head>
 	<link rel="icon" type="image/png" href={favicon}/>
-	<title>Login</title>
+	<title>Register</title>
 </svelte:head>
 
 
 <main class="flex justify-center items-center mx-auto h-screen text-white">
     <div class="rounded-xl shadow-2xl bg-slate-900 max-w-fit p-10">
-        <h1 class="underline text-2xl mx-auto flex justify-center p-2">Login</h1>
-        <form method="POST" action="/api/login" on:submit|preventDefault={handleSubmit}>
+        <h1 class="underline text-2xl mx-auto flex justify-center p-2">Register</h1>
+        <form method="POST" action="api/register" on:submit|preventDefault={handleSubmit}>
             <div class="form-control">
                 <label class="input-group">
                   <span>Username</span>
@@ -32,6 +29,12 @@
                 </label>
             </div>
             <br class="pt-4"/>
+            <div class="form-control">
+                <label class="input-group">
+                  <span>Email</span>
+                  <input name="email" required type="text" placeholder="test@example" class="input input-bordered" />
+                </label>
+            </div>
             <br class="pt-4"/>
             <div class="form-control">
                 <label class="input-group">
@@ -39,9 +42,8 @@
                   <input name="password" required type="text" placeholder="1234" class="input input-bordered" />
                 </label>
             </div>
-            <div class="flex justify-between pt-4">
-                <button type="submit" class="btn btn-primary">Login</button>
-                <button class="btn btn-primary" on:click={()=>redirect("register")}>Register</button>
+            <div class="flex justify-center mt-2">
+                <button type="submit" class="btn btn-primary">Register</button>
             </div>
         </form>
     </div>
