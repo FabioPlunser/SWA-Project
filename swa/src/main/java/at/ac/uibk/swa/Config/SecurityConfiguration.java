@@ -5,11 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.util.matcher.*;
@@ -71,7 +68,7 @@ public class SecurityConfiguration {
                 // Specify which Routes/Endpoints should be protected and which ones should be accessible to everyone.
                 .authorizeHttpRequests((auth) ->
                     auth
-                            // Anyone should be able to login (alias for getting a Token)
+                            // Anyone should be able to log in (alias for getting a Token)
                             .requestMatchers("/api/login", "/api/register", "/token").permitAll()
                             // Only allow authenticated Users to use the API
                             .requestMatchers("/api/**").authenticated()

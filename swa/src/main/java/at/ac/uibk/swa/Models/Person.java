@@ -20,8 +20,13 @@ import java.util.UUID;
 @Table(name = "Persons")
 public class Person implements Serializable {
 
+    public Person(String username, String email, String passwdHash, UUID token, List<Permission> permissions) {
+        this(UUID.randomUUID(), username, email, passwdHash, token,
+                new ArrayList<>(), new ArrayList<>(), permissions);
+    }
+
     public Person(String username, String email, String passwdHash, List<Permission> permissions) {
-        this(UUID.randomUUID(), username, email, passwdHash, UUID.randomUUID(),
+        this(UUID.randomUUID(), username, email, passwdHash, null,
                 new ArrayList<>(), new ArrayList<>(), permissions);
     }
 
