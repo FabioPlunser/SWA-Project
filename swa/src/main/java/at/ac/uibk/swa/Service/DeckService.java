@@ -16,7 +16,7 @@ public class DeckService {
             this.deckRepository.save(deck);
             return true;
         } catch (Exception e) {
-            throw e;
+            return false;
         }
     }
 }

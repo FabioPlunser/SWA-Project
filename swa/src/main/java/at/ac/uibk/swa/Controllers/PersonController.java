@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.Controllers;
 
-import at.ac.uibk.swa.Models.Permission;
+import at.ac.uibk.swa.Models.Permissions.Permission;
 import at.ac.uibk.swa.Models.Person;
 import at.ac.uibk.swa.Models.RestResponses.CreatedUserResponse;
 import at.ac.uibk.swa.Models.RestResponses.ListResponse;
@@ -38,7 +38,7 @@ public class PersonController {
             @RequestParam("password") final String password,
             @RequestParam("email") final String email
     ) {
-        Person person = new Person(username, email, password, false, List.of(Permission.USER));
+        Person person = new Person(username, email, password, List.of(Permission.USER));
         if (personService.save(person))
             return new CreatedUserResponse(username, person.getCustomerId());
         return new MessageResponse(false, "Could not create User - Username already exists!");
@@ -62,7 +62,7 @@ public class PersonController {
             @RequestParam("isAdmin") final boolean isAdmin
     ) {
         List<Permission> permissions = List.of(isAdmin ? Permission.ADMIN : Permission.USER);
-        Person person = new Person(username, email, password, isAdmin, permissions);
+        Person person = new Person(username, email, password, permissions);
         if (personService.save(person))
             return new CreatedUserResponse(username, person.getCustomerId());
         return new MessageResponse(false, "Could not create User - Username already exists!");

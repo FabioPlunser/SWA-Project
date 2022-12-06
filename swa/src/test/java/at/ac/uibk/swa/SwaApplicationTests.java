@@ -35,7 +35,7 @@ class SwaApplicationTests {
 
     @Test
     public void TestRetrievingUserFromToken() {
-        Person person = new Person("tokenTest", "def", "ghi", false, new ArrayList<>());
+        Person person = new Person("tokenTest", "def", "ghi", new ArrayList<>());
 
         assertEquals(true, personService.save(person));
 
@@ -50,7 +50,7 @@ class SwaApplicationTests {
 
     @Test
     public void TestCreatingDeck() {
-        Person person = new Person("deckTest", "def", "ghi", false, new ArrayList<>());
+        Person person = new Person("deckTest", "def", "ghi", new ArrayList<>());
 
         Deck deck = new Deck("Deck1", "abcd", person);
         Card card = new Card("Front", "Back", false, deck);

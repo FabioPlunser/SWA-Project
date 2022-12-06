@@ -8,7 +8,7 @@
 
 <!-- This site is index -> deck overview -->
 <svelte:head>
-	<link rel="icon" type="image/png" href="../static/882998.png"/>
+	<link rel="icon" type="image/png" href="/favicon.png"/>
 	<title>Decks overview</title>
 </svelte:head>
 
