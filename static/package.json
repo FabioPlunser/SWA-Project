@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "restart": "npm run build && cd ../swa && gradlew bootRun"
+    "restart": "npm run build && cd ../swa && gradle bootRun"
   },
   "devDependencies": {
     "@brainandbones/skeleton": "^0.67.5",
