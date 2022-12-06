@@ -41,4 +41,11 @@ public class RedirectController {
         modelAndView.setViewName("listCards/index.html");
         return modelAndView;
     }
+    @GetMapping("/admin")
+    public ModelAndView admin() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("admin/index.html");
+        return modelAndView;
+    }
+}
 }
