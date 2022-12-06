@@ -36,7 +36,7 @@
             <div class="form-control">
                 <label class="input-group">
                   <span>Password</span>
-                  <input name="password" required type="text" placeholder="1234" class="input input-bordered" />
+                  <input name="password" required type="password" placeholder="1234" class="input input-bordered" />
                 </label>
             </div>
             <div class="flex justify-between pt-4">
