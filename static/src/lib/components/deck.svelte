@@ -2,7 +2,6 @@
     
     import { onMount } from 'svelte';
     import { redirect } from '../utils/redirect';
-    import { loggedIN } from '../stores/loggedIn';
     export let title = "title";
     export let description = "description";
     // export let id: number = 0;
@@ -16,11 +15,6 @@
     function handleMouseOver() {
         hover = true
     }
-    onMount(() => {
-        if(!$loggedIN){
-            redirect("login");
-        }
-    });
 </script>
 
 
