@@ -5,6 +5,7 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [svelte()],
   root: "./src/",
+  publicDir: './public',
   build: {
     outDir: "../../swa/src/main/resources/static",
     rollupOptions: {
