@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controller responsible for creating and deleting Users.
@@ -38,9 +39,10 @@ public class PersonController {
             @RequestParam("password") final String password,
             @RequestParam("email") final String email
     ) {
-        Person person = new Person(username, email, password, List.of(Permission.USER));
+        UUID token = UUID.randomUUID();
+        Person person = new Person(username, email, password, token, List.of(Permission.USER));
         if (personService.save(person))
-            return new CreatedUserResponse(username, person.getCustomerId());
+            return new CreatedUserResponse(username, person.getCustomerId(), token);
         return new MessageResponse(false, "Could not create User - Username already exists!");
     }
 
