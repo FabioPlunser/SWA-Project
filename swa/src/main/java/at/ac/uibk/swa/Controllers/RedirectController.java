@@ -24,7 +24,7 @@ public class RedirectController {
         return modelAndView;
     }
     @GetMapping("/register")
-    public ModelAndView login() {
+    public ModelAndView register() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("register/index.html");
         return modelAndView;
