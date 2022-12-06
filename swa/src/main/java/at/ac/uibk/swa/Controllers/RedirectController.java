@@ -23,6 +23,12 @@ public class RedirectController {
         modelAndView.setViewName("login/index.html");
         return modelAndView;
     }
+    @GetMapping("/register")
+    public ModelAndView login() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("register/index.html");
+        return modelAndView;
+    }
     @GetMapping("/learn")
     public ModelAndView learn() {
         ModelAndView modelAndView = new ModelAndView();

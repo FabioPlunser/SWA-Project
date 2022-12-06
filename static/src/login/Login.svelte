@@ -1,9 +1,8 @@
 <script lang="ts">
     // TODO implement login locig and page redirection
-    import Nav from "../lib/components/nav.svelte";
-    import {loggedIN} from "../lib/stores/loggedIn";
+    import favicon from "/favicon.png";
+    import { redirect } from "../lib/utils/redirect";
 
-    let username = "";
     let token = "";
     async function handleSubmit (e){
 		// getting the action url
@@ -48,7 +47,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" type="image/png" href="/favicon.png"/>
+	<link rel="icon" type="image/png" href={favicon}/>
 	<title>Login</title>
 </svelte:head>
 
@@ -73,7 +72,7 @@
             </div>
             <div class="flex justify-between pt-4">
                 <button type="submit" class="btn btn-primary">Login</button>
-                <!-- <button class="btn btn-primary">Register</button> -->
+                <button class="btn btn-primary" on:click={()=>redirect("register")}>Register</button>
             </div>
         </form>
     </div>
