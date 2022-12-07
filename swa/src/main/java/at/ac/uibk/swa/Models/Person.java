@@ -72,7 +72,7 @@ public class Person implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "PersonPermissions",
-            joinColumns=@JoinColumn(name = "customerId")
+            joinColumns=@JoinColumn(name = "personId")
     )
     @Column(name="Permission")
     private List<Permission> permissions;
