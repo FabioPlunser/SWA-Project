@@ -53,7 +53,7 @@ public class Person implements Serializable {
 
     @Column(name = "Token", nullable = true, unique = true)
     @Setter
-    @JdbcTypeCode(SqlTypes.UUID)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     @JsonIgnore
     private UUID token;
 
