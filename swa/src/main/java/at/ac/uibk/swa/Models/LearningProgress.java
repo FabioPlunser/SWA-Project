@@ -20,12 +20,12 @@ public class LearningProgress {
 
     @Id
     @Column(name = "CustomerId", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID customerId;
 
     @Id
     @Column(name = "CardId", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID cardId;
 
     @Setter

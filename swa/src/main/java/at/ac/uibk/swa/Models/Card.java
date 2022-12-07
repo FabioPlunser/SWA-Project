@@ -24,7 +24,7 @@ public class Card implements Serializable {
     @Id
     // @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "CardId", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID cardId;
 
     @Setter
