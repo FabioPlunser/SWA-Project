@@ -42,7 +42,7 @@ public class PersonController {
         UUID token = UUID.randomUUID();
         Person person = new Person(username, email, password, token, List.of(Permission.USER));
         if (personService.save(person))
-            return new CreatedUserResponse(username, person.getCustomerId(), token);
+            return new CreatedUserResponse(username, person.getPersonId(), token);
         return new MessageResponse(false, "Could not create User - Username already exists!");
     }
 
@@ -66,7 +66,7 @@ public class PersonController {
         List<Permission> permissions = List.of(isAdmin ? Permission.ADMIN : Permission.USER);
         Person person = new Person(username, email, password, permissions);
         if (personService.save(person))
-            return new CreatedUserResponse(username, person.getCustomerId());
+            return new CreatedUserResponse(username, person.getPersonId());
         return new MessageResponse(false, "Could not create User - Username already exists!");
     }
 

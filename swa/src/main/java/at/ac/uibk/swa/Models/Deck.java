@@ -40,7 +40,7 @@ public class Deck implements Serializable {
     @Id
     // @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "DeckId", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID deckId;
 
     @Setter

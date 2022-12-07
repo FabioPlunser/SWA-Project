@@ -32,9 +32,9 @@ public class Person implements Serializable {
 
     @Id
     // @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = "CustomerId", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
-    private UUID customerId;
+    @Column(name = "PersonId", nullable = false)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
+    private UUID personId;
 
     @Column(name = "Username", nullable = false, unique = true)
     @Setter
@@ -85,13 +85,13 @@ public class Person implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Person u)
-            return u.customerId == this.customerId;
+            return u.personId == this.personId;
 
         return false;
     }
 
     @Override
     public int hashCode() {
-        return this.customerId.hashCode();
+        return this.personId.hashCode();
     }
 }
