@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { redirect } from '../lib/utils/redirect';
     import favicon from "/favicon.png";
     import { formFetch } from "../lib/utils/formFetch";
     import { token } from "../lib/stores/token";
+
+    // TODO add validation
     async function handleSubmit (e){
         let res = await formFetch(e);
         if(!res.success){
@@ -10,6 +13,7 @@
         }
         $token = res.token;
 	}
+    $: if($token.length > 30) redirect("");
 </script>
 
 <svelte:head>

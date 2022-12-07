@@ -1,9 +1,10 @@
 <script lang="ts">
-    // TODO implement login locig and page redirection
     import favicon from "/favicon.png";
     import { redirect } from "../lib/utils/redirect";
     import { formFetch } from "../lib/utils/formFetch";
     import { token } from "../lib/stores/token";
+
+    // TODO add validation
     async function handleSubmit (e){
         let res = await formFetch(e);
         if(!res.success){

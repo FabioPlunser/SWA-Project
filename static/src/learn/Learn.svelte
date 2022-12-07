@@ -2,6 +2,9 @@
     import FlipCard from "../lib/components/flipCard.svelte";
     import Slider from "../lib/components/slider.svelte";
 	import Nav from "../lib/components/nav.svelte";
+	import { redirect } from '../lib/utils/redirect';
+    import { token } from "../lib/stores/token";
+    $: if($token.length < 30) redirect("login");
 </script>
 
 <svelte:head>
