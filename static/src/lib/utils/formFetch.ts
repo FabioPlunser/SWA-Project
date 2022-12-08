@@ -2,9 +2,6 @@ export async function formFetch(e) {
   const action = e.target.action;
   const method = e.target.method.toUpperCase();
 
-  console.log(action);
-  console.log(method);
-
   if(method === 'GET') {
     let res = await fetch(action)
     res = await res.json();
@@ -12,6 +9,10 @@ export async function formFetch(e) {
   }
   if(method === 'POST') {
     const formdata = new FormData(e.target);
+    console.log(formdata);
+    for(var pair of formdata.entries()) {
+      console.log(pair[0]+ ', '+ pair[1]);
+    }
     var requestOptions = {
       method: e.target.method.toUpperCase(),
       header: {

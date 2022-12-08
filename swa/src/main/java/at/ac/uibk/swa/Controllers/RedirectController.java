@@ -42,7 +42,7 @@ public class RedirectController {
         return modelAndView;
     }
     @GetMapping("/admin")
-    public ModelAndView admin() {
+    public ModelAndView adminPage() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("admin/index.html");
         return modelAndView;

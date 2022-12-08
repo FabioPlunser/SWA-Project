@@ -33,7 +33,6 @@
                 </label>
             </div>
             <br class="pt-4"/>
-            <br class="pt-4"/>
             <div class="form-control">
                 <label class="input-group">
                   <span>Password</span>

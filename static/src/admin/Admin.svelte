@@ -36,11 +36,24 @@
     let showEditModal = false;
 
     let selectedUser = null;
+
+    let searchFirstName = "";
+    let searchLastName = "";
+    let searchEmail = "";
+    let data = [
+        {id: 1, firstName: "Max", lastName: "Mustermann", email: "test@example.com"},
+        {id: 2, firstName: "David", lastName: "Mustermann", email: "test@example.com"},
+        {id: 3, firstName: "Fabio", lastName: "Mustermann", email: "test@example.com"},
+        {id: 4, firstName: "Lukas", lastName: "Mustermann", email: "test@example.com"},
+        {id: 5, firstName: "Fabian", lastName: "Mustermann", email: "test@example.com"},
+        {id: 6, firstName: "Luana", lastName: "Mustermann", email: "test@example.com"},
+    ]
 </script>
 
 <svelte:head>
 	<link rel="icon" type="image/png" href="favicon.png"/>
 	<title>Admin</title>
+    
 </svelte:head>
 
 <Nav title="Admin"/>
@@ -106,7 +119,46 @@
     <div class="flex justify-center">
         <label for="AdminCreateUser" class="btn btn-primary" on:click={()=> showCreateModal = true}>Create User</label>
     </div>
-    {#key users}
+    <div class="overflow-x-auto">
+        <table class="table table-zebra table-compact w-full">
+          <!-- head -->
+          <thead class="">
+            <tr>
+              <th>Search</th>
+              <th><input bind:value={searchFirstName} class="input" placeholder="Max"/></th>
+              <th><input bind:value={searchLastName} class="input" placeholder="Max"/></th>
+              <th><input bind:value={searchEmail} class="input" placeholder="Max"/></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <thead class="bg-slate-900">
+            <tr>
+              <th></th>
+              <th>FirstName</th>
+              <th>LastName</th>
+              <th>email</th>
+              <th>edit</th>
+              <th>remove</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each data as user}
+                {#if user.firstName.includes(searchFirstName) && user.lastName.includes(searchLastName) && user.email.includes(searchEmail)}
+                    <tr>
+                        <th>{user.id}</th>
+                        <th>{user.firstName}</th>
+                        <th>{user.lastName}</th>
+                        <th>{user.email}</th>
+                        <th><button class="btn btn-secondary">Edit</button></th>
+                        <th><button class="btn btn-info">Delete</button></th>
+                    </tr>
+                {/if}
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    <!-- {#key users}
         {#each users as user}
             <div class="flex justify-center m-2">
                 <div class="form-control mx-2">
@@ -132,7 +184,7 @@
                 <button class="btn btn-info mx-2" on:click={deleateUser}>Delete</button>
             </div>
         {/each} 
-    {/key}
+    {/key} -->
 
 
 </main>
