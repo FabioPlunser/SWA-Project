@@ -69,7 +69,7 @@ public class Deck implements Serializable {
     private boolean isDeleted;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "customerId", nullable = false)
+    @JoinColumn(name = "PersonId", nullable = false)
     private Person person;
 
     @Setter

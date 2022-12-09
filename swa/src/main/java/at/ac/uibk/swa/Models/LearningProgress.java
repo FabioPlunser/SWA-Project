@@ -19,7 +19,7 @@ import java.util.UUID;
 public class LearningProgress {
 
     @Id
-    @Column(name = "CustomerId", nullable = false)
+    @Column(name = "PersonId", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID customerId;
 
