@@ -73,9 +73,10 @@ public class SecurityConfiguration {
                             .requestMatchers(PUBLIC_API_ROUTES).permitAll()
                             // Only allow authenticated Users to use the API
                             .requestMatchers("/api/**").authenticated()
-//                            .requestMatchers("/admin/**").hasAuthority(Permission.ADMIN.toString())
+                            .requestMatchers("/admin/**").hasAuthority(Permission.ADMIN.toString())
+                            
                             // Permit everyone to get the static resources
-                            .requestMatchers("/admin/**").permitAll()
+                            // .requestMatchers("/admin/**").permitAll()
                             .requestMatchers("/**").permitAll()
                 )
 

@@ -14,6 +14,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -63,7 +64,7 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
         }
 
         // For non-API Endpoints the authentication can be done using a Document Cookie
-        if (!httpServletRequest.getPathInfo().startsWith("/api")) {
+        if (!httpServletRequest.getServletPath().startsWith("/api")) {
 
             Optional<String> cookieToken = Arrays.stream(httpServletRequest.getCookies())
                     .filter(x -> x.getName().startsWith("Token="))

@@ -14,6 +14,8 @@
         $token = res.token;
 	}
     $: if($token.length > 30) redirect("");
+    $: document.cookie = `Token=${$token}; path=/;`;
+
 </script>
 
 <svelte:head>
