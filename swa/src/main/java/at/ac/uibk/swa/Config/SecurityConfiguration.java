@@ -32,14 +32,13 @@ public class SecurityConfiguration {
     private static final RequestMatcher PUBLIC_API_ROUTES = new OrRequestMatcher(
             new AntPathRequestMatcher("/api/login"),
             new AntPathRequestMatcher("/api/register"),
-            new AntPathRequestMatcher("/token"),
-            new AntPathRequestMatcher("/admin/**")
+            new AntPathRequestMatcher("/token")
     );
 
     private static final RequestMatcher PROTECTED_ROUTES = new AndRequestMatcher(
             new OrRequestMatcher(
-                    new AntPathRequestMatcher("/api/**")
-//                    new AntPathRequestMatcher("/admin/**")
+                    new AntPathRequestMatcher("/api/**"),
+                    new AntPathRequestMatcher("/admin/**")
             ),
             new NegatedRequestMatcher(PUBLIC_API_ROUTES)
     );
