@@ -8,7 +8,6 @@ import at.ac.uibk.swa.Models.RestResponses.TokenResponse;
 import at.ac.uibk.swa.Service.PersonService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;

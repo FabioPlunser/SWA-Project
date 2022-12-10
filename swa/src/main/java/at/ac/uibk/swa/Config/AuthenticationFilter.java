@@ -14,7 +14,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -67,7 +66,7 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
         if (!httpServletRequest.getServletPath().startsWith("/api")) {
 
             Optional<String> cookieToken = Arrays.stream(httpServletRequest.getCookies())
-                    .filter(x -> x.getName().startsWith("Token="))
+                    .filter(x -> x.getName().equals("Token"))
                     .map(x -> x.getValue())
                     .findFirst();
 
