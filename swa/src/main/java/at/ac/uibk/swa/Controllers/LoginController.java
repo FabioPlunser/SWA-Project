@@ -7,6 +7,7 @@ import at.ac.uibk.swa.Models.RestResponses.RestResponse;
 import at.ac.uibk.swa.Models.RestResponses.TokenResponse;
 import at.ac.uibk.swa.Service.PersonService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +32,7 @@ public class LoginController {
      * @param password The password of the User to create the Token for.
      * @return A Token if the user credentials are correct, otherwise an error.
      */
+    @SneakyThrows
     @PostMapping({"/api/login", "/token"})
     public RestResponse getToken(
             HttpServletResponse response,
@@ -44,10 +46,12 @@ public class LoginController {
 
         UUID token = maybeToken.get();
 
+        /*
         // https://www.baeldung.com/spring-response-header#1-usinghttpservletresponse
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
         response.setHeader("Set-Cookie",
                 String.format("Token=%s;Max-Age=3600", token.toString()));
+        */
 
         return new TokenResponse(token);
     }
