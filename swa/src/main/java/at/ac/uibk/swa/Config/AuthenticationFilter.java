@@ -53,13 +53,11 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
             try {
                 token = UUID.fromString(bearerToken);
             } catch (Exception e) {
-                throw new BadCredentialsException("Misformed Token");
+                throw new BadCredentialsException("Malformed Token");
             }
 
             // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
             UsernamePasswordAuthenticationToken requestAuthentication = new UsernamePasswordAuthenticationToken(null, token);
-            // Make the Login Token available to Endpoints via the SecurityContext
-            requestAuthentication.setDetails(token);
             return getAuthenticationManager().authenticate(requestAuthentication);
         }
 

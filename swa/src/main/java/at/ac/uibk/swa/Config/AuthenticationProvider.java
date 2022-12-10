@@ -41,7 +41,6 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
     protected UserDetails retrieveUser(
             String userName, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
     ) {
-        // TODO: The Credentials should be the UUID returned by the AuthenticationFilter.
         // TODO: Also send a username and check that the Token is associated with the user?
         UUID token = (UUID) usernamePasswordAuthenticationToken.getCredentials();
 
@@ -50,6 +49,7 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
         if (maybePerson.isPresent()) {
             // If the Customer was found, successfully authenticate them by returning to the AuthenticationFilter.
             Person person = maybePerson.get();
+            usernamePasswordAuthenticationToken.setDetails(person);
             return new User(
                     person.getUsername(), person.getPasswdHash(),
                     true, true, true, true,

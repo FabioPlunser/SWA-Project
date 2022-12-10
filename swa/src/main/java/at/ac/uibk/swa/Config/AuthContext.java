@@ -1,0 +1,30 @@
+package at.ac.uibk.swa.Config;
+
+import at.ac.uibk.swa.Models.Authenticable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public class AuthContext {
+
+    public static boolean isAuthenticated() {
+        return !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken);
+    }
+
+    private static Optional<UsernamePasswordAuthenticationToken> getAuthentication() {
+        if (!isAuthenticated())
+            return Optional.empty();
+        return Optional.of((UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    public static Optional<Authenticable> getCurrentUser() {
+        return getAuthentication().map(x -> (Authenticable) x.getDetails());
+    }
+
+    public static Optional<UUID> getLoginToken() {
+        return getAuthentication().map(x -> ((Authenticable) x.getDetails()).getToken());
+    }
+}
