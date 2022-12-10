@@ -25,10 +25,10 @@
 
 <input type="checkbox" id="{uniqueModalQualifier}" class="modal-toggle"/>
 	<label for="{uniqueModalQualifier}" id="modal-background" class="modal cursor-pointe" on:click={close}>
-		<label class="modal-box relative overflow-auto" id="modal" bind:this={modal}>
+		<label class="modal-box relative overflow-auto bg-slate-900" id="modal" bind:this={modal}>
             <slot/>
-            <div class="modal-action">
-                <label for="{uniqueModalQualifier}" class="btn btn-primary" autofocus on:click={close}>Close</label>
-            </div>
+            <!-- <div class="modal-action"> -->
+        <!-- <label for="{uniqueModalQualifier}" class="btn btn-primary" autofocus on:click={close}>Close</label> -->
+            <!-- </div> -->
     </label>
 </label>
