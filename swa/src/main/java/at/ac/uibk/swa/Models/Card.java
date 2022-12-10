@@ -7,22 +7,24 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Table(name = "Cards")
 public class Card implements Serializable {
 
     public Card(String frontText, String backText, boolean isFlipped, Deck deck) {
-        this(UUID.randomUUID(), frontText, backText, isFlipped, deck);
+        this(UUID.randomUUID(), frontText, backText, isFlipped, deck, new HashMap<>());
     }
 
     @Id
-    // @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "CardId", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID cardId;
@@ -42,10 +44,16 @@ public class Card implements Serializable {
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     private boolean isFlipped;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "deckId", nullable = false)
     @JsonIgnore
+    @JoinColumn(name = "deckId", nullable = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Deck deck;
+
+    @JsonIgnore
+    @OneToMany
+    @Builder.Default
+    @ElementCollection
+    private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
 
     @Override
     public String toString() {
