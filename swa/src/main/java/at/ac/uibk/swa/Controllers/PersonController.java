@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.Controllers;
 
-import at.ac.uibk.swa.Models.Permissions.Permission;
+import at.ac.uibk.swa.Models.Permission;
 import at.ac.uibk.swa.Models.Person;
 import at.ac.uibk.swa.Models.RestResponses.CreatedUserResponse;
 import at.ac.uibk.swa.Models.RestResponses.ListResponse;
@@ -8,7 +8,6 @@ import at.ac.uibk.swa.Models.RestResponses.MessageResponse;
 import at.ac.uibk.swa.Models.RestResponses.RestResponse;
 import at.ac.uibk.swa.Service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,7 +55,6 @@ public class PersonController {
      * @return A RestResponse indicating whether the user could be created or not.
      */
     @PostMapping("/api/createUser")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public RestResponse create(
             @RequestParam("username") final String username,
             @RequestParam("password") final String password,
@@ -70,8 +68,7 @@ public class PersonController {
         return new MessageResponse(false, "Could not create User - Username already exists!");
     }
 
-    @PostMapping("/api/getAllUsers")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/admin/getAllUsers")
     public RestResponse getAllUsers() {
         return new ListResponse<Person>(personService.getPersons());
     }

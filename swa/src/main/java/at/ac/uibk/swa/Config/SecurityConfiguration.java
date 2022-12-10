@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.Config;
 
-import at.ac.uibk.swa.Models.Permissions.Permission;
+import at.ac.uibk.swa.Models.Permission;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -70,7 +70,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((auth) ->
                     auth
                             // Anyone should be able to log in (alias for getting a Token)
-                            .requestMatchers("/api/login", "/api/register", "/token").permitAll()
+                            .requestMatchers(PUBLIC_API_ROUTES).permitAll()
                             // Only allow authenticated Users to use the API
                             .requestMatchers("/api/**").authenticated()
 //                            .requestMatchers("/admin/**").hasAuthority(Permission.ADMIN.toString())
@@ -78,6 +78,7 @@ public class SecurityConfiguration {
                             .requestMatchers("/admin/**").permitAll()
                             .requestMatchers("/**").permitAll()
                 )
+
                 // Disable CORS, CSRF as well as the default Web Security Login and Logout Pages.
                 .csrf().disable()
                 .cors().disable()

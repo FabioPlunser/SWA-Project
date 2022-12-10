@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,14 +54,35 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
             try {
                 token = UUID.fromString(bearerToken);
             } catch (Exception e) {
-                throw new BadCredentialsException("Misformed Token");
+                throw new BadCredentialsException("Malformed Token");
             }
 
             // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
             UsernamePasswordAuthenticationToken requestAuthentication = new UsernamePasswordAuthenticationToken(null, token);
-            // Make the Login Token available to Endpoints via the SecurityContext
-            requestAuthentication.setDetails(token);
             return getAuthenticationManager().authenticate(requestAuthentication);
+        }
+
+        // For non-API Endpoints the authentication can be done using a Document Cookie
+        if (!httpServletRequest.getPathInfo().startsWith("/api")) {
+
+            Optional<String> cookieToken = Arrays.stream(httpServletRequest.getCookies())
+                    .filter(x -> x.getName().startsWith("Token="))
+                    .map(x -> x.getValue())
+                    .findFirst();
+
+            if (cookieToken.isPresent()) {
+                UUID token;
+                // Try to parse the Header
+                try {
+                    token = UUID.fromString(cookieToken.get());
+                } catch (Exception e) {
+                    throw new BadCredentialsException("Malformed Token");
+                }
+
+                // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
+                UsernamePasswordAuthenticationToken requestAuthentication = new UsernamePasswordAuthenticationToken(null, token);
+                return getAuthenticationManager().authenticate(requestAuthentication);
+            }
         }
 
         throw new BadCredentialsException("No Token was sent with the Request!");

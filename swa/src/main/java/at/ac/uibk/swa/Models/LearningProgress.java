@@ -1,32 +1,27 @@
 package at.ac.uibk.swa.Models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.io.Serializable;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "LearningProgress")
-@IdClass(LearningProgress.LearningProgressId.class)
 public class LearningProgress {
 
     @Id
-    @Column(name = "PersonId", nullable = false)
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
-    private UUID customerId;
-
-    @Id
-    @Column(name = "CardId", nullable = false)
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
-    private UUID cardId;
+    @Column(name = "LearningProcessId", nullable = false)
+    @JdbcTypeCode(SqlTypes.INTEGER)
+    private UUID learningProcessId;
 
     @Setter
     @Column(name = "InterVal", nullable = false)
@@ -42,39 +37,4 @@ public class LearningProgress {
     @Column(name = "Repetitions", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int repetitions;
-
-    @Override
-    public boolean equals(Object obj) {
-
-        if (obj instanceof LearningProgressId u)
-            return u.cardId == this.cardId && this.customerId == u.customerId;
-
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.customerId, this.cardId);
-    }
-
-    @NoArgsConstructor
-    @AllArgsConstructor
-    static class LearningProgressId implements Serializable {
-        private UUID customerId;
-        private UUID cardId;
-
-        @Override
-        public boolean equals(Object obj) {
-
-            if (obj instanceof LearningProgressId u)
-                return u.cardId == this.cardId && this.customerId == u.customerId;
-
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.customerId, this.cardId);
-        }
-    }
 }

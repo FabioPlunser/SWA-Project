@@ -23,7 +23,7 @@ public class DeckReference implements Serializable {
     private Deck deck;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "PersonId", nullable = false)
+    @JoinColumn(name = "customerId", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private Person person;
 
