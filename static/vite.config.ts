@@ -17,7 +17,6 @@ export default defineConfig({
         error: resolve(__dirname, "src", "error", "index.html"),
         learn: resolve(__dirname, "src", "learn", "index.html"),
         cards: resolve(__dirname, "src", "listCards", "index.html"),
-
       }
     }
   }

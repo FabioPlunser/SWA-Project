@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "buildC": "vite build --watch",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "restart": "npm run build --emptyOutDir && cd ../swa && gradle bootRun"
