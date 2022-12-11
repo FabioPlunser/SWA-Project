@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.Controllers;
 
+import at.ac.uibk.swa.Models.Annotations.Admin;
 import at.ac.uibk.swa.Models.Permission;
 import at.ac.uibk.swa.Models.Person;
 import at.ac.uibk.swa.Models.RestResponses.CreatedUserResponse;
@@ -55,15 +56,15 @@ public class PersonController {
      * @param permissions The Permissions the new User should have.
      * @return A RestResponse indicating whether the user could be created or not.
      */
+    @Admin
     @PostMapping("/api/createUser")
     public RestResponse create(
             @RequestParam("username") final String username,
             @RequestParam("password") final String password,
             @RequestParam("email") final String email,
-            @RequestParam("permissions") final List<String> permissions
+            @RequestParam("permissions") final List<Permission> permissions
     ) {
-        List<Permission> permissionList = permissions.stream().map(Permission::valueOf).toList();
-        Person person = new Person(username, email, password, permissionList);
+        Person person = new Person(username, email, password, permissions);
 
         return saveUser(person);
     }
@@ -74,7 +75,7 @@ public class PersonController {
      * @param person The Person to save.
      * @return A RestResponse indicating whether the operation was successful or not.
      */
-    public RestResponse saveUser(Person person) {
+    private RestResponse saveUser(Person person) {
         if (!personService.save(person))
             return new MessageResponse(false, "Could not create User - Username already exists!");
 
@@ -86,6 +87,7 @@ public class PersonController {
      *
      * @return A RestReponse containing a List of all users.
      */
+    @Admin
     @GetMapping("/api/getAllUsers")
     public RestResponse getAllUsers() {
         return new ListResponse<Person>(personService.getPersons());
@@ -97,6 +99,7 @@ public class PersonController {
      * @param personId The ID of the User to delete
      * @return A RestResponse indicating whether the operation was successful or not.
      */
+    @Admin
     @PostMapping("/api/deleteUser")
     public RestResponse deleteUser(
             @RequestParam("personId") final UUID personId
@@ -117,19 +120,16 @@ public class PersonController {
      * @param permissions
      * @return success message
      */
+    @Admin
     @PostMapping("/api/updateUser")
     public RestResponse updateUser(
             @RequestParam("personId") final UUID personId,
             @RequestParam(name = "username", required = false) final String username,
             @RequestParam(name = "email", required = false) final String email,
-            @RequestParam(name = "permissions", required = false) final List<String> permissions,
+            @RequestParam(name = "permissions", required = false) final List<Permission> permissions,
             @RequestParam(name = "password", required = false) final String password
     ) {
-        List<Permission> permissionList = null;
-        if (permissions != null)
-            permissionList = permissions.stream().map(Permission::valueOf).toList();
-
-        if (personService.update(personId, username, email, permissionList, password))
+        if (personService.update(personId, username, email, permissions, password))
             return new MessageResponse(true, "User updated successfully!");
 
         return new MessageResponse(false, "Could not update User - User does not exist!");
@@ -140,6 +140,7 @@ public class PersonController {
      *
      * @return A List of all possible Permissions.
      */
+    @Admin
     @GetMapping("/api/getAllPermissions")
     public RestResponse getAllPermissions() {
         return new ListResponse<>(Stream.of(Permission.values()).map(Enum::name).toList());

@@ -74,15 +74,6 @@ public class PersonService {
         }
     }
 
-    public boolean delete(UUID personId) {
-        try {
-            this.personRepository.deleteById(personId);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     /**
      * Updates a Person with the Values given as Parameters.
      * The User is retrieved using the personId.
@@ -110,5 +101,14 @@ public class PersonService {
         }
 
         return false;
+    }
+
+    public boolean delete(UUID personId) {
+        try {
+            this.personRepository.deleteById(personId);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
