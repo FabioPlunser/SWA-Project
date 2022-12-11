@@ -30,18 +30,31 @@ import org.springframework.security.web.util.matcher.*;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
-    static final RequestMatcher API_ROUTE = new AntPathRequestMatcher("/api/**");
-    static final RequestMatcher ADMIN_ROUTE = new AntPathRequestMatcher("/admin/**");
+    static final RequestMatcher API_ROUTES = new AntPathRequestMatcher("/api/**");
+    static final RequestMatcher ADMIN_ROUTES = new AntPathRequestMatcher("/admin/**");
 
+    /**
+     * Request Matcher matching all API-Routes that should be accessible to everyone.
+     */
     private static final RequestMatcher PUBLIC_API_ROUTES = new OrRequestMatcher(
             new AntPathRequestMatcher("/api/login"),
             new AntPathRequestMatcher("/api/register"),
             new AntPathRequestMatcher("/token")
     );
 
+    /**
+     * Request Matcher matching all API-Routes that should be protected.
+     */
+    public static final RequestMatcher PROTECTED_API_ROUTES = new AndRequestMatcher(
+            API_ROUTES, new NegatedRequestMatcher(PUBLIC_API_ROUTES)
+    );
+
+    /**
+     * Request Matcher matching all Routes that should be protected.
+     */
     public static final RequestMatcher PROTECTED_ROUTES = new AndRequestMatcher(
-            new OrRequestMatcher(API_ROUTE, ADMIN_ROUTE),
-            new NegatedRequestMatcher(PUBLIC_API_ROUTES)
+            new NegatedRequestMatcher(PUBLIC_API_ROUTES),
+            new OrRequestMatcher(API_ROUTES, ADMIN_ROUTES)
     );
 
     private AuthenticationProvider provider;
@@ -69,10 +82,11 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((auth) ->
                     auth
                             // Anyone should be able to log in (alias for getting a Token)
-                            .requestMatchers(PUBLIC_API_ROUTES).permitAll()
+                            // TODO: Not needed anymore because of PROTECTED_API_ROUTES?
+                            // .requestMatchers(PUBLIC_API_ROUTES).permitAll()
                             // Only allow authenticated Users to use the API
-                            .requestMatchers(API_ROUTE).authenticated()
-                            .requestMatchers(ADMIN_ROUTE).hasAuthority(Permission.ADMIN.toString())
+                            .requestMatchers(PROTECTED_API_ROUTES).authenticated()
+                            .requestMatchers(ADMIN_ROUTES).hasAuthority(Permission.ADMIN.toString())
                             // Permit everyone to get the static resources
                             .requestMatchers(AnyRequestMatcher.INSTANCE).permitAll()
                 )

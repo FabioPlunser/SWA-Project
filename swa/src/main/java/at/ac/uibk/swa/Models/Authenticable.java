@@ -18,12 +18,12 @@ import java.util.UUID;
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public abstract class Authenticable {
 
-    public Authenticable(String username, String passwdHash, UUID token, List<Permission> permissions) {
-        this(null, username, passwdHash, token, permissions);
+    public Authenticable(String username, String password, UUID token, List<Permission> permissions) {
+        this(null, username, password, token, permissions);
     }
 
-    public Authenticable(String username, String passwdHash, ArrayList<Permission> permissions) {
-        this(null, username, passwdHash, null, permissions);
+    public Authenticable(String username, String password, List<Permission> permissions) {
+        this(null, username, password, null, permissions);
     }
 
     public Authenticable(String username, String passwdHash) {
@@ -48,7 +48,7 @@ public abstract class Authenticable {
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "PasswordHash", nullable = false)
-    private String passwdHash;
+    private String password;
 
     @Setter
     @JsonIgnore
@@ -67,15 +67,12 @@ public abstract class Authenticable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Authenticable that = (Authenticable) o;
-        return username.equals(that.username) && passwdHash.equals(that.passwdHash);
+        return (this == o) || ((o instanceof Authenticable a) && (a.id == this.id));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, passwdHash);
+        return Objects.hash(id);
     }
 
     public String toString() {
