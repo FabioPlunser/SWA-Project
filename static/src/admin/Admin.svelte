@@ -7,9 +7,22 @@
   import { get } from 'svelte/store';
   $: tokenValue = get(token);
   let users = [];
+  let permissions = [];
   
   $: getAllUser(); 
+  $: getAllPermission();
   
+  let showCreateModal = false;
+  let showEditModal = false;
+  
+  let selectedUser = null;
+  
+  let searchUsername = "";
+  let searchEmail = "";
+  let isAdmin = false;
+
+
+
   async function getAllUser(){
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + tokenValue);
@@ -19,56 +32,63 @@
       headers: myHeaders,
     };
 
-    let res = await fetch("api/getAllUsers", requestOptions)
+    let res = await fetch("admin/getAllUsers", requestOptions)
     res = await res.json();
     users = res.items;
   }
 
-  let showCreateModal = false;
-  let showEditModal = false;
+  async function getAllPermission(){
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", "Bearer " + tokenValue);
 
-  let selectedUser = null;
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+    };
 
-  let searchUsername = "";
-  let searchEmail = "";
+    let res = await fetch("admin/getAllPermissions", requestOptions)
+    res = await res.json();
+    permissions = res.items;
 
+  }
+  
   async function handleSubmit(e){
     const action = e.target.action;
     const method = e.target.method.toUpperCase();
 
+    
     const myHeader = new Headers()
     myHeader.append("Authorization", "Bearer " + tokenValue);
     
     const formData = new FormData(e.target);
 
-    var requestOptions = {
-      method: method,
-      headers: myHeader,
-      body: formData
-    };
-
-    let res = await fetch(action, requestOptions);
-    if(!res.success) alert(res.message);
-    await getAllUser();
-  }
-  async function deleteUser(e){
-    const action = e.target.action;
-    const method = e.target.method.toUpperCase();
-
-    const myHeader = new Headers()
-    myHeader.append("Authorization", "Bearer " + tokenValue);
-    console.log(e.target)
-    const formData = new FormData(e.target);
-    for(let pair of formData.entries()) {
-      console.log(pair[0]+ ', '+ pair[1]);
+    if(action.includes("delete") && formData.get("permissions").toString().includes("ADMIN")){
+      if(!confirm(`Are you sure you want to delete ${formData.get("username").toString()}?`)) return;
     }
+    if(action.includes("create")) showCreateModal = !showCreateModal;
+    if(action.includes("update")) showEditModal = !showEditModal;
+    
+
     var requestOptions = {
       method: method,
       headers: myHeader,
       body: formData
     };
 
+    try {
+      let res = await fetch(action, requestOptions);
+      res = await res.json();
+      console.log(res);
+      if(res.success === false) alert(res.message);
+    } catch (error) {
+      alert(action + " failed");
+    }
+    
+    
+    await getAllUser();
+
   }
+
 
 </script>
 
@@ -83,7 +103,7 @@
     <Modal uniqueModalQualifier={"AdminCreateUser"}>
         <h1 class="flex justify-center underline text-2xl">Create User</h1>
         <br class="mt-20"/>
-        <form id="AdminCreateUser" method='POST' action='api/createUser' on:submit|preventDefault={handleSubmit}>
+        <form method='POST' action='admin/createUser' on:submit|preventDefault={handleSubmit}>
             <div class="flex flex-col">
                 <div class="form-control">
                     <label class="input-group">
@@ -106,12 +126,24 @@
                     </label>
                 </div>
                 <br class="pt-4"/>
-                <div class="flex justify-center">
-                  <span class="">Admin</span>
-                  <input name="isAdmin" type="boolean" value="false" class="checkbox flex items-center m-2" />
+                <div class="form-control">
+                  <label class="input-group">
+                    <span class="w-36">Admin</span>
+                    <select name="permission" class="flex input w-full" required>
+                      {#each permissions as permission}
+                        {#if permission === "USER"}
+                          <option selected>{permission}</option>
+                        {:else}
+                          <option>{permission}</option>
+                        {/if}
+                      {/each}
+                    </select>
+                  </label>
                 </div>
                 <div class="flex justify-between mt-2">
                   <button type="submit" class="btn btn-primary">Register</button>
+                  <input type="reset" class="btn btn-primary" value="Clear"/>
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
                   <label for="AdminCreateUser" class="btn btn-primary" on:click={()=> showCreateModal = !showCreateModal}>Close</label>
                 </div>
             </div>
@@ -122,8 +154,8 @@
 {#if showEditModal}
     <Modal uniqueModalQualifier={"AdminEditUser"}>
         <h1 class="flex justify-center">Edit User</h1>
-        <form id="EditUser" class="flex justify-center" method="POST" action="api/register" on:submit|preventDefault={handleSubmit}>
-          <input class="hide" type="hidden" bind:value={selectedUser.person_id}>
+        <form class="flex justify-center" method="POST" action="admin/updateUser" on:submit|preventDefault={handleSubmit}>
+          <input name="personId" type="hidden" bind:value={selectedUser.personId} required>
           <div class="flex flex-col">
               <div class="form-control">
                   <label class="input-group">
@@ -140,12 +172,33 @@
               </div>
               <br class="pt-4"/>
               <div class="form-control">
-                  <label class="input-group">
+                <label class="input-group">
                   <span class="w-36">Password</span>
-                  <input bind:value={selectedUser.password} name="password" required type="text" placeholder="1234" class="input input-bordered w-full" />
-                  </label>
+                  <input name="password" class="input input-bordered w-full" type="password">
+                </label>
               </div>
-              <button class="mt-10 btn btn-primary" type="submit">Update</button>
+              <br class="pt-4"/>
+              <div class="form-control">
+                <label class="input-group">
+                  <span class="w-36">Admin</span>
+                  <select name="permission" class="flex input w-full" required>
+                    {#each permissions as permission}
+                      {#if permission === selectedUser.permission}
+                        <option selected>{permission}</option>
+                      {:else}
+                        <option>{permission}</option>
+                      {/if}
+                    {/each}
+                  </select>
+                </label>
+              </div>
+              <div class="flex justify-between mt-2">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <input type="reset" class="btn btn-primary" value="Clear"/>
+
+                  <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <label for="AdminEditUser" class="btn btn-primary" on:click={()=> showCreateModal = !showCreateModal}>Close</label>
+              </div>
           </div>
         </form>
     </Modal>
@@ -154,6 +207,7 @@
 
 <main class="mt-20 m-2 flex-justify-center">
     <div class="flex justify-center">
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
         <label for="AdminCreateUser" class="btn btn-primary" on:click={()=> showCreateModal = true}>Create User</label>
     </div>
     <br class="mt-20"/>
@@ -176,7 +230,7 @@
               <th>Id</th>
               <th>Username</th>
               <th>email</th>
-              <th>password</th>
+              <th>Roles</th>
               <th>edit</th>
               <th>remove</th>
             </tr>
@@ -186,12 +240,13 @@
                 {#each users as user}
                     {#if user.username.includes(searchUsername) && user.email.includes(searchEmail)}
                         <tr>
-                            <td>{user.personId.slice(0,5)+"..."}</td>
-                            <td>{user.username}</td>
-                            <td>{user.email}</td>
-                            <td class="hidetext">{user.password}</td>
-                            <td><label class="btn btn-secondary" on:click={()=>{showEditModal=true; selectedUser=user}}>Edit</label></td>
-                            <td><button class="btn btn-info" form="EditDeleteUser" type="submit">Delete</button></td>
+                            <td><form action="admin/deleteUser" method="POST" on:submit|preventDefault={handleSubmit} id={user.personId} name="personId"/>{user.personId.slice(0,5)+"..."}</td>
+                            <input type="hidden" form={user.personId} bind:value={user.personId} name="personId"/>
+                            <td><input form={user.personId} type="text" name="username" bind:value={user.username} class="bg-transparent" readonly/></td>
+                            <td><input form={user.personId} type="text" name="email" bind:value={user.email} class="bg-transparent" readonly/></td>
+                            <td><input form={user.personId} type="text" name="permissions" bind:value={user.permissions} class="bg-transparent" readonly/></td>
+                            <td><label for="AdminEditUser" class="btn btn-secondary" on:click={()=>{showEditModal=true; selectedUser=user}}>Edit</label></td>
+                            <td><button class="btn btn-info" form={user.personId} type="submit">Delete</button></td>
                         </tr>
                     {/if}
                 {/each}
@@ -200,7 +255,3 @@
         </table>
       </div>
 </main>
-
-<style>
-    .hidetext { -webkit-text-security: disc; /* Default */ }
-</style>
