@@ -41,7 +41,6 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
     protected UserDetails retrieveUser(
             String userName, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
     ) {
-        // TODO: Also send a username and check that the Token is associated with the user?
         UUID token = (UUID) usernamePasswordAuthenticationToken.getCredentials();
 
         // Try to find the User with the given Session Token

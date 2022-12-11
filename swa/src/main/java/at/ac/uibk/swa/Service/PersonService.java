@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.Service;
 
+import at.ac.uibk.swa.Models.Permission;
 import at.ac.uibk.swa.Models.Person;
 import at.ac.uibk.swa.Repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,10 @@ public class PersonService {
                 .flatMap(Function.identity());
     }
 
+    public Optional<Person> findById(UUID id) {
+        return personRepository.findById(id);
+    }
+
     public boolean logout(UUID token) {
         Optional<Person> maybePerson = personRepository.findByToken(token);
         if(maybePerson.isPresent()){
@@ -67,5 +72,43 @@ public class PersonService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean delete(UUID personId) {
+        try {
+            this.personRepository.deleteById(personId);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Updates a Person with the Values given as Parameters.
+     * The User is retrieved using the personId.
+     * The other Parameters are used to change the user.
+     * Parameters that are set to null are left unchanged.
+     *
+     * @param personId The ID of the User to change.
+     * @param username The new Username.
+     * @param email The new Email
+     * @param permissions The new List of Permissions.
+     * @param password The new Password.
+     * @return true if the user could be found and could be updated, false otherwise.
+     */
+    public boolean update(UUID personId, String username, String email, List<Permission> permissions, String password) {
+        Optional<Person> maybePerson = personRepository.findById(personId);
+        if(maybePerson.isPresent()) {
+            Person person = maybePerson.get();
+
+            if (username    != null) person.setUsername(username);
+            if (email       != null) person.setEmail(email);
+            if (permissions != null) person.setPermissions(permissions);
+            if (password    != null) person.setPasswdHash(password);
+
+            return save(person);
+        }
+
+        return false;
     }
 }

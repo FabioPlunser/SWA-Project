@@ -30,17 +30,17 @@ import org.springframework.security.web.util.matcher.*;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
+    static final RequestMatcher API_ROUTE = new AntPathRequestMatcher("/api/**");
+    static final RequestMatcher ADMIN_ROUTE = new AntPathRequestMatcher("/admin/**");
+
     private static final RequestMatcher PUBLIC_API_ROUTES = new OrRequestMatcher(
             new AntPathRequestMatcher("/api/login"),
             new AntPathRequestMatcher("/api/register"),
             new AntPathRequestMatcher("/token")
     );
 
-    private static final RequestMatcher PROTECTED_ROUTES = new AndRequestMatcher(
-            new OrRequestMatcher(
-                    new AntPathRequestMatcher("/api/**"),
-                    new AntPathRequestMatcher("/admin/**")
-            ),
+    public static final RequestMatcher PROTECTED_ROUTES = new AndRequestMatcher(
+            new OrRequestMatcher(API_ROUTE, ADMIN_ROUTE),
             new NegatedRequestMatcher(PUBLIC_API_ROUTES)
     );
 
@@ -71,10 +71,10 @@ public class SecurityConfiguration {
                             // Anyone should be able to log in (alias for getting a Token)
                             .requestMatchers(PUBLIC_API_ROUTES).permitAll()
                             // Only allow authenticated Users to use the API
-                            .requestMatchers("/api/**").authenticated()
-                            .requestMatchers("/admin/**").hasAuthority(Permission.ADMIN.toString())
+                            .requestMatchers(API_ROUTE).authenticated()
+                            .requestMatchers(ADMIN_ROUTE).hasAuthority(Permission.ADMIN.toString())
                             // Permit everyone to get the static resources
-                            .requestMatchers("/**").permitAll()
+                            .requestMatchers(AnyRequestMatcher.INSTANCE).permitAll()
                 )
 
                 // Disable CORS, CSRF as well as the default Web Security Login and Logout Pages.
