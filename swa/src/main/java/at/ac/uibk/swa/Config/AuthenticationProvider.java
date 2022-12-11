@@ -50,7 +50,7 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
             Person person = maybePerson.get();
             usernamePasswordAuthenticationToken.setDetails(person);
             return new User(
-                    person.getUsername(), person.getPasswdHash(),
+                    person.getUsername(), person.getPassword(),
                     true, true, true, true,
                     AuthorityUtils.createAuthorityList(person
                             .getPermissions().stream().map(x -> x.toString()).toArray(String[]::new))

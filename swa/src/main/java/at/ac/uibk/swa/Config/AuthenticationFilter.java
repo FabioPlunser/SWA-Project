@@ -44,7 +44,7 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
     {
         // TODO: Split this in multiple Functions or even multiple Filter?
         // For API-Endpoints a Bearer Token is required
-        if (SecurityConfiguration.API_ROUTE.matches(httpServletRequest)) {
+        if (SecurityConfiguration.API_ROUTES.matches(httpServletRequest)) {
             // Get the Authorization Header
             Optional<String> authHeader = Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION));
 

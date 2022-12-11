@@ -4,6 +4,7 @@ import at.ac.uibk.swa.Models.Permission;
 import at.ac.uibk.swa.Models.Person;
 import at.ac.uibk.swa.Repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,25 +16,29 @@ import java.util.function.Function;
 public class PersonService {
 
     @Autowired
-    PersonRepository personRepository;
+    private PersonRepository personRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<Person> getPersons() {
         return personRepository.findAll();
     }
 
     public Optional<UUID> login(String username, String password) {
-        Optional<Person> maybePerson = personRepository.findByUsernameAndPasswdHash(username,password);
-        if(maybePerson.isPresent()){
-            UUID token = UUID.randomUUID();
-            Person person = maybePerson.get();
-            person.setToken(token);
-            // TODO: Token has a unique Constraint => save may fail if the same Token is generated
-            //       FIX: Create Loop? Can the Database generate the Token?
-            personRepository.save(person);
-            return Optional.of(token);
-        }
+        Optional<Person> maybePerson = personRepository.findByUsername(username);
+        if(maybePerson.isEmpty()) return Optional.empty();
 
-        return Optional.empty();
+        Person person = maybePerson.get();
+        if(!passwordEncoder.matches(password, person.getPassword())) return Optional.empty();
+
+        UUID token = UUID.randomUUID();
+        person.setToken(token);
+        // NOTE: Person.Token has a unique-Constraint
+        // => if the same Token is generated for multiple users, the save fails
+        personRepository.save(person);
+
+        return Optional.of(token);
     }
 
     public Optional<Person> findByToken(UUID token) {
@@ -65,9 +70,19 @@ public class PersonService {
 
     public boolean save(Person person) {
         try {
+            // TODO: Can we do this Hashing in the PersonRepository?
+            // TODO: The PersonRepository is a better Spot because there everyone has to use save()
+            // Hash the Password when inserting the Person
+            String password = person.getPassword();
+            person.setPassword(passwordEncoder.encode(password));
+
             // NOTE: This save may fail if the usernames are equal because username has a unique Constraint
             //       => See Customer.username
             this.personRepository.save(person);
+
+            // Reset the Password to the original one
+            person.setPassword(password);
+
             return true;
         } catch (Exception e) {
             return false;
@@ -95,7 +110,7 @@ public class PersonService {
             if (username    != null) person.setUsername(username);
             if (email       != null) person.setEmail(email);
             if (permissions != null) person.setPermissions(permissions);
-            if (password    != null) person.setPasswdHash(password);
+            if (password    != null) person.setPassword(password);
 
             return save(person);
         }
