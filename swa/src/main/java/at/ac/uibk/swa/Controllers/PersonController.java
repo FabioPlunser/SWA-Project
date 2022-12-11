@@ -47,6 +47,15 @@ public class PersonController {
     }
 
     /**
+     * Endpoint for Admins to get all possible Permission so that they don't need to be changed manually on frontend.
+     * @return A List of all possible Permissions.
+     */
+    @GetMapping("/admin/getAllPermissions")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public RestResponse getAllPermissions() {
+        return new ListResponse<>(Stream.of(Permission.values()).map(Enum::name).toList());
+    }
+    /**
      * User Creation Endpoint for Admins to manually create Accounts.
      *
      * @param username The new Users username.
@@ -55,7 +64,8 @@ public class PersonController {
      * @param permissions The Permissions the new User should have.
      * @return A RestResponse indicating whether the user could be created or not.
      */
-    @PostMapping("/api/createUser")
+    @PostMapping("/admin/createUser")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public RestResponse create(
             @RequestParam("username") final String username,
             @RequestParam("password") final String password,

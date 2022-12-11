@@ -58,7 +58,7 @@ public class Person extends Authenticable implements Serializable {
 
     @Override
     public String toString() {
-        return this.getUsername();
+        return this.getUsername() + "\n" + this.getPermissions().toString() + "\n" + this.getPersonId();
     }
 
     @Override
