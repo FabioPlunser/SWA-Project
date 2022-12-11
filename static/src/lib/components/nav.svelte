@@ -3,7 +3,6 @@
   import favicon from "/favicon.png";
   import { redirect } from "../utils/redirect";
   import { token } from "../stores/token";
-  import { eventOnTabClose } from '../utils/eventOnTabClose';
   function handleLogout(){
       $token = null;
       redirect("login");

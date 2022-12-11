@@ -2,9 +2,9 @@
 	import favicon  from '/favicon.png';
   import Nav from "../lib/components/nav.svelte";
   import Modal from "../lib/components/modal.svelte";
-  import { formFetch } from '../lib/utils/formFetch';
   import { token } from '../lib/stores/token';
   import { get } from 'svelte/store';
+
   $: tokenValue = get(token);
   let users = [];
   let permissions = [];
@@ -19,7 +19,7 @@
   
   let searchUsername = "";
   let searchEmail = "";
-  let isAdmin = false;
+  let selected = [];
 
 
 
@@ -32,7 +32,7 @@
       headers: myHeaders,
     };
 
-    let res = await fetch("admin/getAllUsers", requestOptions)
+    let res = await fetch("api/getAllUsers", requestOptions)
     res = await res.json();
     users = res.items;
   }
@@ -46,7 +46,7 @@
       headers: myHeaders,
     };
 
-    let res = await fetch("admin/getAllPermissions", requestOptions)
+    let res = await fetch("api/getAllPermissions", requestOptions)
     res = await res.json();
     permissions = res.items;
 
@@ -61,12 +61,24 @@
     myHeader.append("Authorization", "Bearer " + tokenValue);
     
     const formData = new FormData(e.target);
+    // for(let [key, value] of formData.entries()){
+    //   console.log(key, value)
+    // }
 
     if(action.includes("delete") && formData.get("permissions").toString().includes("ADMIN")){
       if(!confirm(`Are you sure you want to delete ${formData.get("username").toString()}?`)) return;
     }
-    if(action.includes("create")) showCreateModal = !showCreateModal;
-    if(action.includes("update")) showEditModal = !showEditModal;
+    if(action.includes("create")){
+      showCreateModal = !showCreateModal;
+    } 
+    if(action.includes("update")){
+      for(let [key, value] of formData.entries()){
+        if(value === ''){
+          formData.delete(key);
+        }
+      }
+      showEditModal = !showEditModal;
+    } 
     
 
     var requestOptions = {
@@ -78,7 +90,7 @@
     try {
       let res = await fetch(action, requestOptions);
       res = await res.json();
-      console.log(res);
+      // console.log(res);
       if(res.success === false) alert(res.message);
     } catch (error) {
       alert(action + " failed");
@@ -103,7 +115,7 @@
     <Modal uniqueModalQualifier={"AdminCreateUser"}>
         <h1 class="flex justify-center underline text-2xl">Create User</h1>
         <br class="mt-20"/>
-        <form method='POST' action='admin/createUser' on:submit|preventDefault={handleSubmit}>
+        <form method='POST' action='api/createUser' on:submit|preventDefault={handleSubmit}>
             <div class="flex flex-col">
                 <div class="form-control">
                     <label class="input-group">
@@ -127,9 +139,9 @@
                 </div>
                 <br class="pt-4"/>
                 <div class="form-control">
-                  <label class="input-group">
-                    <span class="w-36">Admin</span>
-                    <select name="permission" class="flex input w-full" required>
+                  <label class="input-group min-h-fit">
+                    <span class="w-36 min-h-fit">Admin</span>
+                    <select multiple name="permissions" class="flex input w-full" required>
                       {#each permissions as permission}
                         {#if permission === "USER"}
                           <option selected>{permission}</option>
@@ -154,7 +166,7 @@
 {#if showEditModal}
     <Modal uniqueModalQualifier={"AdminEditUser"}>
         <h1 class="flex justify-center">Edit User</h1>
-        <form class="flex justify-center" method="POST" action="admin/updateUser" on:submit|preventDefault={handleSubmit}>
+        <form class="flex justify-center" method="POST" action="api/updateUser" on:submit|preventDefault={handleSubmit}>
           <input name="personId" type="hidden" bind:value={selectedUser.personId} required>
           <div class="flex flex-col">
               <div class="form-control">
@@ -181,9 +193,9 @@
               <div class="form-control">
                 <label class="input-group">
                   <span class="w-36">Admin</span>
-                  <select name="permission" class="flex input w-full" required>
+                  <select multiple name="permissions" class="flex input w-full" required>
                     {#each permissions as permission}
-                      {#if permission === selectedUser.permission}
+                      {#if selectedUser.permissions.includes(permission)}
                         <option selected>{permission}</option>
                       {:else}
                         <option>{permission}</option>
@@ -240,7 +252,7 @@
                 {#each users as user}
                     {#if user.username.includes(searchUsername) && user.email.includes(searchEmail)}
                         <tr>
-                            <td><form action="admin/deleteUser" method="POST" on:submit|preventDefault={handleSubmit} id={user.personId} name="personId"/>{user.personId.slice(0,5)+"..."}</td>
+                            <td><form action="api/deleteUser" method="POST" on:submit|preventDefault={handleSubmit} id={user.personId} name="personId"/>{user.personId.slice(0,5)+"..."}</td>
                             <input type="hidden" form={user.personId} bind:value={user.personId} name="personId"/>
                             <td><input form={user.personId} type="text" name="username" bind:value={user.username} class="bg-transparent" readonly/></td>
                             <td><input form={user.personId} type="text" name="email" bind:value={user.email} class="bg-transparent" readonly/></td>
