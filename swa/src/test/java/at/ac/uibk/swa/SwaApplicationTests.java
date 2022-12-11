@@ -39,7 +39,7 @@ class SwaApplicationTests {
 
         assertEquals(true, personService.save(person));
 
-        Optional<UUID> oToken = personService.login(person.getUsername(), person.getPasswdHash());
+        Optional<UUID> oToken = personService.login(person.getUsername(), person.getPassword());
         assertTrue(oToken.isPresent());
         UUID token = oToken.get();
 
@@ -59,7 +59,7 @@ class SwaApplicationTests {
         assertEquals(true, deckService.save(deck));
         assertEquals(true, cardService.save(card));
 
-        person = personService.findByToken(personService.login(person.getUsername(), person.getPasswdHash()).get()).get();
+        person = personService.findByToken(personService.login(person.getUsername(), person.getPassword()).get()).get();
 
         assertEquals(deck.getDeckId(), person.getDecks().get(0).getDeckId());
         assertEquals(1, person.getDecks().size());
