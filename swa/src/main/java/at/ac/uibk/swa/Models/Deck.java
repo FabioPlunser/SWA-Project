@@ -23,7 +23,7 @@ public class Deck implements Serializable {
         this(
                 null, name, description,
                 false, false, false,
-                creator, new ArrayList<>()
+                creator, new ArrayList<>(), new ArrayList<>()
         );
     }
 
@@ -61,6 +61,9 @@ public class Deck implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(name = "personId", nullable = false)
     private Person creator;
+
+    @ManyToMany(mappedBy = "savedDecks")
+    private List<Person> subscribers = new ArrayList<>();
 
     @Setter
     @JsonIgnore
