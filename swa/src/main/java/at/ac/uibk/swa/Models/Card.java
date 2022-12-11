@@ -51,8 +51,6 @@ public class Card implements Serializable {
 
     @JsonIgnore
     @OneToMany
-    @Builder.Default
-    @ElementCollection
     private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
 
     @Override

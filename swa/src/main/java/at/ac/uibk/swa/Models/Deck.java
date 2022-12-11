@@ -23,7 +23,7 @@ public class Deck implements Serializable {
         this(
                 null, name, description,
                 false, false, false,
-                creator, new ArrayList<>(), new ArrayList<>()
+                creator, new ArrayList<>()
         );
     }
 
@@ -71,17 +71,6 @@ public class Deck implements Serializable {
             fetch=FetchType.EAGER
     )
     private List<Card> cards = new ArrayList<>();
-
-    @Setter
-    @JsonIgnore
-    @Builder.Default
-    @OneToMany(
-            mappedBy = "deck",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch=FetchType.EAGER
-    )
-    private List<DeckView> deckViews = new ArrayList<>();
 
     @Override
     public String toString() {
