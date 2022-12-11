@@ -4,6 +4,8 @@
   import Modal from "../lib/components/modal.svelte";
   import { token } from '../lib/stores/token';
   import { get } from 'svelte/store';
+  import { redirect } from '../lib/utils/redirect';
+  import { handleLogout } from '../lib/utils/handleLogout';
 
   $: tokenValue = get(token);
   let users = [];
@@ -20,6 +22,21 @@
   let searchUsername = "";
   let searchEmail = "";
   let selected = [];
+
+  let buttons = [
+    {
+      tag: "button",
+      id: "",
+      text: "Home",
+      action: () => redirect("")
+    },
+    {
+      tag: "button",
+      id: "",
+      text: "Logout",
+      action: () => handleLogout()
+    }
+  ];
 
 
 
@@ -110,92 +127,40 @@
     
 </svelte:head>
 
-<Nav title="Admin"/>
+<Nav title="Admin" buttons={buttons}/>
 {#if showCreateModal}
     <Modal uniqueModalQualifier={"AdminCreateUser"}>
         <h1 class="flex justify-center underline text-2xl">Create User</h1>
-        <br class="mt-20"/>
+        <br class="pt-4"/>
         <form method='POST' action='api/createUser' on:submit|preventDefault={handleSubmit}>
             <div class="flex flex-col">
-                <div class="form-control">
-                    <label class="input-group">
-                      <span class="w-36">Username</span>
-                      <input name="username" required type="text" placeholder="Max" class="input input-bordered w-full" />
-                    </label>
-                </div>
-                <br class="pt-4"/>
-                <div class="form-control">
-                    <label class="input-group">
-                      <span class="w-36">Email</span>
-                      <input name="email" required type="email" placeholder="test@example" class="flex input input-bordered w-full" />
-                    </label>
-                </div>
-                <br class="pt-4"/>
-                <div class="form-control">
-                    <label class="input-group">
-                      <span class="w-36">Password</span>
-                      <input name="password" required type="password" placeholder="1234" class="input input-bordered w-full" />
-                    </label>
-                </div>
-                <br class="pt-4"/>
-                <div class="form-control">
-                  <label class="input-group min-h-fit">
-                    <span class="w-36 min-h-fit">Admin</span>
-                    <select multiple name="permissions" class="flex input w-full" required>
-                      {#each permissions as permission}
-                        {#if permission === "USER"}
-                          <option selected>{permission}</option>
-                        {:else}
-                          <option>{permission}</option>
-                        {/if}
-                      {/each}
-                    </select>
-                  </label>
-                </div>
-                <div class="flex justify-between mt-2">
-                  <button type="submit" class="btn btn-primary">Register</button>
-                  <input type="reset" class="btn btn-primary" value="Clear"/>
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                  <label for="AdminCreateUser" class="btn btn-primary" on:click={()=> showCreateModal = !showCreateModal}>Close</label>
-                </div>
-            </div>
-        </form>
-    </Modal>
-{/if}
-
-{#if showEditModal}
-    <Modal uniqueModalQualifier={"AdminEditUser"}>
-        <h1 class="flex justify-center">Edit User</h1>
-        <form class="flex justify-center" method="POST" action="api/updateUser" on:submit|preventDefault={handleSubmit}>
-          <input name="personId" type="hidden" bind:value={selectedUser.personId} required>
-          <div class="flex flex-col">
               <div class="form-control">
                   <label class="input-group">
-                  <span class="w-36">Username</span>
-                  <input bind:value={selectedUser.username} name="username" required type="text" placeholder="Max" class="input input-bordered w-full" />
+                    <span class="w-36">Username</span>
+                    <input name="username" required type="text" placeholder="Max" class="input input-bordered w-full" />
                   </label>
               </div>
               <br class="pt-4"/>
               <div class="form-control">
                   <label class="input-group">
-                  <span class="w-36">Email</span>
-                  <input bind:value={selectedUser.email} name="email" required type="text" placeholder="test@example.com" class="input input-bordered w-full" />
+                    <span class="w-36">Email</span>
+                    <input name="email" required type="email" placeholder="test@example" class="flex input input-bordered w-full" />
                   </label>
               </div>
               <br class="pt-4"/>
               <div class="form-control">
-                <label class="input-group">
-                  <span class="w-36">Password</span>
-                  <input name="password" class="input input-bordered w-full" type="password">
-                </label>
+                  <label class="input-group">
+                    <span class="w-36">Password</span>
+                    <input name="password" required type="password" placeholder="1234" class="input input-bordered w-full" />
+                  </label>
               </div>
               <br class="pt-4"/>
               <div class="form-control">
-                <label class="input-group">
-                  <span class="w-36">Admin</span>
+                <label class="input-group min-h-fit">
+                  <span class="w-36 min-h-fit">Admin</span>
                   <select multiple name="permissions" class="flex input w-full" required>
                     {#each permissions as permission}
-                      {#if selectedUser.permissions.includes(permission)}
+                      {#if permission === "USER"}
                         <option selected>{permission}</option>
                       {:else}
                         <option>{permission}</option>
@@ -204,13 +169,68 @@
                   </select>
                 </label>
               </div>
-              <div class="flex justify-between mt-2">
-                <button type="submit" class="btn btn-primary">Update</button>
+              <br class="pt-4"/>
+              <div class="flex justify-between">
+                <button type="submit" class="btn btn-primary">Register</button>
                 <input type="reset" class="btn btn-primary" value="Clear"/>
-
                   <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <label for="AdminEditUser" class="btn btn-primary" on:click={()=> showCreateModal = !showCreateModal}>Close</label>
+                <label for="AdminCreateUser" class="btn btn-primary" on:click={()=> showCreateModal = !showCreateModal}>Close</label>
               </div>
+            </div>
+        </form>
+    </Modal>
+{/if}
+
+{#if showEditModal}
+    <Modal uniqueModalQualifier={"AdminEditUser"}>
+        <h1 class="flex justify-center">Edit User</h1>
+        <br class="pt-4"/>
+        <form class="flex justify-center" method="POST" action="api/updateUser" on:submit|preventDefault={handleSubmit}>
+          <input name="personId" type="hidden" bind:value={selectedUser.personId} required>
+          <div class="flex flex-col">
+            <div class="form-control">
+                <label class="input-group">
+                <span class="w-36">Username</span>
+                <input bind:value={selectedUser.username} name="username" required type="text" placeholder="Max" class="input input-bordered w-full" />
+                </label>
+            </div>
+            <br class="pt-4"/>
+            <div class="form-control">
+                <label class="input-group">
+                <span class="w-36">Email</span>
+                <input bind:value={selectedUser.email} name="email" required type="text" placeholder="test@example.com" class="input input-bordered w-full" />
+                </label>
+            </div>
+            <br class="pt-4"/>
+            <div class="form-control">
+              <label class="input-group">
+                <span class="w-36">Password</span>
+                <input name="password" class="input input-bordered w-full" type="password">
+              </label>
+            </div>
+            <br class="pt-4"/>
+            <div class="form-control">
+              <label class="input-group">
+                <span class="w-36">Admin</span>
+                <select multiple name="permissions" class="flex input w-full" required>
+                  {#each permissions as permission}
+                    {#if selectedUser.permissions.includes(permission)}
+                      <option selected>{permission}</option>
+                    {:else}
+                      <option>{permission}</option>
+                    {/if}
+                  {/each}
+                </select>
+              </label>
+            </div>
+            <br class="pt-4"/>
+            <div class="flex justify-between">
+              <button type="submit" class="btn btn-primary">Update</button>
+              <input type="reset" class="btn btn-primary" value="Clear"/>
+
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+              <label for="AdminEditUser" class="btn btn-primary" on:click={()=> showCreateModal = !showCreateModal}>Close</label>
+            </div>
           </div>
         </form>
     </Modal>
