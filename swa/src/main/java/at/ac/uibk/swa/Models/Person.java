@@ -1,7 +1,7 @@
 package at.ac.uibk.swa.Models;
 
-import at.ac.uibk.swa.Models.Permissions.Permission;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -14,84 +14,63 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "Persons")
-public class Person implements Serializable {
+public class Person extends Authenticable implements Serializable {
 
     public Person(String username, String email, String passwdHash, UUID token, List<Permission> permissions) {
-        this(UUID.randomUUID(), username, email, passwdHash, token,
-                new ArrayList<>(), new ArrayList<>(), permissions);
+        super(username, passwdHash, token, permissions);
+        this.email = email;
     }
 
     public Person(String username, String email, String passwdHash, List<Permission> permissions) {
-        this(UUID.randomUUID(), username, email, passwdHash, null,
-                new ArrayList<>(), new ArrayList<>(), permissions);
+        this(username, email, passwdHash, null, permissions);
     }
 
-    @Id
-    // @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = "PersonId", nullable = false)
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
-    private UUID personId;
-
-    @Column(name = "Username", nullable = false, unique = true)
     @Setter
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    private String username;
-
     @Column(name = "Email", nullable = false)
-    @Setter
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String email;
-
-    @Column(name = "PasswordHash", nullable = false)
-    @Setter
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
-    private String passwdHash;
-
-    @Column(name = "Token", nullable = true, unique = true)
-    @Setter
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @JsonIgnore
-    private UUID token;
 
     @Setter
     @JsonIgnore
     @Builder.Default
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.EAGER)
+    @OneToMany(
+            mappedBy = "creator",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch=FetchType.EAGER
+    )
     private List<Deck> decks = new ArrayList<>();
 
     @Setter
     @JsonIgnore
     @Builder.Default
-    @OneToMany(mappedBy = "person", orphanRemoval = true)
-    private List<DeckReference> deckReferences = new ArrayList<>();
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DeckView> deckViews = new ArrayList<>();
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "PersonPermissions",
-            joinColumns=@JoinColumn(name = "personId")
-    )
-    @Column(name="Permission")
-    private List<Permission> permissions;
+    @JsonInclude
+    public UUID getPersonId() {
+        return this.getId();
+    }
 
     @Override
     public String toString() {
-        return this.username;
+        return this.getUsername() + "\n" + this.getPermissions().toString() + "\n" + this.getPersonId();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Person u)
-            return u.personId == this.personId;
+            return u.getPersonId() == this.getPersonId();
 
         return false;
     }
 
     @Override
     public int hashCode() {
-        return this.personId.hashCode();
+        return this.getPersonId().hashCode();
     }
 }

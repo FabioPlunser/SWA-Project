@@ -1,5 +1,7 @@
 package at.ac.uibk.swa.Models.RestResponses;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -22,5 +24,9 @@ public class RestResponse implements Serializable {
 
     public RestResponse(boolean successful) {
         this.success = successful;
+    }
+
+    public String toResponse() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(this);
     }
 }

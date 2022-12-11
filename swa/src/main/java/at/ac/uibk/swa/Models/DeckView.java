@@ -1,7 +1,10 @@
 package at.ac.uibk.swa.Models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -13,29 +16,29 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DeckReference implements Serializable {
+public class DeckView implements Serializable {
 
     @Id
-    @ToString.Exclude
     @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
     @JoinColumn(name = "deckId", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private Deck deck;
 
+    @Id
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "customerId", nullable = false)
+    @JoinColumn(name = "personId", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private Person person;
 
     @Override
     public String toString() {
-        return String.format("Deck Reference to : \"%s\" (ID: %s)", this.deck.getName(), this.deck.getDeckId());
+        return String.format("Deck View on \"%s\" (ID: %s)", this.deck.getName(), this.deck.getDeckId());
     }
 
     @Override
     public boolean equals(Object obj) {
 
-        if (obj instanceof DeckReference u)
+        if (obj instanceof DeckView u)
             return u.deck.getDeckId() == this.deck.getDeckId();
 
         return false;

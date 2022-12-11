@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,26 +42,48 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
             HttpServletResponse httpServletResponse
     ) throws AuthenticationException
     {
-        // Get the Authorization Header
-        Optional<String> authHeader = Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION));
+        // TODO: Split this in multiple Functions or even multiple Filter?
+        // For API-Endpoints a Bearer Token is required
+        if (SecurityConfiguration.API_ROUTE.matches(httpServletRequest)) {
+            // Get the Authorization Header
+            Optional<String> authHeader = Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION));
 
-        // Check that an Authorization Header was sent.
-        if (authHeader.isPresent()) {
-            // Get the Token from the Header.
-            String bearerToken = authHeader.get().substring("Bearer".length()).trim();
-            UUID token;
-            // Try to parse the Header
-            try {
-                token = UUID.fromString(bearerToken);
-            } catch (Exception e) {
-                throw new BadCredentialsException("Misformed Token");
+            // Check that an Authorization Header was sent.
+            if (authHeader.isPresent()) {
+                // Get the Token from the Header.
+                String bearerToken = authHeader.get().substring("Bearer".length()).trim();
+                UUID token;
+                // Try to parse the Header
+                try {
+                    token = UUID.fromString(bearerToken);
+                } catch (Exception e) {
+                    throw new BadCredentialsException("Malformed Token");
+                }
+
+                // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
+                UsernamePasswordAuthenticationToken requestAuthentication = new UsernamePasswordAuthenticationToken(null, token);
+                return getAuthenticationManager().authenticate(requestAuthentication);
             }
+        // For non-API Endpoints the authentication can be done using a Document Cookie
+        } else if (httpServletRequest.getCookies() != null) {
+            Optional<String> cookieToken = Arrays.stream(httpServletRequest.getCookies())
+                    .filter(x -> x.getName().equals("Token"))
+                    .map(x -> x.getValue())
+                    .findFirst();
 
-            // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
-            UsernamePasswordAuthenticationToken requestAuthentication = new UsernamePasswordAuthenticationToken(null, token);
-            // Make the Login Token available to Endpoints via the SecurityContext
-            requestAuthentication.setDetails(token);
-            return getAuthenticationManager().authenticate(requestAuthentication);
+            if (cookieToken.isPresent()) {
+                UUID token;
+                // Try to parse the Header
+                try {
+                    token = UUID.fromString(cookieToken.get());
+                } catch (Exception e) {
+                    throw new BadCredentialsException("Malformed Token");
+                }
+
+                // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
+                UsernamePasswordAuthenticationToken requestAuthentication = new UsernamePasswordAuthenticationToken(null, token);
+                return getAuthenticationManager().authenticate(requestAuthentication);
+            }
         }
 
         throw new BadCredentialsException("No Token was sent with the Request!");

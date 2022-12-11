@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class SwaExceptionHandlerController {
 
     @ExceptionHandler(Exception.class)
-    public String handleContentNotAllowedException(Exception e) {
+    public String handleException(Exception e) {
         return "500 - Internal Server Error!";
     }
 }

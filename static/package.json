@@ -9,7 +9,7 @@
     "buildC": "vite build --watch",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "restart": "npm run build --emptyOutDir && cd ../swa && gradle bootRun"
+    "restart": "vite build --emptyOutDir && cd ../swa && gradle bootRun"
   },
   "devDependencies": {
     "@brainandbones/skeleton": "^0.67.5",

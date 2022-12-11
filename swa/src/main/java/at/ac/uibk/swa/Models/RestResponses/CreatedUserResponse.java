@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.Models.RestResponses;
 
+import at.ac.uibk.swa.Models.Authenticable;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
@@ -14,14 +15,18 @@ public class CreatedUserResponse extends RestResponse implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID token;
 
-    public CreatedUserResponse(String username, UUID userId) {
-        this(username, userId, null);
-    }
-
     public CreatedUserResponse(String username, UUID userId, UUID token) {
         super(true);
         this.username = username;
         this.userId = userId;
         this.token = token;
+    }
+
+    public CreatedUserResponse(String username, UUID userId) {
+        this(username, userId, null);
+    }
+
+    public CreatedUserResponse(Authenticable authenticable) {
+        this(authenticable.getUsername(), authenticable.getId(), authenticable.getToken());
     }
 }

@@ -1,9 +1,10 @@
 <script lang="ts">
-    // TODO implement login locig and page redirection
     import favicon from "/favicon.png";
     import { redirect } from "../lib/utils/redirect";
     import { formFetch } from "../lib/utils/formFetch";
     import { token } from "../lib/stores/token";
+
+    // TODO add validation
     async function handleSubmit (e){
         let res = await formFetch(e);
         if(!res.success){
@@ -13,6 +14,7 @@
         $token = res.token;
 	}
     $: if($token.length > 30) redirect("");
+    $: document.cookie = `Token=${$token}`;
 </script>
 
 <svelte:head>
@@ -32,7 +34,6 @@
                 </label>
             </div>
             <br class="pt-4"/>
-            <br class="pt-4"/>
             <div class="form-control">
                 <label class="input-group">
                   <span>Password</span>
@@ -46,3 +47,6 @@
         </form>
     </div>
 </main>
+
+
+
