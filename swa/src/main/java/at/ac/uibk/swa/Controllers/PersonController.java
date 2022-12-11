@@ -79,7 +79,7 @@ public class PersonController {
         if (!personService.save(person))
             return new MessageResponse(false, "Could not create User - Username already exists!");
 
-        return new CreatedUserResponse(person.getUsername(), person.getPersonId());
+        return new CreatedUserResponse(person);
     }
 
     /**

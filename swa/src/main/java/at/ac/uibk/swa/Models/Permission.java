@@ -1,7 +1,5 @@
 package at.ac.uibk.swa.Models;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import java.util.List;
 
 public enum Permission {
