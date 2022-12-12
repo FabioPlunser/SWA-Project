@@ -30,7 +30,7 @@ class SwaApplicationTests {
 
     @Test
     public void DummyTest() {
-        assertEquals(2 + 2, 4);
+        assertEquals(4, 2 + 2);
     }
 
     @Test

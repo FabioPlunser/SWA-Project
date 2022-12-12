@@ -12,6 +12,6 @@ public class SwaErrorController implements ErrorController {
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request) {
         // TODO: Display better error message
-        return String.format("<html><head></head><body><h2>404 Page not found</h2></body></html>");
+        return "<html><head></head><body><h2>404 Page not found</h2></body></html>";
     }
 }

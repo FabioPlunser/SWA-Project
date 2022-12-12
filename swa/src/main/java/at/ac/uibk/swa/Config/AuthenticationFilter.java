@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,57 +37,31 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
         super(requiresAuth);
     }
 
+    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse
-    ) throws AuthenticationException
-    {
+    ) throws AuthenticationException {
+        Optional<UUID> token;
+
         // TODO: Split this in multiple Functions or even multiple Filter?
-        // For API-Endpoints a Bearer Token is required
         if (SecurityConfiguration.API_ROUTES.matches(httpServletRequest)) {
-            // Get the Authorization Header
-            Optional<String> authHeader = Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION));
-
-            // Check that an Authorization Header was sent.
-            if (authHeader.isPresent()) {
-                // Get the Token from the Header.
-                String bearerToken = authHeader.get().substring("Bearer".length()).trim();
-                UUID token;
-                // Try to parse the Header
-                try {
-                    token = UUID.fromString(bearerToken);
-                } catch (Exception e) {
-                    throw new BadCredentialsException("Malformed Token");
-                }
-
-                // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
-                UsernamePasswordAuthenticationToken requestAuthentication = new UsernamePasswordAuthenticationToken(null, token);
-                return getAuthenticationManager().authenticate(requestAuthentication);
-            }
-        // For non-API Endpoints the authentication can be done using a Document Cookie
-        } else if (httpServletRequest.getCookies() != null) {
-            Optional<String> cookieToken = Arrays.stream(httpServletRequest.getCookies())
-                    .filter(x -> x.getName().equals("Token"))
-                    .map(x -> x.getValue())
-                    .findFirst();
-
-            if (cookieToken.isPresent()) {
-                UUID token;
-                // Try to parse the Header
-                try {
-                    token = UUID.fromString(cookieToken.get());
-                } catch (Exception e) {
-                    throw new BadCredentialsException("Malformed Token");
-                }
-
-                // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
-                UsernamePasswordAuthenticationToken requestAuthentication = new UsernamePasswordAuthenticationToken(null, token);
-                return getAuthenticationManager().authenticate(requestAuthentication);
-            }
+            // For API-Endpoints a Bearer Token is required
+            token = getAuthHeaderToken(httpServletRequest);
+        } else {
+            // For non-API Endpoints the authentication can be done using a Document Cookie
+            token = getCookieToken(httpServletRequest);
         }
 
-        throw new BadCredentialsException("No Token was sent with the Request!");
+        if (token.isPresent())
+        {
+            // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
+            UsernamePasswordAuthenticationToken requestAuthentication = new UsernamePasswordAuthenticationToken(null, token);
+            return getAuthenticationManager().authenticate(requestAuthentication);
+        }
+
+        throw new BadCredentialsException("Test: Username or Password are wrong!");
     }
 
     @Override
@@ -98,5 +73,35 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
         SecurityContextHolder.getContext().setAuthentication(authResult);
         // Continue running the Web Security Filter Chain.
         chain.doFilter(request, response);
+    }
+
+    private static Optional<UUID> getAuthHeaderToken(HttpServletRequest httpServletRequest) {
+        // Get the Authorization Header
+        Optional<String> authHeader = Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION));
+
+        // Try to parse the Header
+        try {
+            return authHeader
+                    .map(header -> header.substring("Bearer".length()).trim())
+                    .map(UUID::fromString);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    private static Optional<UUID> getCookieToken(HttpServletRequest httpServletRequest) {
+        if (httpServletRequest.getCookies() == null)
+            return Optional.empty();
+
+        Optional<String> cookieToken = Arrays.stream(httpServletRequest.getCookies())
+                .filter(x -> x.getName().equals("Token"))
+                .map(x -> x.getValue())
+                .findFirst();
+
+        try {
+            return cookieToken.map(UUID::fromString);
+        } catch (Exception e) {}
+
+        return Optional.empty();
     }
 }

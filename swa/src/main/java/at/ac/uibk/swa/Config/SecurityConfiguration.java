@@ -1,12 +1,15 @@
 package at.ac.uibk.swa.Config;
 
 import at.ac.uibk.swa.Models.Permission;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.util.matcher.*;
@@ -57,12 +60,12 @@ public class SecurityConfiguration {
             new OrRequestMatcher(API_ROUTES, ADMIN_ROUTES)
     );
 
-    private AuthenticationProvider provider;
+    @Autowired
+    @Qualifier("delegatedAuthenticationEntryPoint")
+    private AuthenticationEntryPoint authEntryPoint;
 
-    public SecurityConfiguration(final AuthenticationProvider authenticationProvider) {
-        super();
-        this.provider = authenticationProvider;
-    }
+    @Autowired
+    private AuthenticationProvider provider;
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
@@ -95,7 +98,9 @@ public class SecurityConfiguration {
                 .csrf().disable()
                 .cors().disable()
                 .formLogin().disable()
-                .logout().disable();
+                .logout().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(authEntryPoint);
 
         return http.build();
     }

@@ -10,6 +10,8 @@ import java.util.UUID;
 
 public class AuthContext {
 
+    private AuthContext() {}
+
     public static boolean isAuthenticated() {
         return !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken);
     }
