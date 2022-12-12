@@ -1,11 +1,11 @@
 package at.ac.uibk.swa;
 
-import at.ac.uibk.swa.Models.Card;
-import at.ac.uibk.swa.Models.Person;
-import at.ac.uibk.swa.Models.Deck;
-import at.ac.uibk.swa.Service.CardService;
-import at.ac.uibk.swa.Service.PersonService;
-import at.ac.uibk.swa.Service.DeckService;
+import at.ac.uibk.swa.models.Card;
+import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.models.Deck;
+import at.ac.uibk.swa.service.CardService;
+import at.ac.uibk.swa.service.PersonService;
+import at.ac.uibk.swa.service.DeckService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
