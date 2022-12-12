@@ -21,7 +21,7 @@
   
   let searchUsername = "";
   let searchEmail = "";
-  let selected = [];
+  let searchPermission = "";
 
   let buttons = [
     {
@@ -77,6 +77,7 @@
     const myHeader = new Headers()
     myHeader.append("Authorization", "Bearer " + tokenValue);
     
+    //TODO form validation
     const formData = new FormData(e.target);
     // for(let [key, value] of formData.entries()){
     //   console.log(key, value)
@@ -252,7 +253,7 @@
               <th>Search</th>
               <th><input bind:value={searchUsername} class="input bg-slate-900" placeholder="Username"/></th>
               <th><input bind:value={searchEmail} class="input bg-slate-900" placeholder="Email"/></th>
-              <th></th>
+              <th><input bind:value={searchPermission} class="input bg-slate-900" placeholder="ADMIN"/></th>
               <th></th>
               <th></th>
             </tr>
@@ -270,8 +271,8 @@
           <tbody>
             {#key users}
                 {#each users as user}
-                    {#if user.username.includes(searchUsername) && user.email.includes(searchEmail)}
-                        <tr>
+                    {#if user.username.includes(searchUsername) && user.email.toLowerCase().includes(searchEmail.toLowerCase())}
+                         <tr>
                             <td><form action="api/deleteUser" method="POST" on:submit|preventDefault={handleSubmit} id={user.personId} name="personId"/>{user.personId.slice(0,5)+"..."}</td>
                             <input type="hidden" form={user.personId} bind:value={user.personId} name="personId"/>
                             <td><input form={user.personId} type="text" name="username" bind:value={user.username} class="bg-transparent" readonly/></td>

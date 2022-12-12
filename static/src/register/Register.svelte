@@ -11,6 +11,7 @@
             alert(res.message);
             return;
         }
+        //TODO hash token?
         $token = res.token;
 	}
     $: if($token.length > 30) redirect("");
