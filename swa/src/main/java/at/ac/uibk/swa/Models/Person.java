@@ -18,6 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "Persons")
+@AttributeOverride(name = "id", column = @Column(name = "PersonId"))
 public class Person extends Authenticable implements Serializable {
 
     public Person(String username, String email, String passwdHash, UUID token, List<Permission> permissions) {
