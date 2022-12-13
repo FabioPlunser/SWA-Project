@@ -44,13 +44,15 @@ public class Person extends Authenticable implements Serializable {
             orphanRemoval = true,
             fetch=FetchType.EAGER
     )
-    private List<Deck> decks = new ArrayList<>();
+    private List<Deck> createdDecks = new ArrayList<>();
 
-    @Setter
-    @JsonIgnore
-    @Builder.Default
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DeckView> deckViews = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "person_deck",
+            joinColumns = @JoinColumn(name = "person_id"),
+            inverseJoinColumns = @JoinColumn(name = "deck_id")
+    )
+    private List<Deck> savedDecks = new ArrayList<>();
 
     @JsonInclude
     public UUID getPersonId() {
