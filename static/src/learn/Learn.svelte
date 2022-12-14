@@ -1,6 +1,6 @@
 <script lang="ts">
     import FlipCard from "../lib/components/flipCard.svelte";
-    import Slider from "../lib/components/slider.svelte";
+
 	import Nav from "../lib/components/nav.svelte";
 	import { redirect } from '../lib/utils/redirect';
     import { token } from "../lib/stores/token";
@@ -33,9 +33,27 @@
 <main class="mt-20">
 	<div class="grid grid-row gap-6 justify-center">
 		<FlipCard />
-		<div class="flex">
-			<Slider/>
-			<button class="ml-2 btn btn-primary">Next</button>
+		<div class="grid grid-cols-6 gap-4">
+			<div class="tooltip tooltip-error" data-tip="Keine Ahnung; totales Blackout">
+				<button class="btn btn-error">0</button>
+			</div>
+			<div class="tooltip tooltip-warning" data-tip="Falsche Antwort, und nach Anzeige der Rückseite wäre die Karte schwer richtig zu 
+			beantworten gewesen">
+				<button class="btn btn-warning">1</button>
+			</div>
+			<div class="tooltip tooltip-secondary" data-tip="Falsche Antwort, aber nach Anzeige der Rückseite wäre die Karte leicht richtig zu 
+			beantworten gewesen">
+				<button class="btn btn-secondary">2</button>
+			</div>
+			<div class="tooltip tooltip-primary" data-tip="Richtige Antwort nach angestrengtem Nachdenken">
+				<button class="btn btn-primary">3</button>
+			</div>
+			<div class="tooltip tooltip-info" data-tip="Richtige Antwort nach einer kurzen Pause">
+				<button class="btn btn-info">4</button>
+			</div>
+			<div class="tooltip tooltip-success" data-tip="Richtige Antwort ohne langes Zögern">
+				<button class="btn btn-success">5</button>
+			</div>
 		</div>
 	</div>
 </main>
