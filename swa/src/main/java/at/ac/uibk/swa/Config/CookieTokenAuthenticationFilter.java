@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,24 +29,27 @@ public class CookieTokenAuthenticationFilter extends AbstractAuthenticationProce
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse
     ) throws AuthenticationException {
+        Cookie[] cookies = httpServletRequest.getCookies();
 
-        Optional<PersonAuthenticationToken> authenticationToken =
-                // Iterate over a List of all Cookies sent with the Request
-                Arrays.stream(httpServletRequest.getCookies())
-                // Get only the Cookies that have a Token
-                .filter(x -> x.getName().equals("Token"))
-                // Get the Values of the Cookie
-                .map(Cookie::getValue)
-                // Get the first Cookie that contains a Token
-                .findFirst()
-                // Try to parse the Cookie as a Token
-                .map(UUIDConversionUtil::tryConvertUUID)
-                // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
-                .map(token -> new PersonAuthenticationToken(token));
+        if (cookies != null) {
+            Optional<UsernamePasswordAuthenticationToken> authenticationToken =
+                    // Iterate over a List of all Cookies sent with the Request
+                    Arrays.stream(cookies)
+                            // Get only the Cookies that have a Token
+                            .filter(x -> x.getName().equals("Token"))
+                            // Get the Values of the Cookie
+                            .map(Cookie::getValue)
+                            // Get the first Cookie that contains a Token
+                            .findFirst()
+                            // Try to parse the Cookie as a Token
+                            .map(UUIDConversionUtil::tryConvertUUID)
+                            // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
+                            .map(token -> new UsernamePasswordAuthenticationToken(null, token));
 
-        // If a Cookie-Token was found, pass it to the AuthenticationManager/AuthenticationProvider.
-        if (authenticationToken.isPresent()) {
-            return getAuthenticationManager().authenticate(authenticationToken.get());
+            // If a Cookie-Token was found, pass it to the AuthenticationManager/AuthenticationProvider.
+            if (authenticationToken.isPresent()) {
+                return getAuthenticationManager().authenticate(authenticationToken.get());
+            }
         }
 
         throw new BadCredentialsException("No Token or a malformed was sent with the Request!");

@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,15 +39,15 @@ public class BearerTokenAuthenticationFilter extends AbstractAuthenticationProce
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse
     ) throws AuthenticationException {
-        Optional<PersonAuthenticationToken> authenticationToken =
+        Optional<UsernamePasswordAuthenticationToken> authenticationToken =
                 // Get the Authorization Header
                 Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION))
                         // Remove the
-                        .map(header -> header.substring("Bearer".length()))
+                        .map(header -> header.substring("Bearer".length()).trim())
                         // Try to convert the Token given in the Header to a UUID
                         .map(UUIDConversionUtil::tryConvertUUID)
                         // If the Token is a valid UUID then pass it onto the AuthenticationFilter
-                        .map(token -> new PersonAuthenticationToken(token));
+                        .map(token -> new UsernamePasswordAuthenticationToken(null, token));
 
         // If a Cookie-Token was found, pass it to the AuthenticationManager/AuthenticationProvider.
         if (authenticationToken.isPresent()) {

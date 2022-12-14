@@ -51,10 +51,7 @@ public class Card implements Serializable {
 
     @JsonIgnore
     @OneToMany
-    @JoinTable(name = "card_progress_mapping",
-            joinColumns = {@JoinColumn(name = "card_id", referencedColumnName = "card_id")},
-            inverseJoinColumns = {@JoinColumn(name = "progress_id", referencedColumnName = "LearningProgressId")})
-    @MapKeyJoinColumn(name = "person_id")
+    @Builder.Default
     private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
 
     @Override

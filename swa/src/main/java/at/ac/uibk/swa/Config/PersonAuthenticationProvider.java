@@ -46,9 +46,7 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
     protected UserDetails retrieveUser(
             String userName, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
     ) {
-        PersonAuthenticationToken personAuthenticationToken =
-                (PersonAuthenticationToken) usernamePasswordAuthenticationToken;
-        UUID token = personAuthenticationToken.getToken();
+        UUID token = (UUID) usernamePasswordAuthenticationToken.getCredentials();
 
         // Try to find the User with the given Session Token
         Optional<Person> maybePerson = loginService.findByToken(token);
