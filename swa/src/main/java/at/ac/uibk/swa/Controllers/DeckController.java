@@ -35,7 +35,7 @@ public class DeckController {
     public RestResponse getUserDecks(
             @RequestParam(name = "personId") final UUID personId
     ) {
-        return new MessageResponse(true, "");
+        return new MessageResponse(true, "getUserDecks" + personId);
     }
 
     @GetMapping("/api/getPublishedDecks")
@@ -46,7 +46,7 @@ public class DeckController {
     @Admin
     @GetMapping("/api/getAllDecks")
     public RestResponse getAllDecks() {
-        return new MessageResponse(true, "");
+        return new MessageResponse(true, "getAllDecks");
     }
 
     @GetMapping("/api/learn")
