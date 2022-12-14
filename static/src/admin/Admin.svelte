@@ -2,7 +2,6 @@
   import favicon  from '/favicon.png';
   import Nav from "../lib/components/nav.svelte";
   import Modal from "../lib/components/modal.svelte";
-	import AdminDeck from './../lib/components/adminDeck.svelte';
   import { token } from '../lib/stores/token';
   import { get } from 'svelte/store';
   import { redirect } from '../lib/utils/redirect';
@@ -388,11 +387,7 @@
 <main class="mt-20 m-2 flex-justify-center">
   <h1 class="text-2xl flex justify-center">Decks of {selectedUser.username}</h1>
   <br/>
-  <div class="grid grid-cols-4 gap-4">
-    {#each decks as deck}
-      <AdminDeck {...deck} on:listCards={()=>{selectedDeck=deck; handleListCards();}}/>
-    {/each}
-  </div>
+  <!-- <div class="grid grid-cols-4 gap-4"> {#each decks as deck} <AdminDeck {...deck} on:listCards={()=>{selectedDeck=deck; handleListCards();}}/> {/each} </div> -->
 </main>
 {/if}
 

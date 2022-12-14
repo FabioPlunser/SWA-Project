@@ -25,8 +25,8 @@ public class Card implements Serializable {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = "CardId", nullable = false)
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
+    @Column(name = "card_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.UUID)
     private UUID cardId;
 
     @Setter
@@ -52,7 +52,6 @@ public class Card implements Serializable {
     @JsonIgnore
     @OneToMany
     @Builder.Default
-    @ElementCollection
     private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.util.matcher.*;
 
@@ -28,7 +29,7 @@ import org.springframework.security.web.util.matcher.*;
  * </p>
  */
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     static final RequestMatcher API_ROUTES = new AntPathRequestMatcher("/api/**");
@@ -58,8 +59,17 @@ public class SecurityConfiguration {
             new OrRequestMatcher(API_ROUTES, ADMIN_ROUTES)
     );
 
-    @Autowired
-    private AuthenticationProvider provider;
+    public static final RequestMatcher PUBLIC_ROUTES = new OrRequestMatcher(
+            new NegatedRequestMatcher(new OrRequestMatcher(API_ROUTES, ADMIN_ROUTES)),
+            AnyRequestMatcher.INSTANCE
+    );
+
+    private final PersonAuthenticationProvider provider;
+
+    public SecurityConfiguration(final PersonAuthenticationProvider authenticationProvider) {
+        super();
+        this.provider = authenticationProvider;
+    }
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
@@ -74,13 +84,11 @@ public class SecurityConfiguration {
         http
                 // Use the custom AuthenticationProvider and AuthenticationFilter
                 .authenticationProvider(provider)
-                .addFilterBefore(authenticationFilter(http), AnonymousAuthenticationFilter.class)
+                .addFilterBefore(bearerAuthenticationFilter(http), AnonymousAuthenticationFilter.class)
+                .addFilterBefore(cookieAuthenticationFilter(http), AnonymousAuthenticationFilter.class)
                 // Specify which Routes/Endpoints should be protected and which ones should be accessible to everyone.
                 .authorizeHttpRequests((auth) ->
                     auth
-                            // Anyone should be able to log in (alias for getting a Token)
-                            // TODO: Not needed anymore because of PROTECTED_API_ROUTES?
-                            // .requestMatchers(PUBLIC_API_ROUTES).permitAll()
                             // Only allow authenticated Users to use the API
                             .requestMatchers(PROTECTED_API_ROUTES).authenticated()
                             .requestMatchers(ADMIN_ROUTES).hasAuthority(Permission.ADMIN.toString())
@@ -98,8 +106,15 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    AuthenticationFilter authenticationFilter(HttpSecurity http) throws Exception {
-        final AuthenticationFilter filter = new AuthenticationFilter(PROTECTED_ROUTES);
+    AbstractAuthenticationProcessingFilter bearerAuthenticationFilter(HttpSecurity http) throws Exception {
+        final AbstractAuthenticationProcessingFilter filter = new BearerTokenAuthenticationFilter(PROTECTED_API_ROUTES);
+        filter.setAuthenticationManager(authManager(http));
+        return filter;
+    }
+
+    @Bean
+    AbstractAuthenticationProcessingFilter cookieAuthenticationFilter(HttpSecurity http) throws Exception {
+        final AbstractAuthenticationProcessingFilter filter = new CookieTokenAuthenticationFilter(ADMIN_ROUTES);
         filter.setAuthenticationManager(authManager(http));
         return filter;
     }

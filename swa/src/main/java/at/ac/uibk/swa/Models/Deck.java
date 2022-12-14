@@ -62,6 +62,9 @@ public class Deck implements Serializable {
     @JoinColumn(name = "personId", nullable = false)
     private Person creator;
 
+    @ManyToMany(mappedBy = "savedDecks")
+    private List<Person> subscribers = new ArrayList<>();
+
     @Setter
     @JsonIgnore
     @Builder.Default
@@ -71,17 +74,6 @@ public class Deck implements Serializable {
             fetch=FetchType.EAGER
     )
     private List<Card> cards = new ArrayList<>();
-
-    @Setter
-    @JsonIgnore
-    @Builder.Default
-    @OneToMany(
-            mappedBy = "deck",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch=FetchType.EAGER
-    )
-    private List<DeckView> deckViews = new ArrayList<>();
 
     @Override
     public String toString() {

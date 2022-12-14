@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,10 +26,10 @@ import java.util.UUID;
  *     The Token is provided by the AuthenticationFilter.
  * </p>
  *
- * @see AuthenticationFilter
+ * @see AbstractAuthenticationProcessingFilter
  */
 @Component
-public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
     PersonService loginService;
@@ -35,7 +38,9 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
     protected void additionalAuthenticationChecks(
             UserDetails userDetails,
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-    ) {}
+    ) {
+        // All Checks are done in retrieveUser
+    }
 
     @Override
     protected UserDetails retrieveUser(
@@ -52,11 +57,15 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
             return new User(
                     person.getUsername(), person.getPassword(),
                     true, true, true, true,
-                    AuthorityUtils.createAuthorityList(person
-                            .getPermissions().stream().map(x -> x.toString()).toArray(String[]::new))
+                    getAuthorities(person)
             );
         }
 
         throw new AuthenticationCredentialsNotFoundException("Cannot find user with authentication token=" + token.toString());
+    }
+
+    private static Collection<GrantedAuthority> getAuthorities(Person person) {
+        return AuthorityUtils.createAuthorityList(person
+                .getPermissions().stream().map(x -> x.toString()).toArray(String[]::new));
     }
 }
