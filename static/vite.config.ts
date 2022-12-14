@@ -18,6 +18,8 @@ export default defineConfig({
         learn: resolve(__dirname, "src", "learn", "index.html"),
         cards: resolve(__dirname, "src", "listCards", "index.html"),
         admin: resolve(__dirname, "src", "admin", "index.html"),
+        adminShowCards: resolve(__dirname, "src", "admin", "showCards", "index.html"),
+        adminShowDecks: resolve(__dirname, "src", "admin", "showDecks", "index.html"),
       }
     }
   }

@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" type="image/png" href={favicon}/>
+	<link rel="icon" type="image/png" href="{favicon}"/>
 	<title>Login</title>
 </svelte:head>
 

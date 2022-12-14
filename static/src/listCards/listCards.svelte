@@ -8,18 +8,8 @@
     $: if($token.length < 30) redirect("login");
 
     let navButtons = [
-        {
-            tag: "button",
-            id: "",
-            text: "DeckView",
-            action: () => redirect("")
-        },
-        {
-            tag: "button",
-            id: "",
-            text: "Logout",
-            action: handleLogout
-        }
+        { tag: "button", id: "", text: "DeckView", action: () => redirect("") },
+        { tag: "button", id: "", text: "Logout", action: handleLogout }
     ];
 
     //TODO get cards from server and make them editable

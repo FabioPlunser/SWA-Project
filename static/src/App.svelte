@@ -15,26 +15,11 @@
 	$: console.log("showeditdeckmodal " + showEditDeckModal);
 	$: console.log("selectedDeck " + {selectedDeck});
 
+	//TODO only show admin button if user is admin
 	let navButtons = [
-		{
-			tag: "label",
-			id: "createDeckModal",
-			text: "Create Deck",
-			action: () =>{showCreateDeckModal = true;}
-		},
-		//TODO only show admin button if user is admin
-		{
-			tag: "button",
-			id: "",
-			text: "Admin",
-			action: () => redirect("admin")
-		},
-		{
-			tag: "button",
-			id: "",
-			text: "Logout",
-			action: () => handleLogout()
-		}
+		{ tag: "label", id: "createDeckModal", text: "Create Deck", action: () =>{showCreateDeckModal = true;} },
+		{ tag: "button", id: "", text: "Admin", action: () => redirect("admin") },
+		{ tag: "button", id: "", text: "Logout", action: () => handleLogout()}
 	]
 	
 	function handleSubmit(event) {
