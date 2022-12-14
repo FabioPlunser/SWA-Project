@@ -5,8 +5,8 @@ public class DeckView {
     private final IDeck deck;
     private Map<UUID, LearningProgress> progress = new HashMap<>();
 
-    public DeckView(IDeck deck, UUID userId, boolean isAdmin) {
-        this.deck = new DeckProxy(deck, userId, isAdmin);
+    public DeckView(IDeck deck, UUID personId, boolean isAdmin) {
+        this.deck = new DeckProxy(deck, personId, isAdmin);
     }
 
     public IDeck getDeck() {

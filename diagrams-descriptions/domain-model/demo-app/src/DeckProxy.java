@@ -3,12 +3,12 @@ import java.util.UUID;
 
 public class DeckProxy implements IDeck{
     private final IDeck deck;
-    private final UUID userId;
+    private final UUID personId;
     private final boolean userIsAdmin;
 
-    public DeckProxy(IDeck deck, UUID userId, boolean userIsAdmin) {
+    public DeckProxy(IDeck deck, UUID personId, boolean userIsAdmin) {
         this.deck = deck;
-        this.userId = userId;
+        this.personId = personId;
         this.userIsAdmin = userIsAdmin;
     }
 
@@ -22,7 +22,7 @@ public class DeckProxy implements IDeck{
         if (hasAdminAccess()) {
             return !deck.isDeleted();
         // creator can view deck as long as it's not deleted and not blocked
-        } else if (userId == deck.getCreatorId()) {
+        } else if (personId == deck.getCreatorId()) {
             return !deck.isBlocked() && !deck.isDeleted();
         // others can view deck only as long as it's published, not deleted and not blocked
         } else {
@@ -31,7 +31,7 @@ public class DeckProxy implements IDeck{
     }
 
     public boolean hasModifyAccess() {
-        return hasReadAccess() && userId == deck.getCreatorId() ;
+        return hasReadAccess() && personId == deck.getCreatorId() ;
     }
 
     @Override
