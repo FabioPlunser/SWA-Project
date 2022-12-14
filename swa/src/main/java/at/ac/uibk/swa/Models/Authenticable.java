@@ -12,9 +12,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Getter
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@MappedSuperclass
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public abstract class Authenticable {
 
