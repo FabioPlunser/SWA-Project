@@ -54,7 +54,7 @@
 
         <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
                 <button class="btn btn-primary" on:click={()=>redirect("learn")}>Learn Deck</button>
-                <button class="btn btn-primary" on:click={()=>redirect("listCards")}>List Cards</button>
+                <button class="btn btn-primary" on:click={()=>redirect("listcards")}>List Cards</button>
                 <label for="editDeckModal" class="btn btn-primary" on:click={handleEditDeck}>Edit Deck</label>
                 <button class="btn {published ? "btn-secondary" : "btn-primary"}" on:click={()=> published = !published}>Publish Deck</button>
                 <button class="btn btn-primary">Delete Deck</button>

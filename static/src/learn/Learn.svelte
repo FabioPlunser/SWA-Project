@@ -23,7 +23,7 @@
 <main class="mt-20">
 	<div class="grid grid-row gap-6 justify-center">
 		<FlipCard />
-		<div class="grid grid-cols-6gap-4">
+		<div class="grid grid-cols-6 gap-4">
 			<div class="tooltip tooltip-error" data-tip="Keine Ahnung; totales Blackout">
 				<button class="btn btn-error">0</button>
 			</div>

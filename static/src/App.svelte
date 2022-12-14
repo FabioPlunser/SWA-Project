@@ -16,6 +16,7 @@
 	$: console.log("selectedDeck " + {selectedDeck});
 
 	//TODO only show admin button if user is admin
+	//TODO admin gets to see all the decks that user own. 
 	let navButtons = [
 		{ tag: "label", id: "createDeckModal", text: "Create Deck", action: () =>{showCreateDeckModal = true;} },
 		{ tag: "button", id: "", text: "Admin", action: () => redirect("admin") },
@@ -131,6 +132,8 @@
 					<textarea bind:value={selectedDeck.description} name="description" required type="text" placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full" />
 					</label>
 				</div>
+				<br class="pt-2"/>
+				<button class="btn btn-primary" on:click={()=> redirect("listcards")}>Edit Cards</button>
 				<br class="pt-4"/>
 				<div class="flex justify-between">
 					<button type="submit" class="btn btn-primary">Update</button>
