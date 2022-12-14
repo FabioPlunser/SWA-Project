@@ -6,8 +6,6 @@
   import { get } from 'svelte/store';
   import { redirect } from '../lib/utils/redirect';
   import { handleLogout } from '../lib/utils/handleLogout';
-  import { onMount } from 'svelte';
-
 
   $: tokenValue = get(token);
   let users = [];
@@ -21,82 +19,17 @@
   let searchUsername = "";
   let searchEmail = "";
   let searchPermission = "";
-  let showDecks = false;
-  let listCards = false;
-  let selectedDeck = null;
 
   let buttons = [
-    {
-      tag: "button",
-      id: "",
-      text: "Home",
-      action: () => redirect("")
-    },
-    {
-      tag: "button",
-      id: "",
-      text: "Logout",
-      action: () => handleLogout()
-    }
-  ];
-
-  let decks = [
-    {
-      id: 1,
-      title: "Deck1",
-      description: "Deck1 Testing",
-      cards: [
-        {
-          id: 1,
-          front: "SOLID",
-          back: "Hallo"
-        },
-        {
-          id: 2,
-          front: "Assembly",
-          back: "kein bock"
-        }
-      ]
-    },
-    {
-      id: 2,
-      title: "Deck2",
-      description: "Deck2 Testing",
-      cards: [
-        {
-          id: 1,
-          front: "Testing",
-          back: "Hallo"
-        }
-      ]
-    }
+    { tag: "button", id: "", text: "Home", action: () => redirect("") },
+    { tag: "button", id: "", text: "Admin",action: () => redirect("admin")},
+    { tag: "button", id: "", text: "Logout",action: () => handleLogout()}
   ];
 
 
-  
   $: getAllUser(); 
   $: getAllPermission();
-  $: handleURLParams();
 
-  /**
-   * Handles the URL parameters and sets the appropriate variables
-   * Used for showing decks and cards for a specific user 
-   * Made for better UX when navigating between pages, because without it the back-button would not work as expected
-   */
-  function handleURLParams(){
-    const urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.toString().length > 0){
-      showDecks = urlParams.get("showDecks") === "true";
-      listCards = urlParams.get("listCards") === "true";
-      selectedUser = {
-        personId: urlParams.get("userID"),
-        username: urlParams.get("username")
-      }
-      selectedDeck = decks.find(deck => deck.id === parseInt(urlParams.get("deckID")));
-    }
-  }
-  
-  
   async function getAllUser(){
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + tokenValue);
@@ -128,29 +61,6 @@
   }
   
 
-
-  $:{
-    /**
-     * If something happens on the page and the page should show decks of cards, fetch those form the backend
-     */
-    async function getFromServer(){
-      if(showDecks || listCards){
-        //fetch decks from backend 
-        console.log("fetch decks");
-        let res = await fetch("api/getAllDecks?userID=" + selectedUser.personId, {
-          method: "GET",
-          headers: {
-            "Authorization": "Bearer " + tokenValue
-          }
-        })
-        res = await res.json();
-        // decks = res.items;
-        console.log(res);
-      }
-    }
-
-    getFromServer();
-  }
 
 
 
@@ -200,16 +110,6 @@
 
   }
 
-
-
-  function handleShowDecks(){
-    redirect(`admin?showDecks=${true}&userID=${selectedUser.personId}&username=${selectedUser.username}`);
-  }
-
-  function handleListCards(){
-    redirect(`admin?listCards=${true}&deckID=${selectedDeck.id}&deckTitle=${selectedDeck.title}`);
-  }
-
 </script>
 
 <svelte:head>
@@ -218,7 +118,7 @@
     
 </svelte:head>
 
-<Nav title="Admin" buttons={buttons}/>
+<Nav title="Admin" {buttons}/>
 {#if showCreateModal}
     <Modal uniqueModalQualifier={"AdminCreateUser"}>
         <h1 class="flex justify-center underline text-2xl">Create User</h1>
@@ -327,7 +227,6 @@
   </Modal>
 {/if}
 
-{#if !showDecks && !listCards}
 <main class="mt-20 m-2 flex-justify-center">
   <div class="flex justify-center">
       <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -354,6 +253,7 @@
             <th>Username</th>
             <th>email</th>
             <th>Roles</th>
+            <th>showDecks</th>
             <th>edit</th>
             <th>remove</th>
           </tr>
@@ -368,7 +268,7 @@
                           <td><input form={user.personId} type="text" name="username" bind:value={user.username} class="bg-transparent" readonly/></td>
                           <td><input form={user.personId} type="text" name="email" bind:value={user.email} class="bg-transparent" readonly/></td>
                           <td><input form={user.personId} type="text" name="permissions" bind:value={user.permissions} class="bg-transparent" readonly/></td>
-                          <td><div class="tooltip" data-tip="Show all decks of user"><button class="btn btn-info" on:click={()=>{selectedUser=user; handleShowDecks();}}>Decks</button></div></td>
+                          <td><button class="btn btn-info" on:click={()=>{redirect("admin/showdecks")}}>Decks</button></td>
                           <!-- svelte-ignore a11y-click-events-have-key-events -->
                           <td><label for="AdminEditUser" class="btn btn-secondary" on:click={()=>{showEditModal=true; selectedUser=user}}>Edit</label></td>
                           <td><button class="btn btn-info" form={user.personId} type="submit">Delete</button></td>
@@ -380,37 +280,3 @@
       </table>
     </div>
 </main>
-
-{/if}
-
-{#if showDecks && !listCards}
-<main class="mt-20 m-2 flex-justify-center">
-  <h1 class="text-2xl flex justify-center">Decks of {selectedUser.username}</h1>
-  <br/>
-  <!-- <div class="grid grid-cols-4 gap-4"> {#each decks as deck} <AdminDeck {...deck} on:listCards={()=>{selectedDeck=deck; handleListCards();}}/> {/each} </div> -->
-</main>
-{/if}
-
-
-{#if listCards && !showDecks}
-<main class="mt-20 m-2 flex-justify-center">
-  <h1 class="text-2xl flex justify-center">Cards of {selectedDeck.title}</h1>
-  <br/>
-  <div class="grid grid-cols-4 gap-4">
-    {#each selectedDeck.cards as card}
-      <div class="card rounded-2xl bg-slate-900 shadow-xl">
-        <div class="card-body">
-          <div class="flex flex-col w-full lg:flex-row">
-            <div>Front</div>
-            <div class="grid flex-grow h-32 card bg-base-300 rounded-box place-items-center">{card.front}</div> 
-            <div class="divider lg:divider-horizontal"></div> 
-            <div>Back</div>
-            <div class="grid flex-grow h-32 card bg-base-300 rounded-box place-items-center">{card.back}</div>
-          </div>
-        </div>
-      </div>
-    {/each}
-  </div>
-</main>
-
-{/if}
