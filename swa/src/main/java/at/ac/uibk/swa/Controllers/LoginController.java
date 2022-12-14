@@ -1,10 +1,11 @@
 package at.ac.uibk.swa.Controllers;
 
 import at.ac.uibk.swa.Config.AuthContext;
+import at.ac.uibk.swa.Models.Person;
 import at.ac.uibk.swa.Models.RestResponses.AuthFailedResponse;
+import at.ac.uibk.swa.Models.RestResponses.LoginResponse;
 import at.ac.uibk.swa.Models.RestResponses.MessageResponse;
 import at.ac.uibk.swa.Models.RestResponses.RestResponse;
-import at.ac.uibk.swa.Models.RestResponses.TokenResponse;
 import at.ac.uibk.swa.Service.PersonService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
@@ -39,21 +40,12 @@ public class LoginController {
             @RequestParam("username") final String username,
             @RequestParam("password") final String password
     ) {
-        Optional<UUID> maybeToken = personService.login(username, password);
+        Optional<Person> maybePerson = personService.login(username, password);
 
-        if(maybeToken.isEmpty())
+        if(maybePerson.isEmpty())
             return new AuthFailedResponse("Username or Password are wrong!");
 
-        UUID token = maybeToken.get();
-
-        /*
-        // https://www.baeldung.com/spring-response-header#1-usinghttpservletresponse
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
-        response.setHeader("Set-Cookie",
-                String.format("Token=%s;Max-Age=3600", token.toString()));
-        */
-
-        return new TokenResponse(token);
+        return new LoginResponse(maybePerson.get());
     }
 
     /**

@@ -1,7 +1,9 @@
 package at.ac.uibk.swa.Models.RestResponses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.List;
  * Only if the success-Field is set to true then a List is sent.
  */
 @Getter
+@NoArgsConstructor(access = AccessLevel.MODULE)
 public class ListResponse<T extends Serializable> extends RestResponse implements Serializable {
 
     /**
@@ -37,13 +40,5 @@ public class ListResponse<T extends Serializable> extends RestResponse implement
         } else {
             this.items = new ArrayList<>();
         }
-    }
-
-    /**
-     * Indicate an unsuccessful fetch of a List of items.
-     */
-    public ListResponse() {
-        super(false);
-        this.items = null;
     }
 }

@@ -2,7 +2,10 @@ package at.ac.uibk.swa.Models.RestResponses;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -15,16 +18,14 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Getter
+@NoArgsConstructor(access = AccessLevel.MODULE)
+@AllArgsConstructor
 public class RestResponse implements Serializable {
 
     /**
      * Indicates the Success-State of an Operation to the Front-End.
      */
-    private boolean success;
-
-    public RestResponse(boolean successful) {
-        this.success = successful;
-    }
+    private boolean success = false;
 
     public String toResponse() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(this);

@@ -25,7 +25,7 @@ public class PersonService {
         return personRepository.findAll();
     }
 
-    public Optional<UUID> login(String username, String password) {
+    public Optional<Person> login(String username, String password) {
         Optional<Person> maybePerson = personRepository.findByUsername(username);
         if(maybePerson.isEmpty()) return Optional.empty();
 
@@ -38,7 +38,7 @@ public class PersonService {
         // => if the same Token is generated for multiple users, the save fails
         personRepository.save(person);
 
-        return Optional.of(token);
+        return Optional.of(person);
     }
 
     public Optional<Person> findByToken(UUID token) {
