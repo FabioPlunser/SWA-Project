@@ -35,7 +35,7 @@ public class RedirectController {
         modelAndView.setViewName("learn/index.html");
         return modelAndView;
     }
-    @GetMapping("/listCards")
+    @GetMapping("/listcards")
     public ModelAndView listCards() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("listCards/index.html");

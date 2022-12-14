@@ -2,12 +2,17 @@
   import favicon  from '/favicon.png';
   import Nav from "../lib/components/nav.svelte";
   import Modal from "../lib/components/modal.svelte";
-  import { token } from '../lib/stores/token';
-  import { get } from 'svelte/store';
   import { redirect } from '../lib/utils/redirect';
   import { handleLogout } from '../lib/utils/handleLogout';
-
+  
+  import { get } from 'svelte/store';
+  import { token } from '../lib/stores/token';
+	import { adminSelectedUser } from './../lib/stores/adminSelectedUser';
+  
   $: tokenValue = get(token);
+  $: console.log($adminSelectedUser);
+  $: $adminSelectedUser = selectedUser;
+
   let users = [];
   let permissions = [];
 
@@ -59,10 +64,6 @@
     permissions = res.items;
     
   }
-  
-
-
-
 
   async function handleSubmit(e){
     const action = e.target.action;
@@ -71,15 +72,12 @@
     myHeader.append("Authorization", "Bearer " + tokenValue);
     //TODO form validation
     const formData = new FormData(e.target);
-    // for(let [key, value] of formData.entries()){
-      //   console.log(key, value)
-      // }
       
-      if(action.includes("delete") && formData.get("permissions").toString().includes("ADMIN")){
-        if(!confirm(`Are you sure you want to delete ${formData.get("username").toString()}?`)) return;
-      }
-      if(action.includes("create")){
-        showCreateModal = !showCreateModal;
+    if(action.includes("delete") && formData.get("permissions").toString().includes("ADMIN")){
+      if(!confirm(`Are you sure you want to delete ${formData.get("username").toString()}?`)) return;
+    }
+    if(action.includes("create")){
+      showCreateModal = !showCreateModal;
     } 
     if(action.includes("update")){
       for(let [key, value] of formData.entries()){
@@ -268,7 +266,7 @@
                           <td><input form={user.personId} type="text" name="username" bind:value={user.username} class="bg-transparent" readonly/></td>
                           <td><input form={user.personId} type="text" name="email" bind:value={user.email} class="bg-transparent" readonly/></td>
                           <td><input form={user.personId} type="text" name="permissions" bind:value={user.permissions} class="bg-transparent" readonly/></td>
-                          <td><button class="btn btn-info" on:click={()=>{redirect("admin/showdecks")}}>Decks</button></td>
+                          <td><button class="btn btn-info" on:click={()=>{$adminSelectedUser=user; redirect("admin/showdecks")}}>Decks</button></td>
                           <!-- svelte-ignore a11y-click-events-have-key-events -->
                           <td><label for="AdminEditUser" class="btn btn-secondary" on:click={()=>{showEditModal=true; selectedUser=user}}>Edit</label></td>
                           <td><button class="btn btn-info" form={user.personId} type="submit">Delete</button></td>

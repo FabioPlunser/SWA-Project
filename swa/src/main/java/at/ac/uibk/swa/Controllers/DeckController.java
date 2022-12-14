@@ -32,7 +32,9 @@ public class DeckController {
     }
 
     @GetMapping("/api/getUserDecks")
-    public RestResponse getUserDecks() {
+    public RestResponse getUserDecks(
+            @RequestParam(name = "personId") final UUID personId
+    ) {
         return new MessageResponse(true, "");
     }
 
