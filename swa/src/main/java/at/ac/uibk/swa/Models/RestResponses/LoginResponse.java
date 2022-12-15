@@ -16,12 +16,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class LoginResponse extends TokenResponse implements Serializable {
 
-    private UUID userId;
+    private UUID personId;
     private List<Permission> permissions;
 
     public LoginResponse(Authenticable authenticable) {
         super(true, authenticable.getToken());
-        this.userId = authenticable.getId();
+        this.personId = authenticable.getId();
         this.permissions = authenticable.getPermissions();
     }
 }

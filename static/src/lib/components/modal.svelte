@@ -6,9 +6,10 @@
     /**
      * Id for modal must be unique
      */
-   export let uniqueModalQualifier = "title";
+    export let uniqueModalQualifier = "title";
+    export let disableModalClick = false;
+    export let width = "w-96";
 
-    let modal;
 
     function handleDispatch() {
         // console.log("Send data of " + uniqueModalQualifier + " to server");
@@ -21,6 +22,7 @@
 		});
 	}
     function handleKeyDown(event) {
+        console.log(event.key);
         if (event.key === 'Escape') {
             close();
         }
@@ -29,11 +31,18 @@
 
 
 <input type="checkbox" id="{uniqueModalQualifier}" class="modal-toggle" on:keydown={handleKeyDown}/>
-	<label for="{uniqueModalQualifier}" id="modal-background" class="modal cursor-pointe" on:click={close}>
-		<label class="modal-box relative overflow-auto bg-slate-900" id="modal" bind:this={modal}>
-            <slot/>
-            <!-- <div class="modal-action"> -->
-        <!-- <label for="{uniqueModalQualifier}" class="btn btn-primary" autofocus on:click={close}>Close</label> -->
-            <!-- </div> -->
-    </label>
-</label>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+    {#if disableModalClick}
+        <label for="{uniqueModalQualifier}" id="modal-background" class="modal cursor-pointe">
+            <label class="modal-box relative overflow-auto bg-slate-900 w-fit h-fit" id="modal">
+                <slot/>
+            </label>
+        </label>
+    {:else}
+        <label for="{uniqueModalQualifier}" id="modal-background" class="modal cursor-pointe" on:click={close}>
+            <label class="modal-box relative overflow-auto bg-slate-900" id="modal">
+                <slot/>
+            </label>
+        </label>
+    {/if}
+

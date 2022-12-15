@@ -2,7 +2,7 @@
     import favicon from "/favicon.png";
     import Nav from "../lib/components/nav.svelte";
     import { redirect } from '../lib/utils/redirect';
-    import { token } from "../lib/stores/token";
+    import { tokenStore } from "../lib/stores/tokenStore";
     import { handleLogout } from '../lib/utils/handleLogout';
     import FlipCard from "../lib/components/flipCard.svelte";
     $: if($token.length < 30) redirect("login");
@@ -33,7 +33,7 @@
     <div class="flex justify-center mx-4">
         <div class="grid grid-cols-3 gap-y-3 gap-x-3">
             {#each [...Array(16)] as _, i}
-                <FlipCard editable={true}/>
+                <FlipCard/>
             {/each}
         </div>
     </div>

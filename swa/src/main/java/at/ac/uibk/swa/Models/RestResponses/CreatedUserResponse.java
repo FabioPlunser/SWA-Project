@@ -19,7 +19,7 @@ public class CreatedUserResponse extends RestResponse implements Serializable {
 
     private UUID id;
     private String username;
-    private UUID userId;
+    private UUID personId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID token;
     private List<Permission> permissions;

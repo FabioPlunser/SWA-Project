@@ -2,21 +2,25 @@
     import favicon from "/favicon.png";
     import { redirect } from "../lib/utils/redirect";
     import { formFetch } from "../lib/utils/formFetch";
-    import { token } from "../lib/stores/token";
+    import { tokenStore } from "../lib/stores/tokenStore";
+    import { personIdStore } from "../lib/stores/peronsIdStore";
+    import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
 
     // TODO add validation
     async function handleSubmit (e){
         let res = await formFetch(e);
+        console.log(res);
         if(!res.success){
             alert(res.message);
             return;
         }
-
         //TODO hash token?
-        $token = res.token;
+        $tokenStore = res.token;
+        $personIdStore = res.personId;
+        $userPermissionsStore= res.permissions;
 	}
-    $: if($token.length > 30) redirect("");
-    $: document.cookie = `Token=${$token}`;
+    $: if($tokenStore.length > 30) redirect("");
+    $: document.cookie = `Token=${$tokenStore}`;
 </script>
 
 <svelte:head>

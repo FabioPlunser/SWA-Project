@@ -1,4 +1,5 @@
 <script lang="ts">
+
   import favicon  from '/favicon.png';
   import Nav from "../lib/components/nav.svelte";
   import Modal from "../lib/components/modal.svelte";
@@ -6,12 +7,12 @@
   import { handleLogout } from '../lib/utils/handleLogout';
   
   import { get } from 'svelte/store';
-  import { token } from '../lib/stores/token';
-	import { adminSelectedUser } from './../lib/stores/adminSelectedUser';
+  import { tokenStore } from '../lib/stores/tokenStore';
+	import { adminSelectedUserStore} from '../lib/stores/adminSelectedUserStore';
   
-  $: tokenValue = get(token);
-  $: console.log($adminSelectedUser);
-  $: $adminSelectedUser = selectedUser;
+  $: tokenValue = get(tokenStore);
+  $: console.log($adminSelectedUserStore);
+  $: $adminSelectedUserStore = selectedUser;
 
   let users = [];
   let permissions = [];
@@ -266,7 +267,7 @@
                           <td><input form={user.personId} type="text" name="username" bind:value={user.username} class="bg-transparent" readonly/></td>
                           <td><input form={user.personId} type="text" name="email" bind:value={user.email} class="bg-transparent" readonly/></td>
                           <td><input form={user.personId} type="text" name="permissions" bind:value={user.permissions} class="bg-transparent" readonly/></td>
-                          <td><button class="btn btn-info" on:click={()=>{$adminSelectedUser=user; redirect("admin/showdecks")}}>Decks</button></td>
+                          <td><button class="btn btn-info" on:click={()=>{$adminSelectedUserStore=user; redirect("admin/showdecks")}}>Decks</button></td>
                           <!-- svelte-ignore a11y-click-events-have-key-events -->
                           <td><label for="AdminEditUser" class="btn btn-secondary" on:click={()=>{showEditModal=true; selectedUser=user}}>Edit</label></td>
                           <td><button class="btn btn-info" form={user.personId} type="submit">Delete</button></td>

@@ -1,11 +1,9 @@
 export async function formFetch(e, token = "") {
   const action = e.target.action;
   const method = e.target.method.toUpperCase();
-  console.log('formFetch', method, action);
   
 
   if(method === 'GET') {
-    console.log('getting data')
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + token);
 
@@ -17,7 +15,6 @@ export async function formFetch(e, token = "") {
     return res = await res.json();
   }
   if(method === 'POST') {
-    console.log('posting data')
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + token);
     
@@ -28,12 +25,12 @@ export async function formFetch(e, token = "") {
       header: myHeaders,
       body: formdata,
     };
-    for(let pair of formdata.entries()) {
-      console.log(pair[0]+ ', '+ pair[1]);
-    }
-    for(let pair of myHeaders.entries()) {
-      console.log(pair[0]+ ', '+ pair[1]);
-    }
+    // for(let pair of formdata.entries()) {
+    //   console.log(pair[0]+ ', '+ pair[1]);
+    // }
+    // for(let pair of myHeaders.entries()) {
+    //   console.log(pair[0]+ ', '+ pair[1]);
+    // }
     let res = await fetch(action, requestOptions);
     return res = await res.json();
   }
