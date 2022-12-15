@@ -3,8 +3,8 @@
   import Nav from "../../lib/components/nav.svelte";
   import { redirect } from '../../lib/utils/redirect';
   import { handleLogout } from "../../lib/utils/handleLogout";
-	import { adminSelectedDeck } from './../../lib/stores/adminSelectedDeck';
-  import { token } from './../../lib/stores/token';
+	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
+  import { tokenStore} from '../../lib/stores/tokenStore';
   let buttons = [
     { tag: "button", id: "", text: "Back", action: () => redirect("admin/showdecks") },
     { tag: "button", id: "", text: "Admin", action: () => redirect("admin") },
@@ -12,8 +12,8 @@
     { tag: "button", id: "", text: "Logout",action: () => handleLogout()}
   ];
 
-  $: console.log("showCards: ", $adminSelectedDeck);
-  $: selectedDeck = $adminSelectedDeck;
+  $: console.log("showCards: ", $adminSelectedDeckStore);
+  $: selectedDeck = $adminSelectedDeckStore;
 
   
 </script>

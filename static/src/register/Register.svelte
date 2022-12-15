@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { redirect } from '../lib/utils/redirect';
     import favicon from "/favicon.png";
+	import { redirect } from '../lib/utils/redirect';
     import { formFetch } from "../lib/utils/formFetch";
-    import { token } from "../lib/stores/token";
+    import { tokenStore } from "../lib/stores/tokenStore";
 
     // TODO add validation
     async function handleSubmit (e){
@@ -12,10 +12,10 @@
             return;
         }
         //TODO hash token?
-        $token = res.token;
+        $tokenStore = res.token;
 	}
-    $: if($token.length > 30) redirect("");
-    $: document.cookie = `Token=${$token}`;
+    $: if($tokenStore.length > 30) redirect("");
+    $: document.cookie = `Token=${$tokenStore}`;
 
 </script>
 

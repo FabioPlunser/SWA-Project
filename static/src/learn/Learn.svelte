@@ -1,11 +1,10 @@
 <script lang="ts">
     import FlipCard from "../lib/components/flipCard.svelte";
-
 	import Nav from "../lib/components/nav.svelte";
 	import { redirect } from '../lib/utils/redirect';
-    import { token } from "../lib/stores/token";
+    import { tokenStore } from "../lib/stores/tokenStore";
 	import { handleLogout } from '../lib/utils/handleLogout';
-    $: if($token.length < 30) redirect("login");
+    $: if($tokenStore.length < 30) redirect("login");
 
 	let buttons = [
 		{ tag: "button", id: "", text: "DeckView", action: () => redirect("") },

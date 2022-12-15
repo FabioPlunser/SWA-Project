@@ -3,9 +3,9 @@
   import Nav from "../../lib/components/nav.svelte";
   import { redirect } from '../../lib/utils/redirect';
   import { handleLogout } from "../../lib/utils/handleLogout";
-  import { token } from './../../lib/stores/token';
-  import { adminSelectedUser } from './../../lib/stores/adminSelectedUser';
-	import { adminSelectedDeck } from './../../lib/stores/adminSelectedDeck';
+  import { tokenStore } from '../../lib/stores/tokenStore';
+  import { adminSelectedUserStore } from '../../lib/stores/adminSelectedUserStore';
+	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
   import { onMount } from "svelte";
 
   let buttons = [
@@ -15,13 +15,13 @@
   ];
 
  
-  $: selectedUser = $adminSelectedUser;
+  $: selectedUser = $adminSelectedUserStore;
   onMount(async () => {
     await fetchDecks();
   });
 
   $: {
-    if (!$token) {
+    if (!$tokenStore) {
       redirect("login");
     }
   }
@@ -60,9 +60,9 @@
   ]
 
   async function fetchDecks(){
-    selectedUser = $adminSelectedUser;
+    selectedUser = $adminSelectedUserStore;
     const myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + $token);
+    myHeaders.append("Authorization", "Bearer " + $tokenStore);
     myHeaders.append("Content-Type", "application/json");
 
     let res = await fetch("api/getUserDecks/personId " +  selectedUser.peronId, {
@@ -93,7 +93,7 @@
               <p class="card-text">{deck.description}</p>
               <div class="card-actions">
                 <button class="btn btn-primary" on:click={()=>deck.blocked = !deck.blocked}>Unblock</button>
-                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeck=deck; redirect("admin/showcards")}}>ShowCards</button>
+                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/showcards")}}>ShowCards</button>
               </div>
             </div>
         </div>
@@ -104,7 +104,7 @@
               <p class="card-text">{deck.description}</p>
               <div class="card-actions">
                 <button class="btn btn-primary" on:click={()=>deck.blocked = !deck.blocked}>Block</button>
-                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeck=deck; redirect("admin/showcards")}}>ShowCards</button>
+                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/showcards")}}>ShowCards</button>
               </div>
             </div>
         </div>
