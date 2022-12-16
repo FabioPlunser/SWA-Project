@@ -1,21 +1,12 @@
 package at.ac.uibk.swa.controllers;
 
-<<<<<<< HEAD:swa/src/main/java/at/ac/uibk/swa/Controllers/LoginController.java
-import at.ac.uibk.swa.Config.AuthContext;
-import at.ac.uibk.swa.Models.Person;
-import at.ac.uibk.swa.Models.RestResponses.AuthFailedResponse;
-import at.ac.uibk.swa.Models.RestResponses.LoginResponse;
-import at.ac.uibk.swa.Models.RestResponses.MessageResponse;
-import at.ac.uibk.swa.Models.RestResponses.RestResponse;
-import at.ac.uibk.swa.Service.PersonService;
-=======
 import at.ac.uibk.swa.config.AuthContext;
-import at.ac.uibk.swa.models.RestResponses.AuthFailedResponse;
-import at.ac.uibk.swa.models.RestResponses.MessageResponse;
-import at.ac.uibk.swa.models.RestResponses.RestResponse;
-import at.ac.uibk.swa.models.RestResponses.TokenResponse;
+import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.models.restResponses.AuthFailedResponse;
+import at.ac.uibk.swa.models.restResponses.LoginResponse;
+import at.ac.uibk.swa.models.restResponses.MessageResponse;
+import at.ac.uibk.swa.models.restResponses.RestResponse;
 import at.ac.uibk.swa.service.PersonService;
->>>>>>> feature-CodeSmells:swa/src/main/java/at/ac/uibk/swa/controllers/LoginController.java
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +20,7 @@ import java.util.UUID;
 /**
  * Controller responsible for creating and deleting Authentication Tokens.
  */
+@SuppressWarnings("unused")
 @RestController
 public class LoginController {
 
@@ -54,13 +46,7 @@ public class LoginController {
         if(maybePerson.isEmpty())
             return new AuthFailedResponse("Username or Password are wrong!");
 
-<<<<<<< HEAD:swa/src/main/java/at/ac/uibk/swa/Controllers/LoginController.java
         return new LoginResponse(maybePerson.get());
-=======
-        UUID token = maybeToken.get();
-
-        return new TokenResponse(token);
->>>>>>> feature-CodeSmells:swa/src/main/java/at/ac/uibk/swa/controllers/LoginController.java
     }
 
     /**

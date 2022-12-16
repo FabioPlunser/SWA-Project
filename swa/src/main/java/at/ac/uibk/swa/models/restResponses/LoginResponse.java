@@ -1,7 +1,7 @@
-package at.ac.uibk.swa.Models.RestResponses;
+package at.ac.uibk.swa.models.restResponses;
 
-import at.ac.uibk.swa.Models.Authenticable;
-import at.ac.uibk.swa.Models.Permission;
+import at.ac.uibk.swa.models.Authenticable;
+import at.ac.uibk.swa.models.Permission;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.models.Exceptions;
+package at.ac.uibk.swa.models.exceptions;
 
 import org.springframework.security.access.AccessDeniedException;
 

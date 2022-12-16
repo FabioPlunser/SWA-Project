@@ -2,9 +2,11 @@ package at.ac.uibk.swa.config;
 
 import at.ac.uibk.swa.models.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -59,22 +61,18 @@ public class SecurityConfiguration {
             new OrRequestMatcher(API_ROUTES, ADMIN_ROUTES)
     );
 
-<<<<<<< HEAD:swa/src/main/java/at/ac/uibk/swa/Config/SecurityConfiguration.java
     public static final RequestMatcher PUBLIC_ROUTES = new OrRequestMatcher(
             new NegatedRequestMatcher(new OrRequestMatcher(API_ROUTES, ADMIN_ROUTES)),
             AnyRequestMatcher.INSTANCE
     );
 
-    private final PersonAuthenticationProvider provider;
-
     public SecurityConfiguration(final PersonAuthenticationProvider authenticationProvider) {
         super();
         this.provider = authenticationProvider;
     }
-=======
     @Autowired
-    private AuthenticationProvider provider;
->>>>>>> feature-CodeSmells:swa/src/main/java/at/ac/uibk/swa/config/SecurityConfiguration.java
+    @Qualifier("personAuthenticationProvider")
+    private final AuthenticationProvider provider;
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {

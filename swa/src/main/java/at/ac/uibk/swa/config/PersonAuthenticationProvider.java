@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.config;
 
+import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ import java.util.UUID;
  *
  * @see AbstractAuthenticationProcessingFilter
  */
-@Component
+@Component("personAuthenticationProvider")
 public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
@@ -39,11 +40,7 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
             UserDetails userDetails,
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
     ) {
-<<<<<<<< HEAD:swa/src/main/java/at/ac/uibk/swa/config/PersonAuthenticationProvider.java
         // All Checks are done in retrieveUser
-========
-        // Do nothing because of X and Y.
->>>>>>>> feature-CodeSmells:swa/src/main/java/at/ac/uibk/swa/config/AuthenticationProvider.java
     }
 
     @Override
@@ -61,12 +58,7 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
             return new User(
                     person.getUsername(), person.getPassword(),
                     true, true, true, true,
-<<<<<<<< HEAD:swa/src/main/java/at/ac/uibk/swa/config/PersonAuthenticationProvider.java
                     getAuthorities(person)
-========
-                    AuthorityUtils.createAuthorityList(person
-                            .getPermissions().stream().map(Enum::toString).toArray(String[]::new))
->>>>>>>> feature-CodeSmells:swa/src/main/java/at/ac/uibk/swa/config/AuthenticationProvider.java
             );
         }
 
@@ -75,6 +67,6 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
     private static Collection<GrantedAuthority> getAuthorities(Person person) {
         return AuthorityUtils.createAuthorityList(person
-                .getPermissions().stream().map(x -> x.toString()).toArray(String[]::new));
+                .getPermissions().stream().map(Permission::toString).toArray(String[]::new));
     }
 }

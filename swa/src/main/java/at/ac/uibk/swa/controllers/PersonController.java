@@ -1,12 +1,12 @@
 package at.ac.uibk.swa.controllers;
 
-import at.ac.uibk.swa.models.Annotations.Admin;
+import at.ac.uibk.swa.models.annotations.Admin;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
-import at.ac.uibk.swa.models.RestResponses.CreatedUserResponse;
-import at.ac.uibk.swa.models.RestResponses.ListResponse;
-import at.ac.uibk.swa.models.RestResponses.MessageResponse;
-import at.ac.uibk.swa.models.RestResponses.RestResponse;
+import at.ac.uibk.swa.models.restResponses.CreatedUserResponse;
+import at.ac.uibk.swa.models.restResponses.ListResponse;
+import at.ac.uibk.swa.models.restResponses.MessageResponse;
+import at.ac.uibk.swa.models.restResponses.RestResponse;
 import at.ac.uibk.swa.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 /**
  * Controller responsible for creating and deleting Users.
  */
+@SuppressWarnings("unused")
 @RestController
 public class PersonController {
 
@@ -90,7 +91,7 @@ public class PersonController {
     @Admin
     @GetMapping("/api/getAllUsers")
     public RestResponse getAllUsers() {
-        return new ListResponse<Person>(personService.getPersons());
+        return new ListResponse<>(personService.getPersons());
     }
 
     /**
@@ -114,11 +115,11 @@ public class PersonController {
      * Endpoint for Admins to change/update a user
      *
      * @param personId The ID of the User to update
-     * @param username
-     * @param email
-     * @param password
-     * @param permissions
-     * @return success message
+     * @param username The new username
+     * @param email The new email
+     * @param password The new Password
+     * @param permissions The new Permissions
+     * @return A RESTResponse indicating Success
      */
     @Admin
     @PostMapping("/api/updateUser")

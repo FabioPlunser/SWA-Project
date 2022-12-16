@@ -1,14 +1,15 @@
-package at.ac.uibk.swa.Controllers;
+package at.ac.uibk.swa.controllers;
 
-import at.ac.uibk.swa.Models.Annotations.Admin;
-import at.ac.uibk.swa.Models.Deck;
-import at.ac.uibk.swa.Models.RestResponses.MessageResponse;
-import at.ac.uibk.swa.Models.RestResponses.RestResponse;
+import at.ac.uibk.swa.models.Deck;
+import at.ac.uibk.swa.models.annotations.Admin;
+import at.ac.uibk.swa.models.restResponses.MessageResponse;
+import at.ac.uibk.swa.models.restResponses.RestResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
+@SuppressWarnings("unused")
 public class DeckController {
     @PutMapping("/api/createDeck")
     public RestResponse createDeck(

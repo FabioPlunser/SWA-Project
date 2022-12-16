@@ -1,11 +1,7 @@
-package at.ac.uibk.swa.models.RestResponses;
+package at.ac.uibk.swa.models.restResponses;
 
-<<<<<<< HEAD:swa/src/main/java/at/ac/uibk/swa/Models/RestResponses/CreatedUserResponse.java
-import at.ac.uibk.swa.Models.Authenticable;
-import at.ac.uibk.swa.Models.Permission;
-=======
 import at.ac.uibk.swa.models.Authenticable;
->>>>>>> feature-CodeSmells:swa/src/main/java/at/ac/uibk/swa/models/RestResponses/CreatedUserResponse.java
+import at.ac.uibk.swa.models.Permission;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

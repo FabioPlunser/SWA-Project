@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.models.RestResponses;
+package at.ac.uibk.swa.models.restResponses;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +27,7 @@ public class RestResponse implements Serializable {
      */
     private boolean success = false;
 
+    @SuppressWarnings("unused")
     public String toResponse() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(this);
     }

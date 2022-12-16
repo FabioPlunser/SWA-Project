@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.config;
 
+import at.ac.uibk.swa.util.UUIDConversionUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -29,9 +30,10 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
  * The Token is the then passed onto the AuthenticationProvider.
  * </p>
  *
- * @see at.ac.uibk.swa.config.AuthenticationProvider
+ * @see at.ac.uibk.swa.config.PersonAuthenticationProvider
  * @see AbstractAuthenticationProcessingFilter
  */
+@SuppressWarnings("unused")
 public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     AuthenticationFilter(final RequestMatcher requiresAuth) {
@@ -98,10 +100,6 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
                 .map(Cookie::getValue)
                 .findFirst();
 
-        try {
-            return cookieToken.map(UUID::fromString);
-        } catch (Exception e) {}
-
-        return Optional.empty();
+        return cookieToken.map(UUIDConversionUtil::tryConvertUUID);
     }
 }

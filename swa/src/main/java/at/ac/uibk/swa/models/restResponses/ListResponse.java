@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.models.RestResponses;
+package at.ac.uibk.swa.models.restResponses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A Response Container for sending a List of items fetched on the server side.
@@ -35,10 +36,6 @@ public class ListResponse<T extends Serializable> extends RestResponse implement
         super(true);
 
         // Ensure that a List is always sent.
-        if (items != null) {
-            this.items = items;
-        } else {
-            this.items = new ArrayList<>();
-        }
+        this.items = Optional.ofNullable(items).orElse(new ArrayList<>());
     }
 }

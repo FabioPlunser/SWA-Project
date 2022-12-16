@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.Config;
+package at.ac.uibk.swa.config;
 
 import at.ac.uibk.swa.util.UUIDConversionUtil;
 import jakarta.servlet.FilterChain;

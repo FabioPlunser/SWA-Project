@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.models.RestResponses;
+package at.ac.uibk.swa.models.restResponses;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

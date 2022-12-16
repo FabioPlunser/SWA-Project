@@ -53,7 +53,7 @@ public abstract class Authenticable {
     @Setter
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "Token", nullable = true, unique = true)
+    @Column(name = "Token", unique = true)
     private UUID token;
 
     @Setter
