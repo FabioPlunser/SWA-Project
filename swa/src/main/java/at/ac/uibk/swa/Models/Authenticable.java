@@ -33,34 +33,34 @@ public abstract class Authenticable {
     @Id
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "AuthId", nullable = false)
+    @Column(name = "auth_id", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID id;
 
     @Setter
     @NonNull
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "Username", nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Setter
     @NonNull
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "PasswordHash", nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String passwdHash;
 
     @Setter
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "Token", nullable = true, unique = true)
+    @Column(name = "token", nullable = true, unique = true)
     private UUID token;
 
     @Setter
     @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
     @CollectionTable(
-            name = "PersonPermissions",
-            joinColumns=@JoinColumn(name = "personId")
+            name = "person_permissions",
+            joinColumns=@JoinColumn(name = "person_id")
     )
     @Enumerated(EnumType.STRING)
     private List<Permission> permissions;

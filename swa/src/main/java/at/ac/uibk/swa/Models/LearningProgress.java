@@ -15,26 +15,26 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "LearningProgress")
+@Table(name = "learning_progress")
 public class LearningProgress {
 
     @Id
-    @Column(name = "LearningProcessId", nullable = false)
+    @Column(name = "learning_progress_id", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
-    private UUID learningProcessId;
+    private UUID learningProgressId;
 
     @Setter
-    @Column(name = "InterVal", nullable = false)
+    @Column(name = "interval", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int interval;
 
     @Setter
-    @Column(name = "EFactor", nullable = false)
+    @Column(name = "e_factor", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int eFactor;
 
     @Setter
-    @Column(name = "Repetitions", nullable = false)
+    @Column(name = "repetitions", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int repetitions;
 }

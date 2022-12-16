@@ -17,8 +17,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "Persons")
-@AttributeOverride(name = "id", column = @Column(name = "PersonId"))
+@Table(name = "person")
+@AttributeOverride(name = "id", column = @Column(name = "person_id"))
 public class Person extends Authenticable implements Serializable {
 
     public Person(String username, String email, String passwdHash, UUID token, List<Permission> permissions) {
@@ -32,7 +32,7 @@ public class Person extends Authenticable implements Serializable {
 
     @Setter
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "Email", nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Setter
@@ -48,7 +48,7 @@ public class Person extends Authenticable implements Serializable {
 
     @ManyToMany
     @JoinTable(
-            name = "person_deck",
+            name = "person_saved_deck",
             joinColumns = @JoinColumn(name = "person_id"),
             inverseJoinColumns = @JoinColumn(name = "deck_id")
     )
