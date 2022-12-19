@@ -16,42 +16,50 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Cards")
+@Table(name = "card")
 public class Card implements Serializable {
 
     public Card(String frontText, String backText, boolean isFlipped, Deck deck) {
-        this(UUID.randomUUID(), frontText, backText, isFlipped, deck, new HashMap<>());
+        this(null, frontText, backText, isFlipped, deck, new HashMap<>());
     }
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "card_id", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID cardId;
 
     @Setter
-    @Column(name = "FrontText", nullable = false)
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
+    @Lob
+    // @JdbcTypeCode(SqlTypes.NVARCHAR)
+    @Column(name = "front_text", nullable = false)
     private String frontText;
 
     @Setter
-    @Column(name = "BackText", nullable = false)
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
+    @Lob
+    // @JdbcTypeCode(SqlTypes.NVARCHAR)
+    @Column(name = "back_text", nullable = false)
     private String backText;
 
     @Setter
-    @Column(name = "IsFlipped", nullable = false)
+    @Column(name = "is_flipped", nullable = false)
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     private boolean isFlipped;
 
     @JsonIgnore
-    @JoinColumn(name = "deckId", nullable = false)
+    @JoinColumn(name = "deck_id", nullable = false)
     @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Deck deck;
 
     @JsonIgnore
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @Builder.Default
+    @JoinTable(
+            name = "card_progress_mapping",
+            joinColumns = {@JoinColumn(name = "card_id", referencedColumnName = "card_id")},
+            inverseJoinColumns = {@JoinColumn(name = "progress_id", referencedColumnName = "learning_progress_id")}
+    )
+    @MapKeyJoinColumn(name = "person_id")
     private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
 
     @Override

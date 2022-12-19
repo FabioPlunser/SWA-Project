@@ -1,21 +1,23 @@
 package at.ac.uibk.swa;
 
 import at.ac.uibk.swa.models.Card;
-import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.models.Deck;
+import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.CardService;
-import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.DeckService;
+import at.ac.uibk.swa.service.PersonService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -37,9 +39,9 @@ class SwaApplicationTests {
     public void TestRetrievingUserFromToken() {
         Person person = new Person("tokenTest", "def", "ghi", new ArrayList<>());
 
-        assertEquals(true, personService.save(person));
+        assertTrue(personService.save(person));
 
-        Optional<Person> maybePerson = personService.login(person.getUsername(), person.getPassword());
+        Optional<Person> maybePerson = personService.login(person.getUsername(), person.getPasswdHash());
         assertTrue(maybePerson.isPresent());
         UUID token = maybePerson.get().getToken();
 
@@ -55,16 +57,19 @@ class SwaApplicationTests {
         Deck deck = new Deck("Deck1", "abcd", person);
         Card card = new Card("Front", "Back", false, deck);
 
-        assertEquals(true, personService.save(person));
-        assertEquals(true, deckService.save(deck));
-        assertEquals(true, cardService.save(card));
+        assertTrue(personService.save(person));
+        assertTrue(deckService.save(deck));
+        assertTrue(cardService.save(card));
 
-        person = personService.findByToken(personService.login(person.getUsername(), person.getPassword()).get().getToken()).get();
+        person = personService.findByToken(personService.login(person.getUsername(), person.getPasswdHash()).get().getToken()).get();
 
-        assertEquals(deck.getDeckId(), person.getCreatedDecks().get(0).getDeckId());
-        assertEquals(1, person.getCreatedDecks().size());
+        List<Deck> decks = person.getCreatedDecks();
+        Deck retrievedDeck = person.getCreatedDecks().get(0);
 
-        // assertEquals(card.getCardId(), person.getDecks().get(0).getCards().get(0).getCardId());
-        assertEquals(1, person.getCreatedDecks().get(0).getCards().size());
+        assertEquals(deck.getDeckId(), retrievedDeck.getDeckId());
+        assertEquals(1, decks.size());
+
+        assertEquals(card.getCardId(), retrievedDeck.getCards().get(0).getCardId());
+        assertEquals(1, retrievedDeck.getCards().size());
     }
 }

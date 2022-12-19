@@ -130,7 +130,7 @@ public class PersonController {
             @RequestParam(name = "permissions", required = false) final List<Permission> permissions,
             @RequestParam(name = "password", required = false) final String password
     ) {
-        if (personService.update(personId, username, email, permissions, password))
+        if (personService.update(personId, username, permissions, password))
             return new MessageResponse(true, "User updated successfully!");
 
         return new MessageResponse(false, "Could not update User - User does not exist!");

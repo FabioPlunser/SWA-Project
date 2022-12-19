@@ -16,26 +16,26 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "LearningProgress")
+@Table(name = "learning_progress")
 public class LearningProgress implements Serializable {
 
     @Id
-    @Column(name = "LearningProcessId", nullable = false)
-    @JdbcTypeCode(SqlTypes.INTEGER)
-    private UUID learningProcessId;
+    @Column(name = "learning_progress_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
+    private UUID learningProgressId;
 
     @Setter
-    @Column(name = "InterVal", nullable = false)
+    @Column(name = "interVal", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int interval;
 
     @Setter
-    @Column(name = "EFactor", nullable = false)
-    @JdbcTypeCode(SqlTypes.INTEGER)
+    @Column(name = "e_factor", nullable = false)
+    @JdbcTypeCode(SqlTypes.DOUBLE)
     private int eFactor;
 
     @Setter
-    @Column(name = "Repetitions", nullable = false)
-    @JdbcTypeCode(SqlTypes.INTEGER)
+    @Column(name = "repetitions", nullable = false)
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private int repetitions;
 }
