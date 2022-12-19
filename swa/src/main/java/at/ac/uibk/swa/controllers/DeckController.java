@@ -1,11 +1,14 @@
 package at.ac.uibk.swa.controllers;
 
+import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.annotations.Admin;
+import at.ac.uibk.swa.models.restResponses.ListResponse;
 import at.ac.uibk.swa.models.restResponses.MessageResponse;
 import at.ac.uibk.swa.models.restResponses.RestResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -23,6 +26,13 @@ public class DeckController {
             @RequestParam(name = "deck") final Deck deck
     ) {
         return new MessageResponse(true, "");
+    }
+
+    @PutMapping("/api/setPublicity")
+    public RestResponse setPublicity(
+            @RequestParam(name = "deck") final Deck deck
+    ) {
+        return new MessageResponse(true, "Changed Deck Publicity");
     }
 
     @DeleteMapping("/api/deleteDeck")
@@ -50,11 +60,16 @@ public class DeckController {
         return new MessageResponse(true, "getAllDecks");
     }
 
-    @GetMapping("/api/learn")
-    public RestResponse learn(
-            @RequestParam(name = "cardId") final Deck cardId,
-            @RequestParam(name = "g") final int g
+    /**
+     * Gets the Cards from the given Deck which should be learned.
+     * A Card should be learned if it's nextLearn-Date is before LocalDateTime.NOW
+     *
+     * @return A List of Cards that should be learned sorted by nextLearn-Date.
+     */
+    @GetMapping("/api/getAllCardsToLearn")
+    public RestResponse getAllCardsToLearn(
+            @RequestParam(name = "deckId") final UUID deckId
     ) {
-        return new MessageResponse(true, "");
+        return new ListResponse<Card>(List.of());
     }
 }
