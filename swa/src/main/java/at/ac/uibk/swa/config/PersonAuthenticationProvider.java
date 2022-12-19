@@ -4,7 +4,7 @@ import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
@@ -62,7 +62,7 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
             );
         }
 
-        throw new AuthenticationCredentialsNotFoundException("Cannot find user with authentication token=" + token.toString());
+        throw new BadCredentialsException("Cannot find user with authentication token=" + token.toString());
     }
 
     private static Collection<GrantedAuthority> getAuthorities(Person person) {

@@ -5,7 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -54,7 +54,7 @@ public class BearerTokenAuthenticationFilter extends AbstractAuthenticationProce
             return getAuthenticationManager().authenticate(authenticationToken.get());
         }
 
-        throw new BadCredentialsException("No Token was sent with the Request!");
+        throw new AuthenticationCredentialsNotFoundException("No Token was sent with the Request!");
     }
 
     @Override

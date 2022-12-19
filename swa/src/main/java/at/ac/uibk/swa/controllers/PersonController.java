@@ -1,8 +1,8 @@
 package at.ac.uibk.swa.controllers;
 
-import at.ac.uibk.swa.models.annotations.Admin;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.models.annotations.Admin;
 import at.ac.uibk.swa.models.restResponses.CreatedUserResponse;
 import at.ac.uibk.swa.models.restResponses.ListResponse;
 import at.ac.uibk.swa.models.restResponses.MessageResponse;

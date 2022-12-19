@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.config;
 
+import at.ac.uibk.swa.controllers.SwaErrorController;
 import at.ac.uibk.swa.models.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,10 +11,13 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.util.matcher.*;
+
+import java.util.Arrays;
 
 /**
  * <p>
@@ -37,12 +41,19 @@ public class SecurityConfiguration {
     static final RequestMatcher API_ROUTES = new AntPathRequestMatcher("/api/**");
     static final RequestMatcher ADMIN_ROUTES = new AntPathRequestMatcher("/admin/**");
 
+    private static final RequestMatcher ERROR_ROUTES = new OrRequestMatcher(
+            Arrays.stream(SwaErrorController.errorEndpoints)
+                    .map(x ->new AntPathRequestMatcher(x))
+                    .toArray(AntPathRequestMatcher[]::new)
+    );
+
     /**
      * Request Matcher matching all API-Routes that should be accessible to everyone.
      */
     private static final RequestMatcher PUBLIC_API_ROUTES = new OrRequestMatcher(
             new AntPathRequestMatcher("/api/login"),
             new AntPathRequestMatcher("/api/register"),
+            ERROR_ROUTES,
             new AntPathRequestMatcher("/token")
     );
 
@@ -111,14 +122,29 @@ public class SecurityConfiguration {
     @Bean
     AbstractAuthenticationProcessingFilter bearerAuthenticationFilter(HttpSecurity http) throws Exception {
         final AbstractAuthenticationProcessingFilter filter = new BearerTokenAuthenticationFilter(PROTECTED_API_ROUTES);
+
         filter.setAuthenticationManager(authManager(http));
+        filter.setAuthenticationFailureHandler(restAuthenticationFailureHandler());
+
         return filter;
     }
 
     @Bean
     AbstractAuthenticationProcessingFilter cookieAuthenticationFilter(HttpSecurity http) throws Exception {
         final AbstractAuthenticationProcessingFilter filter = new CookieTokenAuthenticationFilter(ADMIN_ROUTES);
+
         filter.setAuthenticationManager(authManager(http));
+        filter.setAuthenticationFailureHandler(restAuthenticationFailureHandler());
+
         return filter;
+    }
+
+    @Bean
+    private static RestAuthenticationFailureHandler restAuthenticationFailureHandler() {
+        return new RestAuthenticationFailureHandler();
+    }
+    @Bean
+    private static AuthenticationEntryPoint restAuthenticationEntryPoint() {
+        return new RestAuthenticationEntryPoint();
     }
 }
