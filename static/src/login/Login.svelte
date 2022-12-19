@@ -1,22 +1,30 @@
 <script lang="ts">
-    // TODO implement login locig and page redirection
     import favicon from "/favicon.png";
     import { redirect } from "../lib/utils/redirect";
     import { formFetch } from "../lib/utils/formFetch";
-    import { token } from "../lib/stores/token";
+    import { tokenStore } from "../lib/stores/tokenStore";
+    import { personIdStore } from "../lib/stores/peronsIdStore";
+    import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
+
+    // TODO add validation
     async function handleSubmit (e){
         let res = await formFetch(e);
+        console.log(res);
         if(!res.success){
             alert(res.message);
             return;
         }
-        $token = res.token;
+        //TODO hash token?
+        $tokenStore = res.token;
+        $personIdStore = res.personId;
+        $userPermissionsStore= res.permissions;
 	}
-    $: if($token.length > 30) redirect("");
+    $: if($tokenStore.length > 30) redirect("");
+    $: document.cookie = `Token=${$tokenStore}`;
 </script>
 
 <svelte:head>
-	<link rel="icon" type="image/png" href={favicon}/>
+	<link rel="icon" type="image/png" href="{favicon}"/>
 	<title>Login</title>
 </svelte:head>
 
@@ -32,7 +40,6 @@
                 </label>
             </div>
             <br class="pt-4"/>
-            <br class="pt-4"/>
             <div class="form-control">
                 <label class="input-group">
                   <span>Password</span>
@@ -46,3 +53,6 @@
         </form>
     </div>
 </main>
+
+
+

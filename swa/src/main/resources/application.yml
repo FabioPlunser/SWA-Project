@@ -3,7 +3,6 @@ spring:
   datasource:
     driver-class: org.mariadb.jdbc.Driver
     url: "jdbc:mariadb://mariadb.fabioplunser.com/swa"
-    
   jpa:
     hibernate:
       ddl-auto: none
