@@ -45,7 +45,7 @@ class SwaApplicationTests {
 
         Optional<Person> oCustomer = personService.findByToken(token);
         assertTrue(oCustomer.isPresent());
-        assertEquals(person.getCustomerId(), oCustomer.get().getCustomerId());
+        assertEquals(person.getPersonId(), oCustomer.get().getPersonId());
     }
 
     @Test
@@ -61,10 +61,10 @@ class SwaApplicationTests {
 
         person = personService.findByToken(personService.login(person.getUsername(), person.getPasswdHash()).get()).get();
 
-        assertEquals(deck.getDeckId(), person.getDecks().get(0).getDeckId());
-        assertEquals(1, person.getDecks().size());
+        assertEquals(deck.getDeckId(), person.getCreatedDecks().get(0).getDeckId());
+        assertEquals(1, person.getCreatedDecks().size());
 
-        assertEquals(card.getCardId(), person.getDecks().get(0).getCards().get(0).getCardId());
-        assertEquals(1, person.getDecks().get(0).getCards().size());
+        assertEquals(card.getCardId(), person.getCreatedDecks().get(0).getCards().get(0).getCardId());
+        assertEquals(1, person.getCreatedDecks().get(0).getCards().size());
     }
 }

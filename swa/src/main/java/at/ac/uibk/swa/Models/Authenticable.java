@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Authenticable {
 
     public Authenticable(String username, String passwdHash, UUID token, List<Permission> permissions) {
@@ -38,13 +38,11 @@ public abstract class Authenticable {
     private UUID id;
 
     @Setter
-    @NonNull
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Setter
-    @NonNull
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "password_hash", nullable = false)
@@ -56,14 +54,11 @@ public abstract class Authenticable {
     @Column(name = "token", nullable = true, unique = true)
     private UUID token;
 
-    @Setter
-    @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "person_permissions",
-            joinColumns=@JoinColumn(name = "person_id")
-    )
-    @Enumerated(EnumType.STRING)
-    private List<Permission> permissions;
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
+    @Column(name = "permission", nullable = false)
+    @ElementCollection(targetClass = Permission.class)
+    @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "person_id"))
+    private List<Permission> permissions = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

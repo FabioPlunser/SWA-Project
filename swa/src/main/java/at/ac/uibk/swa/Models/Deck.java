@@ -20,10 +20,9 @@ import java.util.UUID;
 public class Deck implements Serializable {
 
     public Deck(String name, String description, Person creator) {
-        this(
-                null, name, description,
-                false, false, false,
-                creator, new ArrayList<>(), new ArrayList<>()
+        this(null, name, description,
+             false, false, false,
+             creator, new ArrayList<>(), new ArrayList<>()
         );
     }
 
@@ -39,13 +38,14 @@ public class Deck implements Serializable {
     private String name;
 
     @Setter
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
+    @Lob
+    // @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "description", nullable = false)
     private String description;
 
     @Setter
     @JdbcTypeCode(SqlTypes.BOOLEAN)
-    @Column(name = "Is_published", nullable = false)
+    @Column(name = "is_published", nullable = false)
     private boolean isPublished;
 
     @Setter
@@ -59,13 +59,9 @@ public class Deck implements Serializable {
     private boolean isDeleted;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "person_id", nullable = false)
+    @JoinColumn(name = "creator_id", nullable = false)
     private Person creator;
 
-    @ManyToMany(mappedBy = "person_saved_deck")
-    private List<Person> subscribers = new ArrayList<>();
-
-    @Setter
     @JsonIgnore
     @Builder.Default
     @OneToMany(
@@ -74,6 +70,9 @@ public class Deck implements Serializable {
             fetch=FetchType.EAGER
     )
     private List<Card> cards = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL)
+    private List<Person> persons = new ArrayList<>();
 
     @Override
     public String toString() {

@@ -30,25 +30,22 @@ public class Person extends Authenticable implements Serializable {
         this(username, email, passwdHash, null, permissions);
     }
 
-    @Setter
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Setter
     @JsonIgnore
     @Builder.Default
     @OneToMany(
             mappedBy = "creator",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch=FetchType.EAGER
+            cascade = CascadeType.ALL
     )
     private List<Deck> createdDecks = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "person_saved_deck",
+    @JsonIgnore
+    @Builder.Default
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "person_saved_deck",
             joinColumns = @JoinColumn(name = "person_id"),
             inverseJoinColumns = @JoinColumn(name = "deck_id")
     )

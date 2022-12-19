@@ -20,21 +20,21 @@ public class LearningProgress {
 
     @Id
     @Column(name = "learning_progress_id", nullable = false)
-    @JdbcTypeCode(SqlTypes.INTEGER)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID learningProgressId;
 
     @Setter
-    @Column(name = "interval", nullable = false)
+    @Column(name = "interVal", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int interval;
 
     @Setter
     @Column(name = "e_factor", nullable = false)
-    @JdbcTypeCode(SqlTypes.INTEGER)
+    @JdbcTypeCode(SqlTypes.DOUBLE)
     private int eFactor;
 
     @Setter
     @Column(name = "repetitions", nullable = false)
-    @JdbcTypeCode(SqlTypes.INTEGER)
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private int repetitions;
 }

@@ -24,19 +24,21 @@ public class Card implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "card_id", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID cardId;
 
     @Setter
+    @Lob
+    // @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "front_text", nullable = false)
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String frontText;
 
     @Setter
+    @Lob
+    // @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "back_text", nullable = false)
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private String backText;
 
     @Setter
@@ -46,7 +48,7 @@ public class Card implements Serializable {
 
     @JsonIgnore
     @JoinColumn(name = "deck_id", nullable = false)
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Deck deck;
 
     @JsonIgnore
