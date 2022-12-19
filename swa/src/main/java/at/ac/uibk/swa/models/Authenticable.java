@@ -55,9 +55,9 @@ public abstract class Authenticable {
     private UUID token;
 
     @Setter
-    @Column(name = "permission", nullable = false)
-    @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
+    @Column(name = "name", nullable = false, unique = true)
     @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "person_id"))
     private List<Permission> permissions = new ArrayList<>();
 

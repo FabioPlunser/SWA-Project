@@ -35,7 +35,7 @@ public class DeckServiceTest {
         assertTrue(deckService.save(deck), "Unable to save deck for test");
 
         // when: loading person and created decks
-        Optional<Person> maybePerson = personService.login(person.getUsername(), person.getPassword());
+        Optional<Person> maybePerson = personService.login(person.getUsername(), person.getPasswdHash());
         assertTrue(maybePerson.isPresent(), "Unable to login user");
         List<Deck> createdDecks = maybePerson.get().getCreatedDecks();
 

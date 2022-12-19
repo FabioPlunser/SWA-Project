@@ -32,7 +32,7 @@ public class PersonServiceTest {
         assertTrue(personService.save(person), "Unable to save user for test");
 
         // when: logging in as user and retrieving token
-        Optional<Person> maybePerson = personService.login(person.getUsername(), person.getPassword());
+        Optional<Person> maybePerson = personService.login(person.getUsername(), person.getPasswdHash());
         assertTrue(maybePerson.isPresent(), "Could not login user");
         UUID token = maybePerson.get().getToken();
 
