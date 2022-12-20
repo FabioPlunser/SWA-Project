@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -63,7 +63,7 @@ public class PersonController {
             @RequestParam("username") final String username,
             @RequestParam("password") final String password,
             @RequestParam("email") final String email,
-            @RequestParam("permissions") final List<Permission> permissions
+            @RequestParam("permissions") final Set<Permission> permissions
     ) {
         Person person = new Person(username, email, password, permissions);
 
@@ -127,7 +127,7 @@ public class PersonController {
             @RequestParam("personId") final UUID personId,
             @RequestParam(name = "username", required = false) final String username,
             @RequestParam(name = "email", required = false) final String email,
-            @RequestParam(name = "permissions", required = false) final List<Permission> permissions,
+            @RequestParam(name = "permissions", required = false) final Set<Permission> permissions,
             @RequestParam(name = "password", required = false) final String password
     ) {
         if (personService.update(personId, username, permissions, password))

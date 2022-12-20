@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -19,7 +19,7 @@ public class CreatedUserResponse extends RestResponse implements Serializable {
     private String username;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID token;
-    private List<Permission> permissions;
+    private Set<Permission> permissions;
 
     public CreatedUserResponse(Authenticable authenticable) {
         super.setSuccess(true);
