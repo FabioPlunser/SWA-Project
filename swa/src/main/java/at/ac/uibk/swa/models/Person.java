@@ -10,6 +10,7 @@ import org.hibernate.type.SqlTypes;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -21,12 +22,12 @@ import java.util.UUID;
 @AttributeOverride(name = "id", column = @Column(name = "person_id"))
 public class Person extends Authenticable implements Serializable {
 
-    public Person(String username, String email, String passwdHash, UUID token, List<Permission> permissions) {
+    public Person(String username, String email, String passwdHash, UUID token, Set<Permission> permissions) {
         super(username, passwdHash, token, permissions);
         this.email = email;
     }
 
-    public Person(String username, String email, String passwdHash, List<Permission> permissions) {
+    public Person(String username, String email, String passwdHash, Set<Permission> permissions) {
         this(username, email, passwdHash, null, permissions);
     }
 

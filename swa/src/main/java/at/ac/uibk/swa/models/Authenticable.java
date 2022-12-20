@@ -6,10 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @NoArgsConstructor
@@ -18,16 +15,16 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Authenticable {
 
-    protected Authenticable(String username, String password, UUID token, List<Permission> permissions) {
+    protected Authenticable(String username, String password, UUID token, Set<Permission> permissions) {
         this(null, username, password, token, permissions);
     }
 
-    protected Authenticable(String username, String password, List<Permission> permissions) {
+    protected Authenticable(String username, String password, Set<Permission> permissions) {
         this(null, username, password, null, permissions);
     }
 
     protected Authenticable(String username, String passwdHash) {
-        this(username, passwdHash, new ArrayList<>());
+        this(username, passwdHash, new HashSet<>());
     }
 
     @Id
@@ -55,11 +52,11 @@ public abstract class Authenticable {
     private UUID token;
 
     @Setter
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "person_id"))
-    private List<Permission> permissions = new ArrayList<>();
+    private Set<Permission> permissions = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

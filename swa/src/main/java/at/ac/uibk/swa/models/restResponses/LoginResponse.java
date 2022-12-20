@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -17,7 +17,7 @@ import java.util.UUID;
 public class LoginResponse extends TokenResponse implements Serializable {
 
     private UUID personId;
-    private List<Permission> permissions;
+    private Set<Permission> permissions;
 
     public LoginResponse(Authenticable authenticable) {
         super(true, authenticable.getToken());

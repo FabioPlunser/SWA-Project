@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -102,7 +103,7 @@ public class PersonService {
      * @param password The new Password.
      * @return true if the user could be found and could be updated, false otherwise.
      */
-    public boolean update(UUID personId, String username, List<Permission> permissions, String password) {
+    public boolean update(UUID personId, String username, Set<Permission> permissions, String password) {
         Optional<Person> maybePerson = personRepository.findById(personId);
         if(maybePerson.isPresent()) {
             Person person = maybePerson.get();
