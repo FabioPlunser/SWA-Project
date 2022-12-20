@@ -16,56 +16,52 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "Decks")
+@Table(name = "deck")
 public class Deck implements Serializable {
 
     public Deck(String name, String description, Person creator) {
-        this(
-                null, name, description,
-                false, false, false,
-                creator, new ArrayList<>(), new ArrayList<>()
+        this(null, name, description,
+             false, false, false,
+             creator, new ArrayList<>(), new ArrayList<>()
         );
     }
 
     @Id
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "DeckId", nullable = false)
+    @Column(name = "deck_id", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID deckId;
 
     @Setter
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "Name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Setter
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "Description", nullable = false)
+    @Lob
+    // @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Setter
     @JdbcTypeCode(SqlTypes.BOOLEAN)
-    @Column(name = "IsPublished", nullable = false)
+    @Column(name = "is_published", nullable = false)
     private boolean isPublished;
 
     @Setter
     @JdbcTypeCode(SqlTypes.BOOLEAN)
-    @Column(name = "IsBlocked", nullable = false)
+    @Column(name = "is_blocked", nullable = false)
     private boolean isBlocked;
 
     @Setter
     @JdbcTypeCode(SqlTypes.BOOLEAN)
-    @Column(name = "IsDeleted", nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "personId", nullable = false)
+    @JoinColumn(name = "creator_id", nullable = false)
     private Person creator;
 
-    @ManyToMany(mappedBy = "savedDecks")
-    private List<Person> subscribers = new ArrayList<>();
-
-    @Setter
     @JsonIgnore
     @Builder.Default
     @OneToMany(
@@ -74,6 +70,9 @@ public class Deck implements Serializable {
             fetch=FetchType.EAGER
     )
     private List<Card> cards = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Person> persons = new ArrayList<>();
 
     @Override
     public String toString() {

@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Authenticable {
 
     protected Authenticable(String username, String password, UUID token, List<Permission> permissions) {
@@ -33,37 +33,33 @@ public abstract class Authenticable {
     @Id
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "AuthId", nullable = false)
+    @Column(name = "auth_id", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID id;
 
     @Setter
-    @NonNull
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "Username", nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Setter
-    @NonNull
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "PasswordHash", nullable = false)
-    private String password;
+    @Column(name = "password_hash", nullable = false)
+    private String passwdHash;
 
     @Setter
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "Token", unique = true)
+    @Column(name = "token", nullable = true, unique = true)
     private UUID token;
 
     @Setter
-    @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "PersonPermissions",
-            joinColumns=@JoinColumn(name = "personId")
-    )
+    @Column(name = "name", nullable = false, unique = true)
     @Enumerated(EnumType.STRING)
-    private List<Permission> permissions;
+    @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "person_id"))
+    private List<Permission> permissions = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

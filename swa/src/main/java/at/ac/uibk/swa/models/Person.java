@@ -17,8 +17,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "Persons")
-@AttributeOverride(name = "id", column = @Column(name = "PersonId"))
+@Table(name = "person")
+@AttributeOverride(name = "id", column = @Column(name = "person_id"))
 public class Person extends Authenticable implements Serializable {
 
     public Person(String username, String email, String passwdHash, UUID token, List<Permission> permissions) {
@@ -30,25 +30,23 @@ public class Person extends Authenticable implements Serializable {
         this(username, email, passwdHash, null, permissions);
     }
 
-    @Setter
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "Email", nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Setter
     @JsonIgnore
     @Builder.Default
     @OneToMany(
             mappedBy = "creator",
             cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch=FetchType.EAGER
+            fetch = FetchType.EAGER
     )
     private List<Deck> createdDecks = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "person_deck",
+    @JsonIgnore
+    @Builder.Default
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "person_saved_deck",
             joinColumns = @JoinColumn(name = "person_id"),
             inverseJoinColumns = @JoinColumn(name = "deck_id")
     )
@@ -61,7 +59,7 @@ public class Person extends Authenticable implements Serializable {
 
     @Override
     public String toString() {
-        return this.getUsername() + "\n" + this.getPermissions().toString() + "\n" + this.getPersonId();
+        return this.getUsername();
     }
 
     @Override

@@ -56,7 +56,7 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
             Person person = maybePerson.get();
             usernamePasswordAuthenticationToken.setDetails(person);
             return new User(
-                    person.getUsername(), person.getPassword(),
+                    person.getUsername(), person.getPasswdHash(),
                     true, true, true, true,
                     getAuthorities(person)
             );

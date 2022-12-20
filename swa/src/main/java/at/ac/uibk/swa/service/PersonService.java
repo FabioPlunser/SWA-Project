@@ -30,7 +30,7 @@ public class PersonService {
         if(maybePerson.isEmpty()) return Optional.empty();
 
         Person person = maybePerson.get();
-        if(!passwordEncoder.matches(password, person.getPassword())) return Optional.empty();
+        if(!passwordEncoder.matches(password, person.getPasswdHash())) return Optional.empty();
 
         UUID token = UUID.randomUUID();
         person.setToken(token);
@@ -74,15 +74,15 @@ public class PersonService {
             // TODO: The PersonRepository is a better Spot because there everyone has to use save()
 
             // Hash the Password when inserting the Person
-            String password = person.getPassword();
-            person.setPassword(passwordEncoder.encode(password));
+            String password = person.getPasswdHash();
+            person.setPasswdHash(passwordEncoder.encode(password));
 
             // NOTE: This save may fail if the usernames are equal because username has a unique Constraint
             //       => See Customer.username
             this.personRepository.save(person);
 
             // Reset the Password to the original one
-            person.setPassword(password);
+            person.setPasswdHash(password);
 
             return true;
         } catch (Exception e) {
@@ -98,20 +98,18 @@ public class PersonService {
      *
      * @param personId The ID of the User to change.
      * @param username The new Username.
-     * @param email The new Email
      * @param permissions The new List of Permissions.
      * @param password The new Password.
      * @return true if the user could be found and could be updated, false otherwise.
      */
-    public boolean update(UUID personId, String username, String email, List<Permission> permissions, String password) {
+    public boolean update(UUID personId, String username, List<Permission> permissions, String password) {
         Optional<Person> maybePerson = personRepository.findById(personId);
         if(maybePerson.isPresent()) {
             Person person = maybePerson.get();
 
             if (username    != null) person.setUsername(username);
-            if (email       != null) person.setEmail(email);
             if (permissions != null) person.setPermissions(permissions);
-            if (password    != null) person.setPassword(password);
+            if (password    != null) person.setPasswdHash(password);
 
             return save(person);
         }
