@@ -10,11 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -29,7 +30,7 @@ public class DeckServiceTest {
     @Test
     public void testCreateDeck() {
         // given: person and deck created by person
-        Person person = new Person("person-testCreatingDeck", "", "", new ArrayList<>());
+        Person person = new Person("person-testCreatingDeck", "", "", Set.of());
         Deck deck = new Deck("deck-testCreatingDeck", "", person);
         assertTrue(personService.save(person), "Unable to save user for test");
         assertTrue(deckService.save(deck), "Unable to save deck for test");

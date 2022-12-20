@@ -55,7 +55,7 @@ public abstract class Authenticable {
     @Column(name = "name", nullable = false)
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "person_id"))
+    @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "auth_id"))
     private Set<Permission> permissions = new HashSet<>();
 
     @Override
