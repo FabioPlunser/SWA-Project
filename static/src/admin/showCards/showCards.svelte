@@ -1,6 +1,8 @@
 <script lang="ts">
   import favicon from "/favicon.png";
   import Nav from "../../lib/components/nav.svelte";
+  import DualSideCard from "../../lib/components/dualSideCard.svelte";
+
   import { redirect } from '../../lib/utils/redirect';
   import { handleLogout } from "../../lib/utils/handleLogout";
 	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
@@ -14,6 +16,7 @@
 
   $: console.log("showCards: ", $adminSelectedDeckStore);
   $: selectedDeck = $adminSelectedDeckStore;
+  $: console.log("showCards: ", selectedDeck);
 
   
 </script>
@@ -29,15 +32,7 @@
   <br/>
   <div class="grid grid-cols-4 gap-4">
     {#each selectedDeck.cards as card}
-      <div class="card bg-slate-900 rounded-xl shadow-xl">
-        <div class="card-body">
-          <div class="flex w-full">
-            <div class="grid h-20 flex-grow card bg-base-300 rounded-box place-items-center">{card.front}</div>
-            <div class="divider divider-horizontal"></div>
-            <div class="grid h-20 flex-grow card bg-base-300 rounded-box place-items-center">{card.back}</div>
-          </div>
-        </div>
-      </div>
+      <DualSideCard {card}/>
     {/each}
   </div>
 </main>

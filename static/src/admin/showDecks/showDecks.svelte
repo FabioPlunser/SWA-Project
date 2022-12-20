@@ -33,8 +33,8 @@
       description: "This is a deck",
       blocked: false,
       cards: [
-        { id: 1, front: "Deck1 Front1", back: "Deck1 Back1" },
-        { id: 2, front: "Deck1 Front2", back: "Deck1 Back2" }
+        { id: 1, question: "Deck1 question1", answer: "Deck1 answer1" },
+        { id: 2, question: "Deck1 question2", answer: "Deck1 answer2" }
       ]
     },
     {
@@ -43,8 +43,8 @@
       description: "This is a deck",
       blocked: true,
       cards: [
-        { id: 1, front: "Deck2 Front1", back: "Deck2 Back1" },
-        { id: 2, front: "Deck2 Front2", back: "Deck2 Back2" }
+        { id: 1, question: "Deck2 question1", answer: "Deck2 answer1" },
+        { id: 2, question: "Deck2 question2", answer: "Deck2 answer2" }
       ]
     },
     {
@@ -53,8 +53,8 @@
       blocked: false,
       description: "This is a deck",
       cards: [
-        { id: 1, front: "Deck3 Front1", back: "Deck3 Back1" },
-        { id: 2, front: "Deck3 Front2", back: "Deck3 Back2" }
+        { id: 1, question: "Deck3 question1", answer: "Deck3 answer1" },
+        { id: 2, question: "Deck3 question2", answer: "Deck3 answer2" }
       ]
     }
   ]
