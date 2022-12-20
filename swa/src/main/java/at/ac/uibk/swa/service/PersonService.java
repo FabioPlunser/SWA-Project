@@ -72,6 +72,7 @@ public class PersonService {
         try {
             // TODO: Can we do this Hashing in the PersonRepository?
             // TODO: The PersonRepository is a better Spot because there everyone has to use save()
+
             // Hash the Password when inserting the Person
             String password = person.getPassword();
             person.setPassword(passwordEncoder.encode(password));
