@@ -2,10 +2,7 @@ package at.ac.uibk.swa.models.restResponses;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -25,6 +22,7 @@ public class RestResponse implements Serializable {
     /**
      * Indicates the Success-State of an Operation to the Front-End.
      */
+    @Setter(AccessLevel.PROTECTED)
     private boolean success = false;
 
     @SuppressWarnings("unused")

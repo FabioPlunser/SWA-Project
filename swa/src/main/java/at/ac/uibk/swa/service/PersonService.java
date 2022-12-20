@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -72,6 +73,7 @@ public class PersonService {
         try {
             // TODO: Can we do this Hashing in the PersonRepository?
             // TODO: The PersonRepository is a better Spot because there everyone has to use save()
+
             // Hash the Password when inserting the Person
             String password = person.getPasswdHash();
             person.setPasswdHash(passwordEncoder.encode(password));
@@ -101,7 +103,7 @@ public class PersonService {
      * @param password The new Password.
      * @return true if the user could be found and could be updated, false otherwise.
      */
-    public boolean update(UUID personId, String username, List<Permission> permissions, String password) {
+    public boolean update(UUID personId, String username, Set<Permission> permissions, String password) {
         Optional<Person> maybePerson = personRepository.findById(personId);
         if(maybePerson.isPresent()) {
             Person person = maybePerson.get();

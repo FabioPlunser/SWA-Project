@@ -71,6 +71,7 @@ public class Deck implements Serializable {
     )
     private List<Card> cards = new ArrayList<>();
 
+    @Builder.Default
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Person> persons = new ArrayList<>();
 
