@@ -25,12 +25,11 @@ public class CreatedUserResponse extends RestResponse implements Serializable {
     private List<Permission> permissions;
 
     public CreatedUserResponse(Authenticable authenticable) {
-        this(
-                authenticable.getId(),
-                authenticable.getUsername(),
-                authenticable.getId(),
-                authenticable.getToken(),
-                authenticable.getPermissions()
-        );
+        super(true);
+        this.id = authenticable.getId();
+        this.username = authenticable.getUsername();
+        this.personId = authenticable.getId();
+        this.token = authenticable.getToken();
+        this.permissions = authenticable.getPermissions();
     }
 }
