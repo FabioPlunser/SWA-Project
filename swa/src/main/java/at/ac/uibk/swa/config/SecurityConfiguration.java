@@ -1,9 +1,7 @@
 package at.ac.uibk.swa.config;
 
-import at.ac.uibk.swa.controllers.SwaErrorController;
 import at.ac.uibk.swa.models.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,9 +13,11 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import org.springframework.security.web.util.matcher.*;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 
-import java.util.Arrays;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ADMIN_ROUTES;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.PROTECTED_API_ROUTES;
 
 /**
  * <p>
@@ -37,62 +37,53 @@ import java.util.Arrays;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfiguration {
-
-    static final RequestMatcher API_ROUTES = new AntPathRequestMatcher("/api/**");
-    static final RequestMatcher ADMIN_ROUTES = new AntPathRequestMatcher("/admin/**");
-
-    private static final RequestMatcher ERROR_ROUTES = new OrRequestMatcher(
-            Arrays.stream(SwaErrorController.errorEndpoints)
-                    .map(x ->new AntPathRequestMatcher(x))
-                    .toArray(AntPathRequestMatcher[]::new)
-    );
-
-    /**
-     * Request Matcher matching all API-Routes that should be accessible to everyone.
-     */
-    private static final RequestMatcher PUBLIC_API_ROUTES = new OrRequestMatcher(
-            new AntPathRequestMatcher("/api/login"),
-            new AntPathRequestMatcher("/api/register"),
-            ERROR_ROUTES,
-            new AntPathRequestMatcher("/token")
-    );
-
-    /**
-     * Request Matcher matching all API-Routes that should be protected.
-     */
-    public static final RequestMatcher PROTECTED_API_ROUTES = new AndRequestMatcher(
-            API_ROUTES, new NegatedRequestMatcher(PUBLIC_API_ROUTES)
-    );
-
-    /**
-     * Request Matcher matching all Routes that should be protected.
-     */
-    public static final RequestMatcher PROTECTED_ROUTES = new AndRequestMatcher(
-            new NegatedRequestMatcher(PUBLIC_API_ROUTES),
-            new OrRequestMatcher(API_ROUTES, ADMIN_ROUTES)
-    );
-
-    public static final RequestMatcher PUBLIC_ROUTES = new OrRequestMatcher(
-            new NegatedRequestMatcher(new OrRequestMatcher(API_ROUTES, ADMIN_ROUTES)),
-            AnyRequestMatcher.INSTANCE
-    );
-
-    public SecurityConfiguration(final PersonAuthenticationProvider authenticationProvider) {
-        super();
-        this.provider = authenticationProvider;
-    }
+    //region Autowired Components
     @Autowired
-    @Qualifier("personAuthenticationProvider")
-    private final AuthenticationProvider provider;
+    private AuthenticationProvider provider;
 
+    @Autowired
+    private AuthenticationFailureHandler failureHandler;
+
+    @Autowired
+    private AuthenticationEntryPoint entryPoint;
+
+    @Autowired
+    private RestAccessDeniedHandler accessDeniedHandler;
+    //endregion
+
+    //region Authentication Manager Bean
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder =
-                http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.authenticationProvider(provider);
-        return authenticationManagerBuilder.build();
+        return http
+                .getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(provider)
+                .build();
+    }
+    //endregion
+
+    //region Custom Authentication Filter Beans
+    @Bean
+    AbstractAuthenticationProcessingFilter bearerAuthenticationFilter(HttpSecurity http) throws Exception {
+        final AbstractAuthenticationProcessingFilter filter = new BearerTokenAuthenticationFilter(PROTECTED_API_ROUTES);
+
+        filter.setAuthenticationManager(authManager(http));
+        filter.setAuthenticationFailureHandler(failureHandler);
+
+        return filter;
     }
 
+    @Bean
+    AbstractAuthenticationProcessingFilter cookieAuthenticationFilter(HttpSecurity http) throws Exception {
+        final AbstractAuthenticationProcessingFilter filter = new CookieTokenAuthenticationFilter(ADMIN_ROUTES);
+
+        filter.setAuthenticationManager(authManager(http));
+        filter.setAuthenticationFailureHandler(failureHandler);
+
+        return filter;
+    }
+    //endregion
+
+    //region Filter Chain Bean
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -114,37 +105,15 @@ public class SecurityConfiguration {
                 .csrf().disable()
                 .cors().disable()
                 .formLogin().disable()
-                .logout().disable();
+                .logout().disable()
+        ;
+
+        http.exceptionHandling()
+                .authenticationEntryPoint(entryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
+        ;
 
         return http.build();
     }
-
-    @Bean
-    AbstractAuthenticationProcessingFilter bearerAuthenticationFilter(HttpSecurity http) throws Exception {
-        final AbstractAuthenticationProcessingFilter filter = new BearerTokenAuthenticationFilter(PROTECTED_API_ROUTES);
-
-        filter.setAuthenticationManager(authManager(http));
-        filter.setAuthenticationFailureHandler(restAuthenticationFailureHandler());
-
-        return filter;
-    }
-
-    @Bean
-    AbstractAuthenticationProcessingFilter cookieAuthenticationFilter(HttpSecurity http) throws Exception {
-        final AbstractAuthenticationProcessingFilter filter = new CookieTokenAuthenticationFilter(ADMIN_ROUTES);
-
-        filter.setAuthenticationManager(authManager(http));
-        filter.setAuthenticationFailureHandler(restAuthenticationFailureHandler());
-
-        return filter;
-    }
-
-    @Bean
-    private static RestAuthenticationFailureHandler restAuthenticationFailureHandler() {
-        return new RestAuthenticationFailureHandler();
-    }
-    @Bean
-    private static AuthenticationEntryPoint restAuthenticationEntryPoint() {
-        return new RestAuthenticationEntryPoint();
-    }
+    //endregion
 }

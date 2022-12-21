@@ -10,19 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.*;
+
 @Controller
 @SuppressWarnings("unused")
 public class SwaErrorController implements ErrorController {
-
-    public static final String authenticationErrorEndpoint = "/api/unauthorized";
-    public static final String authorizationErrorEndpoint = "/api/forbidden";
-    public static final String notFoundErrorEndpoint = "/api/notFound";
-    public static final String errorEndpoint = "/api/error";
-
-    public static final String[] errorEndpoints = {
-            authenticationErrorEndpoint, authorizationErrorEndpoint,
-            notFoundErrorEndpoint, errorEndpoint
-    };
 
     @ResponseBody
     @RequestMapping(authenticationErrorEndpoint)

@@ -25,9 +25,12 @@ import java.util.stream.Stream;
 @RestController
 public class PersonController {
 
+    //region Autowired Components
     @Autowired
     private PersonService personService;
+    //endregion
 
+    //region User Creation Endpoints
     /**
      * User Registration Endpoint for Users to create an Account by themselves.
      *
@@ -82,35 +85,9 @@ public class PersonController {
 
         return new CreatedUserResponse(person);
     }
+    //endregion
 
-    /**
-     * Endpoint for Admins to get all users.
-     *
-     * @return A RestReponse containing a List of all users.
-     */
-    @Admin
-    @GetMapping("/api/getAllUsers")
-    public RestResponse getAllUsers() {
-        return new ListResponse<>(personService.getPersons());
-    }
-
-    /**
-     * Endpoint for Admins to delete a user.
-     *
-     * @param personId The ID of the User to delete
-     * @return A RestResponse indicating whether the operation was successful or not.
-     */
-    @Admin
-    @PostMapping("/api/deleteUser")
-    public RestResponse deleteUser(
-            @RequestParam("personId") final UUID personId
-    ) {
-        if (!personService.delete(personId))
-            return new MessageResponse(false, "Could not delete User - User does not exist!");
-
-        return new MessageResponse(true, "User deleted successfully!");
-    }
-
+    //region Update User Endpoints
     /**
      * Endpoint for Admins to change/update a user
      *
@@ -135,6 +112,38 @@ public class PersonController {
 
         return new MessageResponse(false, "Could not update User - User does not exist!");
     }
+    //endregion
+
+    //region Delete User Endpoints
+    /**
+     * Endpoint for Admins to delete a user.
+     *
+     * @param personId The ID of the User to delete
+     * @return A RestResponse indicating whether the operation was successful or not.
+     */
+    @Admin
+    @PostMapping("/api/deleteUser")
+    public RestResponse deleteUser(
+            @RequestParam("personId") final UUID personId
+    ) {
+        if (!personService.delete(personId))
+            return new MessageResponse(false, "Could not delete User - User does not exist!");
+
+        return new MessageResponse(true, "User deleted successfully!");
+    }
+    //endregion
+
+    //region GET Endpoints
+    /**
+     * Endpoint for Admins to get all users.
+     *
+     * @return A RestReponse containing a List of all users.
+     */
+    @Admin
+    @GetMapping("/api/getAllUsers")
+    public RestResponse getAllUsers() {
+        return new ListResponse<>(personService.getPersons());
+    }
 
     /**
      * Endpoint for Admins to get all possible Permission so that they don't need to be changed manually on frontend.
@@ -146,4 +155,5 @@ public class PersonController {
     public RestResponse getAllPermissions() {
         return new ListResponse<>(Stream.of(Permission.values()).map(Enum::name).toList());
     }
+    //endregion
 }
