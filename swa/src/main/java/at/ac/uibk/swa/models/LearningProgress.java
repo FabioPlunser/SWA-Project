@@ -1,9 +1,6 @@
 package at.ac.uibk.swa.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -38,4 +35,13 @@ public class LearningProgress implements Serializable {
     @Column(name = "repetitions", nullable = false)
     @JdbcTypeCode(SqlTypes.BIGINT)
     private int repetitions;
+
+    //TODO: Explain these many to one relationships
+    @ManyToOne
+    @JoinColumn(name = "card_id", nullable = false)
+    private Card card;
+
+    @ManyToOne
+    @JoinColumn(name = "person_id", nullable = false)
+    private Person person;
 }
