@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.config;
 
 import at.ac.uibk.swa.models.Authenticable;
+import at.ac.uibk.swa.models.Permission;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,5 +29,12 @@ public class AuthContext {
 
     public static Optional<UUID> getLoginToken() {
         return getAuthentication().map(x -> ((Authenticable) x.getDetails()).getToken());
+    }
+
+    public static boolean hasPermission(Permission required) {
+        return getCurrentUser()
+                .map(Authenticable::getPermissions)
+                .map(permissions -> permissions.contains(required))
+                .orElse(false);
     }
 }
