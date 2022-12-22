@@ -125,7 +125,17 @@ public class PersonServiceTest {
 
     @Test
     public void testGetPersonById() {
-        //TODO
+        // given: demo user in database
+        Person person = new Person("person-TestGetPersonById", StringGenerator.email(), StringGenerator.password(), Set.of());
+        assertTrue(personService.save(person), "Unable to save user for test");
+        UUID id = person.getPersonId();
+
+        // when: retrieving user from database by id
+        Optional<Person> maybePerson = personService.findById(id);
+
+        // then: retrieved user must be correct
+        assertTrue(maybePerson.isPresent(), "Did not find user by id");
+        assertEquals(person, maybePerson.get(), "Got user " + maybePerson.get() + " when user " + person + " was expected");
     }
 
     @Test
