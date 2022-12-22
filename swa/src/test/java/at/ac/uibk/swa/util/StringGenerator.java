@@ -15,11 +15,11 @@ public class StringGenerator {
     }
 
     public static String email() {
-        int length_local_part = 20;
-        int length_domain_part = 8;
-        String local_part = StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, length_local_part);
-        String domain_part = StringGenerator.base(SMALL_LETTERS, length_domain_part) + ".com";
-        return  local_part + "@" + domain_part;
+        int lengthLocalPart = 20;
+        int lengthDomainPart = 8;
+        String localPart = StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, lengthLocalPart);
+        String domainPart = StringGenerator.base(SMALL_LETTERS, lengthDomainPart) + ".com";
+        return  localPart + "@" + domainPart;
     }
 
     public static String password() {

@@ -4,14 +4,13 @@ import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.DeckService;
 import at.ac.uibk.swa.service.PersonService;
+import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,9 +25,33 @@ public class PersonServiceTest {
     @Autowired
     private PersonService personService;
 
+
+
     @Test
-    public void testGetPersons() {
-        //TODO
+    public void testSaveAndGetPersons() {
+        // given: some demo users stored in database
+        int numberOfDemoPersons = 20;
+        List<Person> savedPersons = new ArrayList<>();
+        for (int i = 0; i < numberOfDemoPersons; i++) {
+            Person person = new Person(
+                    "person-TestGetPerson-" + (i+1),
+                    StringGenerator.email(),
+                    StringGenerator.password(),
+                    Set.of()
+            );
+            savedPersons.add(person);
+            assertTrue(personService.save(person), "Unable to save user " + person);
+        }
+
+        // when: retrieving all demo users from database
+        List<Person> foundPersons = personService.getPersons();
+
+        // then: all saved persons must be found again and no additional persons must be returned
+        assertEquals(savedPersons.size(), foundPersons.size(), "Expected " + savedPersons.size() + " but found " + foundPersons.size());
+        for (Person person: savedPersons) {
+            assertTrue(foundPersons.contains(person), "Could not find person " + person);
+
+        }
     }
 
     @Test
@@ -44,7 +67,7 @@ public class PersonServiceTest {
     @Test
     public void testGetPersonByToken() {
         // given: demo user in database
-        Person person = new Person("person-TestRetrieveUserFromToken", "", "", Set.of());
+        Person person = new Person("person-TestGetPersonByToken", "", "", Set.of());
         assertTrue(personService.save(person), "Unable to save user for test");
 
         // when: logging in as user and retrieving token
@@ -69,15 +92,10 @@ public class PersonServiceTest {
     }
 
     @Test
-    public void testSavePerson() {
-        //TODO
-    }
-
-    @Test
     public void testUpdatePerson() {
         //TODO
     }
-    
+
     @Test
     public void testDeletePerson() {
         //TODO
