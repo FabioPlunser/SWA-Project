@@ -47,8 +47,7 @@ public class PersonServiceTest {
         // when: retrieving all demo users from database
         List<Person> foundPersons = personService.getPersons();
 
-        // then: all saved users must be found again, attributes must be identical and no additional users must be returned
-        assertEquals(savedPersons.size(), foundPersons.size(), "Expected " + savedPersons.size() + " but found " + foundPersons.size());
+        // then: all saved users must be found again and attributes must be identical
         for (Person person: savedPersons) {
             assertTrue(foundPersons.contains(person), "Could not find person " + person);
             Person foundPerson = foundPersons.get(foundPersons.indexOf(person));
@@ -110,18 +109,18 @@ public class PersonServiceTest {
     @Test
     public void testGetPersonByToken() {
         // given: demo user in database
-        Person person = new Person("person-TestGetPersonByToken", "", "", Set.of());
+        Person person = new Person("person-TestGetPersonByToken", StringGenerator.email(), StringGenerator.password(), Set.of());
         assertTrue(personService.save(person), "Unable to save user for test");
 
         // when: logging in as user and retrieving token
         Optional<Person> maybePerson = personService.login(person.getUsername(), person.getPasswdHash());
-        assertTrue(maybePerson.isPresent(), "Could not login user");
+        assertTrue(maybePerson.isPresent(), "Could not login");
         UUID token = maybePerson.get().getToken();
 
         // then: user returned by handing over token must be original user
-        Optional<Person> oPerson = personService.findByToken(token);
-        assertTrue(oPerson.isPresent(), "Did not find user by token");
-        assertEquals(person.getPersonId(), oPerson.get().getPersonId(), "Got user " + oPerson.get().getPersonId() + " when user " + person.getPersonId() + " was expected");
+        Optional<Person> maybePersonByToken = personService.findByToken(token);
+        assertTrue(maybePersonByToken.isPresent(), "Did not find user by token");
+        assertEquals(person, maybePersonByToken.get(), "Got user " + maybePersonByToken.get() + " when user " + person + " was expected");
     }
 
     @Test
