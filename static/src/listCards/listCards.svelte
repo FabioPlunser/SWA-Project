@@ -1,16 +1,18 @@
 <script lang="ts">
     import favicon from "/favicon.png";
     import Nav from "../lib/components/nav.svelte";
+	import DualSideCard from './../lib/components/dualSideCard.svelte';
     import { redirect } from '../lib/utils/redirect';
     import { tokenStore } from "../lib/stores/tokenStore";
+    import { userSelectedDeckStore } from "../lib/stores/userSelectedDeckStore";
     import { handleLogout } from '../lib/utils/handleLogout';
-    import FlipCard from "../lib/components/flipCard.svelte";
-    $: if($token.length < 30) redirect("login");
+    $: if($tokenStore.length < 30) redirect("login");
 
     let navButtons = [
-        { tag: "button", id: "", text: "DeckView", action: () => redirect("") },
-        { tag: "button", id: "", text: "Logout", action: handleLogout }
+        { text: "DeckView", action: () => redirect("") },
+        { text: "Logout", action: handleLogout }
     ];
+    $: cards = $userSelectedDeckStore.cards;
 
     //TODO get cards from server and make them editable
     //TODO make cards draggable to change order
@@ -32,8 +34,8 @@
 
     <div class="flex justify-center mx-4">
         <div class="grid grid-cols-3 gap-y-3 gap-x-3">
-            {#each [...Array(16)] as _, i}
-                <FlipCard/>
+            {#each cards as card}
+                <DualSideCard {card}/>
             {/each}
         </div>
     </div>

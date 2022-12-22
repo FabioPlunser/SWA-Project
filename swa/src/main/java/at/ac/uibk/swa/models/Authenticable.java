@@ -60,12 +60,17 @@ public abstract class Authenticable {
 
     @Override
     public boolean equals(Object o) {
-        return (this == o) || ((o instanceof Authenticable a) && (a.id == this.id));
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Authenticable that = (Authenticable) o;
+
+        return id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return id.hashCode();
     }
 
     public String toString() {

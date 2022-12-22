@@ -12,12 +12,7 @@
 
     <div class="menu menu-horizontal">
       {#each buttons as button}
-      {#if button.tag === "label"}
-        <label for={button.id} class="flex justify-center btn btn-primary mx-2" on:click={button.action}>{button.text}</label>
-      {/if}
-      {#if button.tag === "button"}
-        <button id={button.id} class="flex justify-center btn btn-primary mx-2" on:click={button.action}>{button.text}</button>
-      {/if}
+        <button class="flex justify-center btn btn-primary mx-2" on:click={button.action}>{button.text}</button>
       {/each}
     </div>
 </div>
