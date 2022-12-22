@@ -34,7 +34,7 @@ public class PersonServiceTest {
         List<Person> savedPersons = new ArrayList<>();
         for (int i = 0; i < numberOfDemoPersons; i++) {
             Person person = new Person(
-                    "person-TestGetPerson-" + (i+1),
+                    "person-TestSaveAndGetPersons-" + (i+1),
                     StringGenerator.email(),
                     StringGenerator.password(),
                     Set.of()
@@ -46,17 +46,23 @@ public class PersonServiceTest {
         // when: retrieving all demo users from database
         List<Person> foundPersons = personService.getPersons();
 
-        // then: all saved persons must be found again and no additional persons must be returned
+        // then: all saved persons must be found again, attributes must be identical and no additional persons must be returned
         assertEquals(savedPersons.size(), foundPersons.size(), "Expected " + savedPersons.size() + " but found " + foundPersons.size());
         for (Person person: savedPersons) {
             assertTrue(foundPersons.contains(person), "Could not find person " + person);
-
+            Person foundPerson = foundPersons.get(foundPersons.indexOf(person));
+            assertEquals(person.getPersonId(), foundPerson.getPersonId(), "Wrong id of " + person);
+            assertEquals(person.getUsername(), foundPerson.getUsername(), "Wrong username of " + person);
+            assertEquals(person.getEmail(), foundPerson.getEmail(), "Wrong email of " + person);
+            assertEquals(person.getPermissions(), foundPerson.getPermissions(), "Wrong permissions of " + person);
         }
     }
 
     @Test
     public void testLoginWithValidCredentials() {
-        //TODO
+        // given: demo user in database
+        String password = StringGenerator.password();
+        Person person = new Person("person-TestLoginWithValidCredetials", StringGenerator.email(), password, Set.of());
     }
 
     @Test
