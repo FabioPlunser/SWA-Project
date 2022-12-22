@@ -104,6 +104,7 @@ public class PersonService {
      * @param password The new Password.
      * @return true if the user could be found and could be updated, false otherwise.
      */
+    // TODO: Maybe add email address
     public boolean update(UUID personId, String username, Set<Permission> permissions, String password) {
         Optional<Person> maybePerson = personRepository.findById(personId);
         if(maybePerson.isPresent()) {

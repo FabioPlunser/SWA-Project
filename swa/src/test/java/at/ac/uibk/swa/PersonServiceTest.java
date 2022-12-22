@@ -1,5 +1,6 @@
 package at.ac.uibk.swa;
 
+import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.DeckService;
@@ -13,8 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import javax.print.DocFlavor;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -161,11 +161,37 @@ public class PersonServiceTest {
 
     @Test
     public void testUpdatePerson() {
-        // TODO
+        // given: demo user in database
+        String username = "person-TestUpdatePerson";
+        String password = StringGenerator.password();
+        String email = StringGenerator.email();
+        Person person = new Person(username, email, password, Set.of());
+        assertTrue(personService.save(person), "Unable to save user for test");
+
+        // when: updating the person
+        String newUsername = "person-TestUpdatePerson-new";
+        String newPassword = StringGenerator.password();
+        Set<Permission> newPermissions = Set.of(Permission.ADMIN, Permission.USER);
+        assertTrue(personService.update(person.getPersonId(), newUsername, newPermissions, newPassword), "Could not update user");
+
+        // then: logging in should be possible with new credentials only and other attributes must be correct
+        Optional<Person> maybePerson = personService.login(newUsername, newPassword);
+        assertTrue(maybePerson.isPresent(), "Could not login with new credentials");
+        Optional<Person> maybeOldCredentialsPerson = personService.login(username, password);
+        assertTrue(maybeOldCredentialsPerson.isEmpty(), "Could still login with old credentials");
+        assertEquals(newPermissions, maybePerson.get().getPermissions(), "Permissions have not been updated");
     }
 
     @Test
     public void testDeletePerson() {
-        //TODO
+        // given: demo user in database
+        Person person = new Person("person-TestDeletePerson", StringGenerator.email(), StringGenerator.password(), Set.of());
+        assertTrue(personService.save(person), "Unable to save user for test");
+
+        // when: deleting that user
+        assertTrue(personService.delete(person.getPersonId()), "Could not delete user");
+
+        // then: user should not exist in database anymore
+        assertFalse(personService.getPersons().contains(person), "User still in database");
     }
 }
