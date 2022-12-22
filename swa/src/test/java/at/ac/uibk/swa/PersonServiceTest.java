@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.print.DocFlavor;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +47,7 @@ public class PersonServiceTest {
         // when: retrieving all demo users from database
         List<Person> foundPersons = personService.getPersons();
 
-        // then: all saved persons must be found again, attributes must be identical and no additional persons must be returned
+        // then: all saved users must be found again, attributes must be identical and no additional users must be returned
         assertEquals(savedPersons.size(), foundPersons.size(), "Expected " + savedPersons.size() + " but found " + foundPersons.size());
         for (Person person: savedPersons) {
             assertTrue(foundPersons.contains(person), "Could not find person " + person);
@@ -60,14 +61,50 @@ public class PersonServiceTest {
 
     @Test
     public void testLoginWithValidCredentials() {
-        // given: demo user in database
+        // given: demo user in database (and additional anonymous user)
+        int numberOfOtherPersons = 20;
+        String username = "person-TestLoginWithValidCredentials";
         String password = StringGenerator.password();
-        Person person = new Person("person-TestLoginWithValidCredetials", StringGenerator.email(), password, Set.of());
+        Person person = new Person(username, StringGenerator.email(), password, Set.of());
+        assertTrue(personService.save(person), "Unable to save user " + person);
+        for (int i = 0; i < numberOfOtherPersons; i++) {
+            assertTrue(personService.save(new Person(
+                    "otherPerson-TestLoginWithValidCredentials-" + (i+1),
+                    StringGenerator.email(),
+                    StringGenerator.password(),
+                    Set.of()
+            )), "Unable to save user " + person);
+        }
+
+        // when: logging in with that users credentials
+        Optional<Person> maybePerson = personService.login(username, password);
+        assertTrue(maybePerson.isPresent(), "Unable to log in");
+
+        // then: returned user must be correct
+        assertEquals(person, maybePerson.get(), "Got the wrong user");
     }
 
     @Test
     public void testLoginWithInvalidCredentials() {
-        //TODO
+        // given: demo user in database
+        int numberOfOtherPersons = 20;
+        String username = "person-TestLoginWithInvalidCredentials";
+        String password = "password";
+        Person person = new Person(username, StringGenerator.email(), password, Set.of());
+        assertTrue(personService.save(person), "Unable to save user " + person);
+
+        // when:
+        //  logging in with completely wrong credentials
+        Optional<Person> maybePersonAllWrong = personService.login("wrong-username", "wrong-password");
+        //  logging in with wrong username
+        Optional<Person> maybePersonUsernameWrong = personService.login("wrong-username", password);
+        //  logging in with wrong password
+        Optional<Person> maybePersonPasswordWrong = personService.login(username, "wrong-password");
+
+        // then: login should never be possible
+        assertTrue(maybePersonAllWrong.isEmpty(), "Could login with completely different credentials");
+        assertTrue(maybePersonUsernameWrong.isEmpty(), "Could login with wrong username");
+        assertTrue(maybePersonPasswordWrong.isEmpty(), "Could login with wrong password");
     }
 
     @Test
