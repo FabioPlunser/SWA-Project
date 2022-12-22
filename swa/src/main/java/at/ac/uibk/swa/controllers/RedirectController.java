@@ -60,4 +60,10 @@ public class RedirectController {
         modelAndView.setViewName("/admin/showCards/index.html");
         return modelAndView;
     }
+    @GetMapping("/createdeck")
+    public ModelAndView createDeck() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/createDeck/index.html");
+        return modelAndView;
+    }
 }

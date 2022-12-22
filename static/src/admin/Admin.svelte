@@ -27,9 +27,9 @@
   let searchPermission = "";
 
   let buttons = [
-    { tag: "button", id: "", text: "Home", action: () => redirect("") },
-    { tag: "button", id: "", text: "Admin",action: () => redirect("admin")},
-    { tag: "button", id: "", text: "Logout",action: () => handleLogout()}
+    { text: "Home", action: () => redirect("") },
+    { text: "Admin",action: () => redirect("admin")},
+    { text: "Logout",action: () => handleLogout()}
   ];
 
 
@@ -119,7 +119,7 @@
 
 <Nav title="Admin" {buttons}/>
 {#if showCreateModal}
-    <Modal uniqueModalQualifier={"AdminCreateUser"}>
+    <Modal open={showCreateModal} on:close={()=>showCreateModal=false} closeOnBodyClick={false}>
         <h1 class="flex justify-center underline text-2xl">Create User</h1>
         <br class="pt-4"/>
         <form method='POST' action='api/createUser' on:submit|preventDefault={handleSubmit}>
@@ -163,8 +163,7 @@
               <div class="flex justify-between">
                 <button type="submit" class="btn btn-primary">Register</button>
                 <input type="reset" class="btn btn-primary" value="Clear"/>
-                  <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <label for="AdminCreateUser" class="btn btn-primary" on:click={()=> showCreateModal = !showCreateModal}>Close</label>
+                <button class="btn btn-primary" on:click={()=> showCreateModal = false}>Close</button>
               </div>
             </div>
         </form>
@@ -172,7 +171,7 @@
 {/if}
 
 {#if showEditModal}
-  <Modal uniqueModalQualifier={"AdminEditUser"}>
+  <Modal open={showEditModal} on:close={()=>showEditModal=false} closeOnBodyClick={false}>
       <h1 class="flex justify-center">Edit User</h1>
       <br class="pt-4"/>
       <form class="flex justify-center" method="POST" action="api/updateUser" on:submit|preventDefault={handleSubmit}>
@@ -217,9 +216,7 @@
           <div class="flex justify-between">
             <button type="submit" class="btn btn-primary">Update</button>
             <input type="reset" class="btn btn-primary" value="Clear"/>
-
-              <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <label for="AdminEditUser" class="btn btn-primary" on:click={()=> showCreateModal = !showCreateModal}>Close</label>
+            <button class="btn btn-primary" on:click={()=> showEditModal = false}>Close</button>
           </div>
         </div>
       </form>
@@ -228,8 +225,7 @@
 
 <main class="mt-20 m-2 flex-justify-center">
   <div class="flex justify-center">
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <label for="AdminCreateUser" class="btn btn-primary" on:click={()=> showCreateModal = true}>Create User</label>
+      <button class="btn btn-primary" on:click={()=> showCreateModal = true}>Create User</button>
   </div>
   <br class="mt-20"/>
   <!-- TODO add all decks of user and add the ability to block them -->
@@ -269,7 +265,7 @@
                           <td><input form={user.personId} type="text" name="permissions" bind:value={user.permissions} class="bg-transparent" readonly/></td>
                           <td><button class="btn btn-info" on:click={()=>{$adminSelectedUserStore=user; redirect("admin/showdecks")}}>Decks</button></td>
                           <!-- svelte-ignore a11y-click-events-have-key-events -->
-                          <td><label for="AdminEditUser" class="btn btn-secondary" on:click={()=>{showEditModal=true; selectedUser=user}}>Edit</label></td>
+                          <td><button class="btn btn-secondary" on:click={()=>{showEditModal=true; selectedUser=user}}>Edit</button></td>
                           <td><button class="btn btn-info" form={user.personId} type="submit">Delete</button></td>
                       </tr>
                   {/if}

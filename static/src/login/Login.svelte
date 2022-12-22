@@ -9,12 +9,10 @@
     // TODO add validation
     async function handleSubmit (e){
         let res = await formFetch(e);
-        console.log(res);
         if(!res.success){
             alert(res.message);
             return;
         }
-        //TODO hash token?
         $tokenStore = res.token;
         $personIdStore = res.personId;
         $userPermissionsStore= res.permissions;
@@ -48,7 +46,7 @@
             </div>
             <div class="flex justify-between pt-4">
                 <button type="submit" class="btn btn-primary">Login</button>
-                <button class="btn btn-primary" on:click={()=>redirect("register")}>Register</button>
+                <button type="button" class="btn btn-primary" on:click={()=>redirect("register")}>Create Account</button>
             </div>
         </form>
     </div>

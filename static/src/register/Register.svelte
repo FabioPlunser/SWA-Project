@@ -3,6 +3,8 @@
 	import { redirect } from '../lib/utils/redirect';
     import { formFetch } from "../lib/utils/formFetch";
     import { tokenStore } from "../lib/stores/tokenStore";
+    import { personIdStore } from "../lib/stores/peronsIdStore";
+    import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
 
     // TODO add validation
     async function handleSubmit (e){
@@ -11,8 +13,9 @@
             alert(res.message);
             return;
         }
-        //TODO hash token?
         $tokenStore = res.token;
+        $personIdStore = res.personId;
+        $userPermissionsStore= res.permissions;
 	}
     $: if($tokenStore.length > 30) redirect("");
     $: document.cookie = `Token=${$tokenStore}`;
