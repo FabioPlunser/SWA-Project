@@ -109,11 +109,13 @@ public class PersonServiceTest {
     @Test
     public void testGetPersonByToken() {
         // given: demo user in database
-        Person person = new Person("person-TestGetPersonByToken", StringGenerator.email(), StringGenerator.password(), Set.of());
+        String username = "person-TestGetPersonByToken";
+        String password = StringGenerator.password();
+        Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.save(person), "Unable to save user for test");
 
         // when: logging in as user and retrieving token
-        Optional<Person> maybePerson = personService.login(person.getUsername(), person.getPasswdHash());
+        Optional<Person> maybePerson = personService.login(username, password);
         assertTrue(maybePerson.isPresent(), "Could not login");
         UUID token = maybePerson.get().getToken();
 
@@ -140,12 +142,26 @@ public class PersonServiceTest {
 
     @Test
     public void testLogout() {
-        //TODO
+        // given: demo user in database, logged in
+        String username = "person-TestLogout";
+        String password = StringGenerator.password();
+        Person person = new Person(username, StringGenerator.email(), password, Set.of());
+        assertTrue(personService.save(person), "Unable to save user for test");
+        Optional<Person> maybePerson = personService.login(username, password);
+        assertTrue(maybePerson.isPresent(), "Could not login");
+        UUID token = maybePerson.get().getToken();
+
+        // when: logging out
+        assertTrue(personService.logout(token), "Could not log out");
+
+        // then: retrieving user by token should not be possible anymore
+        Optional<Person> maybeLoggedOutPerson = personService.findByToken(token);
+        assertTrue(maybeLoggedOutPerson.isEmpty(), "Token still valid after logout");
     }
 
     @Test
     public void testUpdatePerson() {
-        //TODO
+        // TODO
     }
 
     @Test

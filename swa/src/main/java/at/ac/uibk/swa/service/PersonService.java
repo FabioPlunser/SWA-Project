@@ -47,6 +47,7 @@ public class PersonService {
         //       Theoretically not needed because the Token has a unique Constraint
         //       but would make it even harder to brute force for a Token as you would need to guess the username
         //       and the Token at the same time.
+        // NOTE: Maybe switch to JWT? UUID is OK, but definitely not the best solution
 
         return Optional.of(token)
                 .map(personRepository::findByToken)
