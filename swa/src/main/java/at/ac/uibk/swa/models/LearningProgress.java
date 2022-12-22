@@ -10,6 +10,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 import java.util.UUID;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -42,5 +43,5 @@ public class LearningProgress implements Serializable {
     @Setter
     @Column(name = "next_learn", nullable = false)
     @JdbcTypeCode(SqlTypes.TIMESTAMP)
-    private int repetitions;
+    private Date nextLearn;
 }
