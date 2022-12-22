@@ -2,7 +2,7 @@
 # Run all tests before commiting
 
 BACKEND_DIR=swa
-BACKEND_TEST_CMD="gradle test"
+BACKEND_TEST_CMD="mvn test"
 
 TRUE=0
 FALSE=1
