@@ -27,7 +27,22 @@ public class PersonServiceTest {
     private PersonService personService;
 
     @Test
-    public void testRetrieveUserFromToken() {
+    public void testGetPersons() {
+        //TODO
+    }
+
+    @Test
+    public void testLoginWithValidCredentials() {
+        //TODO
+    }
+
+    @Test
+    public void testLoginWithInvalidCredentials() {
+        //TODO
+    }
+
+    @Test
+    public void testGetPersonByToken() {
         // given: demo user in database
         Person person = new Person("person-TestRetrieveUserFromToken", "", "", Set.of());
         assertTrue(personService.save(person), "Unable to save user for test");
@@ -41,5 +56,30 @@ public class PersonServiceTest {
         Optional<Person> oPerson = personService.findByToken(token);
         assertTrue(oPerson.isPresent(), "Did not find user by token");
         assertEquals(person.getPersonId(), oPerson.get().getPersonId(), "Got user " + oPerson.get().getPersonId() + " when user " + person.getPersonId() + " was expected");
+    }
+
+    @Test
+    public void testGetPersonById() {
+        //TODO
+    }
+
+    @Test
+    public void testLogout() {
+        //TODO
+    }
+
+    @Test
+    public void testSavePerson() {
+        //TODO
+    }
+
+    @Test
+    public void testUpdatePerson() {
+        //TODO
+    }
+    
+    @Test
+    public void testDeletePerson() {
+        //TODO
     }
 }
