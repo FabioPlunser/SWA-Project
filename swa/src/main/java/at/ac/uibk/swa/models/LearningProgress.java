@@ -20,12 +20,12 @@ import java.util.UUID;
 public class LearningProgress implements Serializable {
 
     @Id
-    @Column(name = "learning_progress_id", nullable = false)
+    @Column(name = "progress_id", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID learningProgressId;
 
     @Setter
-    @Column(name = "interVal", nullable = false)
+    @Column(name = "learning_interval", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int interval;
 
@@ -35,7 +35,12 @@ public class LearningProgress implements Serializable {
     private int eFactor;
 
     @Setter
-    @Column(name = "repetitions", nullable = false)
+    @Column(name = "num_repetitions", nullable = false)
     @JdbcTypeCode(SqlTypes.BIGINT)
+    private int repetitions;
+
+    @Setter
+    @Column(name = "next_learn", nullable = false)
+    @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private int repetitions;
 }
