@@ -29,7 +29,7 @@ public class LearningProgress implements Serializable {
     @Setter
     @Column(name = "e_factor", nullable = false)
     @JdbcTypeCode(SqlTypes.DOUBLE)
-    private int eFactor;
+    private double eFactor;
 
     @Setter
     @Column(name = "repetitions", nullable = false)

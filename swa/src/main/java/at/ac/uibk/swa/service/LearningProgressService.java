@@ -1,11 +1,15 @@
 package at.ac.uibk.swa.service;
 
+import at.ac.uibk.swa.models.Card;
+import at.ac.uibk.swa.models.LearningProgress;
+import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.LearningProgressRepository;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service("learningProgressService")
 public class LearningProgressService {
@@ -13,11 +17,11 @@ public class LearningProgressService {
     LearningProgressRepository learningProgressRepository;
 
     @Getter
-    private Integer learningInterval;
+    private int learningInterval;
     @Getter
-    private Double eFactor;
+    private double eFactor;
     @Getter
-    private Integer repetitions;
+    private int repetitions;
     @Getter
     private LocalDateTime nextLearningDate;
 
@@ -30,17 +34,18 @@ public class LearningProgressService {
     }
 
     //difficulty is a parameter set by user after attempting to learn a card
-    public void determineNextLearningDate(int difficulty) {
+    public void determineNextLearningDate(int difficulty, Person person, Card card) {
         repetitions += 1;
 
         if (difficulty < 3) {
             learningInterval = 1;
+            //TODO: ??
+            learningProgressRepository.save(new LearningProgress(UUID.randomUUID(), learningInterval, eFactor, repetitions, card, person));
         }
         if (difficulty < 4) {
             nextLearningDate = LocalDateTime.now();
         }
         if (difficulty > 2) {
-            //TODO: Exception handling in case repetitions is negative?
             if (repetitions == 1) {
                 learningInterval = 1;
             } else if (repetitions == 2) {
