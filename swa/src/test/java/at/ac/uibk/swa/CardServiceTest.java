@@ -66,5 +66,20 @@ public class CardServiceTest {
                 }
             }
         }
+
+        // when: loading all cards from database
+        List<Card> loadedCards = cardService.getAllCards();
+
+        // then: all saved cards must be found again an attributes must be identical
+        for (Map.Entry<Deck,Card> entry : savedCards.entrySet()) {
+            Deck deck = entry.getKey();
+            Card card = entry.getValue();
+            assertTrue(loadedCards.contains(card), "Could not find card " + card);
+            Card loadedCard = loadedCards.get(loadedCards.indexOf(card));
+            assertEquals(deck, loadedCard.getDeck(), "Wrong deck of " + card);
+            assertEquals(card.getFrontText(), loadedCard.getFrontText(), "Wrong front text of " + card);
+            assertEquals(card.getBackText(), loadedCard.getBackText(), "Wrong back text of " + card);
+            assertEquals(card.isFlipped(), loadedCard.isFlipped(), card + " has been flipped");
+        }
     }
 }
