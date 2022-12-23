@@ -107,7 +107,6 @@ public class DeckService {
 
     /**
      * Saves a deck to the repository
-     * If deck already exists, use one of
      *  update()
      *  delete()
      *  block()
@@ -123,6 +122,35 @@ public class DeckService {
         try {
             this.deckRepository.save(deck);
             return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Updates a deck with the given parameters
+     * Deleted and blocked decks cannot be updated
+     *
+     * @param deckId id of the deck to be updated
+     * @param name new name of the deck, set to null if no change is desired
+     * @param description new description of the deck, set to null if no change is desired
+     * @return true if the deck was updated, false otherwise
+     */
+    public boolean update(UUID deckId, String name, String description) {
+        try {
+            Optional<Deck> maybeFoundDeck = this.findById(deckId);
+            if (maybeFoundDeck.isEmpty()) {
+                return false;
+            } else if (maybeFoundDeck.get().isBlocked() || maybeFoundDeck.get().isDeleted()) {
+                return false;
+            } else {
+                Deck deck = maybeFoundDeck.get();
+
+                if (name != null) deck.setName(name);
+                if (description != null) deck.setDescription(description);
+
+                return save(deck);
+            }
         } catch (Exception e) {
             return false;
         }
