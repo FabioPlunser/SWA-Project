@@ -253,4 +253,29 @@ public class DeckService {
             return false;
         }
     }
+
+    /**
+     * Unpublishes a deck
+     * Already unpublished deck cannot be unpublished again
+     * NOTE: No permission check is done within this method - check before, if execution is allowed!
+     *
+     * @param deckId id of deck to be unpublished
+     * @return true if deck has been unpublished, false otherwise
+     */
+    public boolean unpublish(UUID deckId) {
+        try {
+            Optional<Deck> maybeFoundDeck = this.findById(deckId);
+            if (maybeFoundDeck.isEmpty()) {
+                return false;
+            } else if (maybeFoundDeck.get().isPublished()) {
+                return false;
+            } else {
+                Deck deck = maybeFoundDeck.get();
+                deck.setPublished(false);
+                return save(deck);
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
