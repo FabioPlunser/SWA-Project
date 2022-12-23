@@ -18,8 +18,6 @@ public class CardService {
     @Autowired
     CardRepository cardRepository;
     @Autowired
-    Learn
-    @Autowired
     DeckService deckService;
     @Autowired
     PersonService personService;
