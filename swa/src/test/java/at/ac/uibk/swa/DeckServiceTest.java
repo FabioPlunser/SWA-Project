@@ -5,17 +5,15 @@ import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.DeckService;
 import at.ac.uibk.swa.service.PersonService;
+import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -28,20 +26,47 @@ public class DeckServiceTest {
     private PersonService personService;
 
     @Test
-    public void testCreateDeck() {
-        // given: person and deck created by person
-        Person person = new Person("person-testCreatingDeck", "", "", Set.of());
-        Deck deck = new Deck("deck-testCreatingDeck", "", person);
-        assertTrue(personService.save(person), "Unable to save user for test");
-        assertTrue(deckService.save(deck), "Unable to save deck for test");
+    public void testSaveAndGetDecks() {
+        // given: demo creators and decks saved to database
+        int numberOfCreators = 5;
+        int numberOfDecksPerCreator = 10;
+        List<Person> creators = new ArrayList<>();
+        Map<Person, Deck> savedDecks = new HashMap<>();
+        for (int i = 0; i < numberOfCreators; i++) {
+            Person creator = new Person(
+                    "person-TestSaveAndGetDecks-" + (i+1),
+                    StringGenerator.email(),
+                    StringGenerator.password(),
+                    Set.of()
+            );
+            assertTrue(personService.save(creator), "Could not save user");
+            creators.add(creator);
+            for (int j = 0; j < numberOfDecksPerCreator; j++) {
+                Deck deck = new Deck(
+                        "deck-TestSaveAndGetDecks-" + (j+1),
+                        StringGenerator.deckDescription(),
+                        creator
+                );
+                assertTrue(deckService.save(deck), "Could not save deck");
+                savedDecks.put(creator, deck);
+            }
+        }
 
-        // when: loading person and created decks
-        Optional<Person> maybePerson = personService.login(person.getUsername(), person.getPasswdHash());
-        assertTrue(maybePerson.isPresent(), "Unable to login user");
-        List<Deck> createdDecks = maybePerson.get().getCreatedDecks();
+        // when: loading all decks from database
+        List<Deck> loadedDecks = deckService.getAllDecks();
 
-        // then: user should have exactly one created deck and deck id should be as defined in beginning
-        assertEquals(1, createdDecks.size(), "Unexpectedly received " + createdDecks.size() + " decks");
-        assertEquals(deck.getDeckId(), createdDecks.get(0).getDeckId(), "Got deck " + createdDecks.get(0).getDeckId() + " when deck " + deck.getDeckId() + " was expected");
+        // then: all saved decks must be found again and attributes must be identical
+        for (Map.Entry<Person,Deck> entry : savedDecks.entrySet()) {
+            Person creator = entry.getKey();
+            Deck deck = entry.getValue();
+            assertTrue(loadedDecks.contains(deck), "Could not find deck " + deck);
+            Deck loadedDeck = loadedDecks.get(loadedDecks.indexOf(deck));
+            assertEquals(creator, loadedDeck.getCreator(), "Wrong creator of " + deck);
+            assertEquals(deck.getName(), loadedDeck.getName(), "Wrong name of " + deck);
+            assertEquals(deck.getDescription(), loadedDeck.getDescription(), "Wrong description of " + deck);
+            assertFalse(loadedDeck.isBlocked(), deck + " has been blocked");
+            assertFalse(loadedDeck.isDeleted(), deck + " has been deleted");
+            assertFalse(loadedDeck.isPublished(), deck + " has been published");
+        }
     }
 }

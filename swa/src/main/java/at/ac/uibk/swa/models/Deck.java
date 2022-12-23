@@ -76,6 +76,15 @@ public class Deck implements Serializable {
     @Builder.Default
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Person> subscribedPersons = new ArrayList<>();
+    
+    //TODO: Change name - get subscribes, etc.
+    public Person[] getPersons() {
+        return Stream.concat(
+                    this.subscribedPersons.stream(),
+                    Stream.of(this.creator)
+            )
+            .toArray(Person[]::new);
+    }
 
     @Override
     public String toString() {
@@ -83,12 +92,17 @@ public class Deck implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof Deck u) && (u.deckId == this.deckId));
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Deck deck = (Deck) o;
+
+        return deckId.equals(deck.deckId);
     }
 
     @Override
     public int hashCode() {
-        return this.deckId.hashCode();
+        return deckId.hashCode();
     }
 }
