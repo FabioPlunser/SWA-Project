@@ -8,10 +8,7 @@ import at.ac.uibk.swa.repositories.CardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service("cardService")
 public class CardService {
@@ -42,6 +39,28 @@ public class CardService {
         List<Card> cards = new ArrayList<>();
         Optional<Deck> maybeDeck = deckService.findById(deckId);
         if (maybeDeck.isPresent()) cards = maybeDeck.get().getCards();
+        return cards;
+    }
+
+    /**
+     * Gets all cards that should be learnt from a specific deck from the repository
+     * NOTE: if deck is not found (wrong id) no cards will be returned
+     *
+     * @param deckId id of the deck of which cards should be returned
+     * @param personId id of the person for which the progress should be checked
+     * @return
+     */
+    public List<Card> getAllCardsToLearn(UUID deckId, UUID personId) {
+        List<Card> cards = new ArrayList<>();
+        Optional<Deck> maybeDeck = deckService.findById(deckId);
+        if (maybeDeck.isPresent()) {
+            Deck deck = maybeDeck.get();
+            Date now = new Date();
+            cards = deck.getCards().stream()
+                    .filter(c -> getLearningProgress(c.getCardId(), personId).isPresent())
+                    .filter(c -> getLearningProgress(c.getCardId(), personId).get().getNextLearn().before(now))
+                    .toList();
+        }
         return cards;
     }
 
