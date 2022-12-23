@@ -107,13 +107,6 @@ public class DeckService {
 
     /**
      * Saves a deck to the repository
-     *  update()
-     *  delete()
-     *  block()
-     *  unblock()
-     *  publish()
-     *  unpublish()
-     * instead.
      *
      * @param deck deck to save
      * @return true if deck has been saved, false otherwise
@@ -130,6 +123,7 @@ public class DeckService {
     /**
      * Updates a deck with the given parameters
      * Deleted and blocked decks cannot be updated
+     * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
      * @param deckId id of the deck to be updated
      * @param name new name of the deck, set to null if no change is desired
