@@ -5,10 +5,12 @@ import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.LearningProgress;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.CardRepository;
+import at.ac.uibk.swa.service.LearningAlgorithm.LearningAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service("cardService")
 public class CardService {
@@ -56,10 +58,14 @@ public class CardService {
         if (maybeDeck.isPresent()) {
             Deck deck = maybeDeck.get();
             Date now = new Date();
-            cards = deck.getCards().stream()
+            List<Card> oldCards = deck.getCards().stream()
                     .filter(c -> getLearningProgress(c.getCardId(), personId).isPresent())
                     .filter(c -> getLearningProgress(c.getCardId(), personId).get().getNextLearn().before(now))
                     .toList();
+            List<Card> newCards = deck.getCards().stream()
+                    .filter(c -> getLearningProgress(c.getCardId(), personId).isEmpty())
+                    .toList();
+            cards = Stream.concat(oldCards.stream(), newCards.stream()).toList();
         }
         return cards;
     }
@@ -93,6 +99,30 @@ public class CardService {
             }
         } else {
             return Optional.empty();
+        }
+    }
+
+    /**
+     * Give feedback on the learning of a specific card for a specific person
+     *
+     * @param cardId
+     * @param personId
+     * @param difficulty
+     * @return
+     */
+    public boolean learn(UUID cardId, UUID personId, int difficulty) {
+        Optional<Card> maybeCard = findById(cardId);
+        Optional<Person> maybePerson = personService.findById(personId);
+        if (maybeCard.isPresent() && maybePerson.isPresent()) {
+            Card card = maybeCard.get();
+            Person person = maybePerson.get();
+            Optional<LearningProgress> maybeLearningProgress = getLearningProgress(card.getCardId(), personId);
+            LearningProgress learningProgress = maybeLearningProgress.orElseGet(LearningProgress::new);;
+            learningProgress = LearningAlgorithm.updateLearningProgress(learningProgress, difficulty);
+            card.getLearningProgresses().put(person, learningProgress);
+            return save(card);
+        } else {
+            return false;
         }
     }
 
