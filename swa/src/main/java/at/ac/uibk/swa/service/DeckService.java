@@ -113,7 +113,7 @@ public class DeckService {
         Optional<Person> maybePerson = personService.findById(personId);
         if (maybePerson.isPresent()) {
             Person person = maybePerson.get();
-            List<Deck> allDecks = getAllDecks(person);
+            List<Deck> allDecks = getAllDecks(person.getPersonId());
             return allDecks.stream().filter(d -> d.getCreator().equals(person)).toList();
         } else {
             return new ArrayList<>();
