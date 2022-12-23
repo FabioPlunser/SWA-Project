@@ -228,4 +228,29 @@ public class DeckService {
             return false;
         }
     }
+
+    /**
+     * Publishes a deck
+     * Already published deck cannot be published again
+     * NOTE: No permission check is done within this method - check before, if execution is allowed!
+     *
+     * @param deckId id of deck to be published
+     * @return true if deck has been published, false otherwise
+     */
+    public boolean publish(UUID deckId) {
+        try {
+            Optional<Deck> maybeFoundDeck = this.findById(deckId);
+            if (maybeFoundDeck.isEmpty()) {
+                return false;
+            } else if (maybeFoundDeck.get().isPublished()) {
+                return false;
+            } else {
+                Deck deck = maybeFoundDeck.get();
+                deck.setPublished(true);
+                return save(deck);
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
