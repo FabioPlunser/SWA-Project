@@ -203,4 +203,29 @@ public class DeckService {
             return false;
         }
     }
+
+    /**
+     * Unlocks a deck
+     * Already unblocked deck cannot be unblocked again
+     * NOTE: No permission check is done within this method - check before, if execution is allowed!
+     *
+     * @param deckId id of deck to be unblocked
+     * @return true if deck has been unblocked, false otherwise
+     */
+    public boolean unblock(UUID deckId) {
+        try {
+            Optional<Deck> maybeFoundDeck = this.findById(deckId);
+            if (maybeFoundDeck.isEmpty()) {
+                return false;
+            } else if (maybeFoundDeck.get().isBlocked()) {
+                return false;
+            } else {
+                Deck deck = maybeFoundDeck.get();
+                deck.setBlocked(false);
+                return save(deck);
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
