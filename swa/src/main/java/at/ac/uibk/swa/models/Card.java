@@ -70,15 +70,17 @@ public class Card implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Card u)
-            return u.cardId == this.cardId;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        return false;
+        Card card = (Card) o;
+
+        return cardId.equals(card.cardId);
     }
 
     @Override
     public int hashCode() {
-        return this.cardId.hashCode();
+        return cardId.hashCode();
     }
 }

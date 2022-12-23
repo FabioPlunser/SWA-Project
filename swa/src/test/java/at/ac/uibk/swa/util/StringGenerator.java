@@ -23,6 +23,17 @@ public class StringGenerator {
     }
 
     public static String password() {
-        return StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, 16);
+        int passwordLength = 16;
+        return StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, passwordLength);
+    }
+
+    public static String deckDescription() {
+        int deckDescriptionLength = 50;
+        return "Random deck description: " + StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS + " ", deckDescriptionLength);
+    }
+
+    public static String cardText() {
+        int cardTextLength = 250;
+        return "Random card text: " + StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS + " ", cardTextLength);
     }
 }

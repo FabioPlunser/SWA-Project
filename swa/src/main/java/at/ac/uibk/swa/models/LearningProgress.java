@@ -44,4 +44,19 @@ public class LearningProgress implements Serializable {
     @Column(name = "next_learn", nullable = false)
     @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private Date nextLearn;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LearningProgress that = (LearningProgress) o;
+
+        return learningProgressId.equals(that.learningProgressId);
+    }
+
+    @Override
+    public int hashCode() {
+        return learningProgressId.hashCode();
+    }
 }
