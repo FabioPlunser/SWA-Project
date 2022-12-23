@@ -52,11 +52,8 @@ public class DeckServiceTest {
             }
         }
 
-        // TODO: Implement functionality on deckService
-
         // when: loading all decks from database
         List<Deck> loadedDecks = deckService.getAllDecks();
-        System.out.println(loadedDecks);
 
         // then: all saved decks must be found again and attributes must be identical
         for (Map.Entry<Person,Deck> entry : savedDecks.entrySet()) {
@@ -71,6 +68,5 @@ public class DeckServiceTest {
             assertFalse(loadedDeck.isDeleted(), deck + " has been deleted");
             assertFalse(loadedDeck.isPublished(), deck + " has been published");
         }
-
     }
 }
