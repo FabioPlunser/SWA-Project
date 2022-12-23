@@ -2,6 +2,8 @@ package at.ac.uibk.swa.service;
 
 import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
+import at.ac.uibk.swa.models.LearningProgress;
+import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.CardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,11 @@ public class CardService {
     @Autowired
     CardRepository cardRepository;
     @Autowired
+    Learn
+    @Autowired
     DeckService deckService;
+    @Autowired
+    PersonService personService;
 
     /**
      * Gets all existing cards from the repository
@@ -49,6 +55,22 @@ public class CardService {
      */
     public Optional<Card> findById(UUID cardId) {
         return cardRepository.findById(cardId);
+    }
+
+    /**
+     * Gets the learning progress for a specific card and a specific person, if available
+     *
+     * @param personId id of the person for which the learning progress is requested
+     * @return learning progress for given card and person (if found), otherwise nothing
+     */
+    public Optional<LearningProgress> getLearningProgress(UUID cardId, UUID personId) {
+        Optional<Card> maybeCard = findById(cardId);
+        Optional<Person> maybePerson = personService.findById(personId);
+        if (maybeCard.isPresent() && maybePerson.isPresent()) {
+            return null;
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**
