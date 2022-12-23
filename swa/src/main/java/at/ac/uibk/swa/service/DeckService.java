@@ -157,9 +157,10 @@ public class DeckService {
     /**
      * Deletes a deck (soft delete)
      * Already deleted deck cannot be deleted again
+     * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param deckId
-     * @return
+     * @param deckId id of deck to be deleted
+     * @return true if deck has been deleted, false otherwise
      */
     public boolean delete(UUID deckId) {
         try {
@@ -171,6 +172,31 @@ public class DeckService {
             } else {
                 Deck deck = maybeFoundDeck.get();
                 deck.setDeleted(true);
+                return save(deck);
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Blocks a deck
+     * Already blocked deck cannot be blocked again
+     * NOTE: No permission check is done within this method - check before, if execution is allowed!
+     *
+     * @param deckId id of deck to be blocked
+     * @return true if deck has been blocked, false otherwise
+     */
+    public boolean block(UUID deckId) {
+        try {
+            Optional<Deck> maybeFoundDeck = this.findById(deckId);
+            if (maybeFoundDeck.isEmpty()) {
+                return false;
+            } else if (maybeFoundDeck.get().isBlocked()) {
+                return false;
+            } else {
+                Deck deck = maybeFoundDeck.get();
+                deck.setBlocked(true);
                 return save(deck);
             }
         } catch (Exception e) {
