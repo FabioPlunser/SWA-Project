@@ -24,7 +24,7 @@ public class Deck implements Serializable {
     public Deck(String name, String description, Person creator) {
         this(null, name, description,
              false, false, false,
-             creator, new ArrayList<>(), Arrays.asList(creator)
+             creator, new ArrayList<>(), new ArrayList<>()
         );
     }
 
@@ -76,6 +76,14 @@ public class Deck implements Serializable {
     @Builder.Default
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Person> subscribedPersons = new ArrayList<>();
+
+    public List<Person> getAllPersons() {
+        return Stream.concat(
+                    this.subscribedPersons.stream(),
+                    Stream.of(this.creator)
+            )
+            .toList();
+    }
 
     @Override
     public String toString() {
