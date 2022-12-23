@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -76,13 +77,12 @@ public class Deck implements Serializable {
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Person> subscribedPersons = new ArrayList<>();
 
-    //TODO: Change name - get subscribes, etc.
-    public Person[] getPersons() {
+    public List<Person> getAllPersons() {
         return Stream.concat(
                     this.subscribedPersons.stream(),
                     Stream.of(this.creator)
             )
-            .toArray(Person[]::new);
+            .toList();
     }
 
     @Override
