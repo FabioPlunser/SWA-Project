@@ -27,15 +27,6 @@ public class CardService {
         return cardRepository.findAll();
     }
 
-    public boolean save(Card card) {
-        try {
-            this.cardRepository.save(card);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     /**
      * Gets all existing cards for a specific deck from the repository
      * NOTE: if deck is not found (wrong id) no cards will be returned
@@ -48,5 +39,24 @@ public class CardService {
         Optional<Deck> maybeDeck = deckService.findById(deckId);
         if (maybeDeck.isPresent()) cards = maybeDeck.get().getCards();
         return cards;
+    }
+
+    /**
+     * Finds a card within the repository by its id
+     *
+     * @param cardId id of the card to be found
+     * @return card with given id (if found), otherwise nothing
+     */
+    public Optional<Card> findById(UUID cardId) {
+        return cardRepository.findById(cardId);
+    }
+    
+    public boolean save(Card card) {
+        try {
+            this.cardRepository.save(card);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
