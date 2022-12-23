@@ -7,6 +7,8 @@ import at.ac.uibk.swa.repositories.DeckRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,9 +18,10 @@ import java.util.stream.Stream;
 
 @Service("deckService")
 public class DeckService {
-
     @Autowired
     DeckRepository deckRepository;
+    @Autowired
+    PersonService personService;
 
     /**
      * Gets all decks from the repository no matter if deleted, blocked, published, etc.
@@ -41,59 +44,81 @@ public class DeckService {
      *      - deck is included, if person is creator
      *      - deck is included, if person is subscriber of deck, but description is changed
      *
-     * @param person person that wants to get all decks
-     * @return a list of all decks that person can view
+     * @param personId id of the person that wants to get all decks
+     * @return a list of all decks that person can view, empty list if person has not been found
      */
-    public List<Deck> getAllDecks(Person person) {
-        List<Deck> allDecks = this.getAllDecks();
+    public List<Deck> getAllDecks(UUID personId) {
+        Optional<Person> maybePerson = personService.findById(personId);
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
+            List<Deck> allDecks = this.getAllDecks();
 
-        List<Deck> deletedDecks = allDecks.stream()
-                .filter(d -> d.getAllPersons().contains(person) && d.isDeleted())
-                .toList();
-        deletedDecks.forEach(d -> d.setDescription("Deck has been deleted"));
+            List<Deck> deletedDecks = allDecks.stream()
+                    .filter(d -> d.getAllPersons().contains(person) && d.isDeleted())
+                    .toList();
+            deletedDecks.forEach(d -> d.setDescription("Deck has been deleted"));
 
-        List<Deck> blockedDecks = allDecks.stream()
-                .filter(d -> !deletedDecks.contains(d))
-                .filter(d ->
-                        person.getPermissions().contains(Permission.ADMIN) ||
-                        (d.getAllPersons().contains(person) && d.isBlocked())
-                )
-                .toList();
-        if (!person.getPermissions().contains(Permission.ADMIN)) {
-            blockedDecks.forEach(d -> d.setDescription("Deck has been blocked"));
+            List<Deck> blockedDecks = allDecks.stream()
+                    .filter(d -> !deletedDecks.contains(d))
+                    .filter(d ->
+                            person.getPermissions().contains(Permission.ADMIN) ||
+                                    (d.getAllPersons().contains(person) && d.isBlocked())
+                    )
+                    .toList();
+            if (!person.getPermissions().contains(Permission.ADMIN)) {
+                blockedDecks.forEach(d -> d.setDescription("Deck has been blocked"));
+            }
+
+            List<Deck> ownedDecks = allDecks.stream()
+                    .filter(d -> !deletedDecks.contains(d))
+                    .filter(d -> !blockedDecks.contains(d))
+                    .filter(d -> d.getCreator().equals(person))
+                    .toList();
+
+            List<Deck> publishedDecks = allDecks.stream()
+                    .filter(d -> !deletedDecks.contains(d))
+                    .filter(d -> !blockedDecks.contains(d))
+                    .filter(d -> !ownedDecks.contains(d))
+                    .filter(d ->
+                            person.getPermissions().contains(Permission.ADMIN) ||
+                                    (d.getAllPersons().contains(person) && !d.isPublished())
+                    )
+                    .toList();
+            if (!person.getPermissions().contains(Permission.ADMIN)) {
+                publishedDecks.forEach(d -> d.setDescription("Deck has been unpublished"));
+            }
+
+            return Stream.concat(
+                    Stream.concat(
+                            deletedDecks.stream(),
+                            blockedDecks.stream()
+                    ),
+                    Stream.concat(
+                            ownedDecks.stream(),
+                            publishedDecks.stream()
+                    )
+            ).toList();
+        } else {
+            return new ArrayList<>();
         }
-
-        List<Deck> ownedDecks = allDecks.stream()
-                .filter(d -> !deletedDecks.contains(d))
-                .filter(d -> !blockedDecks.contains(d))
-                .filter(d -> d.getCreator().equals(person))
-                .toList();
-
-        List<Deck> publishedDecks = allDecks.stream()
-                .filter(d -> !deletedDecks.contains(d))
-                .filter(d -> !blockedDecks.contains(d))
-                .filter(d -> !ownedDecks.contains(d))
-                .filter(d ->
-                        person.getPermissions().contains(Permission.ADMIN) ||
-                        (d.getAllPersons().contains(person) && !d.isPublished())
-                )
-                .toList();
-        if (!person.getPermissions().contains(Permission.ADMIN)) {
-            publishedDecks.forEach(d -> d.setDescription("Deck has been unpublished"));
-        }
-
-        return Stream.concat(
-                Stream.concat(
-                        deletedDecks.stream(),
-                        blockedDecks.stream()
-                ),
-                Stream.concat(
-                        ownedDecks.stream(),
-                        publishedDecks.stream()
-                )
-        ).toList();
     }
 
+    /**
+     * Gets all decks owned by a specific user from the repository
+     *
+     * @param personId id of the person
+     * @return list of owned decks, empty list if none have been found or person has not been found
+     */
+    public List<Deck> getAllOwnedDecks(UUID personId) {
+        Optional<Person> maybePerson = personService.findById(personId);
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
+            List<Deck> allDecks = getAllDecks(person.getPersonId());
+            return allDecks.stream().filter(d -> d.getCreator().equals(person)).toList();
+        } else {
+            return new ArrayList<>();
+        }
+    }
 
     /**
      * Finds a deck within the repository by its id
