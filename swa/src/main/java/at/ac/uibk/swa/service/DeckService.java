@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,7 +45,7 @@ public class DeckService {
      * @return a list of all decks that person can view
      */
     public List<Deck> getAllDecks(Person person) {
-        List<Deck> allDecks = deckRepository.findAll();
+        List<Deck> allDecks = this.getAllDecks();
 
         List<Deck> deletedDecks = allDecks.stream()
                 .filter(d -> d.getAllPersons().contains(person) && d.isDeleted())
@@ -90,6 +92,17 @@ public class DeckService {
                         publishedDecks.stream()
                 )
         ).toList();
+    }
+
+
+    /**
+     * Finds a deck within the repository by its id
+     *
+     * @param id id of the deck to be return
+     * @return deck with given id (if found), otherwise nothing
+     */
+    public Optional<Deck> findById(UUID id) {
+        return deckRepository.findById(id);
     }
 
     /**
