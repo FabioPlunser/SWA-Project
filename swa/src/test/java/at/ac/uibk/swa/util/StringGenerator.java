@@ -28,12 +28,12 @@ public class StringGenerator {
     }
 
     public static String deckDescription() {
-        int deckDescriptionLength = 100;
-        return StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS + " ", deckDescriptionLength);
+        int deckDescriptionLength = 50;
+        return "Random deck description: " + StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS + " ", deckDescriptionLength);
     }
 
     public static String cardText() {
         int cardTextLength = 250;
-        return StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS + " ", cardTextLength);
+        return "Random card text: " + StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS + " ", cardTextLength);
     }
 }
