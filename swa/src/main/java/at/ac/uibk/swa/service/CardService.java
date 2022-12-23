@@ -67,7 +67,13 @@ public class CardService {
         Optional<Card> maybeCard = findById(cardId);
         Optional<Person> maybePerson = personService.findById(personId);
         if (maybeCard.isPresent() && maybePerson.isPresent()) {
-            return null;
+            Card card = maybeCard.get();
+            Person person = maybePerson.get();
+            if (card.getLearningProgresses().containsKey(person)) {
+                return Optional.of(card.getLearningProgresses().get(person));
+            } else {
+                return Optional.empty();
+            }
         } else {
             return Optional.empty();
         }
