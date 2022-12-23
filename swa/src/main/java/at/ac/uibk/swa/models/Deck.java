@@ -76,6 +76,7 @@ public class Deck implements Serializable {
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Person> subscribedPersons = new ArrayList<>();
 
+    //TODO: Change name - get subscribes, etc.
     public Person[] getPersons() {
         return Stream.concat(
                     this.subscribedPersons.stream(),
