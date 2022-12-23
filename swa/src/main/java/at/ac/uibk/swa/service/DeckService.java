@@ -91,7 +91,21 @@ public class DeckService {
                 )
         ).toList();
     }
-    
+
+    /**
+     * Saves a deck to the repository
+     * If deck already exists, use one of
+     *  update()
+     *  delete()
+     *  block()
+     *  unblock()
+     *  publish()
+     *  unpublish()
+     * instead.
+     *
+     * @param deck deck to save
+     * @return true if deck has been saved, false otherwise
+     */
     public boolean save(Deck deck) {
         try {
             this.deckRepository.save(deck);
