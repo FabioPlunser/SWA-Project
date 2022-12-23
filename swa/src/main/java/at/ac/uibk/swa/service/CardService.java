@@ -50,7 +50,13 @@ public class CardService {
     public Optional<Card> findById(UUID cardId) {
         return cardRepository.findById(cardId);
     }
-    
+
+    /**
+     * Saves a card to the repository
+     *
+     * @param card card to be saved
+     * @return true if card has been saved, false otherwise
+     */
     public boolean save(Card card) {
         try {
             this.cardRepository.save(card);

@@ -107,13 +107,6 @@ public class DeckService {
 
     /**
      * Saves a deck to the repository
-     *  update()
-     *  delete()
-     *  block()
-     *  unblock()
-     *  publish()
-     *  unpublish()
-     * instead.
      *
      * @param deck deck to save
      * @return true if deck has been saved, false otherwise
