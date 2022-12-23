@@ -44,57 +44,63 @@ public class DeckService {
      *      - deck is included, if person is creator
      *      - deck is included, if person is subscriber of deck, but description is changed
      *
-     * @param person person that wants to get all decks
-     * @return a list of all decks that person can view
+     * @param personId id of the person that wants to get all decks
+     * @return a list of all decks that person can view, empty list if person has not been found
      */
-    public List<Deck> getAllDecks(Person person) {
-        List<Deck> allDecks = this.getAllDecks();
+    public List<Deck> getAllDecks(UUID personId) {
+        Optional<Person> maybePerson = personService.findById(personId);
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
+            List<Deck> allDecks = this.getAllDecks();
 
-        List<Deck> deletedDecks = allDecks.stream()
-                .filter(d -> d.getAllPersons().contains(person) && d.isDeleted())
-                .toList();
-        deletedDecks.forEach(d -> d.setDescription("Deck has been deleted"));
+            List<Deck> deletedDecks = allDecks.stream()
+                    .filter(d -> d.getAllPersons().contains(person) && d.isDeleted())
+                    .toList();
+            deletedDecks.forEach(d -> d.setDescription("Deck has been deleted"));
 
-        List<Deck> blockedDecks = allDecks.stream()
-                .filter(d -> !deletedDecks.contains(d))
-                .filter(d ->
-                        person.getPermissions().contains(Permission.ADMIN) ||
-                        (d.getAllPersons().contains(person) && d.isBlocked())
-                )
-                .toList();
-        if (!person.getPermissions().contains(Permission.ADMIN)) {
-            blockedDecks.forEach(d -> d.setDescription("Deck has been blocked"));
+            List<Deck> blockedDecks = allDecks.stream()
+                    .filter(d -> !deletedDecks.contains(d))
+                    .filter(d ->
+                            person.getPermissions().contains(Permission.ADMIN) ||
+                                    (d.getAllPersons().contains(person) && d.isBlocked())
+                    )
+                    .toList();
+            if (!person.getPermissions().contains(Permission.ADMIN)) {
+                blockedDecks.forEach(d -> d.setDescription("Deck has been blocked"));
+            }
+
+            List<Deck> ownedDecks = allDecks.stream()
+                    .filter(d -> !deletedDecks.contains(d))
+                    .filter(d -> !blockedDecks.contains(d))
+                    .filter(d -> d.getCreator().equals(person))
+                    .toList();
+
+            List<Deck> publishedDecks = allDecks.stream()
+                    .filter(d -> !deletedDecks.contains(d))
+                    .filter(d -> !blockedDecks.contains(d))
+                    .filter(d -> !ownedDecks.contains(d))
+                    .filter(d ->
+                            person.getPermissions().contains(Permission.ADMIN) ||
+                                    (d.getAllPersons().contains(person) && !d.isPublished())
+                    )
+                    .toList();
+            if (!person.getPermissions().contains(Permission.ADMIN)) {
+                publishedDecks.forEach(d -> d.setDescription("Deck has been unpublished"));
+            }
+
+            return Stream.concat(
+                    Stream.concat(
+                            deletedDecks.stream(),
+                            blockedDecks.stream()
+                    ),
+                    Stream.concat(
+                            ownedDecks.stream(),
+                            publishedDecks.stream()
+                    )
+            ).toList();
+        } else {
+            return new ArrayList<>();
         }
-
-        List<Deck> ownedDecks = allDecks.stream()
-                .filter(d -> !deletedDecks.contains(d))
-                .filter(d -> !blockedDecks.contains(d))
-                .filter(d -> d.getCreator().equals(person))
-                .toList();
-
-        List<Deck> publishedDecks = allDecks.stream()
-                .filter(d -> !deletedDecks.contains(d))
-                .filter(d -> !blockedDecks.contains(d))
-                .filter(d -> !ownedDecks.contains(d))
-                .filter(d ->
-                        person.getPermissions().contains(Permission.ADMIN) ||
-                        (d.getAllPersons().contains(person) && !d.isPublished())
-                )
-                .toList();
-        if (!person.getPermissions().contains(Permission.ADMIN)) {
-            publishedDecks.forEach(d -> d.setDescription("Deck has been unpublished"));
-        }
-
-        return Stream.concat(
-                Stream.concat(
-                        deletedDecks.stream(),
-                        blockedDecks.stream()
-                ),
-                Stream.concat(
-                        ownedDecks.stream(),
-                        publishedDecks.stream()
-                )
-        ).toList();
     }
 
     /**
