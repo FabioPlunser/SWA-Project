@@ -1,5 +1,8 @@
 package at.ac.uibk.swa.config;
 
+import at.ac.uibk.swa.config.exceptionHandling.RestAccessDeniedHandler;
+import at.ac.uibk.swa.config.filters.BearerTokenAuthenticationFilter;
+import at.ac.uibk.swa.config.filters.CookieTokenAuthenticationFilter;
 import at.ac.uibk.swa.models.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

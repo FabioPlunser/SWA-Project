@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.controllers;
+package at.ac.uibk.swa.controllers.errorControllers;
 
 import at.ac.uibk.swa.models.restResponses.MessageResponse;
 import at.ac.uibk.swa.models.restResponses.RestResponse;

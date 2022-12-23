@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.controllers;
 
-import at.ac.uibk.swa.config.AuthContext;
+import at.ac.uibk.swa.config.personAuthentication.AuthContext;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.models.restResponses.AuthFailedResponse;
 import at.ac.uibk.swa.models.restResponses.LoginResponse;

@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.config;
+package at.ac.uibk.swa.config.exceptionHandling;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

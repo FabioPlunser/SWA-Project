@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.config;
+package at.ac.uibk.swa.config.personAuthentication;
 
 import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Permission;
