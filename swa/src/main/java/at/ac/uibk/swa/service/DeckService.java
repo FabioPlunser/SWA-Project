@@ -7,6 +7,8 @@ import at.ac.uibk.swa.repositories.DeckRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,9 +18,10 @@ import java.util.stream.Stream;
 
 @Service("deckService")
 public class DeckService {
-
     @Autowired
     DeckRepository deckRepository;
+    @Autowired
+    PersonService personService;
 
     /**
      * Gets all decks from the repository no matter if deleted, blocked, published, etc.
@@ -94,6 +97,22 @@ public class DeckService {
         ).toList();
     }
 
+    /**
+     * Gets all decks owned by a specific user from the repository
+     *
+     * @param personId id of the person
+     * @return list of owned decks, empty list if none have been found or person has not been found
+     */
+    public List<Deck> getAllOwnedDecks(UUID personId) {
+        Optional<Person> maybePerson = personService.findById(personId);
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
+            List<Deck> allDecks = getAllDecks(person);
+            return allDecks.stream().filter(d -> d.getCreator().equals(person)).toList();
+        } else {
+            return new ArrayList<>();
+        }
+    }
 
     /**
      * Finds a deck within the repository by its id
