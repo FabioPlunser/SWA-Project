@@ -145,10 +145,32 @@ public class DeckService {
                 return false;
             } else {
                 Deck deck = maybeFoundDeck.get();
-
                 if (name != null) deck.setName(name);
                 if (description != null) deck.setDescription(description);
+                return save(deck);
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
+    /**
+     * Deletes a deck (soft delete)
+     * Already deleted deck cannot be deleted again
+     *
+     * @param deckId
+     * @return
+     */
+    public boolean delete(UUID deckId) {
+        try {
+            Optional<Deck> maybeFoundDeck = this.findById(deckId);
+            if (maybeFoundDeck.isEmpty()) {
+                return false;
+            } else if (maybeFoundDeck.get().isDeleted()) {
+                return false;
+            } else {
+                Deck deck = maybeFoundDeck.get();
+                deck.setDeleted(true);
                 return save(deck);
             }
         } catch (Exception e) {
