@@ -48,7 +48,7 @@ public class Card implements Serializable {
 
     @JsonIgnore
     @JoinColumn(name = "deck_id", nullable = false)
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     private Deck deck;
 
     @JsonIgnore
