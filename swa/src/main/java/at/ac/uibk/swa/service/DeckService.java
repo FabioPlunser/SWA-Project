@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service("deckService")
 public class DeckService {
@@ -23,15 +25,6 @@ public class DeckService {
      */
     public List<Deck> getAllDecks() {
         return deckRepository.findAll();
-    }
-
-    public boolean save(Deck deck) {
-        try {
-            this.deckRepository.save(deck);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     /**
@@ -51,6 +44,60 @@ public class DeckService {
      */
     public List<Deck> getAllDecks(Person person) {
         List<Deck> allDecks = deckRepository.findAll();
-        return null;
+
+        List<Deck> deletedDecks = allDecks.stream()
+                .filter(d -> d.getAllPersons().contains(person) && d.isDeleted())
+                .toList();
+        deletedDecks.forEach(d -> d.setDescription("Deck has been deleted"));
+
+        List<Deck> blockedDecks = allDecks.stream()
+                .filter(d -> !deletedDecks.contains(d))
+                .filter(d ->
+                        person.getPermissions().contains(Permission.ADMIN) ||
+                        (d.getAllPersons().contains(person) && d.isBlocked())
+                )
+                .toList();
+        if (!person.getPermissions().contains(Permission.ADMIN)) {
+            blockedDecks.forEach(d -> d.setDescription("Deck has been blocked"));
+        }
+
+        List<Deck> ownedDecks = allDecks.stream()
+                .filter(d -> !deletedDecks.contains(d))
+                .filter(d -> !blockedDecks.contains(d))
+                .filter(d -> d.getCreator().equals(person))
+                .toList();
+
+        List<Deck> publishedDecks = allDecks.stream()
+                .filter(d -> !deletedDecks.contains(d))
+                .filter(d -> !blockedDecks.contains(d))
+                .filter(d -> !ownedDecks.contains(d))
+                .filter(d ->
+                        person.getPermissions().contains(Permission.ADMIN) ||
+                        (d.getAllPersons().contains(person) && !d.isPublished())
+                )
+                .toList();
+        if (!person.getPermissions().contains(Permission.ADMIN)) {
+            publishedDecks.forEach(d -> d.setDescription("Deck has been unpublished"));
+        }
+
+        return Stream.concat(
+                Stream.concat(
+                        deletedDecks.stream(),
+                        blockedDecks.stream()
+                ),
+                Stream.concat(
+                        ownedDecks.stream(),
+                        publishedDecks.stream()
+                )
+        ).toList();
+    }
+    
+    public boolean save(Deck deck) {
+        try {
+            this.deckRepository.save(deck);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
