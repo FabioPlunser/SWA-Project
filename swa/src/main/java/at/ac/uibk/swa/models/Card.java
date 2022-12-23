@@ -48,7 +48,7 @@ public class Card implements Serializable {
 
     @JsonIgnore
     @JoinColumn(name = "deck_id", nullable = false)
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     private Deck deck;
 
     @JsonIgnore
@@ -64,9 +64,7 @@ public class Card implements Serializable {
 
     @Override
     public String toString() {
-        String f = !isFlipped ? this.frontText : this.backText;
-        String b =  isFlipped ? this.frontText : this.backText;
-        return String.format("Card: %s - %s", f, b);
+        return cardId.toString();
     }
 
     @Override
