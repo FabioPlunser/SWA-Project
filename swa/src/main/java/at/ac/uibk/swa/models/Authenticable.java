@@ -60,12 +60,7 @@ public abstract class Authenticable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Authenticable that = (Authenticable) o;
-
-        return id.equals(that.id);
+        return (this == o) || ((o instanceof Authenticable a) && (this.id.equals(a.id)));
     }
 
     @Override
