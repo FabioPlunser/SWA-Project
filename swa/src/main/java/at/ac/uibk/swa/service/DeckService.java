@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.service;
 
 import at.ac.uibk.swa.models.Deck;
+import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.DeckRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +32,25 @@ public class DeckService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Gets all decks from the repository that a person can see, depending on permissions
+     *  - isDeleted:
+     *      - deck is included, if person is subscriber of deck, but description is changed
+     *  - isBlocked:
+     *      - deck is included, if person is ADMIN
+     *      - deck is included, if person is subscriber of deck, but description is changed
+     *  - !isPublished:
+     *      - deck is included, if person is ADMIN
+     *      - deck is included, if person is creator
+     *      - deck is included, if person is subscriber of deck, but description is changed
+     *
+     * @param person person that wants to get all decks
+     * @return a list of all decks that person can view
+     */
+    public List<Deck> getAllDecks(Person person) {
+        List<Deck> allDecks = deckRepository.findAll();
+        return null;
     }
 }
