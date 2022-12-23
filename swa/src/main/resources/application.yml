@@ -1,3 +1,7 @@
+
+server:
+  port: 3000
+
 spring:
   profiles.include: 'secrets'
   datasource:
@@ -14,5 +18,14 @@ spring:
   resources:
     static-locations: 'classpath:/static/'
 
-server:
-  port: 3000
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test
+    password: password
+    properties:
+      mail:
+        smtp:
+          auth: true
+        starttls:
+          enable: true

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Getter
 @Entity
@@ -73,7 +74,15 @@ public class Deck implements Serializable {
 
     @Builder.Default
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Person> persons = new ArrayList<>();
+    private List<Person> subscribedPersons = new ArrayList<>();
+
+    public Person[] getPersons() {
+        return Stream.concat(
+                    this.subscribedPersons.stream(),
+                    Stream.of(this.creator)
+            )
+            .toArray(Person[]::new);
+    }
 
     @Override
     public String toString() {
