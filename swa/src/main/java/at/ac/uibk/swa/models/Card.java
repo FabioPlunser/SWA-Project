@@ -69,12 +69,7 @@ public class Card implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Card card = (Card) o;
-
-        return cardId.equals(card.cardId);
+        return (this == o) || ((o instanceof Card c) && (this.cardId.equals(c.cardId)));
     }
 
     @Override

@@ -8,7 +8,6 @@ import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -92,12 +91,7 @@ public class Deck implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Deck deck = (Deck) o;
-
-        return deckId.equals(deck.deckId);
+        return (this == o) || ((o instanceof Deck d) && (this.deckId.equals(d.deckId)));
     }
 
     @Override

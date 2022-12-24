@@ -47,12 +47,7 @@ public class LearningProgress implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        LearningProgress that = (LearningProgress) o;
-
-        return learningProgressId.equals(that.learningProgressId);
+        return (this == o) || ((o instanceof LearningProgress lp) && (this.learningProgressId.equals(lp.learningProgressId)));
     }
 
     @Override
