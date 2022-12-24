@@ -298,7 +298,7 @@ public class DeckService {
             Optional<Deck> maybeFoundDeck = this.findById(deckId);
             if (maybeFoundDeck.isEmpty()) {
                 return false;
-            } else if (maybeFoundDeck.get().isPublished()) {
+            } else if (!maybeFoundDeck.get().isPublished()) {
                 return false;
             } else {
                 Deck deck = maybeFoundDeck.get();
