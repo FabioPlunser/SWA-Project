@@ -69,4 +69,14 @@ public class DeckServiceTest {
             assertFalse(loadedDeck.isPublished(), deck + " has been published");
         }
     }
+
+    @Test
+    public void testGetVisibleDecksAsUser() {
+
+    }
+
+    @Test
+    public void testGetVisibleDecksAsAdmin() {
+        
+    }
 }
