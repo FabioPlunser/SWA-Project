@@ -240,8 +240,6 @@ public class DeckServiceTest {
         assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has changed");
     }
 
-
-
     @Test
     public void testGetAllDecksAsAdmin() {
     }
