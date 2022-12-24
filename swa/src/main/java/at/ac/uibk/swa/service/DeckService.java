@@ -324,7 +324,7 @@ public class DeckService {
         if (maybeDeck.isPresent() && maybePerson.isPresent()) {
             Deck deck = maybeDeck.get();
             Person person = maybePerson.get();
-            if (!deck.getSubscribedPersons().contains(person)) {
+            if (!person.getSavedDecks().contains(deck)) {
                 person.getSavedDecks().add(deck);
                 try {
                     Person savedPerson = personRepository.save(person);
@@ -356,8 +356,15 @@ public class DeckService {
         if (maybeDeck.isPresent() && maybePerson.isPresent()) {
             Deck deck = maybeDeck.get();
             Person person = maybePerson.get();
-            if (deck.getSubscribedPersons().remove(person)) {
-                return save(deck);
+            if (person.getSavedDecks().contains(deck)) {
+                person.getSavedDecks().remove(deck);
+                try {
+                    Person savedPerson = personRepository.save(person);
+                    savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().remove(savedPerson);
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
             } else {
                 return false;
             }
