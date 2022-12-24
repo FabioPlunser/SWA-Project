@@ -1,16 +1,15 @@
 package at.ac.uibk.swa.service;
 
-import at.ac.uibk.swa.models.Card;
-import at.ac.uibk.swa.models.Deck;
-import at.ac.uibk.swa.models.LearningProgress;
-import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.config.personAuthentication.AuthContext;
+import at.ac.uibk.swa.models.*;
 import at.ac.uibk.swa.repositories.CardRepository;
+import at.ac.uibk.swa.repositories.PersonRepository;
 import at.ac.uibk.swa.service.LearningAlgorithm.LearningAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
 @Service("cardService")
 public class CardService {
@@ -20,6 +19,8 @@ public class CardService {
     DeckService deckService;
     @Autowired
     PersonService personService;
+    @Autowired
+    private PersonRepository personRepository;
 
     /**
      * Gets all existing cards from the repository
@@ -37,38 +38,91 @@ public class CardService {
      * @param deckId id of the deck for which the cards should be retrieved
      * @return a list of all the cards in the deck
      */
+    // TODO: Shouldn't this first check if the Deck is blocked and return an empty List if it is?
     public List<Card> getAllCards(UUID deckId) {
-        List<Card> cards = new ArrayList<>();
+        return deckService.findById(deckId)
+                .map(Deck::getCards)
+                .orElse(new ArrayList<>());
+    }
+
+    /**
+     * Gets all cards that should be learnt from a specific deck from the repository for the logged in user.
+     *
+     * @param deck
+     * @return
+     */
+    public List<Card> getAllCardsToLearn(Deck deck) {
+        Optional maybeUser = AuthContext.getCurrentUser();
+
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            return getAllCardsToLearn(deck, person);
+        }
+
+        return new ArrayList<>();
+    }
+
+    /**
+     * Gets all cards that should be learnt from a specific deck from the repository for the logged in user.
+     *
+     * @param deckId
+     * @return
+     */
+    public List<Card> getAllCardsToLearn(UUID deckId) {
         Optional<Deck> maybeDeck = deckService.findById(deckId);
-        if (maybeDeck.isPresent()) cards = maybeDeck.get().getCards();
-        return cards;
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+
+        if (maybeDeck.isPresent() && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            return getAllCardsToLearn(maybeDeck.get(), person);
+        }
+
+        return new ArrayList<>();
     }
 
     /**
      * Gets all cards that should be learnt from a specific deck from the repository
      * NOTE: if deck is not found (wrong id) no cards will be returned
      *
-     * @param deckId id of the deck of which cards should be returned
-     * @param personId id of the person for which the progress should be checked
-     * @return
+     * @param deckId the deck from which cards should be returned
+     * @param personId the person for which the progress should be checked
+     * @return A List of all Cards that have to be learned.
+     *         This contains Cards whose nextLearn Date is due and cards which haven't been learned yet.
      */
     public List<Card> getAllCardsToLearn(UUID deckId, UUID personId) {
-        List<Card> cards = new ArrayList<>();
         Optional<Deck> maybeDeck = deckService.findById(deckId);
-        if (maybeDeck.isPresent()) {
-            Deck deck = maybeDeck.get();
-            Date now = new Date();
-            List<Card> oldCards = deck.getCards().stream()
-                    .filter(c -> getLearningProgress(c.getCardId(), personId).isPresent())
-                    .filter(c -> getLearningProgress(c.getCardId(), personId).get().getNextLearn().before(now))
-                    .toList();
-            List<Card> newCards = deck.getCards().stream()
-                    .filter(c -> getLearningProgress(c.getCardId(), personId).isEmpty())
-                    .toList();
-            cards = Stream.concat(oldCards.stream(), newCards.stream()).toList();
+        Optional<Person> maybePerson = personService.findById(personId);
+
+        if (maybeDeck.isPresent() && maybePerson.isPresent()) {
+            return getAllCardsToLearn(maybeDeck.get(), maybePerson.get());
         }
-        return cards;
+
+        return new ArrayList<>();
     }
+
+    /**
+     * Gets all cards that should be learnt from a specific deck from the repository
+     * NOTE: if deck is not found (wrong id) no cards will be returned
+     *
+     * @param deck the deck from which cards should be returned
+     * @param person the person for which the progress should be checked
+     * @return A List of all Cards that have to be learned.
+     *         This contains Cards whose nextLearn Date is due and cards which haven't been learned yet.
+     */
+    public List<Card> getAllCardsToLearn(Deck deck, Person person) {
+            Date now = new Date();
+            return deck
+                    .getCards()
+                    .stream()
+                    .filter(card -> card.getLearningProgress(person)
+                                    .map(
+                                            // If a Learning Progress is present, check if it's nextLearn is due.
+                                            // If it is due, return null => Optional will be empty
+                                            lp -> lp.getNextLearn().before(now) ? null : lp
+                                    )
+                            // If no Learning Progress is present, the card hasn't been learned.
+                            .isEmpty()
+                    ).toList();
+    }
+
 
     /**
      * Finds a card within the repository by its id
@@ -80,26 +134,45 @@ public class CardService {
         return cardRepository.findById(cardId);
     }
 
+    public Optional<LearningProgress> getLearningProgress(Card card) {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        return maybeUser
+                .map(user -> user instanceof Person person ? person : null)
+                .map(person -> getLearningProgress(card, person))
+                .flatMap(Function.identity());
+    }
+
+    public Optional<LearningProgress> getLearningProgress(UUID cardId) {
+        Optional<Card> maybeCard = cardRepository.findById(cardId);
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+
+        if (maybeCard.isPresent() && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            return getLearningProgress(maybeCard.get(), person);
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<LearningProgress> getLearningProgress(UUID cardId, UUID personId) {
+        Optional<Card> maybeCard = cardRepository.findById(cardId);
+        Optional<Person> maybePerson = personService.findById(personId);
+
+        if (maybeCard.isPresent() && maybePerson.isPresent()) {
+            return getLearningProgress(maybeCard.get(), maybePerson.get());
+        }
+
+        return Optional.empty();
+    }
+
     /**
      * Gets the learning progress for a specific card and a specific person, if available
      *
-     * @param personId id of the person for which the learning progress is requested
+     * @parm card the card for which the learning progress is requested
+     * @param person the person for which the learning progress is requested
      * @return learning progress for given card and person (if found), otherwise nothing
      */
-    public Optional<LearningProgress> getLearningProgress(UUID cardId, UUID personId) {
-        Optional<Card> maybeCard = findById(cardId);
-        Optional<Person> maybePerson = personService.findById(personId);
-        if (maybeCard.isPresent() && maybePerson.isPresent()) {
-            Card card = maybeCard.get();
-            Person person = maybePerson.get();
-            if (card.getLearningProgresses().containsKey(person)) {
-                return Optional.of(card.getLearningProgresses().get(person));
-            } else {
-                return Optional.empty();
-            }
-        } else {
-            return Optional.empty();
-        }
+    public Optional<LearningProgress> getLearningProgress(Card card, Person person) {
+        return card.getLearningProgress(person);
     }
 
     /**
@@ -113,17 +186,43 @@ public class CardService {
     public boolean learn(UUID cardId, UUID personId, int difficulty) {
         Optional<Card> maybeCard = findById(cardId);
         Optional<Person> maybePerson = personService.findById(personId);
+
         if (maybeCard.isPresent() && maybePerson.isPresent()) {
-            Card card = maybeCard.get();
-            Person person = maybePerson.get();
-            Optional<LearningProgress> maybeLearningProgress = getLearningProgress(card.getCardId(), personId);
-            LearningProgress learningProgress = maybeLearningProgress.orElseGet(LearningProgress::new);;
-            learningProgress = LearningAlgorithm.updateLearningProgress(learningProgress, difficulty);
-            card.getLearningProgresses().put(person, learningProgress);
-            return save(card);
+            return learn(maybeCard.get(), maybePerson.get(), difficulty);
         } else {
             return false;
         }
+    }
+
+    public boolean learn(Card card, int difficulty) {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            return learn(card, person, difficulty);
+        } else {
+            return false;
+        }
+    }
+
+    public boolean learn(UUID cardId, int difficulty) {
+        Optional<Card> maybeCard = findById(cardId);
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+
+        if (maybeCard.isPresent() && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            return learn(maybeCard.get(), person, difficulty);
+        } else {
+            return false;
+        }
+    }
+
+    public boolean learn(Card card, Person person, int difficulty) {
+        card.computeNewLearningProgress(person, maybeLearningProgress -> {
+                LearningProgress learningProgress = maybeLearningProgress.orElseGet(LearningProgress::new);
+                return LearningAlgorithm.updateLearningProgress(learningProgress, difficulty);
+            }
+        );
+
+        return save(card);
     }
 
     /**

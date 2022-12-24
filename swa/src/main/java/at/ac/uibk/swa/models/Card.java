@@ -9,7 +9,9 @@ import org.hibernate.type.SqlTypes;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Getter
 @Entity
@@ -51,6 +53,7 @@ public class Card implements Serializable {
     @ManyToOne(optional = false)
     private Deck deck;
 
+    @Getter(AccessLevel.NONE)
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER)
     @Builder.Default
@@ -61,6 +64,17 @@ public class Card implements Serializable {
     )
     @MapKeyJoinColumn(name = "person_id")
     private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
+
+    public Optional<LearningProgress> getLearningProgress(Person person) {
+        return Optional.ofNullable(this.learningProgresses.getOrDefault(person, null));
+    }
+
+    public void computeNewLearningProgress(
+            Person person,
+            Function<Optional<LearningProgress>, LearningProgress> mapper
+    ) {
+        this.learningProgresses.compute(person, (p, lp) -> mapper.apply(Optional.ofNullable(lp)));
+    }
 
     @Override
     public String toString() {
