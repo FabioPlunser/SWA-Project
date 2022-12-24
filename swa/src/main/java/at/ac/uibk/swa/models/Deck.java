@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
@@ -77,12 +78,10 @@ public class Deck implements Serializable {
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Person> subscribedPersons = new ArrayList<>();
 
-    public List<Person> getAllPersons() {
-        return Stream.concat(
-                    this.subscribedPersons.stream(),
-                    Stream.of(this.creator)
-            )
-            .toList();
+    public List<Person> getSubscribedPersons() {
+        List<Person> subscribers = new ArrayList<>(this.subscribedPersons);
+        if (!isDeleted) subscribers.add(creator);
+        return subscribers;
     }
 
     @Override

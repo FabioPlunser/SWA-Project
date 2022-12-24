@@ -84,7 +84,7 @@ public class DeckServiceTest {
 
         String deckDescription = "Description";
         Deck deck = new Deck("deck-TestGetAllDecksAsUserCreatedUnpublished", deckDescription, person);
-        assertTrue(deckService.save(deck));
+        assertTrue(deckService.save(deck), "Unable to save deck");
 
         // when: loading all decks for that user
         List<Deck> decks = deckService.getAllDecks(person.getPersonId());
@@ -108,8 +108,8 @@ public class DeckServiceTest {
 
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedPublished", deckDescription, person);
-        assertTrue(deckService.save(deck));
-        assertTrue(deckService.publish(deck.getDeckId()));
+        assertTrue(deckService.save(deck), "Unable to save deck");
+        assertTrue(deckService.publish(deck.getDeckId()), "Unable to publish deck");
 
         // when: loading all decks for that user
         List<Deck> decks = deckService.getAllDecks(person.getPersonId());
@@ -133,8 +133,8 @@ public class DeckServiceTest {
 
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedBlocked", deckDescription, person);
-        assertTrue(deckService.save(deck));
-        assertTrue(deckService.block(deck.getDeckId()));
+        assertTrue(deckService.save(deck), "Unable to save deck");
+        assertTrue(deckService.block(deck.getDeckId()), "Unable to block deck");
 
         // when: loading all decks for that user
         List<Deck> decks = deckService.getAllDecks(person.getPersonId());
@@ -160,8 +160,8 @@ public class DeckServiceTest {
 
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedDeleted", deckDescription, person);
-        assertTrue(deckService.save(deck));
-        assertTrue(deckService.delete(deck.getDeckId()));
+        assertTrue(deckService.save(deck), "Unable to save deck");
+        assertTrue(deckService.delete(deck.getDeckId()), "Unable to delete deck");
 
         // when: loading all decks for that user
         List<Deck> decks = deckService.getAllDecks(person.getPersonId());

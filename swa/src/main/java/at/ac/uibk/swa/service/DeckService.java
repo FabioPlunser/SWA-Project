@@ -55,22 +55,16 @@ public class DeckService {
             Person person = maybePerson.get();
             List<Deck> allDecks = this.getAllDecks();
 
-            List<Deck> ownedDeletedDecks = allDecks.stream()
-                    .filter(d -> d.getCreator().equals(person) && d.isDeleted())
-                    .toList();
-
             List<Deck> deletedDecks = allDecks.stream()
-                    .filter(d -> !ownedDeletedDecks.contains(d))
-                    .filter(d -> d.getAllPersons().contains(person) && d.isDeleted())
+                    .filter(d -> d.getSubscribedPersons().contains(person) && d.isDeleted())
                     .toList();
             deletedDecks.forEach(d -> d.setDescription("Deck has been deleted"));
 
             List<Deck> blockedDecks = allDecks.stream()
-                    .filter(d -> !ownedDeletedDecks.contains(d))
                     .filter(d -> !deletedDecks.contains(d))
                     .filter(d ->
                             person.getPermissions().contains(Permission.ADMIN) ||
-                                    (d.getAllPersons().contains(person) && d.isBlocked())
+                                    (d.getSubscribedPersons().contains(person) && d.isBlocked())
                     )
                     .toList();
             if (!person.getPermissions().contains(Permission.ADMIN)) {
@@ -78,20 +72,18 @@ public class DeckService {
             }
 
             List<Deck> ownedDecks = allDecks.stream()
-                    .filter(d -> !ownedDeletedDecks.contains(d))
                     .filter(d -> !deletedDecks.contains(d))
                     .filter(d -> !blockedDecks.contains(d))
-                    .filter(d -> d.getCreator().equals(person))
+                    .filter(d -> d.getCreator().equals(person) && !d.isDeleted())
                     .toList();
 
             List<Deck> publishedDecks = allDecks.stream()
-                    .filter(d -> !ownedDeletedDecks.contains(d))
                     .filter(d -> !deletedDecks.contains(d))
                     .filter(d -> !blockedDecks.contains(d))
                     .filter(d -> !ownedDecks.contains(d))
                     .filter(d ->
                             person.getPermissions().contains(Permission.ADMIN) ||
-                                    (d.getAllPersons().contains(person) && !d.isPublished())
+                                    (d.getSubscribedPersons().contains(person) && !d.isPublished())
                     )
                     .toList();
             if (!person.getPermissions().contains(Permission.ADMIN)) {
