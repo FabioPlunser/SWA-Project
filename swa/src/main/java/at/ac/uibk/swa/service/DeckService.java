@@ -297,4 +297,58 @@ public class DeckService {
             return false;
         }
     }
+
+    /**
+     * Subscribe a person to a deck
+     * A person that is already subscribed to a deck cannot subscribe again
+     *
+     * @param deckId id of the deck to subscribe to
+     * @param personId id of the person that is to subscribe
+     * @return true if the person has been subscribed, false otherwise
+     */
+    public boolean subscribeToDeck(UUID deckId, UUID personId) {
+        Optional<Deck> maybeDeck = findById(deckId);
+        Optional<Person> maybePerson = personService.findById(personId);
+        if (maybeDeck.isPresent() && maybePerson.isPresent()) {
+            Deck deck = maybeDeck.get();
+            Person person = maybePerson.get();
+            if (!deck.getSubscribedPersons().contains(person)) {
+                deck.getSubscribedPersons().add(person);
+                return save(deck);
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Unsubscribe a person from a deck
+     * Only persons that have subscribed to a deck can unsubscribe from it
+     * The creator of a deck cannot unsubscribe from the deck
+     *
+     * @param deckId id of the from which to unsubscribe
+     * @param personId id of the person that is to be unsubscribed
+     * @return true if the person has been unsubscribed, false otherwise
+     */
+    public boolean unsubscribeFromDeck(UUID deckId, UUID personId) {
+        Optional<Deck> maybeDeck = findById(deckId);
+        Optional<Person> maybePerson = personService.findById(personId);
+        if (maybeDeck.isPresent() && maybePerson.isPresent()) {
+            Deck deck = maybeDeck.get();
+            Person person = maybePerson.get();
+            if (deck.getSubscribedPersons().contains(person)) {
+                if (deck.getCreator().equals(person)) {
+                    return false;
+                }
+                deck.getSubscribedPersons().remove(person);
+                return save(deck);
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 }
