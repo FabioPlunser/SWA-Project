@@ -144,7 +144,7 @@ public class DeckServiceTest {
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
         assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");
-        assertTrue(decks.get(decks.indexOf(deck)).getDescription().contains("blocked"));
+        assertTrue(decks.get(decks.indexOf(deck)).getDescription().contains("blocked"), "Missing info on blocking");
     }
 
     @Test
@@ -169,6 +169,78 @@ public class DeckServiceTest {
         // then: the user should not be able to see that deck
         assertEquals(0, decks.size(), "Found more decks than expected");
     }
+
+    @Test
+    public void testGetAllDecksAsUserSubscribedUnpublished() {
+        // given: a published deck from another user, to which a user has subscribed and afterwards the creator
+        // unpublished the deck
+        Person person = new Person(
+                "person-testGetAllDecksAsUserSubscribedUnpublished",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(person), "Unable to save user");
+        Person otherPerson = new Person(
+                "person-testGetAllDecksAsUserSubscribedUnpublished-other",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(otherPerson), "Unable to save user");
+
+        String deckDescription = "Description";
+        Deck deck = new Deck("deck-testGetAllDecksAsUserSubscribedUnpublished", deckDescription, otherPerson);
+        assertTrue(deckService.save(deck), "Unable to save deck");
+        assertTrue(deckService.publish(deck.getDeckId()), "Unable to publish deck");
+        assertTrue(deckService.subscribeToDeck(deck.getDeckId(), person.getPersonId()), "Unable to subscribe to deck");
+        assertTrue(deckService.unpublish(deck.getDeckId()), "Unable to unpublish deck");
+
+        // when: loading all decks for the user
+        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+
+        // then: the user should be able to see the deck (and only that), but the description should be changed and
+        // contain info on unpublishing
+        assertTrue(decks.contains(deck), "Unable to find deck");
+        assertEquals(1, decks.size(), "Found more decks than expected");
+        assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");
+        assertTrue(decks.get(decks.indexOf(deck)).getDescription().contains("unpublished"), "Missing info on unpublishing");
+    }
+
+    @Test
+    public void testGetAllDecksAsUserSubscribedPublished() {
+        // given: a user and another user that has created a deck and published it, when the user subscribed to it
+        Person person = new Person(
+                "person-testGetAllDecksAsUserSubscribedPublished",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(person), "Unable to save user");
+        Person otherPerson = new Person(
+                "person-testGetAllDecksAsUserSubscribedPublished-other",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(otherPerson), "Unable to save user");
+
+        String deckDescription = "Description";
+        Deck deck = new Deck("deck-testGetAllDecksAsUserSubscribedPublished", deckDescription, otherPerson);
+        assertTrue(deckService.save(deck), "Unable to save deck");
+        assertTrue(deckService.publish(deck.getDeckId()), "Unable to publish deck");
+        assertTrue(deckService.subscribeToDeck(deck.getDeckId(), person.getPersonId()), "Unable to subscribe to deck");
+
+        // when: loading all decks for the user
+        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+
+        // then: the user should be able to see that deck (and only that) without a change to its description
+        assertTrue(decks.contains(deck), "Unable to find deck");
+        assertEquals(1, decks.size(), "Found more decks than expected");
+        assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has changed");
+    }
+
+
 
     @Test
     public void testGetAllDecksAsAdmin() {

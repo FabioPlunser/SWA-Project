@@ -4,8 +4,10 @@ import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.DeckRepository;
+import at.ac.uibk.swa.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.text.html.Option;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class DeckService {
     DeckRepository deckRepository;
     @Autowired
     PersonService personService;
+    @Autowired
+    PersonRepository personRepository;
 
     /**
      * Gets all decks from the repository no matter if deleted, blocked, published, etc.
@@ -60,8 +64,13 @@ public class DeckService {
                     .toList();
             deletedDecks.forEach(d -> d.setDescription("Deck has been deleted"));
 
+            List<Deck> administeredDecks = allDecks.stream()
+                    .filter(d -> person.getPermissions().contains(Permission.ADMIN) && !deletedDecks.contains(d))
+                    .toList();
+
             List<Deck> blockedDecks = allDecks.stream()
                     .filter(d -> !deletedDecks.contains(d))
+                    .filter(d -> !administeredDecks.contains(d))
                     .filter(d ->
                             person.getPermissions().contains(Permission.ADMIN) ||
                                     (d.getSubscribedPersons().contains(person) && d.isBlocked())
@@ -73,31 +82,31 @@ public class DeckService {
 
             List<Deck> ownedDecks = allDecks.stream()
                     .filter(d -> !deletedDecks.contains(d))
+                    .filter(d -> !administeredDecks.contains(d))
                     .filter(d -> !blockedDecks.contains(d))
                     .filter(d -> d.getCreator().equals(person) && !d.isDeleted())
                     .toList();
 
-            List<Deck> publishedDecks = allDecks.stream()
+            List<Deck> subscribedDecks = allDecks.stream()
                     .filter(d -> !deletedDecks.contains(d))
+                    .filter(d -> !administeredDecks.contains(d))
                     .filter(d -> !blockedDecks.contains(d))
                     .filter(d -> !ownedDecks.contains(d))
-                    .filter(d ->
-                            person.getPermissions().contains(Permission.ADMIN) ||
-                                    (d.getSubscribedPersons().contains(person) && !d.isPublished())
-                    )
+                    .filter(d -> d.getSubscribedPersons().contains(person))
                     .toList();
-            if (!person.getPermissions().contains(Permission.ADMIN)) {
-                publishedDecks.forEach(d -> d.setDescription("Deck has been unpublished"));
-            }
+            subscribedDecks.stream().filter(d -> !d.isPublished()).forEach(d -> d.setDescription("Deck has been unpublished"));
 
             return Stream.concat(
                     Stream.concat(
-                            deletedDecks.stream(),
+                            Stream.concat(
+                                    deletedDecks.stream(),
+                                    administeredDecks.stream()
+                            ),
                             blockedDecks.stream()
                     ),
                     Stream.concat(
                             ownedDecks.stream(),
-                            publishedDecks.stream()
+                            subscribedDecks.stream()
                     )
             ).toList();
         } else {
@@ -143,6 +152,7 @@ public class DeckService {
             this.deckRepository.save(deck);
             return true;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return false;
         }
     }
@@ -315,8 +325,14 @@ public class DeckService {
             Deck deck = maybeDeck.get();
             Person person = maybePerson.get();
             if (!deck.getSubscribedPersons().contains(person)) {
-                deck.getSubscribedPersons().add(person);
-                return save(deck);
+                person.getSavedDecks().add(deck);
+                try {
+                    Person savedPerson = personRepository.save(person);
+                    savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().add(savedPerson);
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -340,11 +356,7 @@ public class DeckService {
         if (maybeDeck.isPresent() && maybePerson.isPresent()) {
             Deck deck = maybeDeck.get();
             Person person = maybePerson.get();
-            if (deck.getSubscribedPersons().contains(person)) {
-                if (deck.getCreator().equals(person)) {
-                    return false;
-                }
-                deck.getSubscribedPersons().remove(person);
+            if (deck.getSubscribedPersons().remove(person)) {
                 return save(deck);
             } else {
                 return false;
