@@ -35,14 +35,16 @@ public class DeckService {
     /**
      * Gets all decks from the repository that a person can see, depending on permissions
      *  - isDeleted:
-     *      - deck is included, if person is subscriber of deck, but description is changed
+     *      - deck is included, if person is subscriber of deck (but not creator), but description is changed
      *  - isBlocked:
      *      - deck is included, if person is ADMIN
      *      - deck is included, if person is subscriber of deck, but description is changed
      *  - !isPublished:
      *      - deck is included, if person is ADMIN
      *      - deck is included, if person is creator
-     *      - deck is included, if person is subscriber of deck, but description is changed
+     *      - deck is included, if person is subscriber of deck (but not creator), but description is changed
+     *
+     * NOTE: creator of deck is also subscriber of deck
      *
      * @param personId id of the person that wants to get all decks
      * @return a list of all decks that person can view, empty list if person has not been found
@@ -53,12 +55,18 @@ public class DeckService {
             Person person = maybePerson.get();
             List<Deck> allDecks = this.getAllDecks();
 
+            List<Deck> ownedDeletedDecks = allDecks.stream()
+                    .filter(d -> d.getCreator().equals(person) && d.isDeleted())
+                    .toList();
+
             List<Deck> deletedDecks = allDecks.stream()
+                    .filter(d -> !ownedDeletedDecks.contains(d))
                     .filter(d -> d.getAllPersons().contains(person) && d.isDeleted())
                     .toList();
             deletedDecks.forEach(d -> d.setDescription("Deck has been deleted"));
 
             List<Deck> blockedDecks = allDecks.stream()
+                    .filter(d -> !ownedDeletedDecks.contains(d))
                     .filter(d -> !deletedDecks.contains(d))
                     .filter(d ->
                             person.getPermissions().contains(Permission.ADMIN) ||
@@ -70,12 +78,14 @@ public class DeckService {
             }
 
             List<Deck> ownedDecks = allDecks.stream()
+                    .filter(d -> !ownedDeletedDecks.contains(d))
                     .filter(d -> !deletedDecks.contains(d))
                     .filter(d -> !blockedDecks.contains(d))
                     .filter(d -> d.getCreator().equals(person))
                     .toList();
 
             List<Deck> publishedDecks = allDecks.stream()
+                    .filter(d -> !ownedDeletedDecks.contains(d))
                     .filter(d -> !deletedDecks.contains(d))
                     .filter(d -> !blockedDecks.contains(d))
                     .filter(d -> !ownedDecks.contains(d))

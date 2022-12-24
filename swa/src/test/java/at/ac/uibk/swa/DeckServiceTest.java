@@ -75,7 +75,7 @@ public class DeckServiceTest {
     public void testGetAllDecksAsUserCreatedUnpublished() {
         // given: a user that has created a deck and not published it
         Person person = new Person(
-                "person-testGetAllDecksAsUser-main",
+                "person-testGetAllDecksAsUserCreatedUnpublished",
                 StringGenerator.email(),
                 StringGenerator.password(),
                 Set.of(Permission.USER)
@@ -90,13 +90,87 @@ public class DeckServiceTest {
         List<Deck> decks = deckService.getAllDecks(person.getPersonId());
 
         // then: the user should be able to see that deck (and only that) without a change to its description
-        assertTrue(decks.contains(deck));
-        assertEquals(1, decks.size());
-        assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription());
+        assertTrue(decks.contains(deck), "Unable to find deck");
+        assertEquals(1, decks.size(), "Found more decks than expected");
+        assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has changed");
+    }
+
+    @Test
+    public void testGetAllDecksAsUserCreatedPublished() {
+        // given: a user that has created a deck and published it
+        Person person = new Person(
+                "person-testGetAllDecksAsUserCreatedPublished",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(person), "Unable to save user");
+
+        String deckDescription = "Description";
+        Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedPublished", deckDescription, person);
+        assertTrue(deckService.save(deck));
+        assertTrue(deckService.publish(deck.getDeckId()));
+
+        // when: loading all decks for that user
+        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+
+        // then: the user should be able to see that deck (and only that) without a change to its description
+        assertTrue(decks.contains(deck), "Unable to find deck");
+        assertEquals(1, decks.size(), "Found more decks than expected");
+        assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has changed");
+    }
+
+    @Test
+    public void testGetAllDecksAsUserCreatedBlocked() {
+        // given: a user that has created a deck, but the deck has been blocked
+        Person person = new Person(
+                "person-testGetAllDecksAsUserCreatedBlocked",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(person), "Unable to save user");
+
+        String deckDescription = "Description";
+        Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedBlocked", deckDescription, person);
+        assertTrue(deckService.save(deck));
+        assertTrue(deckService.block(deck.getDeckId()));
+
+        // when: loading all decks for that user
+        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+
+        // then: the user should be able to see that deck (and only that), but the description should be changed
+        // and contain info on the blocking
+        assertTrue(decks.contains(deck), "Unable to find deck");
+        assertEquals(1, decks.size(), "Found more decks than expected");
+        assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");
+        assertTrue(decks.get(decks.indexOf(deck)).getDescription().contains("blocked"));
+    }
+
+    @Test
+    public void testGetAllDecksAsUserCreatedDeleted() {
+        // given: a user that has created a deck, but then the deck has been deleted (only possible by the user)
+        Person person = new Person(
+                "person-testGetAllDecksAsUserCreatedDeleted",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(person), "Unable to save user");
+
+        String deckDescription = "Description";
+        Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedDeleted", deckDescription, person);
+        assertTrue(deckService.save(deck));
+        assertTrue(deckService.delete(deck.getDeckId()));
+
+        // when: loading all decks for that user
+        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+
+        // then: the user should not be able to see that deck
+        assertEquals(0, decks.size(), "Found more decks than expected");
     }
 
     @Test
     public void testGetAllDecksAsAdmin() {
-        
     }
 }
