@@ -7,6 +7,7 @@ import at.ac.uibk.swa.service.DeckService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -55,6 +56,30 @@ public class PersonServiceTest {
             assertEquals(person.getEmail(), foundPerson.getEmail(), "Wrong email of " + person);
             assertEquals(person.getPermissions(), foundPerson.getPermissions(), "Wrong permissions of " + person);
         }
+    }
+
+    @Test
+    public void testCreateTwoIdenticalUsernames() {
+        // given: one demo user already in the database
+        String username = "person-TestCreateTwoIdenticalUsernames";
+        Person person = new Person(
+                username,
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of()
+        );
+        assertTrue(personService.save(person), "Unable to save user");
+
+        // when: creating a second user with exactly the same username
+        Person duplicatePerson = new Person(
+                username,
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of()
+        );
+
+        // then: it should not be possible to create that second user
+        assertFalse(personService.save(duplicatePerson), "Second user with identical username was created");
     }
 
     @Test
