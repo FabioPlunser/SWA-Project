@@ -105,6 +105,12 @@ public class UserDeckService {
         if (deck.getDeckId() == null) {
             Deck savedDeck = save(deck);
             if (savedDeck != null) {
+                savedDeck.getCreator().getCreatedDecks().add(savedDeck);
+                try {
+                    personRepository.save(savedDeck.getCreator());
+                } catch (Exception e) {
+                    return false;
+                }
                 return subscribe(savedDeck, savedDeck.getCreator());
             } else {
                 return false;
