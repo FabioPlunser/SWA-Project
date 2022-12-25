@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.service.LearningAlgorithm;
+package at.ac.uibk.swa.service.learning_algorithm;
 
 import at.ac.uibk.swa.models.LearningProgress;
 
