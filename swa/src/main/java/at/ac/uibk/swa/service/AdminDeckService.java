@@ -6,8 +6,10 @@ import at.ac.uibk.swa.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @Service("adminDeckService")
 public class AdminDeckService {
@@ -24,6 +26,17 @@ public class AdminDeckService {
      */
     public Optional<Deck> findById(UUID id) {
         return deckRepository.findById(id);
+    }
+
+    /**
+     * Finds all decks within the repository, except deleted decks
+     *
+     * @return list of all found decks
+     */
+    public List<Deck> findAll() {
+        return deckRepository.findAll().stream()
+                .filter(Predicate.not(Deck::isDeleted))
+                .toList();
     }
 
     /**
