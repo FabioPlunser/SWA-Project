@@ -48,7 +48,7 @@ public class PersonController {
         UUID token = UUID.randomUUID();
         Person person = new Person(username, email, password, token, Permission.defaultPermissions());
 
-        return saveUser(person);
+        return createUser(person);
     }
 
     /**
@@ -70,7 +70,7 @@ public class PersonController {
     ) {
         Person person = new Person(username, email, password, permissions);
 
-        return saveUser(person);
+        return createUser(person);
     }
 
     /**
@@ -79,8 +79,8 @@ public class PersonController {
      * @param person The Person to save.
      * @return A RestResponse indicating whether the operation was successful or not.
      */
-    private RestResponse saveUser(Person person) {
-        if (!personService.save(person))
+    private RestResponse createUser(Person person) {
+        if (!personService.create(person))
             return new MessageResponse(false, "Could not create User - Username already exists!");
 
         return new CreatedUserResponse(person);

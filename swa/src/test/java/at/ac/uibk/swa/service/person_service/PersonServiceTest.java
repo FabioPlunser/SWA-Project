@@ -34,7 +34,7 @@ public class PersonServiceTest {
                     Set.of()
             );
             savedPersons.add(person);
-            assertTrue(personService.save(person), "Unable to save user " + person);
+            assertTrue(personService.create(person), "Unable to create user " + person);
         }
 
         // when: retrieving all demo users from database
@@ -61,7 +61,7 @@ public class PersonServiceTest {
                 StringGenerator.password(),
                 Set.of()
         );
-        assertTrue(personService.save(person), "Unable to save user");
+        assertTrue(personService.create(person), "Unable to create user");
 
         // when: creating a second user with exactly the same username
         Person duplicatePerson = new Person(
@@ -72,7 +72,7 @@ public class PersonServiceTest {
         );
 
         // then: it should not be possible to create that second user
-        assertFalse(personService.save(duplicatePerson), "Second user with identical username was created");
+        assertFalse(personService.create(duplicatePerson), "Second user with identical username was created");
     }
 
     @Test
@@ -82,14 +82,14 @@ public class PersonServiceTest {
         String username = "person-TestLoginWithValidCredentials";
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
-        assertTrue(personService.save(person), "Unable to save user " + person);
+        assertTrue(personService.create(person), "Unable to create user " + person);
         for (int i = 0; i < numberOfOtherPersons; i++) {
-            assertTrue(personService.save(new Person(
+            assertTrue(personService.create(new Person(
                     "otherPerson-TestLoginWithValidCredentials-" + (i+1),
                     StringGenerator.email(),
                     StringGenerator.password(),
                     Set.of()
-            )), "Unable to save user " + person);
+            )), "Unable to create user " + person);
         }
 
         // when: logging in with that users credentials
@@ -107,7 +107,7 @@ public class PersonServiceTest {
         String username = "person-TestLoginWithInvalidCredentials";
         String password = "password";
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
-        assertTrue(personService.save(person), "Unable to save user " + person);
+        assertTrue(personService.create(person), "Unable to create user " + person);
 
         // when:
         //  logging in with completely wrong credentials
@@ -129,7 +129,7 @@ public class PersonServiceTest {
         String username = "person-TestGetPersonByToken";
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
-        assertTrue(personService.save(person), "Unable to save user for test");
+        assertTrue(personService.create(person), "Unable to create user for test");
 
         // when: logging in as user and retrieving token
         Optional<Person> maybePerson = personService.login(username, password);
@@ -146,7 +146,7 @@ public class PersonServiceTest {
     public void testGetPersonById() {
         // given: demo user in database
         Person person = new Person("person-TestGetPersonById", StringGenerator.email(), StringGenerator.password(), Set.of());
-        assertTrue(personService.save(person), "Unable to save user for test");
+        assertTrue(personService.create(person), "Unable to create user for test");
         UUID id = person.getPersonId();
 
         // when: retrieving user from database by id
@@ -163,7 +163,7 @@ public class PersonServiceTest {
         String username = "person-TestLogout";
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
-        assertTrue(personService.save(person), "Unable to save user for test");
+        assertTrue(personService.create(person), "Unable to create user for test");
         Optional<Person> maybePerson = personService.login(username, password);
         assertTrue(maybePerson.isPresent(), "Could not login");
         UUID token = maybePerson.get().getToken();
@@ -183,7 +183,7 @@ public class PersonServiceTest {
         String password = StringGenerator.password();
         String email = StringGenerator.email();
         Person person = new Person(username, email, password, Set.of());
-        assertTrue(personService.save(person), "Unable to save user for test");
+        assertTrue(personService.create(person), "Unable to create user for test");
 
         // when: updating the person
         String newUsername = "person-TestUpdatePerson-new";
@@ -203,7 +203,7 @@ public class PersonServiceTest {
     public void testDeletePerson() {
         // given: demo user in database
         Person person = new Person("person-TestDeletePerson", StringGenerator.email(), StringGenerator.password(), Set.of());
-        assertTrue(personService.save(person), "Unable to save user for test");
+        assertTrue(personService.create(person), "Unable to create user for test");
 
         // when: deleting that user
         assertTrue(personService.delete(person.getPersonId()), "Could not delete user");

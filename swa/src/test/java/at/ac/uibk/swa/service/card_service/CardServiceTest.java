@@ -44,7 +44,7 @@ public class CardServiceTest {
                     StringGenerator.password(),
                     Set.of()
             );
-            assertTrue(personService.save(creator), "Could not save user");
+            assertTrue(personService.create(creator), "Could not create user");
             creators.add(creator);
             for (int j = 0; j < numberOfDecksPerCreator; j++) {
                 Deck deck = new Deck(

@@ -76,22 +76,42 @@ public class PersonService {
         return false;
     }
 
-    public boolean save(Person person) {
-        try {
-            // Hash the Password when inserting the Person
+    /**
+     * Creates a new person in the repository
+     *
+     * @param person person to be created
+     * @return true if person has been created, false otherwise
+     */
+    public boolean create(Person person) {
+        if (person != null && person.getPersonId() == null) {
+            // person is created with password in plain text
+            // encode to hash before proceeding
             String password = person.getPasswdHash();
             person.setPasswdHash(passwordEncoder.encode(password));
 
-            // NOTE: This save may fail if the usernames are equal because username has a unique Constraint
-            //       => See Customer.username
-            this.personRepository.save(person);
+            // save the person
+            boolean success = (save(person) != null);
 
-            // Reset the Password to the original one
+            // reset password to original one so hash cannot be
             person.setPasswdHash(password);
 
-            return true;
-        } catch (Exception e) {
+            return success;
+        } else {
             return false;
+        }
+    }
+
+    /**
+     * Saves a person to the repository
+     *
+     * @param person person to save
+     * @return person that has been saved if successfull, null otherwise
+     */
+    private Person save(Person person) {
+        try {
+            return personRepository.save(person);
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -115,9 +135,13 @@ public class PersonService {
 
             if (username    != null) person.setUsername(username);
             if (permissions != null) person.setPermissions(permissions);
-            if (password    != null) person.setPasswdHash(password);
+            if (password    != null) person.setPasswdHash(passwordEncoder.encode(password));
 
-            return save(person);
+            boolean success = save(person) != null;
+
+            if (password != null) person.setPasswdHash(password);
+
+            return success;
         }
 
         return false;
