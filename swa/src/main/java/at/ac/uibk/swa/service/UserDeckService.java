@@ -75,7 +75,10 @@ public class UserDeckService {
      */
     public List<Deck> getAllOwnedDecks(Person person) {
         if (person != null && person.getPersonId() != null) {
-            return person.getCreatedDecks().stream().filter(Predicate.not(Deck::isDeleted)).toList();
+            return person.getCreatedDecks().stream()
+                    .filter(Predicate.not(Deck::isDeleted))
+                    .map(d -> {if (d.isBlocked()) d.setDescription("Deck has been blocked"); return d;})
+                    .toList();
         } else {
             return new ArrayList<>();
         }
