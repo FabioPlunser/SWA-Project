@@ -117,7 +117,7 @@ public class UserDeckServiceTestGetAll {
         Deck deck = new Deck("deck-testGetAllDecksSubscribedUnpublished", deckDescription, otherPerson);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck), "Unable to publish deck");
-        assertTrue(userDeckService.subscribeToDeck(deck, person), "Unable to subscribe to deck");
+        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
         assertTrue(userDeckService.unpublish(deck), "Unable to unpublish deck");
 
         // when: loading all decks for the user
@@ -140,7 +140,7 @@ public class UserDeckServiceTestGetAll {
         Deck deck = new Deck("deck-testGetAllDecksSubscribedPublished", deckDescription, otherPerson);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck), "Unable to publish deck");
-        assertTrue(userDeckService.subscribeToDeck(deck, person), "Unable to subscribe to deck");
+        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
 
         // when: loading all decks for the user
         List<Deck> decks = userDeckService.getAllSavedDecks(person);
@@ -161,7 +161,7 @@ public class UserDeckServiceTestGetAll {
         Deck deck = new Deck("deck-testGetAllDecksSubscribedBlocked", deckDescription, otherPerson);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck), "Unable to publish deck");
-        assertTrue(userDeckService.subscribeToDeck(deck, person), "Unable to subscribe to deck");
+        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
         // when: loading all decks for the user
@@ -185,7 +185,7 @@ public class UserDeckServiceTestGetAll {
         Deck deck = new Deck("deck-testGetAllDecksSubscribedDeleted", deckDescription, otherPerson);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck), "Unable to publish deck");
-        assertTrue(userDeckService.subscribeToDeck(deck, person), "Unable to subscribe to deck");
+        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
         assertTrue(userDeckService.delete(deck), "Unable to delete deck");
 
         // when: loading all decks for the user

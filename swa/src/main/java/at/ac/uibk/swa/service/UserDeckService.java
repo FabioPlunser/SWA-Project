@@ -105,7 +105,7 @@ public class UserDeckService {
         if (deck.getDeckId() == null) {
             Deck savedDeck = save(deck);
             if (savedDeck != null) {
-                return subscribeToDeck(savedDeck, savedDeck.getCreator());
+                return subscribe(savedDeck, savedDeck.getCreator());
             } else {
                 return false;
             }
@@ -147,7 +147,7 @@ public class UserDeckService {
         if (deck != null && deck.getDeckId() != null) {
             if (deck.isDeleted()) return false;
             deck.setDeleted(true);
-            unsubscribeFromDeck(deck, deck.getCreator());
+            unsubscribe(deck, deck.getCreator());
             return save(deck) != null;
         } else {
             return false;
@@ -198,7 +198,7 @@ public class UserDeckService {
      * @param person person to subscribe to
      * @return true if the person has been subscribed, false otherwise
      */
-    public boolean subscribeToDeck(Deck deck, Person person) {
+    public boolean subscribe(Deck deck, Person person) {
         if (deck != null && deck.getDeckId() != null && person != null && person.getPersonId() != null) {
             if (!person.getSavedDecks().contains(deck)) {
                 person.getSavedDecks().add(deck);
@@ -226,7 +226,7 @@ public class UserDeckService {
      * @param person to unsubsubscribe from
      * @return true if the person has been unsubscribed, false otherwise
      */
-    public boolean unsubscribeFromDeck(Deck deck, Person person) {
+    public boolean unsubscribe(Deck deck, Person person) {
         if (deck != null && deck.getDeckId() != null && person != null && person.getPersonId() != null) {
             if (person.getSavedDecks().contains(deck)) {
                 person.getSavedDecks().remove(deck);

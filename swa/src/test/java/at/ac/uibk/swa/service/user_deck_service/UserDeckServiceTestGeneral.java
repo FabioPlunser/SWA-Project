@@ -179,4 +179,6 @@ public class UserDeckServiceTestGeneral {
         assertEquals(0, availableDecks.stream().filter(Deck::isBlocked).count(), "Found blocked decks");
         assertEquals(0, availableDecks.stream().filter(Deck::isDeleted).count(), "Found deleted decks");
     }
+
+
 }
