@@ -80,7 +80,25 @@ public class AdminDeckServiceGeneral {
     }
 
     @Test
-    public void testFindAllDecks() {
+    public void testFindAllDecksAsAdmin() {
+        // given: a number of decks in the repository, where one was deleted, one was blocked and one was published
+        int numberOfDecks = 10;
+        List<Deck> decks = new ArrayList<>();
+        for (int i = 0; i < numberOfDecks; i++) {
+            decks.add(createDeck("test-testFindAllDecksAsAdmin-"+(i+1), "person-testFindAllDecksAsAdmin-"+(i+1)));
+        }
+        assertTrue(userDeckService.delete(decks.get(0)));
+        Deck deletedDeck = decks.remove(0);
+        assertTrue(userDeckService.publish(decks.get(0)));
+        assertTrue(adminDeckService.block(decks.get(1)));
 
+        // when: loading all decks within the repository
+        List<Deck> loadedDecks = adminDeckService.findAll();
+
+        // then: all decks except the deleted one must be found
+        for (Deck deck : decks) {
+            assertTrue(loadedDecks.contains(deck), "Unable to find deck " + deck);
+        }
+        assertFalse(loadedDecks.contains(deletedDeck), "Found deleted deck");
     }
 }
