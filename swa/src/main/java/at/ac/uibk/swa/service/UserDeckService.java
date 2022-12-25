@@ -102,10 +102,13 @@ public class UserDeckService {
      * @return true if deck has been created, false otherwise
      */
     public boolean create(Deck deck) {
-        Deck savedDeck = save(deck);
-        System.out.println("Saved deck: " + savedDeck);
-        if (savedDeck != null) {
-            return subscribeToDeck(savedDeck, savedDeck.getCreator());
+        if (deck.getDeckId() == null) {
+            Deck savedDeck = save(deck);
+            if (savedDeck != null) {
+                return subscribeToDeck(savedDeck, savedDeck.getCreator());
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

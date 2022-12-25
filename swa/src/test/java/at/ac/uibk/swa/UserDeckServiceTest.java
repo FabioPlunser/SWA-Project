@@ -5,7 +5,6 @@ import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.service.AdminDeckService;
-import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
 import at.ac.uibk.swa.util.StringGenerator;
@@ -15,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -73,6 +73,42 @@ public class UserDeckServiceTest {
             assertFalse(loadedDeck.isDeleted(), deck + " has been deleted");
             assertFalse(loadedDeck.isPublished(), deck + " has been published");
         }
+    }
+
+    @Test
+    public void testFindAllAvailableDecks() {
+        // given: a user in the database, where the user has created 4 decks:
+        //  - published
+        //  - unpublished
+        //  - blocked
+        //  - deleted
+        Person person = new Person(
+                "person-testFindAllAvailableDecks",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(person), "Unable to save user");
+        Deck publishedDeck = new Deck("deck-findAllAvailableDecks-published", "published", person);
+        assertTrue(userDeckService.create(publishedDeck), "Unable to create deck");
+        assertTrue(userDeckService.publish(publishedDeck), "Unable to publish deck");
+        Deck unpublishedDeck = new Deck("deck-findAllAvailableDecks-published", "unpublished", person);
+        assertTrue(userDeckService.create(unpublishedDeck), "Unable to create deck");
+        Deck blockedDeck = new Deck("deck-findAllAvailableDecks-blocked", "blocked", person);
+        assertTrue(userDeckService.create(blockedDeck), "Unable to create deck");
+        assertTrue(adminDeckService.block(blockedDeck), "Unable to block deck");
+        Deck deletedDeck = new Deck("deck-findAllAvailableDecks-deleted", "deleted", person);
+        assertTrue(userDeckService.create(deletedDeck), "Unable to create deck");
+        assertTrue(userDeckService.delete(deletedDeck), "Unable to delete deck");
+
+        // when: searching for decks available for subscription
+        List<Deck> availableDecks = userDeckService.findAllAvailableDecks();
+
+        // then: only available, public decks (maybe also from other unittests) should be returned
+        assertTrue(availableDecks.contains(publishedDeck), "Unable to find published deck");
+        assertEquals(0, availableDecks.stream().filter(Predicate.not(Deck::isPublished)).count(), "Found unpublished decks");
+        assertEquals(0, availableDecks.stream().filter(Deck::isBlocked).count(), "Found blocked decks");
+        assertEquals(0, availableDecks.stream().filter(Deck::isDeleted).count(), "Found deleted decks");
     }
 
     @Test
@@ -242,5 +278,79 @@ public class UserDeckServiceTest {
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
         assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has changed");
+    }
+
+    @Test
+    public void testGetAllDecksSubscribedBlocked() {
+        // given: a user and another user that has created a deck and published it, when the user subscribed to it
+        // and afterwards the deck has been blocked
+        Person person = new Person(
+                "person-testGetAllDecksSubscribedBlocked",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(person), "Unable to save user");
+        Person otherPerson = new Person(
+                "person-testGetAllDecksSubscribedBlocked-other",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(otherPerson), "Unable to save user");
+
+        String deckDescription = "Description";
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedBlocked", deckDescription, otherPerson);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
+        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.subscribeToDeck(deck, person), "Unable to subscribe to deck");
+        assertTrue(adminDeckService.block(deck), "Unable to block deck");
+
+        // when: loading all decks for the user
+        List<Deck> decks = userDeckService.getAllSavedDecks(person);
+
+        // then: the user should be able to see that deck (and only that), but the description should be changed and
+        // contain info on blocking
+        assertTrue(decks.contains(deck), "Unable to find deck");
+        assertEquals(1, decks.size(), "Found more decks than expected");
+        assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");
+        assertTrue(decks.get(decks.indexOf(deck)).getDescription().contains("blocked"), "Missing info on blocking");
+    }
+
+    @Test
+    public void testGetAllDecksSubscribedDeleted() {
+        // given: a user and another user that has created a deck and published it, when the user subscribed to it
+        // and afterwards the deck has been deleted
+        Person person = new Person(
+                "person-testGetAllDecksSubscribedDeleted",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(person), "Unable to save user");
+        Person otherPerson = new Person(
+                "person-testGetAllDecksSubscribedDeleted-other",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(otherPerson), "Unable to save user");
+
+        String deckDescription = "Description";
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedDeleted", deckDescription, otherPerson);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
+        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.subscribeToDeck(deck, person), "Unable to subscribe to deck");
+        assertTrue(userDeckService.delete(deck), "Unable to delete deck");
+
+        // when: loading all decks for the user
+        List<Deck> decks = userDeckService.getAllSavedDecks(person);
+
+        // then: the user should be able to see that deck (and only that), but the description should be changed and
+        // contain info on deleting
+        assertTrue(decks.contains(deck), "Unable to find deck");
+        assertEquals(1, decks.size(), "Found more decks than expected");
+        assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");
+        assertTrue(decks.get(decks.indexOf(deck)).getDescription().contains("deleted"), "Missing info on deleting");
     }
 }
