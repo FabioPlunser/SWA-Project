@@ -5,12 +5,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -83,12 +82,7 @@ public class Deck implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Deck deck = (Deck) o;
-
-        return deckId.equals(deck.deckId);
+        return (this == o) || ((o instanceof Deck d) && (this.deckId.equals(d.deckId)));
     }
 
     @Override

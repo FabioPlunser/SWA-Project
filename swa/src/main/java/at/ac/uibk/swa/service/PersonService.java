@@ -28,16 +28,22 @@ public class PersonService {
 
     public Optional<Person> login(String username, String password) {
         Optional<Person> maybePerson = personRepository.findByUsername(username);
-        if(maybePerson.isEmpty()) return Optional.empty();
+        if(maybePerson.isEmpty())
+            return Optional.empty();
 
         Person person = maybePerson.get();
-        if(!passwordEncoder.matches(password, person.getPasswdHash())) return Optional.empty();
+        if(!passwordEncoder.matches(password, person.getPasswdHash()))
+            return Optional.empty();
 
         UUID token = UUID.randomUUID();
         person.setToken(token);
         // NOTE: Person.Token has a unique-Constraint
         // => if the same Token is generated for multiple users, the save fails
-        personRepository.save(person);
+        try {
+            personRepository.save(person);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
 
         return Optional.of(person);
     }
@@ -72,9 +78,6 @@ public class PersonService {
 
     public boolean save(Person person) {
         try {
-            // TODO: Can we do this Hashing in the PersonRepository?
-            // TODO: The PersonRepository is a better Spot because there everyone has to use save()
-
             // Hash the Password when inserting the Person
             String password = person.getPasswdHash();
             person.setPasswdHash(passwordEncoder.encode(password));
