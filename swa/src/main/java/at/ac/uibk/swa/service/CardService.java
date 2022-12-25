@@ -23,17 +23,25 @@ public class CardService {
     private PersonRepository personRepository;
 
     /**
-     * Gets all existing cards for a specific deck from the repository
-     * NOTE: if deck is not found (wrong id) no cards will be returned
+     * Gets all existing cards for a specific deck and a specific user from the repository
+     * Depending on deck state:
+     *  - !isPublished: only ADMIN and creator will receive cards
+     *  - isBlocked:    only ADMIN will receive cards
+     *  - isDeleted:    no one will receive cards
      *
-     * @param deckId id of the deck for which the cards should be retrieved
+     * @param deck deck for which the cards should be retrieved
+     * @param person person that is trying to access the cards
      * @return a list of all the cards in the deck
      */
-    // TODO: Shouldn't this first check if the Deck is blocked and return an empty List if it is?
-    public List<Card> getAllCards(UUID deckId) {
-        return userDeckService.findById(deckId)
-                .map(Deck::getCards)
-                .orElse(new ArrayList<>());
+    public List<Card> getAllCards(Deck deck, Person person) {
+        if (deck.isDeleted() ||
+                (deck.isBlocked() && !person.getPermissions().contains(Permission.ADMIN)) ||
+                (!deck.isPublished() && (!person.getPermissions().contains(Permission.ADMIN) && !deck.getCreator().equals(person)))
+        ) {
+            return new ArrayList<>();
+        } else {
+            return deck.getCards();
+        }
     }
 
     /**
