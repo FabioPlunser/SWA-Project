@@ -33,7 +33,7 @@ public class UserDeckServiceTestGetOwned {
 
     private Person createUser(String username) {
         Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
-        assertTrue(personService.save(person), "Unable to save user");
+        assertTrue(personService.create(person), "Unable to create user");
         return person;
     }
 

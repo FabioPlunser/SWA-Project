@@ -22,10 +22,22 @@ public class PersonService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Gets a list of all persons in the repository
+     *
+     * @return list of found persons
+     */
     public List<Person> getPersons() {
         return personRepository.findAll();
     }
 
+    /**
+     * Login via username and password
+     *
+     * @param username username of the person to be logged in
+     * @param password password of the person to be logged in
+     * @return person if successfully logged in, nothing otherwise
+     */
     public Optional<Person> login(String username, String password) {
         Optional<Person> maybePerson = personRepository.findByUsername(username);
         if(maybePerson.isEmpty())
@@ -48,6 +60,12 @@ public class PersonService {
         return Optional.of(person);
     }
 
+    /**
+     * Find a person via its current token
+     *
+     * @param token current token of the person to be found
+     * @return person if found, otherwise nothing
+     */
     public Optional<Person> findByToken(UUID token) {
         // TODO: Should this also get a Username and check if the Token is associated with the given username?
         //       Theoretically not needed because the Token has a unique Constraint
@@ -60,67 +78,123 @@ public class PersonService {
                 .flatMap(Function.identity());
     }
 
+    /**
+     * Find a person with its id
+     *
+     * @param id id of the person to be found
+     * @return person if found, otherwise nothing
+     */
     public Optional<Person> findById(UUID id) {
         return personRepository.findById(id);
     }
 
-    public boolean logout(UUID token) {
-        Optional<Person> maybePerson = personRepository.findByToken(token);
-        if(maybePerson.isPresent()){
-            Person person = maybePerson.get();
-            // Delete the Token on Logout
+    /**
+     * Logout a user
+     *
+     * @param person user to be logged out
+     * @return true if user has been logged out, false otherwise
+     */
+    public boolean logout(Person person) {
+        if (person != null && person.getPersonId() != null && person.getToken() != null) {
             person.setToken(null);
-            personRepository.save(person);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean save(Person person) {
-        try {
-            // Hash the Password when inserting the Person
-            String password = person.getPasswdHash();
-            person.setPasswdHash(passwordEncoder.encode(password));
-
-            // NOTE: This save may fail if the usernames are equal because username has a unique Constraint
-            //       => See Customer.username
-            this.personRepository.save(person);
-
-            // Reset the Password to the original one
-            person.setPasswdHash(password);
-
-            return true;
-        } catch (Exception e) {
+            return save(person) != null;
+        } else {
             return false;
         }
     }
 
     /**
-     * Updates a Person with the Values given as Parameters.
-     * The User is retrieved using the personId.
+     * Logout a user
+     * @param token token of the user to be logged out
+     * @return true if user has been logged out, false otherwise
+     */
+    public boolean logout(UUID token) {
+        Optional<Person> maybePerson = personRepository.findByToken(token);
+        return maybePerson.filter(this::logout).isPresent();
+    }
+
+    /**
+     * Creates a new person in the repository
+     *
+     * @param person person to be created
+     * @return true if person has been created, false otherwise
+     */
+    public boolean create(Person person) {
+        if (person != null && person.getPersonId() == null) {
+            // person is created with password in plain text
+            // encode to hash before proceeding
+            String password = person.getPasswdHash();
+            person.setPasswdHash(passwordEncoder.encode(password));
+
+            // save the person
+            boolean success = (save(person) != null);
+
+            // reset password to original one so hash cannot be
+            person.setPasswdHash(password);
+
+            return success;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Saves a person to the repository
+     *
+     * @param person person to save
+     * @return person that has been saved if successfull, null otherwise
+     */
+    private Person save(Person person) {
+        try {
+            return personRepository.save(person);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Updates a Person with the values given as Parameters.
+     * The User is given directly
      * The other Parameters are used to change the user.
      * Parameters that are set to null are left unchanged.
      *
-     * @param personId The ID of the User to change.
+     * @param person The person to update
      * @param username The new Username.
-     * @param permissions The new List of Permissions.
+     * @param permissions The set of new permissions.
      * @param password The new Password.
      * @return true if the user could be found and could be updated, false otherwise.
      */
     // TODO: Maybe add email address
-    public boolean update(UUID personId, String username, Set<Permission> permissions, String password) {
-        Optional<Person> maybePerson = personRepository.findById(personId);
-        if(maybePerson.isPresent()) {
-            Person person = maybePerson.get();
-
+    public boolean update(Person person, String username, Set<Permission> permissions, String password) {
+        if(person != null && person.getPersonId() != null) {
             if (username    != null) person.setUsername(username);
             if (permissions != null) person.setPermissions(permissions);
-            if (password    != null) person.setPasswdHash(password);
+            if (password    != null) person.setPasswdHash(passwordEncoder.encode(password));
 
-            return save(person);
+            boolean success = save(person) != null;
+
+            if (password != null) person.setPasswdHash(password);
+
+            return success;
         }
 
         return false;
+    }
+
+    /**
+     * updates a person with the values given as parameters
+     * person is identified by id
+     * NOTE: this is an admin function!
+     *
+     * @param personId id of the person to update
+     * @param username new username
+     * @param permissions set of new permissions
+     * @param password new password
+     * @return true if user was successfully update, false otherwise
+     */
+    public boolean update(UUID personId, String username, Set<Permission> permissions, String password) {
+        Optional<Person> maybePerson = findById(personId);
+        return maybePerson.filter(person -> update(person, username, permissions, password)).isPresent();
     }
 
     public boolean delete(UUID personId) {
