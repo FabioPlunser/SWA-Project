@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.print.DocFlavor;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -161,5 +162,43 @@ public class CardServiceTestGeneral {
         assertEquals(originalFrontText, foundCard.getFrontText(), "Front text was changed");
         assertEquals(originalBackText, foundCard.getBackText(), "Back text was changed");
         assertEquals(originalIsFlipped, foundCard.isFlipped(), "Card got flipped");
+    }
+
+    @Test
+    public void testDeleteCard() {
+        // given: a card in the database
+        Card card = new Card(
+                StringGenerator.deckDescription(),
+                StringGenerator.deckDescription(),
+                false,
+                createDeck("deck-testDeleteCard", createUser("person-testDeleteCard"))
+        );
+        assertTrue(cardService.create(card), "Unable to create card");
+        UUID id = card.getCardId();
+
+        // when: deleting the card
+        assertTrue(cardService.delete(card));
+
+        // then: card should not be available anymore
+        assertTrue(cardService.findById(id).isEmpty(), "Found card");
+    }
+
+    @Test
+    public void testDeleteCardViaId() {
+        // given: a card in the database
+        Card card = new Card(
+                StringGenerator.deckDescription(),
+                StringGenerator.deckDescription(),
+                false,
+                createDeck("deck-testDeleteCardViaId", createUser("person-testDeleteCardViaId"))
+        );
+        assertTrue(cardService.create(card), "Unable to create card");
+        UUID id = card.getCardId();
+
+        // when: deleting the card via id
+        assertTrue(cardService.delete(id));
+
+        // then: card should not be available anymore
+        assertTrue(cardService.findById(id).isEmpty(), "Found card");
     }
 }
