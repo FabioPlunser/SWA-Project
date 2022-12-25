@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.print.DocFlavor;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -73,6 +74,32 @@ public class UserDeckServiceTest {
             assertFalse(loadedDeck.isDeleted(), deck + " has been deleted");
             assertFalse(loadedDeck.isPublished(), deck + " has been published");
         }
+    }
+
+    @Test
+    public void testGetDeckById() {
+        // given: a user in the database that created a deck
+        Person person = new Person(
+                "person-testGetDeckById",
+                StringGenerator.email(),
+                StringGenerator.password(),
+                Set.of(Permission.USER)
+        );
+        assertTrue(personService.save(person), "Unable to save user");
+        Deck deck = new Deck(
+                "deck-testGetDeckById",
+                StringGenerator.deckDescription(),
+                person
+        );
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
+        UUID id = deck.getDeckId();
+
+        // when: trying to load that deck by id from the repository
+        Optional<Deck> maybeDeck = userDeckService.findById(id);
+
+        // then: retrieved deck must be correct
+        assertTrue(maybeDeck.isPresent(), "Did not find deck by id");
+        assertEquals(deck, maybeDeck.get(), "Got deck " + maybeDeck.get() + " when deck " + deck + " was expected");
     }
 
     @Test

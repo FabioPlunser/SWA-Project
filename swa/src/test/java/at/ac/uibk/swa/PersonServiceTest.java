@@ -21,8 +21,6 @@ public class PersonServiceTest {
     @Autowired
     private PersonService personService;
 
-
-
     @Test
     public void testSaveAndGetPersons() {
         // given: some demo users stored in database
