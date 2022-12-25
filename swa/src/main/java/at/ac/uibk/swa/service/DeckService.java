@@ -32,7 +32,7 @@ public class DeckService {
      *
      * @return  a list of all decks
      */
-    public List<Deck> getAllDecks() {
+    public List<Deck> getAllSavedDecks() {
         return deckRepository.findAll();
     }
 
@@ -45,8 +45,8 @@ public class DeckService {
      * @param person person that wants to get all the decks
      * @return a list of all decks to which that person has subscribed
      */
-    public List<Deck> getAllDecks(Person person) {
-        if (person != null) {
+    public List<Deck> getAllSavedDecks(Person person) {
+        if (person != null && person.getPersonId() != null) {
             return person.getSavedDecks().stream()
                     .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) d.setDescription("Deck has been unpublished"); return d;})
                     .map(d -> {if (d.isBlocked()) d.setDescription("Deck has been blocked"); return d;})
@@ -60,15 +60,12 @@ public class DeckService {
     /**
      * Gets all decks owned by a specific user from the repository
      *
-     * @param personId id of the person
+     * @param person person for which the owned decks should be found
      * @return list of owned decks, empty list if none have been found or person has not been found
      */
-    public List<Deck> getAllOwnedDecks(UUID personId) {
-        Optional<Person> maybePerson = personService.findById(personId);
-        if (maybePerson.isPresent()) {
-            Person person = maybePerson.get();
-            List<Deck> allDecks = getAllDecks(person);
-            return allDecks.stream().filter(d -> d.getCreator().equals(person)).toList();
+    public List<Deck> getAllOwnedDecks(Person person) {
+        if (person != null && person.getPersonId() != null) {
+            return person.getCreatedDecks().stream().filter(Predicate.not(Deck::isDeleted)).toList();
         } else {
             return new ArrayList<>();
         }
@@ -109,11 +106,11 @@ public class DeckService {
     }
 
     /**
-     * Updates a deck with the given parameters
+     * Updates a deck in the repository with the given parameters
      * Deleted and blocked decks cannot be updated
      * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param deckId id of the deck to be updated
+     * @param deck deck that is to be updated
      * @param name new name of the deck, set to null if no change is desired
      * @param description new description of the deck, set to null if no change is desired
      * @return true if the deck was updated, false otherwise
@@ -130,11 +127,11 @@ public class DeckService {
     }
 
     /**
-     * Deletes a deck (soft delete)
+     * Deletes a deck (soft delete) in the repository
      * Already deleted deck cannot be deleted again
      * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param deckId id of deck to be deleted
+     * @param deck deck to delete
      * @return true if deck has been deleted, false otherwise
      */
     public boolean delete(Deck deck) {
@@ -149,11 +146,11 @@ public class DeckService {
     }
 
     /**
-     * Blocks a deck
+     * Blocks a deck in the repository
      * Already blocked deck cannot be blocked again
      * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param deckId id of deck to be blocked
+     * @param deck deck to be blockes
      * @return true if deck has been blocked, false otherwise
      */
     public boolean block(Deck deck) {
@@ -167,11 +164,11 @@ public class DeckService {
     }
 
     /**
-     * Unlocks a deck
+     * Unlocks a deck in the repository
      * Already unblocked deck cannot be unblocked again
      * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param deckId id of deck to be unblocked
+     * @param deck deck to unblock
      * @return true if deck has been unblocked, false otherwise
      */
     public boolean unblock(Deck deck) {
@@ -185,11 +182,11 @@ public class DeckService {
     }
 
     /**
-     * Publishes a deck
+     * Publishes a deck in the repository
      * Already published deck cannot be published again
      * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param deckId id of deck to be published
+     * @param deck deck to publish
      * @return true if deck has been published, false otherwise
      */
     public boolean publish(Deck deck) {
@@ -203,11 +200,11 @@ public class DeckService {
     }
 
     /**
-     * Unpublishes a deck
+     * Unpublishes a deck in the repository
      * Already unpublished deck cannot be unpublished again
      * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param deckId id of deck to be unpublished
+     * @param deck deck to unpublish
      * @return true if deck has been unpublished, false otherwise
      */
     public boolean unpublish(Deck deck) {
@@ -221,11 +218,11 @@ public class DeckService {
     }
 
     /**
-     * Subscribe a person to a deck
+     * Subscribe a person in the repository to a deck in the repository
      * A person that is already subscribed to a deck cannot subscribe again
      *
-     * @param deckId id of the deck to subscribe to
-     * @param personId id of the person that is to subscribe
+     * @param deck deck to subscribe to
+     * @param person person to subscribe to
      * @return true if the person has been subscribed, false otherwise
      */
     public boolean subscribeToDeck(Deck deck, Person person) {
@@ -248,12 +245,12 @@ public class DeckService {
     }
 
     /**
-     * Unsubscribe a person from a deck
+     * Unsubscribe a person in the repository from a deck in the repository
      * Only persons that have subscribed to a deck can unsubscribe from it
      * The creator of a deck cannot unsubscribe from the deck
      *
-     * @param deckId id of the from which to unsubscribe
-     * @param personId id of the person that is to be unsubscribed
+     * @param deck deck to unsubscribe from
+     * @param person to unsubsubscribe from
      * @return true if the person has been unsubscribed, false otherwise
      */
     public boolean unsubscribeFromDeck(Deck deck, Person person) {
