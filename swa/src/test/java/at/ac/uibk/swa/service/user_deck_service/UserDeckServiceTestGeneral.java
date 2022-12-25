@@ -159,10 +159,43 @@ public class UserDeckServiceTestGeneral {
         // when: deleting that deck
         assertTrue(userDeckService.delete(deck), "Unable to delete deck");
 
-        // then: deck should be deleted
+        // then: deck should be set to deleted
         Optional<Deck> maybeDeck = userDeckService.findById(id);
         assertTrue(maybeDeck.isPresent(), "Unable to find deck");
         assertTrue(maybeDeck.get().isDeleted(), "Deck was not deleted");
+    }
+
+    @Test
+    public void testPublishDeck() {
+        // given: a user that created a deck in the database
+        Deck deck = new Deck("deck-testPublishDeck", StringGenerator.deckDescription(), createUser("person-testPublishDeck"));
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
+        UUID id = deck.getDeckId();
+
+        // when: publishing that deck
+        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+
+        // then: deck should be set to published
+        Optional<Deck> maybeDeck = userDeckService.findById(id);
+        assertTrue(maybeDeck.isPresent(), "Unable to find deck");
+        assertTrue(maybeDeck.get().isPublished(), "Deck was not published");
+    }
+
+    @Test
+    public void testUnpublishDeck() {
+        // given: a user that created a deck in the database and published it
+        Deck deck = new Deck("deck-testUnpublishDeck", StringGenerator.deckDescription(), createUser("person-testUnpublishDeck"));
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
+        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        UUID id = deck.getDeckId();
+
+        // when: unpublishing that deck
+        assertTrue(userDeckService.unpublish(deck), "Unable to unpublish deck");
+
+        // then: deck should be set to published
+        Optional<Deck> maybeDeck = userDeckService.findById(id);
+        assertTrue(maybeDeck.isPresent(), "Unable to find deck");
+        assertFalse(maybeDeck.get().isPublished(), "Deck was not unpublished");
     }
 
     @Test
