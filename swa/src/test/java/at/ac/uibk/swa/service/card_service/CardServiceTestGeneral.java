@@ -86,5 +86,25 @@ public class CardServiceTestGeneral {
         }
     }
 
+    @Test
+    public void testGetCardById() {
+        // given: a card in the database
+        Card card = new Card(
+                StringGenerator.deckDescription(),
+                StringGenerator.deckDescription(),
+                false,
+                createDeck("deck-testGetCardById", createUser("person-testGetCardById"))
+        );
+        assertTrue(cardService.create(card), "Unable to create card");
+        UUID id = card.getCardId();
 
+        // when: retrieving card from database by id
+        Optional<Card> maybeCard = cardService.findById(id);
+
+        // then: retrieved card must be correct
+        assertTrue(maybeCard.isPresent(), "Unable to load card");
+        assertEquals(card, maybeCard.get(), "Got card " + maybeCard.get() + " when card " + card + " was expected");
+    }
+
+    
 }
