@@ -150,6 +150,22 @@ public class UserDeckServiceTestGeneral {
     }
 
     @Test
+    public void testDeleteDeck() {
+        // given: a user that created a deck in the database
+        Deck deck = new Deck("deck-testDeleteDeck", StringGenerator.deckDescription(), createUser("person-testDeleteDecK"));
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
+        UUID id = deck.getDeckId();
+
+        // when: deleting that deck
+        assertTrue(userDeckService.delete(deck), "Unable to delete deck");
+
+        // then: deck should be deleted
+        Optional<Deck> maybeDeck = userDeckService.findById(id);
+        assertTrue(maybeDeck.isPresent(), "Unable to find deck");
+        assertTrue(maybeDeck.get().isDeleted(), "Deck was not deleted");
+    }
+
+    @Test
     public void testFindAllAvailableDecks() {
         // given: a user in the database, where the user has created 4 decks:
         //  - published
@@ -157,7 +173,6 @@ public class UserDeckServiceTestGeneral {
         //  - blocked
         //  - deleted
         Person person = createUser("person-testFindAllAvailableDecks");
-        assertTrue(personService.save(person), "Unable to save user");
         Deck publishedDeck = new Deck("deck-findAllAvailableDecks-published", "published", person);
         assertTrue(userDeckService.create(publishedDeck), "Unable to create deck");
         assertTrue(userDeckService.publish(publishedDeck), "Unable to publish deck");
