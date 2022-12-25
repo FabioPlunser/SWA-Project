@@ -5,6 +5,7 @@ import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.CardRepository;
+import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.print.DocFlavor;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CardServiceTestGeneral {
     @Autowired
     private UserDeckService userDeckService;
+    @Autowired
+    private AdminDeckService adminDeckService;
     @Autowired
     private CardService cardService;
     @Autowired
@@ -60,12 +64,7 @@ public class CardServiceTestGeneral {
                 Deck deck = createDeck("deck-TestSaveAndGetCards-" + (j+1), creator);
                 decks.put(creator, deck);
                 for (int k = 0; k < numberOfCardsPerDeck; k++) {
-                    Card card = new Card(
-                            StringGenerator.cardText(),
-                            StringGenerator.cardText(),
-                            false,
-                            deck
-                    );
+                    Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
                     assertTrue(cardService.create(card), "Could not create card");
                     savedCards.put(deck, card);
                 }
@@ -86,5 +85,120 @@ public class CardServiceTestGeneral {
             assertEquals(card.getBackText(), loadedCard.getBackText(), "Wrong back text of " + card);
             assertEquals(card.isFlipped(), loadedCard.isFlipped(), card + " has been flipped");
         }
+    }
+
+    @Test
+    public void testGetCardById() {
+        // given: a card in the database
+        Card card = new Card(
+                StringGenerator.deckDescription(),
+                StringGenerator.deckDescription(),
+                false,
+                createDeck("deck-testGetCardById", createUser("person-testGetCardById"))
+        );
+        assertTrue(cardService.create(card), "Unable to create card");
+        UUID id = card.getCardId();
+
+        // when: retrieving card from database by id
+        Optional<Card> maybeCard = cardService.findById(id);
+
+        // then: retrieved card must be correct
+        assertTrue(maybeCard.isPresent(), "Unable to load card");
+        assertEquals(card, maybeCard.get(), "Got card " + maybeCard.get() + " when card " + card + " was expected");
+    }
+
+    @Test
+    public void testUpdateCard() {
+        // given: a card in the database
+        // given: a card in the database
+        Card card = new Card(
+                StringGenerator.deckDescription(),
+                StringGenerator.deckDescription(),
+                false,
+                createDeck("deck-testUpdateCard", createUser("person-testUpdateCard"))
+        );
+        assertTrue(cardService.create(card), "Unable to create card");
+
+        // when: updating the card
+        String frontText = "new front text";
+        String backText = "new back text";
+        boolean isFlipped = true;
+        assertTrue(cardService.update(card, frontText, backText, isFlipped));
+
+        // then: the card should still be available in the repository and attributes should be correct
+        Optional<Card> maybeCard = cardService.findById(card.getCardId());
+        assertTrue(maybeCard.isPresent(), "Unable to find card");
+        Card foundCard = maybeCard.get();
+        assertEquals(frontText, foundCard.getFrontText(), "Wrong front text");
+        assertEquals(backText, foundCard.getBackText(), "Wrong back text");
+        assertEquals(isFlipped, foundCard.isFlipped(), "Card is (not) flipped");
+    }
+
+    @Test
+    public void testUpdateCardViaCreate() {
+        // given: a card in the database
+        String originalFrontText = StringGenerator.deckDescription();
+        String originalBackText = StringGenerator.deckDescription();
+        boolean originalIsFlipped = false;
+        Card card = new Card(
+                originalFrontText,
+                originalBackText,
+                originalIsFlipped,
+                createDeck("deck-testUpdateCardViaCreate", createUser("person-testUpdateCardViaCreate"))
+        );
+        assertTrue(cardService.create(card), "Unable to create card");
+        UUID id = card.getCardId();
+
+        // when: changing the card by interfering with the card directly
+        card.setFrontText("new");
+        card.setBackText("new");
+        card.setFlipped(true);
+
+        // then: saving the modification via create() should not be possible
+        assertFalse(cardService.create(card), "Changed card got created again");
+        Optional<Card> maybeCard = cardService.findById(card.getCardId());
+        assertTrue(maybeCard.isPresent(), "Unable to find original card in repository");
+        Card foundCard = maybeCard.get();
+        assertEquals(originalFrontText, foundCard.getFrontText(), "Front text was changed");
+        assertEquals(originalBackText, foundCard.getBackText(), "Back text was changed");
+        assertEquals(originalIsFlipped, foundCard.isFlipped(), "Card got flipped");
+    }
+
+    @Test
+    public void testDeleteCard() {
+        // given: a card in the database
+        Card card = new Card(
+                StringGenerator.deckDescription(),
+                StringGenerator.deckDescription(),
+                false,
+                createDeck("deck-testDeleteCard", createUser("person-testDeleteCard"))
+        );
+        assertTrue(cardService.create(card), "Unable to create card");
+        UUID id = card.getCardId();
+
+        // when: deleting the card
+        assertTrue(cardService.delete(card));
+
+        // then: card should not be available anymore
+        assertTrue(cardService.findById(id).isEmpty(), "Found card");
+    }
+
+    @Test
+    public void testDeleteCardViaId() {
+        // given: a card in the database
+        Card card = new Card(
+                StringGenerator.deckDescription(),
+                StringGenerator.deckDescription(),
+                false,
+                createDeck("deck-testDeleteCardViaId", createUser("person-testDeleteCardViaId"))
+        );
+        assertTrue(cardService.create(card), "Unable to create card");
+        UUID id = card.getCardId();
+
+        // when: deleting the card via id
+        assertTrue(cardService.delete(id));
+
+        // then: card should not be available anymore
+        assertTrue(cardService.findById(id).isEmpty(), "Found card");
     }
 }

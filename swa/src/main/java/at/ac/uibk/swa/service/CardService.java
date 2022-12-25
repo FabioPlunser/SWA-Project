@@ -3,8 +3,8 @@ package at.ac.uibk.swa.service;
 import at.ac.uibk.swa.config.personAuthentication.AuthContext;
 import at.ac.uibk.swa.models.*;
 import at.ac.uibk.swa.repositories.CardRepository;
-import at.ac.uibk.swa.repositories.PersonRepository;
-import at.ac.uibk.swa.service.learning_algorithm.LearningAlgorithm;
+import at.ac.uibk.swa.repositories.DeckRepository;
+import at.ac.uibk.swa.service.card_service.learning_algorithm.LearningAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +14,13 @@ import java.util.function.Function;
 @Service("cardService")
 public class CardService {
     @Autowired
-    CardRepository cardRepository;
+    private CardRepository cardRepository;
     @Autowired
-    UserDeckService userDeckService;
+    private UserDeckService userDeckService;
     @Autowired
-    PersonService personService;
+    private PersonService personService;
     @Autowired
-    private PersonRepository personRepository;
+    private DeckRepository deckRepository;
 
     /**
      * Gets all existing cards for a specific deck and a specific user from the repository
@@ -36,7 +36,7 @@ public class CardService {
     public List<Card> getAllCards(Deck deck, Person person) {
         if (deck.isDeleted() ||
                 (deck.isBlocked() && !person.getPermissions().contains(Permission.ADMIN)) ||
-                (!deck.isPublished() && (!person.getPermissions().contains(Permission.ADMIN) && !deck.getCreator().equals(person)))
+                (!deck.isPublished() && !person.getPermissions().contains(Permission.ADMIN) && !deck.getCreator().equals(person))
         ) {
             return new ArrayList<>();
         } else {
@@ -232,7 +232,18 @@ public class CardService {
      */
     public boolean create(Card card) {
         if (card != null && card.getCardId() == null) {
-            return save(card) != null;
+            Card savedCard = save(card);
+            if (savedCard != null) {
+                savedCard.getDeck().getCards().add(savedCard);
+                try {
+                    deckRepository.save(savedCard.getDeck());
+                } catch (Exception e) {
+                    return false;
+                }
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -281,6 +292,8 @@ public class CardService {
      */
     public boolean delete(Card card) {
         try {
+            card.getDeck().getCards().remove(card);
+            deckRepository.save(card.getDeck());
             cardRepository.delete(card);
             return true;
         } catch (Exception e) {
@@ -296,8 +309,8 @@ public class CardService {
      */
     public boolean delete(UUID cardId) {
         try {
-            cardRepository.deleteById(cardId);
-            return true;
+            Optional<Card> maybeCard = findById(cardId);
+            return maybeCard.filter(this::delete).isPresent();
         } catch (Exception e) {
             return false;
         }
