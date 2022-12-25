@@ -163,4 +163,27 @@ public class CardServiceTestGetFromDeck {
         // then: no cards must be loaded
         assertEquals(0, loadedCards.size(), "Got wrong number of cards");
     }
+
+    @Test
+    public void testGetCardsFromDeckSubscribedBlocked() {
+        // given: a user, that subscribed to a deck with multiple cards, but the deck was blocked after subscription
+        int numCardsPerDeck = 10;
+        Person person = createUser("person-testGetCardsFromDeckSubscribedBlocked");
+        Deck deck = createDeck("deck-testGetCardsFromDeckSubscribedBlocked", createUser("person-testGetCardsFromDeckSubscribedBlocked-creator"));
+        List<Card> cards = new ArrayList<>();
+        for (int i = 0; i < numCardsPerDeck; i++) {
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
+            assertTrue(cardService.create(card), "Unable to create card");
+            cards.add(card);
+        }
+        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+        assertTrue(adminDeckService.block(deck), "Unable to block deck");
+
+        // when: retrieving all cards for that user and deck
+        List<Card> loadedCards = cardService.getAllCards(deck, person);
+
+        // then: no cards must be loaded
+        assertEquals(0, loadedCards.size(), "Got wrong number of cards");
+    }
 }
