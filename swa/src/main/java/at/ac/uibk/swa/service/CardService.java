@@ -4,12 +4,10 @@ import at.ac.uibk.swa.config.personAuthentication.AuthContext;
 import at.ac.uibk.swa.models.*;
 import at.ac.uibk.swa.repositories.CardRepository;
 import at.ac.uibk.swa.repositories.DeckRepository;
-import at.ac.uibk.swa.repositories.PersonRepository;
-import at.ac.uibk.swa.service.learning_algorithm.LearningAlgorithm;
+import at.ac.uibk.swa.service.card_service.learning_algorithm.LearningAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.function.Function;
 
