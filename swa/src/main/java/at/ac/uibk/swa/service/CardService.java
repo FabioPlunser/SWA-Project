@@ -4,7 +4,7 @@ import at.ac.uibk.swa.config.personAuthentication.AuthContext;
 import at.ac.uibk.swa.models.*;
 import at.ac.uibk.swa.repositories.CardRepository;
 import at.ac.uibk.swa.repositories.PersonRepository;
-import at.ac.uibk.swa.service.LearningAlgorithm.LearningAlgorithm;
+import at.ac.uibk.swa.service.learning_algorithm.LearningAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,26 +23,25 @@ public class CardService {
     private PersonRepository personRepository;
 
     /**
-     * Gets all existing cards from the repository
+     * Gets all existing cards for a specific deck and a specific user from the repository
+     * Depending on deck state:
+     *  - !isPublished: only ADMIN and creator will receive cards
+     *  - isBlocked:    only ADMIN will receive cards
+     *  - isDeleted:    no one will receive cards
      *
-     * @return  a list of all cards
-     */
-    public List<Card> getAllCards() {
-        return cardRepository.findAll();
-    }
-
-    /**
-     * Gets all existing cards for a specific deck from the repository
-     * NOTE: if deck is not found (wrong id) no cards will be returned
-     *
-     * @param deckId id of the deck for which the cards should be retrieved
+     * @param deck deck for which the cards should be retrieved
+     * @param person person that is trying to access the cards
      * @return a list of all the cards in the deck
      */
-    // TODO: Shouldn't this first check if the Deck is blocked and return an empty List if it is?
-    public List<Card> getAllCards(UUID deckId) {
-        return userDeckService.findById(deckId)
-                .map(Deck::getCards)
-                .orElse(new ArrayList<>());
+    public List<Card> getAllCards(Deck deck, Person person) {
+        if (deck.isDeleted() ||
+                (deck.isBlocked() && !person.getPermissions().contains(Permission.ADMIN)) ||
+                (!deck.isPublished() && (!person.getPermissions().contains(Permission.ADMIN) && !deck.getCreator().equals(person)))
+        ) {
+            return new ArrayList<>();
+        } else {
+            return deck.getCards();
+        }
     }
 
     /**
@@ -257,24 +256,33 @@ public class CardService {
      * Updates a card with the given parameters
      * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param cardId id of the card to be updated
+     * @param card card to be updated
      * @param frontText new front text of the card, set to null if no change is desired
      * @param backText new back text of the card, set to null if no change is desired
      * @param isFlipped card flipped or not flipped
      * @return true if card has been updated, false otherwise
      */
-    public boolean update(UUID cardId, String frontText, String backText, boolean isFlipped) {
+    public boolean update(Card card, String frontText, String backText, boolean isFlipped) {
+        if (card != null && card.getCardId() != null) {
+            if (frontText !=  null) card.setFrontText(frontText);
+            if (backText != null) card.setBackText(backText);
+            card.setFlipped(isFlipped);
+            return save(card) != null;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Deletes a card from the repository (hard delete)
+     *
+     * @param card card to be deleted
+     * @return true if card has been updated, false otherwise
+     */
+    public boolean delete(Card card) {
         try {
-            Optional<Card> maybeCard = findById(cardId);
-            if (maybeCard.isEmpty()) {
-                return false;
-            } else {
-                Card card = maybeCard.get();
-                if (frontText !=  null) card.setFrontText(frontText);
-                if (backText != null) card.setBackText(backText);
-                card.setFlipped(isFlipped);
-                return save(card) != null;
-            }
+            cardRepository.delete(card);
+            return true;
         } catch (Exception e) {
             return false;
         }

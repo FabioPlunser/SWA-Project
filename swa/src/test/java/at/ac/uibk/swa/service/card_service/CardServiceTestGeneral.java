@@ -2,7 +2,9 @@ package at.ac.uibk.swa.service.card_service;
 
 import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
+import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.repositories.CardRepository;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
@@ -18,13 +20,27 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class CardServiceTest {
+public class CardServiceTestGeneral {
     @Autowired
     private UserDeckService userDeckService;
     @Autowired
     private CardService cardService;
     @Autowired
     private PersonService personService;
+    @Autowired
+    private CardRepository cardRepository;
+
+    private Person createUser(String username) {
+        Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
+        assertTrue(personService.create(person), "Unable to create user");
+        return person;
+    }
+
+    private Deck createDeck(String name, Person creator) {
+        Deck deck = new Deck(name, StringGenerator.deckDescription(), creator);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
+        return deck;
+    }
 
     @Test
     public void testSaveAndGetCards() {
@@ -38,21 +54,10 @@ public class CardServiceTest {
         Map<Deck, Card> savedCards = new HashMap<>();
 
         for (int i = 0; i < numberOfCreators; i++) {
-            Person creator = new Person(
-                    "person-TestSaveAndGetCards-" + (i+1),
-                    StringGenerator.email(),
-                    StringGenerator.password(),
-                    Set.of()
-            );
-            assertTrue(personService.create(creator), "Could not create user");
+            Person creator = createUser("person-TestSaveAndGetCards-" + (i+1));
             creators.add(creator);
             for (int j = 0; j < numberOfDecksPerCreator; j++) {
-                Deck deck = new Deck(
-                        "deck-TestSaveAndGetCards-" + (j+1),
-                        StringGenerator.deckDescription(),
-                        creator
-                );
-                assertTrue(userDeckService.create(deck), "Could not save deck");
+                Deck deck = createDeck("deck-TestSaveAndGetCards-" + (j+1), creator);
                 decks.put(creator, deck);
                 for (int k = 0; k < numberOfCardsPerDeck; k++) {
                     Card card = new Card(
@@ -68,7 +73,7 @@ public class CardServiceTest {
         }
 
         // when: loading all cards from database
-        List<Card> loadedCards = cardService.getAllCards();
+        List<Card> loadedCards = cardRepository.findAll();
 
         // then: all saved cards must be found again an attributes must be identical
         for (Map.Entry<Deck,Card> entry : savedCards.entrySet()) {
