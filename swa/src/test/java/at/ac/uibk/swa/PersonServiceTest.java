@@ -4,6 +4,7 @@ import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.PersonService;
+import at.ac.uibk.swa.service.UserDeckService;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 public class PersonServiceTest {
-    @Autowired
-    private DeckService deckService;
-    @Autowired
-    private CardService cardService;
     @Autowired
     private PersonService personService;
 
