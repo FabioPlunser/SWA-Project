@@ -3,6 +3,7 @@ package at.ac.uibk.swa.service.card_service;
 import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.repositories.CardRepository;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
@@ -25,6 +26,8 @@ public class CardServiceTest {
     private CardService cardService;
     @Autowired
     private PersonService personService;
+    @Autowired
+    private CardRepository cardRepository;
 
     @Test
     public void testSaveAndGetCards() {
@@ -68,7 +71,7 @@ public class CardServiceTest {
         }
 
         // when: loading all cards from database
-        List<Card> loadedCards = cardService.getAllCards();
+        List<Card> loadedCards = cardRepository.findAll();
 
         // then: all saved cards must be found again an attributes must be identical
         for (Map.Entry<Deck,Card> entry : savedCards.entrySet()) {

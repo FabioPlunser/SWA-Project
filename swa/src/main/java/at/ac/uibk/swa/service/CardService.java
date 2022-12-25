@@ -23,15 +23,6 @@ public class CardService {
     private PersonRepository personRepository;
 
     /**
-     * Gets all existing cards from the repository
-     *
-     * @return  a list of all cards
-     */
-    public List<Card> getAllCards() {
-        return cardRepository.findAll();
-    }
-
-    /**
      * Gets all existing cards for a specific deck from the repository
      * NOTE: if deck is not found (wrong id) no cards will be returned
      *
