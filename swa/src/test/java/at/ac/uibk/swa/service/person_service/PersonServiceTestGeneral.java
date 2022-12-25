@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.service.person_service;
 
+import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.PersonService;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.print.DocFlavor;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -109,6 +111,36 @@ public class PersonServiceTestGeneral {
         Optional<Person> maybeOldCredentialsPerson = personService.login(username, password);
         assertTrue(maybeOldCredentialsPerson.isEmpty(), "Could still login with old credentials");
         assertEquals(newPermissions, maybePerson.get().getPermissions(), "Permissions have not been updated");
+    }
+
+    @Test
+    public void testUpdatePersonViaCreate() {
+        // given: demo user in database
+        String username = "person-testUpdatePersonViaCreate";
+        String password = StringGenerator.password();
+        String email = StringGenerator.email();
+        Person person = new Person(username, email, password, Set.of());
+        assertTrue(personService.create(person), "Unable to create user for test");
+        UUID id = person.getPersonId();
+
+        // when: changing the person by interfering with the model directly
+        person.setUsername("new");
+        person.setPasswdHash("new");
+        person.setPermissions(Set.of(Permission.USER, Permission.ADMIN));
+        person.getCreatedDecks().add(new Deck("deck-1", StringGenerator.deckDescription(), person));
+        person.getSavedDecks().add(new Deck("deck-2", StringGenerator.deckDescription(), person));
+
+        // then: saving the modification via create() should not be possible
+        assertFalse(personService.create(person), "Changed person got created again");
+        Optional<Person> maybePerson = personService.findById(id);
+        assertTrue(maybePerson.isPresent(), "Unable to find original person in repository");
+        Person foundPerson = maybePerson.get();
+        assertEquals(username, foundPerson.getUsername(), "Name was changed");
+        assertTrue(personService.login(username, password).isPresent(), "Could not login anymore");
+        assertEquals(email, foundPerson.getEmail(), "Email was changed");
+        assertEquals(Set.of(), foundPerson.getPermissions(), "Permissions have been changed");
+        assertEquals(0, foundPerson.getCreatedDecks().size(), "Created decks have been changed");
+        assertEquals(0, foundPerson.getSavedDecks().size(), "Saved decks have been changed");
     }
 
     @Test
