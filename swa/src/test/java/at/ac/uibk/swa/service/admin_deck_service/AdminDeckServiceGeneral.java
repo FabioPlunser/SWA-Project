@@ -12,12 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -38,9 +35,9 @@ public class AdminDeckServiceGeneral {
     }
 
     @Test
-    public void testGetDeckById() {
+    public void testGetDeckByIdAsAdmin() {
         // given: a deck in the repository
-        Deck deck = createDeck("deck-testGetDeckById", "person-testGetDeckById");
+        Deck deck = createDeck("deck-testGetDeckByIdAsAdmin", "person-testGetDeckByIdAsAdmin");
         UUID id = deck.getDeckId();
 
         // when: trying to load that deck by id from the repository
@@ -53,12 +50,33 @@ public class AdminDeckServiceGeneral {
 
     @Test
     public void testBlockDeck() {
+        // given: a deck in the repository
+        Deck deck = createDeck("deck-testBlockDeck", "person-testBlockDeck");
+        UUID id = deck.getDeckId();
 
+        // when: blocking that deck
+        assertTrue(adminDeckService.block(deck), "Unable to block deck");
+
+        // then: deck must be set as blocked within the repository
+        Optional<Deck> maybeDeck = adminDeckService.findById(id);
+        assertTrue(maybeDeck.isPresent(), "Unable to find deck");
+        assertTrue(maybeDeck.get().isBlocked(), "Deck was not blocked");
     }
 
     @Test
     public void testUnblockDeck() {
+        // given: a deck in the repository, that was blocked
+        Deck deck = createDeck("deck-testUnblockDeck", "person-testUnblockDeck");
+        UUID id = deck.getDeckId();
+        assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
+        // when: unblocking that deck
+        assertTrue(adminDeckService.unblock(deck), "Unable to unblock deck");
+
+        // then: deck must be set as unblocked within the repository
+        Optional<Deck> maybeDeck = adminDeckService.findById(id);
+        assertTrue(maybeDeck.isPresent(), "Unable to find deck");
+        assertFalse(maybeDeck.get().isBlocked(), "Deck was not blocked");
     }
 
     @Test
