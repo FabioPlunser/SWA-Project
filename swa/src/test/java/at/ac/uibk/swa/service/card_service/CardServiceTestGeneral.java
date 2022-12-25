@@ -87,4 +87,27 @@ public class CardServiceTestGeneral {
             assertEquals(card.isFlipped(), loadedCard.isFlipped(), card + " has been flipped");
         }
     }
+
+    @Test
+    public void testGetCardsFromDeckOwned() {
+        // given: a user, that created a deck with multiple cards
+        int numCardsPerDeck = 10;
+        Person person = createUser("person-testGetCardsFromDeckOwned");
+        Deck deck = createDeck("deck-testGetCardsFromDeckOwned", person);
+        List<Card> cards = new ArrayList<>();
+        for (int i = 0; i < numCardsPerDeck; i++) {
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
+            assertTrue(cardService.create(card), "Unable to create card");
+            cards.add(card);
+        }
+
+        // when: retrieving all cards for that user and deck
+        List<Card> loadedCards = cardService.getAllCards(deck, person);
+
+        // then: all cards must be loaded again
+        assertEquals(cards.size(), loadedCards.size(), "Got wrong number of cards");
+        for (Card card : cards) {
+            assertTrue(loadedCards.contains(card), "Unable to find a card");
+        }
+    }
 }
