@@ -95,6 +95,30 @@ public class UserDeckServiceTest {
     }
 
     @Test
+    public void testUpdateDeck() {
+        // given: a user that created a deck in the repositoriy
+        Person creator = createUser("person-testUpdateDeck");
+        Deck deck = new Deck("deck-testUpdateDeck", StringGenerator.deckDescription(), creator);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
+
+        // when: updating the deck
+        String updatedName = "updated-name";
+        String updatedDescription = "updated-description";
+        assertTrue(userDeckService.update(deck, updatedName, updatedDescription), "Unable to update deck");
+
+        // then: the deck should still be available in the repository and new attributes should be set
+        Optional<Deck> maybeDeck = userDeckService.findById(deck.getDeckId());
+        assertTrue(maybeDeck.isPresent(), "Unable to find deck");
+        Deck foundDeck = maybeDeck.get();
+        assertEquals(updatedName, foundDeck.getName(), "Name has not been updated");
+        assertEquals(updatedDescription, foundDeck.getDescription(), "Description has not been updated");
+        assertEquals(creator, foundDeck.getCreator(), "Creator has changed");
+        assertFalse(foundDeck.isPublished(), "Deck has been published");
+        assertFalse(foundDeck.isBlocked(), "Deck has been blocked");
+        assertFalse(foundDeck.isDeleted(), "Deck has been deleted");
+    }
+
+    @Test
     public void testFindAllAvailableDecks() {
         // given: a user in the database, where the user has created 4 decks:
         //  - published
