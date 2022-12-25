@@ -106,5 +106,30 @@ public class CardServiceTestGeneral {
         assertEquals(card, maybeCard.get(), "Got card " + maybeCard.get() + " when card " + card + " was expected");
     }
 
-    
+    @Test
+    public void testUpdateCard() {
+        // given: a card in the database
+        // given: a card in the database
+        Card card = new Card(
+                StringGenerator.deckDescription(),
+                StringGenerator.deckDescription(),
+                false,
+                createDeck("deck-testUpdateCard", createUser("person-testUpdateCard"))
+        );
+        assertTrue(cardService.create(card), "Unable to create card");
+
+        // when: updating the card
+        String frontText = "new front text";
+        String backText = "new back text";
+        boolean isFlipped = true;
+        assertTrue(cardService.update(card, frontText, backText, isFlipped));
+
+        // then: the card should still be available in the repository and attributes should be correct
+        Optional<Card> maybeCard = cardService.findById(card.getCardId());
+        assertTrue(maybeCard.isPresent(), "Unable to find card");
+        Card foundCard = maybeCard.get();
+        assertEquals(frontText, foundCard.getFrontText(), "Wrong front text");
+        assertEquals(backText, foundCard.getBackText(), "Wrong back text");
+        assertEquals(isFlipped, foundCard.isFlipped(), "Card is (not) flipped");
+    }
 }
