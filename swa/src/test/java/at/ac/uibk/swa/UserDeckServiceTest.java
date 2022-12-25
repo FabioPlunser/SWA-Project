@@ -380,4 +380,23 @@ public class UserDeckServiceTest {
         assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");
         assertTrue(decks.get(decks.indexOf(deck)).getDescription().contains("deleted"), "Missing info on deleting");
     }
+
+    @Test
+    public void testGetAllOwnedDecksPublished() {
+    }
+
+    @Test
+    public void testGetAllOwnedDecksUnpublished() {
+
+    }
+
+    @Test
+    public void testGetAllOwnedDecksBlocked() {
+
+    }
+
+    @Test
+    public void testGetAllOwnedDecksDeleted() {
+
+    }
 }
