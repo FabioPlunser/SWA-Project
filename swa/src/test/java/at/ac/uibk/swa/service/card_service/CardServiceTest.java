@@ -61,7 +61,7 @@ public class CardServiceTest {
                             false,
                             deck
                     );
-                    assertTrue(cardService.save(card), "Could not save card");
+                    assertTrue(cardService.create(card), "Could not create card");
                     savedCards.put(deck, card);
                 }
             }
