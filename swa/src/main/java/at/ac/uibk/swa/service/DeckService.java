@@ -67,7 +67,7 @@ public class DeckService {
         Optional<Person> maybePerson = personService.findById(personId);
         if (maybePerson.isPresent()) {
             Person person = maybePerson.get();
-            List<Deck> allDecks = getAllDecks(person.getPersonId());
+            List<Deck> allDecks = getAllDecks(person);
             return allDecks.stream().filter(d -> d.getCreator().equals(person)).toList();
         } else {
             return new ArrayList<>();
@@ -90,12 +90,20 @@ public class DeckService {
      * @param deck deck to save
      * @return true if deck has been saved, false otherwise
      */
-    public boolean save(Deck deck) {
+    public Deck save(Deck deck) {
         try {
-            this.deckRepository.save(deck);
-            return true;
+            return deckRepository.save(deck);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public boolean create(Deck deck) {
+        Deck savedDeck = save(deck);
+        System.out.println("Saved deck: " + savedDeck);
+        if (savedDeck != null) {
+            return subscribeToDeck(savedDeck, savedDeck.getCreator());
+        } else {
             return false;
         }
     }
@@ -110,20 +118,13 @@ public class DeckService {
      * @param description new description of the deck, set to null if no change is desired
      * @return true if the deck was updated, false otherwise
      */
-    public boolean update(UUID deckId, String name, String description) {
-        try {
-            Optional<Deck> maybeFoundDeck = this.findById(deckId);
-            if (maybeFoundDeck.isEmpty()) {
-                return false;
-            } else if (maybeFoundDeck.get().isBlocked() || maybeFoundDeck.get().isDeleted()) {
-                return false;
-            } else {
-                Deck deck = maybeFoundDeck.get();
-                if (name != null) deck.setName(name);
-                if (description != null) deck.setDescription(description);
-                return save(deck);
-            }
-        } catch (Exception e) {
+    public boolean update(Deck deck, String name, String description) {
+        if (deck != null && deck.getDeckId() != null) {
+            if (deck.isBlocked() || deck.isDeleted()) return false;
+            if (name != null) deck.setName(name);
+            if (description != null) deck.setDescription(description);
+            return save(deck) != null;
+        } else {
             return false;
         }
     }
@@ -136,19 +137,13 @@ public class DeckService {
      * @param deckId id of deck to be deleted
      * @return true if deck has been deleted, false otherwise
      */
-    public boolean delete(UUID deckId) {
-        try {
-            Optional<Deck> maybeFoundDeck = this.findById(deckId);
-            if (maybeFoundDeck.isEmpty()) {
-                return false;
-            } else if (maybeFoundDeck.get().isDeleted()) {
-                return false;
-            } else {
-                Deck deck = maybeFoundDeck.get();
-                deck.setDeleted(true);
-                return save(deck);
-            }
-        } catch (Exception e) {
+    public boolean delete(Deck deck) {
+        if (deck != null && deck.getDeckId() != null) {
+            if (deck.isDeleted()) return false;
+            deck.setDeleted(true);
+            unsubscribeFromDeck(deck, deck.getCreator());
+            return save(deck) != null;
+        } else {
             return false;
         }
     }
@@ -161,19 +156,12 @@ public class DeckService {
      * @param deckId id of deck to be blocked
      * @return true if deck has been blocked, false otherwise
      */
-    public boolean block(UUID deckId) {
-        try {
-            Optional<Deck> maybeFoundDeck = this.findById(deckId);
-            if (maybeFoundDeck.isEmpty()) {
-                return false;
-            } else if (maybeFoundDeck.get().isBlocked()) {
-                return false;
-            } else {
-                Deck deck = maybeFoundDeck.get();
-                deck.setBlocked(true);
-                return save(deck);
-            }
-        } catch (Exception e) {
+    public boolean block(Deck deck) {
+        if (deck != null && deck.getDeckId() != null) {
+            if (deck.isBlocked()) return false;
+            deck.setBlocked(true);
+            return save(deck) != null;
+        } else {
             return false;
         }
     }
@@ -186,19 +174,12 @@ public class DeckService {
      * @param deckId id of deck to be unblocked
      * @return true if deck has been unblocked, false otherwise
      */
-    public boolean unblock(UUID deckId) {
-        try {
-            Optional<Deck> maybeFoundDeck = this.findById(deckId);
-            if (maybeFoundDeck.isEmpty()) {
-                return false;
-            } else if (maybeFoundDeck.get().isBlocked()) {
-                return false;
-            } else {
-                Deck deck = maybeFoundDeck.get();
-                deck.setBlocked(false);
-                return save(deck);
-            }
-        } catch (Exception e) {
+    public boolean unblock(Deck deck) {
+        if (deck != null && deck.getDeckId() != null) {
+            if (!deck.isBlocked()) return false;
+            deck.setBlocked(false);
+            return save(deck) != null;
+        } else {
             return false;
         }
     }
@@ -211,19 +192,12 @@ public class DeckService {
      * @param deckId id of deck to be published
      * @return true if deck has been published, false otherwise
      */
-    public boolean publish(UUID deckId) {
-        try {
-            Optional<Deck> maybeFoundDeck = this.findById(deckId);
-            if (maybeFoundDeck.isEmpty()) {
-                return false;
-            } else if (maybeFoundDeck.get().isPublished()) {
-                return false;
-            } else {
-                Deck deck = maybeFoundDeck.get();
-                deck.setPublished(true);
-                return save(deck);
-            }
-        } catch (Exception e) {
+    public boolean publish(Deck deck) {
+        if (deck != null && deck.getDeckId() != null) {
+            if (deck.isPublished()) return false;
+            deck.setPublished(true);
+            return save(deck) != null;
+        } else {
             return false;
         }
     }
@@ -236,19 +210,12 @@ public class DeckService {
      * @param deckId id of deck to be unpublished
      * @return true if deck has been unpublished, false otherwise
      */
-    public boolean unpublish(UUID deckId) {
-        try {
-            Optional<Deck> maybeFoundDeck = this.findById(deckId);
-            if (maybeFoundDeck.isEmpty()) {
-                return false;
-            } else if (!maybeFoundDeck.get().isPublished()) {
-                return false;
-            } else {
-                Deck deck = maybeFoundDeck.get();
-                deck.setPublished(false);
-                return save(deck);
-            }
-        } catch (Exception e) {
+    public boolean unpublish(Deck deck) {
+        if (deck != null && deck.getDeckId() != null) {
+            if (!deck.isPublished()) return false;
+            deck.setPublished(false);
+            return save(deck) != null;
+        } else {
             return false;
         }
     }
@@ -261,12 +228,8 @@ public class DeckService {
      * @param personId id of the person that is to subscribe
      * @return true if the person has been subscribed, false otherwise
      */
-    public boolean subscribeToDeck(UUID deckId, UUID personId) {
-        Optional<Deck> maybeDeck = findById(deckId);
-        Optional<Person> maybePerson = personService.findById(personId);
-        if (maybeDeck.isPresent() && maybePerson.isPresent()) {
-            Deck deck = maybeDeck.get();
-            Person person = maybePerson.get();
+    public boolean subscribeToDeck(Deck deck, Person person) {
+        if (deck != null && deck.getDeckId() != null && person != null && person.getPersonId() != null) {
             if (!person.getSavedDecks().contains(deck)) {
                 person.getSavedDecks().add(deck);
                 try {
@@ -293,12 +256,8 @@ public class DeckService {
      * @param personId id of the person that is to be unsubscribed
      * @return true if the person has been unsubscribed, false otherwise
      */
-    public boolean unsubscribeFromDeck(UUID deckId, UUID personId) {
-        Optional<Deck> maybeDeck = findById(deckId);
-        Optional<Person> maybePerson = personService.findById(personId);
-        if (maybeDeck.isPresent() && maybePerson.isPresent()) {
-            Deck deck = maybeDeck.get();
-            Person person = maybePerson.get();
+    public boolean unsubscribeFromDeck(Deck deck, Person person) {
+        if (deck != null && deck.getDeckId() != null && person != null && person.getPersonId() != null) {
             if (person.getSavedDecks().contains(deck)) {
                 person.getSavedDecks().remove(deck);
                 try {

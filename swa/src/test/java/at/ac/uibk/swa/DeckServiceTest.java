@@ -48,7 +48,7 @@ public class DeckServiceTest {
                         StringGenerator.deckDescription(),
                         creator
                 );
-                assertTrue(deckService.save(deck), "Could not save deck");
+                assertTrue(deckService.create(deck), "Could not save deck");
                 savedDecks.put(creator, deck);
             }
         }
@@ -84,10 +84,10 @@ public class DeckServiceTest {
 
         String deckDescription = "Description";
         Deck deck = new Deck("deck-TestGetAllDecksAsUserCreatedUnpublished", deckDescription, person);
-        assertTrue(deckService.save(deck), "Unable to save deck");
+        assertTrue(deckService.create(deck), "Unable to save deck");
 
         // when: loading all decks for that user
-        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+        List<Deck> decks = deckService.getAllDecks(person);
 
         // then: the user should be able to see that deck (and only that) without a change to its description
         assertTrue(decks.contains(deck), "Unable to find deck");
@@ -108,11 +108,11 @@ public class DeckServiceTest {
 
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedPublished", deckDescription, person);
-        assertTrue(deckService.save(deck), "Unable to save deck");
-        assertTrue(deckService.publish(deck.getDeckId()), "Unable to publish deck");
+        assertTrue(deckService.create(deck), "Unable to save deck");
+        assertTrue(deckService.publish(deck), "Unable to publish deck");
 
         // when: loading all decks for that user
-        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+        List<Deck> decks = deckService.getAllDecks(person);
 
         // then: the user should be able to see that deck (and only that) without a change to its description
         assertTrue(decks.contains(deck), "Unable to find deck");
@@ -133,11 +133,11 @@ public class DeckServiceTest {
 
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedBlocked", deckDescription, person);
-        assertTrue(deckService.save(deck), "Unable to save deck");
-        assertTrue(deckService.block(deck.getDeckId()), "Unable to block deck");
+        assertTrue(deckService.create(deck), "Unable to save deck");
+        assertTrue(deckService.block(deck), "Unable to block deck");
 
         // when: loading all decks for that user
-        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+        List<Deck> decks = deckService.getAllDecks(person);
 
         // then: the user should be able to see that deck (and only that), but the description should be changed
         // and contain info on the blocking
@@ -160,11 +160,11 @@ public class DeckServiceTest {
 
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedDeleted", deckDescription, person);
-        assertTrue(deckService.save(deck), "Unable to save deck");
-        assertTrue(deckService.delete(deck.getDeckId()), "Unable to delete deck");
+        assertTrue(deckService.create(deck), "Unable to save deck");
+        assertTrue(deckService.delete(deck), "Unable to delete deck");
 
         // when: loading all decks for that user
-        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+        List<Deck> decks = deckService.getAllDecks(person);
 
         // then: the user should not be able to see that deck
         assertEquals(0, decks.size(), "Found more decks than expected");
@@ -191,13 +191,13 @@ public class DeckServiceTest {
 
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksAsUserSubscribedUnpublished", deckDescription, otherPerson);
-        assertTrue(deckService.save(deck), "Unable to save deck");
-        assertTrue(deckService.publish(deck.getDeckId()), "Unable to publish deck");
-        assertTrue(deckService.subscribeToDeck(deck.getDeckId(), person.getPersonId()), "Unable to subscribe to deck");
-        assertTrue(deckService.unpublish(deck.getDeckId()), "Unable to unpublish deck");
+        assertTrue(deckService.create(deck), "Unable to save deck");
+        assertTrue(deckService.publish(deck), "Unable to publish deck");
+        assertTrue(deckService.subscribeToDeck(deck, person), "Unable to subscribe to deck");
+        assertTrue(deckService.unpublish(deck), "Unable to unpublish deck");
 
         // when: loading all decks for the user
-        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+        List<Deck> decks = deckService.getAllDecks(person);
 
         // then: the user should be able to see the deck (and only that), but the description should be changed and
         // contain info on unpublishing
@@ -227,12 +227,12 @@ public class DeckServiceTest {
 
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksAsUserSubscribedPublished", deckDescription, otherPerson);
-        assertTrue(deckService.save(deck), "Unable to save deck");
-        assertTrue(deckService.publish(deck.getDeckId()), "Unable to publish deck");
-        assertTrue(deckService.subscribeToDeck(deck.getDeckId(), person.getPersonId()), "Unable to subscribe to deck");
+        assertTrue(deckService.create(deck), "Unable to save deck");
+        assertTrue(deckService.publish(deck), "Unable to publish deck");
+        assertTrue(deckService.subscribeToDeck(deck, person), "Unable to subscribe to deck");
 
         // when: loading all decks for the user
-        List<Deck> decks = deckService.getAllDecks(person.getPersonId());
+        List<Deck> decks = deckService.getAllDecks(person);
 
         // then: the user should be able to see that deck (and only that) without a change to its description
         assertTrue(decks.contains(deck), "Unable to find deck");

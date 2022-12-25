@@ -52,7 +52,7 @@ public class CardServiceTest {
                         StringGenerator.deckDescription(),
                         creator
                 );
-                assertTrue(deckService.save(deck), "Could not save deck");
+                assertTrue(deckService.create(deck), "Could not save deck");
                 decks.put(creator, deck);
                 for (int k = 0; k < numberOfCardsPerDeck; k++) {
                     Card card = new Card(
