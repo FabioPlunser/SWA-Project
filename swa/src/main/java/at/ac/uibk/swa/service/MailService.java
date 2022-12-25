@@ -17,7 +17,7 @@ public class MailService {
     private JavaMailSender mailSender;
 
     public void notifyBlockedDeck(Deck deck) {
-        String[] recipients = deck.getAllPersons().stream().map(Person::getEmail).toArray(String[]::new);
+        String[] recipients = deck.getSubscribedPersons().stream().map(Person::getEmail).toArray(String[]::new);
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(recipients);

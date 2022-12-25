@@ -25,6 +25,8 @@ public class Person extends Authenticable implements Serializable {
     public Person(String username, String email, String passwdHash, UUID token, Set<Permission> permissions) {
         super(username, passwdHash, token, permissions);
         this.email = email;
+        this.createdDecks = new ArrayList<>();
+        this.savedDecks = new ArrayList<>();
     }
 
     public Person(String username, String email, String passwdHash, Set<Permission> permissions) {

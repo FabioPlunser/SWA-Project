@@ -4,8 +4,8 @@ import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.CardService;
-import at.ac.uibk.swa.service.DeckService;
 import at.ac.uibk.swa.service.PersonService;
+import at.ac.uibk.swa.service.UserDeckService;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 public class CardServiceTest {
     @Autowired
-    private DeckService deckService;
+    private UserDeckService userDeckService;
     @Autowired
     private CardService cardService;
     @Autowired
@@ -52,7 +52,7 @@ public class CardServiceTest {
                         StringGenerator.deckDescription(),
                         creator
                 );
-                assertTrue(deckService.save(deck), "Could not save deck");
+                assertTrue(userDeckService.create(deck), "Could not save deck");
                 decks.put(creator, deck);
                 for (int k = 0; k < numberOfCardsPerDeck; k++) {
                     Card card = new Card(
