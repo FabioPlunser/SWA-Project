@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -37,7 +39,16 @@ public class AdminDeckServiceGeneral {
 
     @Test
     public void testGetDeckById() {
-        
+        // given: a deck in the repository
+        Deck deck = createDeck("deck-testGetDeckById", "person-testGetDeckById");
+        UUID id = deck.getDeckId();
+
+        // when: trying to load that deck by id from the repository
+        Optional<Deck> maybeDeck = adminDeckService.findById(id);
+
+        // then: retrieved deck must be correct
+        assertTrue(maybeDeck.isPresent(), "Unable to find deck");
+        assertEquals(deck, maybeDeck.get(), "Got deck " + maybeDeck.get() + " when deck " + deck + " was expected");
     }
 
     @Test
