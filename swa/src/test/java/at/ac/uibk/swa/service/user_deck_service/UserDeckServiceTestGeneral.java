@@ -97,7 +97,7 @@ public class UserDeckServiceTestGeneral {
 
     @Test
     public void testUpdateDeck() {
-        // given: a user that created a deck in the repositoriy
+        // given: a user that created a deck in the repository
         Person creator = createUser("person-testUpdateDeck");
         Deck deck = new Deck("deck-testUpdateDeck", StringGenerator.deckDescription(), creator);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
@@ -117,6 +117,36 @@ public class UserDeckServiceTestGeneral {
         assertFalse(foundDeck.isPublished(), "Deck has been published");
         assertFalse(foundDeck.isBlocked(), "Deck has been blocked");
         assertFalse(foundDeck.isDeleted(), "Deck has been deleted");
+    }
+
+    @Test
+    public void testUpdateDeckViaCreate() {
+        // given: a user that created a deck in the repository
+        Person creator = createUser("person-testUpdateDeckViaCreate");
+        String originalName = "deck-testUpdateDeckViaCreate";
+        String originalDescription = StringGenerator.deckDescription();
+        Deck deck = new Deck(originalName, originalDescription, creator);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
+        UUID id = deck.getDeckId();
+
+        // when: changing the deck by interfering with the model directly
+        deck.setName("new");
+        deck.setDescription("new");
+        deck.setPublished(true);
+        deck.setBlocked(true);
+        deck.setDeleted(true);
+
+        // then: saving the modification via create() should not be possible
+        assertFalse(userDeckService.create(deck), "Changed deck got created again");
+        Optional<Deck> maybeDeck = userDeckService.findById(id);
+        assertTrue(maybeDeck.isPresent(), "Unable to find original deck in repository");
+        Deck foundDeck = maybeDeck.get();
+        assertEquals(originalName, foundDeck.getName(), "Name was changed");
+        assertEquals(originalDescription, foundDeck.getDescription(), "Description was changed");
+        assertEquals(creator, foundDeck.getCreator(), "Creator was changed");
+        assertFalse(foundDeck.isPublished(), "Deck was published");
+        assertFalse(foundDeck.isBlocked(), "Deck was blocked");
+        assertFalse(foundDeck.isDeleted(), "Deck was deleted");
     }
 
     @Test
