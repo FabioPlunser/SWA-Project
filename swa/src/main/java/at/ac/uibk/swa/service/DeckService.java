@@ -37,78 +37,21 @@ public class DeckService {
     }
 
     /**
-     * Gets all decks from the repository that a person can see, depending on permissions
-     *  - isDeleted:
-     *      - deck is included, if person is subscriber of deck (but not creator), but description is changed
-     *  - isBlocked:
-     *      - deck is included, if person is ADMIN
-     *      - deck is included, if person is subscriber of deck, but description is changed
-     *  - !isPublished:
-     *      - deck is included, if person is ADMIN
-     *      - deck is included, if person is creator
-     *      - deck is included, if person is subscriber of deck (but not creator), but description is changed
+     * Gets all decks to which a person has subscribed, but might alter description, depending on deck status
+     *  - isDeleted: info, that deck has been deleted
+     *  - isBlocked: info, that deck has been blocked
+     *  - !isPublished: info, that deck has been unpublished, if not creator
      *
-     * NOTE: creator of deck is also subscriber of deck
-     *
-     * @param personId id of the person that wants to get all decks
-     * @return a list of all decks that person can view, empty list if person has not been found
+     * @param person person that wants to get all the decks
+     * @return a list of all decks to which that person has subscribed
      */
-    public List<Deck> getAllDecks(UUID personId) {
-        Optional<Person> maybePerson = personService.findById(personId);
-        if (maybePerson.isPresent()) {
-            Person person = maybePerson.get();
-            List<Deck> allDecks = this.getAllDecks();
-
-            List<Deck> deletedDecks = allDecks.stream()
-                    .filter(d -> d.getSubscribedPersons().contains(person) && d.isDeleted())
+    public List<Deck> getAllDecks(Person person) {
+        if (person != null) {
+            return person.getSavedDecks().stream()
+                    .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) d.setDescription("Deck has been unpublished"); return d;})
+                    .map(d -> {if (d.isBlocked()) d.setDescription("Deck has been blocked"); return d;})
+                    .map(d -> {if (d.isDeleted()) d.setDescription("Deck has been deleted"); return d;})
                     .toList();
-            deletedDecks.forEach(d -> d.setDescription("Deck has been deleted"));
-
-            List<Deck> administeredDecks = allDecks.stream()
-                    .filter(d -> person.getPermissions().contains(Permission.ADMIN) && !deletedDecks.contains(d))
-                    .toList();
-
-            List<Deck> blockedDecks = allDecks.stream()
-                    .filter(d -> !deletedDecks.contains(d))
-                    .filter(d -> !administeredDecks.contains(d))
-                    .filter(d ->
-                            person.getPermissions().contains(Permission.ADMIN) ||
-                                    (d.getSubscribedPersons().contains(person) && d.isBlocked())
-                    )
-                    .toList();
-            if (!person.getPermissions().contains(Permission.ADMIN)) {
-                blockedDecks.forEach(d -> d.setDescription("Deck has been blocked"));
-            }
-
-            List<Deck> ownedDecks = allDecks.stream()
-                    .filter(d -> !deletedDecks.contains(d))
-                    .filter(d -> !administeredDecks.contains(d))
-                    .filter(d -> !blockedDecks.contains(d))
-                    .filter(d -> d.getCreator().equals(person) && !d.isDeleted())
-                    .toList();
-
-            List<Deck> subscribedDecks = allDecks.stream()
-                    .filter(d -> !deletedDecks.contains(d))
-                    .filter(d -> !administeredDecks.contains(d))
-                    .filter(d -> !blockedDecks.contains(d))
-                    .filter(d -> !ownedDecks.contains(d))
-                    .filter(d -> d.getSubscribedPersons().contains(person))
-                    .toList();
-            subscribedDecks.stream().filter(d -> !d.isPublished()).forEach(d -> d.setDescription("Deck has been unpublished"));
-
-            return Stream.concat(
-                    Stream.concat(
-                            Stream.concat(
-                                    deletedDecks.stream(),
-                                    administeredDecks.stream()
-                            ),
-                            blockedDecks.stream()
-                    ),
-                    Stream.concat(
-                            ownedDecks.stream(),
-                            subscribedDecks.stream()
-                    )
-            ).toList();
         } else {
             return new ArrayList<>();
         }
