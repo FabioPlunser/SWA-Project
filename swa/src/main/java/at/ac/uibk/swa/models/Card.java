@@ -69,11 +69,31 @@ public class Card implements Serializable {
         return Optional.ofNullable(this.learningProgresses.getOrDefault(person, null));
     }
 
-    public void computeNewLearningProgress(
-            Person person,
-            Function<Optional<LearningProgress>, LearningProgress> mapper
-    ) {
-        this.learningProgresses.compute(person, (p, lp) -> mapper.apply(Optional.ofNullable(lp)));
+    /**
+     * updates the learning progress to the values of the other progress
+     * creates a new progress if no progress is found
+     *
+     * doing it like below is necessary to leave the id unchanged
+     * updating by replacing the learning progress in the map of card will leave the old learning progress undeleted
+     * database will be polluted over time
+     *
+     * unittest is in place to monitor the correct handling of this issue
+     * @see at.ac.uibk.swa.service.card_service.CardServiceTestLearning#testLearnMultipleTimesMonitorLearningProgressEntities()
+     *
+     * @param person person for which the learning progress should be updated
+     * @param learningProgress new learning progress from which the values are taken - does not need to be saved to repository
+     */
+    public void setLearningProgress(Person person, LearningProgress learningProgress) {
+        // updating the learning progress like this is required because otherwise new learning progresses with new
+        // ids are created each time and pollute the database
+        //
+        // unittest (CardServiceTestLearning.testLearnMultipleTimesMonitorLearningProgressEntities) is in place
+        // to check this issue
+        if (learningProgresses.containsKey(person)) {
+            learningProgresses.get(person).update(learningProgress);
+        } else {
+            learningProgresses.put(person, learningProgress);
+        }
     }
 
     @Override

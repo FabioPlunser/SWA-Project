@@ -4,6 +4,7 @@ import at.ac.uibk.swa.config.personAuthentication.AuthContext;
 import at.ac.uibk.swa.models.*;
 import at.ac.uibk.swa.repositories.CardRepository;
 import at.ac.uibk.swa.repositories.DeckRepository;
+import at.ac.uibk.swa.repositories.LearningProgressRepository;
 import at.ac.uibk.swa.service.card_service.learning_algorithm.LearningAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ public class CardService {
     private PersonService personService;
     @Autowired
     private DeckRepository deckRepository;
+    @Autowired
+    private LearningProgressRepository learningProgressRepository;
 
     /**
      * Gets all existing cards for a specific deck and a specific user from the repository
@@ -213,11 +216,20 @@ public class CardService {
     }
 
     public boolean learn(Card card, Person person, int difficulty) {
-        card.computeNewLearningProgress(person, maybeLearningProgress -> {
-                LearningProgress learningProgress = maybeLearningProgress.orElseGet(LearningProgress::new);
-                return LearningAlgorithm.updateLearningProgress(learningProgress, difficulty);
-            }
+        card.setLearningProgress(
+                person,
+                LearningAlgorithm.getUpdatedLearningProgress(
+                        card.getLearningProgress(person).orElseGet(LearningProgress::new),
+                        difficulty
+                )
         );
+
+        // TODO: check if there is way around that
+        try {
+            learningProgressRepository.save(card.getLearningProgress(person).get());
+        } catch (Exception e) {
+            return false;
+        }
 
         return save(card) != null;
     }

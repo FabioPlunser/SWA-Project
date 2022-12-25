@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.service.card_service;
 
 import at.ac.uibk.swa.models.*;
+import at.ac.uibk.swa.repositories.LearningProgressRepository;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
@@ -26,6 +27,8 @@ public class CardServiceTestLearning {
     UserDeckService userDeckService;
     @Autowired
     PersonService personService;
+    @Autowired
+    LearningProgressRepository learningProgressRepository;
 
     private Person createUser(String username) {
         Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
@@ -89,4 +92,39 @@ public class CardServiceTestLearning {
         }
     }
 
+    @Test
+    public void testLearnUnlearntCard() {
+        // given: a deck created by a user with one single card
+        Person person = createUser("person-testLearnUnlearntCard");
+        Deck deck = createDeck("deck-testLearnUnlearntCard", person);
+        Card card = createCard(deck);
+
+        // when: learning that one single card
+        assertTrue(cardService.learn(card, person, 0), "Unable to learn card");
+
+        // then: learning progress shall be updated
+        Optional<LearningProgress> maybeLearningProgress = cardService.getLearningProgress(card, person);
+        assertTrue(maybeLearningProgress.isPresent(), "Did not find any learning progress");
+        LearningProgress learningProgress = maybeLearningProgress.get();
+        assertEquals(1, learningProgress.getRepetitions(), "Number of repetitions other than expected");
+    }
+
+    @Test
+    public void testLearnMultipleTimesMonitorLearningProgressEntities() {
+        // given: a deck created by a user with one single card
+        Person person = createUser("person-testLearnMultipleTimesMonitorLearningProgressEntities");
+        Deck deck = createDeck("deck-testLearnMultipleTimesMonitorLearningProgressEntities", person);
+        Card card = createCard(deck);
+
+        // when: learning the card n times
+        long numberOfLearningProgressEntitiesBefore = learningProgressRepository.count();
+        int numberOfLearningRepetitions = 10;
+        for (int i = 0; i < numberOfLearningRepetitions; i++) {
+            assertTrue(cardService.learn(card, person, 0), "Unable to learn card");
+        }
+
+        // then: only a single learning progress entity must be created
+        long numberOfLearningProgressEntitiesAfter = learningProgressRepository.count();
+        assertEquals(1, numberOfLearningProgressEntitiesAfter - numberOfLearningProgressEntitiesBefore, "Too many entities have been created");
+    }
 }
