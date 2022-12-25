@@ -59,21 +59,34 @@ public class PersonService {
                 .map(personRepository::findByToken)
                 .flatMap(Function.identity());
     }
-
+    
     public Optional<Person> findById(UUID id) {
         return personRepository.findById(id);
     }
 
+    /**
+     * Logout a user
+     *
+     * @param person user to be logged out
+     * @return true if user has been logged out, false otherwise
+     */
+    public boolean logout(Person person) {
+        if (person != null && person.getPersonId() != null && person.getToken() != null) {
+            person.setToken(null);
+            return save(person) != null;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Logout a user
+     * @param token token of the user to be logged out
+     * @return true if user has been logged out, false otherwise
+     */
     public boolean logout(UUID token) {
         Optional<Person> maybePerson = personRepository.findByToken(token);
-        if(maybePerson.isPresent()){
-            Person person = maybePerson.get();
-            // Delete the Token on Logout
-            person.setToken(null);
-            personRepository.save(person);
-            return true;
-        }
-        return false;
+        return maybePerson.filter(this::logout).isPresent();
     }
 
     /**
