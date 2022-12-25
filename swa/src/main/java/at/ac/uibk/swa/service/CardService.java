@@ -256,25 +256,19 @@ public class CardService {
      * Updates a card with the given parameters
      * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param cardId id of the card to be updated
+     * @param card card to be updated
      * @param frontText new front text of the card, set to null if no change is desired
      * @param backText new back text of the card, set to null if no change is desired
      * @param isFlipped card flipped or not flipped
      * @return true if card has been updated, false otherwise
      */
-    public boolean update(UUID cardId, String frontText, String backText, boolean isFlipped) {
-        try {
-            Optional<Card> maybeCard = findById(cardId);
-            if (maybeCard.isEmpty()) {
-                return false;
-            } else {
-                Card card = maybeCard.get();
-                if (frontText !=  null) card.setFrontText(frontText);
-                if (backText != null) card.setBackText(backText);
-                card.setFlipped(isFlipped);
-                return save(card) != null;
-            }
-        } catch (Exception e) {
+    public boolean update(Card card, String frontText, String backText, boolean isFlipped) {
+        if (card != null && card.getCardId() != null) {
+            if (frontText !=  null) card.setFrontText(frontText);
+            if (backText != null) card.setBackText(backText);
+            card.setFlipped(isFlipped);
+            return save(card) != null;
+        } else {
             return false;
         }
     }
