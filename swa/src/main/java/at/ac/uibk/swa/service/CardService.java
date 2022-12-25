@@ -9,6 +9,7 @@ import at.ac.uibk.swa.service.learning_algorithm.LearningAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.function.Function;
 
@@ -293,6 +294,8 @@ public class CardService {
      */
     public boolean delete(Card card) {
         try {
+            card.getDeck().getCards().remove(card);
+            deckRepository.save(card.getDeck());
             cardRepository.delete(card);
             return true;
         } catch (Exception e) {
@@ -308,8 +311,8 @@ public class CardService {
      */
     public boolean delete(UUID cardId) {
         try {
-            cardRepository.deleteById(cardId);
-            return true;
+            Optional<Card> maybeCard = findById(cardId);
+            return maybeCard.filter(this::delete).isPresent();
         } catch (Exception e) {
             return false;
         }

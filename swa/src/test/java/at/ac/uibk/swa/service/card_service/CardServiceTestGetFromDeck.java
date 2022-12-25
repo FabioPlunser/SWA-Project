@@ -186,4 +186,54 @@ public class CardServiceTestGetFromDeck {
         // then: no cards must be loaded
         assertEquals(0, loadedCards.size(), "Got wrong number of cards");
     }
+
+    @Test
+    public void testGetCardsFromDeckSubscribedDeleted() {
+        // given: a user, that subscribed to a deck with multiple cards, but the deck was blocked after subscription
+        int numCardsPerDeck = 10;
+        Person person = createUser("person-testGetCardsFromDeckSubscribedDeleted");
+        Deck deck = createDeck("deck-testGetCardsFromDeckSubscribedDeleted", createUser("person-testGetCardsFromDeckSubscribedDeleted-creator"));
+        List<Card> cards = new ArrayList<>();
+        for (int i = 0; i < numCardsPerDeck; i++) {
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
+            assertTrue(cardService.create(card), "Unable to create card");
+            cards.add(card);
+        }
+        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+        assertTrue(userDeckService.delete(deck), "Unable to delete deck");
+
+        // when: retrieving all cards for that user and deck
+        List<Card> loadedCards = cardService.getAllCards(deck, person);
+
+        // then: no cards must be loaded
+        assertEquals(0, loadedCards.size(), "Got wrong number of cards");
+    }
+
+    @Test
+    public void testGetDeletedCardsFromDeck() {
+        // given: a user, that a deck with multiple cards and deleted a card after creation
+        int numCardsPerDeck = 10;
+        Person person = createUser("person-testGetDeletedCardsFromDeck");
+        Deck deck = createDeck("deck-testGetDeletedCardsFromDeck", createUser("person-testGetDeletedCardsFromDeck-creator"));
+        List<Card> cards = new ArrayList<>();
+        for (int i = 0; i < numCardsPerDeck; i++) {
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
+            assertTrue(cardService.create(card), "Unable to create card");
+            cards.add(card);
+        }
+        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+        assertTrue(cardService.delete(cards.get(0)), "Unable to delete card");
+        cards.remove(0);
+
+        // when: retrieving all cards for that user and deck
+        List<Card> loadedCards = cardService.getAllCards(deck, person);
+
+        // then: all cards, except the deleted card must be loaded
+        assertEquals(cards.size(), loadedCards.size(), "Got wrong number of cards");
+        for (Card card : cards) {
+            assertTrue(loadedCards.contains(card), "Unable to find card");
+        }
+    }
 }
