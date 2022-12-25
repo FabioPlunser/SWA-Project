@@ -108,15 +108,13 @@ public class CardService {
      */
     public List<Card> getAllCardsToLearn(Deck deck, Person person) {
             Date now = new Date();
-            return deck
-                    .getCards()
-                    .stream()
+            return getAllCards(deck, person).stream()
                     .filter(card -> card.getLearningProgress(person)
-                                    .map(
-                                            // If a Learning Progress is present, check if it's nextLearn is due.
-                                            // If it is due, return null => Optional will be empty
-                                            lp -> lp.getNextLearn().before(now) ? null : lp
-                                    )
+                            .map(
+                                    // If a Learning Progress is present, check if it's nextLearn is due.
+                                    // If it is due, return null => Optional will be empty
+                                    lp -> lp.getNextLearn().before(now) ? null : lp
+                            )
                             // If no Learning Progress is present, the card hasn't been learned.
                             .isEmpty()
                     ).toList();

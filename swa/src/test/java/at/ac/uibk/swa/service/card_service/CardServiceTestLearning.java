@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -31,20 +33,29 @@ public class CardServiceTestLearning {
         return person;
     }
 
-    private Card createCard(String deckName, String creatorName) {
-        Person creator = createUser(creatorName);
-        Deck deck = new Deck(deckName, StringGenerator.deckDescription(), creator);
+    private Deck createDeck(String name, Person creator) {
+        Deck deck = new Deck(name, StringGenerator.deckDescription(), creator);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
-        Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(), false, deck);
+        return deck;
+    }
+
+    private Card createCard(Deck deck) {
+        Card card = new Card(
+                StringGenerator.cardText(),
+                StringGenerator.cardText(),
+                false,
+                deck
+        );
         assertTrue(cardService.create(card), "Unable to create card");
         return card;
     }
     
     @Test
-    public void testGetInitialLearningProgressOfDeck() {
+    public void testGetInitialLearningProgress() {
         // given: a deck created by a user with a single card and another user
         int numberOfCards = 1;
-        Card card = createCard("deck-testGetInitialLearningProgressOfDeck", "creator-testGetInitialLearningProgressOfDeck");
+        Deck deck = createDeck("deck-testGetInitialLearningProgressOfDeck", createUser("creator-testGetInitialLearningProgressOfDeck"));
+        Card card = createCard(deck);
         Person person = createUser("person-testGetInitialLearningProgressOfDeck");
 
         // when: loading the learning progress for that card
@@ -53,4 +64,29 @@ public class CardServiceTestLearning {
         // then: no learning progress must be returned
         assertTrue(maybeLearningProgress.isEmpty(), "Got progress on a card that has never been learnt");
     }
+
+    @Test
+    public void testGetInitialCardsToLearn() {
+        // given: a public deck created by a user with a number of cards and another user, subscribed to that deck
+        int numberOfCards = 10;
+        Person creator = createUser("creator-testGetInitialCardsToLearn");
+        Deck deck = createDeck("deck-testGetInitialCardsToLearn", creator);
+        List<Card> cards = new ArrayList<>();
+        for (int i = 0; i < numberOfCards; i++) {
+            cards.add(createCard(deck));
+        }
+        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        Person person = createUser("person-testGetInitialCardsToLearn");
+        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+
+        // when: loading all the cards to learn from that deck
+        List<Card> cardsToLearn = cardService.getAllCardsToLearn(deck, person);
+
+        // then: all cards from the deck must be loaded
+        assertEquals(cards.size(), cardsToLearn.size(), "Got more/less cards than expected");
+        for (Card card : cards) {
+            assertTrue(cardsToLearn.contains(card), "Unable to find card");
+        }
+    }
+
 }
