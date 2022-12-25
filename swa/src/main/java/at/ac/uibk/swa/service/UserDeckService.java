@@ -31,6 +31,22 @@ public class UserDeckService {
     }
 
     /**
+     * Finds all decks in the repository that are public and available for subscription (not deleted/blocked)
+     * Might return decks that are already subscribed TODO: Change that? Person as parameter would be required
+     *
+     *
+     * @return list of all available decks
+     */
+    public List<Deck> findAllAvailableDecks() {
+        List<Deck> allDecks = deckRepository.findAll();
+        return deckRepository.findAll().stream()
+                .filter(Deck::isPublished)
+                .filter(Predicate.not(Deck::isBlocked))
+                .filter(Predicate.not(Deck::isDeleted))
+                .toList();
+    }
+
+    /**
      * Gets all decks to which a person has subscribed, but might alter description, depending on deck status
      *  - isDeleted: info, that deck has been deleted
      *  - isBlocked: info, that deck has been blocked
@@ -59,7 +75,10 @@ public class UserDeckService {
      */
     public List<Deck> getAllOwnedDecks(Person person) {
         if (person != null && person.getPersonId() != null) {
-            return person.getCreatedDecks().stream().filter(Predicate.not(Deck::isDeleted)).toList();
+            return person.getCreatedDecks().stream()
+                    .filter(Predicate.not(Deck::isDeleted))
+                    .map(d -> {if (d.isBlocked()) d.setDescription("Deck has been blocked"); return d;})
+                    .toList();
         } else {
             return new ArrayList<>();
         }
@@ -86,10 +105,19 @@ public class UserDeckService {
      * @return true if deck has been created, false otherwise
      */
     public boolean create(Deck deck) {
-        Deck savedDeck = save(deck);
-        System.out.println("Saved deck: " + savedDeck);
-        if (savedDeck != null) {
-            return subscribeToDeck(savedDeck, savedDeck.getCreator());
+        if (deck.getDeckId() == null) {
+            Deck savedDeck = save(deck);
+            if (savedDeck != null) {
+                savedDeck.getCreator().getCreatedDecks().add(savedDeck);
+                try {
+                    personRepository.save(savedDeck.getCreator());
+                } catch (Exception e) {
+                    return false;
+                }
+                return subscribe(savedDeck, savedDeck.getCreator());
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -128,7 +156,7 @@ public class UserDeckService {
         if (deck != null && deck.getDeckId() != null) {
             if (deck.isDeleted()) return false;
             deck.setDeleted(true);
-            unsubscribeFromDeck(deck, deck.getCreator());
+            unsubscribe(deck, deck.getCreator());
             return save(deck) != null;
         } else {
             return false;
@@ -179,7 +207,7 @@ public class UserDeckService {
      * @param person person to subscribe to
      * @return true if the person has been subscribed, false otherwise
      */
-    public boolean subscribeToDeck(Deck deck, Person person) {
+    public boolean subscribe(Deck deck, Person person) {
         if (deck != null && deck.getDeckId() != null && person != null && person.getPersonId() != null) {
             if (!person.getSavedDecks().contains(deck)) {
                 person.getSavedDecks().add(deck);
@@ -207,7 +235,7 @@ public class UserDeckService {
      * @param person to unsubsubscribe from
      * @return true if the person has been unsubscribed, false otherwise
      */
-    public boolean unsubscribeFromDeck(Deck deck, Person person) {
+    public boolean unsubscribe(Deck deck, Person person) {
         if (deck != null && deck.getDeckId() != null && person != null && person.getPersonId() != null) {
             if (person.getSavedDecks().contains(deck)) {
                 person.getSavedDecks().remove(deck);

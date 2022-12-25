@@ -1,4 +1,4 @@
-package at.ac.uibk.swa;
+package at.ac.uibk.swa.service.card_service;
 
 import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;

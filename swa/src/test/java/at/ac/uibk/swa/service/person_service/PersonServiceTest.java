@@ -1,4 +1,4 @@
-package at.ac.uibk.swa;
+package at.ac.uibk.swa.service.person_service;
 
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
@@ -20,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PersonServiceTest {
     @Autowired
     private PersonService personService;
-
-
 
     @Test
     public void testSaveAndGetPersons() {
