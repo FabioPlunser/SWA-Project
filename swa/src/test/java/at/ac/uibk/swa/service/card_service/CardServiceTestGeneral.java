@@ -5,6 +5,7 @@ import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.CardRepository;
+import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
@@ -23,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CardServiceTestGeneral {
     @Autowired
     private UserDeckService userDeckService;
+    @Autowired
+    private AdminDeckService adminDeckService;
     @Autowired
     private CardService cardService;
     @Autowired
@@ -60,12 +63,7 @@ public class CardServiceTestGeneral {
                 Deck deck = createDeck("deck-TestSaveAndGetCards-" + (j+1), creator);
                 decks.put(creator, deck);
                 for (int k = 0; k < numberOfCardsPerDeck; k++) {
-                    Card card = new Card(
-                            StringGenerator.cardText(),
-                            StringGenerator.cardText(),
-                            false,
-                            deck
-                    );
+                    Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
                     assertTrue(cardService.create(card), "Could not create card");
                     savedCards.put(deck, card);
                 }
@@ -88,26 +86,5 @@ public class CardServiceTestGeneral {
         }
     }
 
-    @Test
-    public void testGetCardsFromDeckOwned() {
-        // given: a user, that created a deck with multiple cards
-        int numCardsPerDeck = 10;
-        Person person = createUser("person-testGetCardsFromDeckOwned");
-        Deck deck = createDeck("deck-testGetCardsFromDeckOwned", person);
-        List<Card> cards = new ArrayList<>();
-        for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
-            cards.add(card);
-        }
 
-        // when: retrieving all cards for that user and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, person);
-
-        // then: all cards must be loaded again
-        assertEquals(cards.size(), loadedCards.size(), "Got wrong number of cards");
-        for (Card card : cards) {
-            assertTrue(loadedCards.contains(card), "Unable to find a card");
-        }
-    }
 }
