@@ -276,6 +276,21 @@ public class CardService {
     /**
      * Deletes a card from the repository (hard delete)
      *
+     * @param card card to be deleted
+     * @return true if card has been updated, false otherwise
+     */
+    public boolean delete(Card card) {
+        try {
+            cardRepository.delete(card);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Deletes a card from the repository (hard delete)
+     *
      * @param cardId id of the card to be deleted
      * @return true if card has been updated, false otherwise
      */
