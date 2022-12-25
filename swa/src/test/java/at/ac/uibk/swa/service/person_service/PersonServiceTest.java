@@ -1,4 +1,4 @@
-package at.ac.uibk.swa;
+package at.ac.uibk.swa.service.person_service;
 
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
