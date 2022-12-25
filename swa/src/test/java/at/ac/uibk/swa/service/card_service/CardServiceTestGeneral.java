@@ -132,4 +132,34 @@ public class CardServiceTestGeneral {
         assertEquals(backText, foundCard.getBackText(), "Wrong back text");
         assertEquals(isFlipped, foundCard.isFlipped(), "Card is (not) flipped");
     }
+
+    @Test
+    public void testUpdateCardViaCreate() {
+        // given: a card in the database
+        String originalFrontText = StringGenerator.deckDescription();
+        String originalBackText = StringGenerator.deckDescription();
+        boolean originalIsFlipped = false;
+        Card card = new Card(
+                originalFrontText,
+                originalBackText,
+                originalIsFlipped,
+                createDeck("deck-testUpdateCardViaCreate", createUser("person-testUpdateCardViaCreate"))
+        );
+        assertTrue(cardService.create(card), "Unable to create card");
+        UUID id = card.getCardId();
+
+        // when: changing the card by interfering with the card directly
+        card.setFrontText("new");
+        card.setBackText("new");
+        card.setFlipped(true);
+
+        // then: saving the modification via create() should not be possible
+        assertFalse(cardService.create(card), "Changed card got created again");
+        Optional<Card> maybeCard = cardService.findById(card.getCardId());
+        assertTrue(maybeCard.isPresent(), "Unable to find original card in repository");
+        Card foundCard = maybeCard.get();
+        assertEquals(originalFrontText, foundCard.getFrontText(), "Front text was changed");
+        assertEquals(originalBackText, foundCard.getBackText(), "Back text was changed");
+        assertEquals(originalIsFlipped, foundCard.isFlipped(), "Card got flipped");
+    }
 }
