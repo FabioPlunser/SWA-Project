@@ -153,23 +153,20 @@ public class PersonService {
     }
 
     /**
-     * Updates a Person with the Values given as Parameters.
-     * The User is retrieved using the personId.
+     * Updates a Person with the values given as Parameters.
+     * The User is given directly
      * The other Parameters are used to change the user.
      * Parameters that are set to null are left unchanged.
      *
-     * @param personId The ID of the User to change.
+     * @param person The person to update
      * @param username The new Username.
-     * @param permissions The new List of Permissions.
+     * @param permissions The set of new permissions.
      * @param password The new Password.
      * @return true if the user could be found and could be updated, false otherwise.
      */
     // TODO: Maybe add email address
-    public boolean update(UUID personId, String username, Set<Permission> permissions, String password) {
-        Optional<Person> maybePerson = personRepository.findById(personId);
-        if(maybePerson.isPresent()) {
-            Person person = maybePerson.get();
-
+    public boolean update(Person person, String username, Set<Permission> permissions, String password) {
+        if(person != null && person.getPersonId() != null) {
             if (username    != null) person.setUsername(username);
             if (permissions != null) person.setPermissions(permissions);
             if (password    != null) person.setPasswdHash(passwordEncoder.encode(password));
@@ -182,6 +179,22 @@ public class PersonService {
         }
 
         return false;
+    }
+
+    /**
+     * updates a person with the values given as parameters
+     * person is identified by id
+     * NOTE: this is an admin function!
+     *
+     * @param personId id of the person to update
+     * @param username new username
+     * @param permissions set of new permissions
+     * @param password new password
+     * @return true if user was successfully update, false otherwise
+     */
+    public boolean update(UUID personId, String username, Set<Permission> permissions, String password) {
+        Optional<Person> maybePerson = findById(personId);
+        return maybePerson.filter(person -> update(person, username, permissions, password)).isPresent();
     }
 
     public boolean delete(UUID personId) {
