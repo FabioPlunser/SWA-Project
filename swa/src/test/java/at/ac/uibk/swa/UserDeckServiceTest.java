@@ -28,8 +28,6 @@ public class UserDeckServiceTest {
     @Autowired
     private AdminDeckService adminDeckService;
     @Autowired
-    private CardService cardService;
-    @Autowired
     private PersonService personService;
 
     @Test
@@ -54,7 +52,7 @@ public class UserDeckServiceTest {
                         StringGenerator.deckDescription(),
                         creator
                 );
-                assertTrue(userDeckService.create(deck), "Could not save deck");
+                assertTrue(userDeckService.create(deck), "Unable to create deck");
                 savedDecks.put(creator, deck);
             }
         }
@@ -78,10 +76,10 @@ public class UserDeckServiceTest {
     }
 
     @Test
-    public void testGetAllDecksAsUserCreatedUnpublished() {
+    public void testGetAllDecksCreatedUnpublished() {
         // given: a user that has created a deck and not published it
         Person person = new Person(
-                "person-testGetAllDecksAsUserCreatedUnpublished",
+                "person-testGetAllDecksCreatedUnpublished",
                 StringGenerator.email(),
                 StringGenerator.password(),
                 Set.of(Permission.USER)
@@ -89,8 +87,8 @@ public class UserDeckServiceTest {
         assertTrue(personService.save(person), "Unable to save user");
 
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-TestGetAllDecksAsUserCreatedUnpublished", deckDescription, person);
-        assertTrue(userDeckService.create(deck), "Unable to save deck");
+        Deck deck = new Deck("deck-testGetAllDecksCreatedUnpublished", deckDescription, person);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
 
         // when: loading all decks for that user
         List<Deck> decks = userDeckService.getAllSavedDecks(person);
@@ -102,10 +100,10 @@ public class UserDeckServiceTest {
     }
 
     @Test
-    public void testGetAllDecksAsUserCreatedPublished() {
+    public void testGetAllDecksCreatedPublished() {
         // given: a user that has created a deck and published it
         Person person = new Person(
-                "person-testGetAllDecksAsUserCreatedPublished",
+                "person-testGetAllDecksCreatedPublished",
                 StringGenerator.email(),
                 StringGenerator.password(),
                 Set.of(Permission.USER)
@@ -113,8 +111,8 @@ public class UserDeckServiceTest {
         assertTrue(personService.save(person), "Unable to save user");
 
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedPublished", deckDescription, person);
-        assertTrue(userDeckService.create(deck), "Unable to save deck");
+        Deck deck = new Deck("deck-testGetAllDecksCreatedPublished", deckDescription, person);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck), "Unable to publish deck");
 
         // when: loading all decks for that user
@@ -127,10 +125,10 @@ public class UserDeckServiceTest {
     }
 
     @Test
-    public void testGetAllDecksAsUserCreatedBlocked() {
+    public void testGetAllDecksCreatedBlocked() {
         // given: a user that has created a deck, but the deck has been blocked
         Person person = new Person(
-                "person-testGetAllDecksAsUserCreatedBlocked",
+                "person-testGetAllDecksCreatedBlocked",
                 StringGenerator.email(),
                 StringGenerator.password(),
                 Set.of(Permission.USER)
@@ -138,8 +136,8 @@ public class UserDeckServiceTest {
         assertTrue(personService.save(person), "Unable to save user");
 
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedBlocked", deckDescription, person);
-        assertTrue(userDeckService.create(deck), "Unable to save deck");
+        Deck deck = new Deck("deck-testGetAllDecksCreatedBlocked", deckDescription, person);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
         // when: loading all decks for that user
@@ -154,10 +152,10 @@ public class UserDeckServiceTest {
     }
 
     @Test
-    public void testGetAllDecksAsUserCreatedDeleted() {
+    public void testGetAllDecksCreatedDeleted() {
         // given: a user that has created a deck, but then the deck has been deleted (only possible by the user)
         Person person = new Person(
-                "person-testGetAllDecksAsUserCreatedDeleted",
+                "person-testGetAllDecksCreatedDeleted",
                 StringGenerator.email(),
                 StringGenerator.password(),
                 Set.of(Permission.USER)
@@ -165,8 +163,8 @@ public class UserDeckServiceTest {
         assertTrue(personService.save(person), "Unable to save user");
 
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksAsUserCreatedDeleted", deckDescription, person);
-        assertTrue(userDeckService.create(deck), "Unable to save deck");
+        Deck deck = new Deck("deck-testGetAllDecksCreatedDeleted", deckDescription, person);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.delete(deck), "Unable to delete deck");
 
         // when: loading all decks for that user
@@ -177,18 +175,18 @@ public class UserDeckServiceTest {
     }
 
     @Test
-    public void testGetAllDecksAsUserSubscribedUnpublished() {
+    public void testGetAllDecksSubscribedUnpublished() {
         // given: a published deck from another user, to which a user has subscribed and afterwards the creator
         // unpublished the deck
         Person person = new Person(
-                "person-testGetAllDecksAsUserSubscribedUnpublished",
+                "person-testGetAllDecksSubscribedUnpublished",
                 StringGenerator.email(),
                 StringGenerator.password(),
                 Set.of(Permission.USER)
         );
         assertTrue(personService.save(person), "Unable to save user");
         Person otherPerson = new Person(
-                "person-testGetAllDecksAsUserSubscribedUnpublished-other",
+                "person-testGetAllDecksSubscribedUnpublished-other",
                 StringGenerator.email(),
                 StringGenerator.password(),
                 Set.of(Permission.USER)
@@ -196,8 +194,8 @@ public class UserDeckServiceTest {
         assertTrue(personService.save(otherPerson), "Unable to save user");
 
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksAsUserSubscribedUnpublished", deckDescription, otherPerson);
-        assertTrue(userDeckService.create(deck), "Unable to save deck");
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedUnpublished", deckDescription, otherPerson);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck), "Unable to publish deck");
         assertTrue(userDeckService.subscribeToDeck(deck, person), "Unable to subscribe to deck");
         assertTrue(userDeckService.unpublish(deck), "Unable to unpublish deck");
@@ -214,17 +212,17 @@ public class UserDeckServiceTest {
     }
 
     @Test
-    public void testGetAllDecksAsUserSubscribedPublished() {
+    public void testGetAllDecksSubscribedPublished() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
         Person person = new Person(
-                "person-testGetAllDecksAsUserSubscribedPublished",
+                "person-testGetAllDecksSubscribedPublished",
                 StringGenerator.email(),
                 StringGenerator.password(),
                 Set.of(Permission.USER)
         );
         assertTrue(personService.save(person), "Unable to save user");
         Person otherPerson = new Person(
-                "person-testGetAllDecksAsUserSubscribedPublished-other",
+                "person-testGetAllDecksSubscribedPublished-other",
                 StringGenerator.email(),
                 StringGenerator.password(),
                 Set.of(Permission.USER)
@@ -232,8 +230,8 @@ public class UserDeckServiceTest {
         assertTrue(personService.save(otherPerson), "Unable to save user");
 
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksAsUserSubscribedPublished", deckDescription, otherPerson);
-        assertTrue(userDeckService.create(deck), "Unable to save deck");
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedPublished", deckDescription, otherPerson);
+        assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck), "Unable to publish deck");
         assertTrue(userDeckService.subscribeToDeck(deck, person), "Unable to subscribe to deck");
 
@@ -244,9 +242,5 @@ public class UserDeckServiceTest {
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
         assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has changed");
-    }
-
-    @Test
-    public void testGetAllDecksAsAdmin() {
     }
 }

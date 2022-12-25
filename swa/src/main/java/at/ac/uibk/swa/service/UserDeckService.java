@@ -31,6 +31,22 @@ public class UserDeckService {
     }
 
     /**
+     * Finds all decks in the repository that are public and available for subscription (not deleted/blocked)
+     * Might return decks that are already subscribed TODO: Change that? Person as parameter would be required
+     *
+     *
+     * @return list of all available decks
+     */
+    public List<Deck> findAllAvailableDecks() {
+        List<Deck> allDecks = deckRepository.findAll();
+        return deckRepository.findAll().stream()
+                .filter(Deck::isPublished)
+                .filter(Predicate.not(Deck::isBlocked))
+                .filter(Predicate.not(Deck::isDeleted))
+                .toList();
+    }
+
+    /**
      * Gets all decks to which a person has subscribed, but might alter description, depending on deck status
      *  - isDeleted: info, that deck has been deleted
      *  - isBlocked: info, that deck has been blocked
