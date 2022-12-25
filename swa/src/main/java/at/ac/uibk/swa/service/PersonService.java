@@ -22,10 +22,22 @@ public class PersonService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Gets a list of all persons in the repository
+     *
+     * @return list of found persons
+     */
     public List<Person> getPersons() {
         return personRepository.findAll();
     }
 
+    /**
+     * Login via username and password
+     *
+     * @param username username of the person to be logged in
+     * @param password password of the person to be logged in
+     * @return person if successfully logged in, nothing otherwise
+     */
     public Optional<Person> login(String username, String password) {
         Optional<Person> maybePerson = personRepository.findByUsername(username);
         if(maybePerson.isEmpty())
@@ -48,6 +60,12 @@ public class PersonService {
         return Optional.of(person);
     }
 
+    /**
+     * Find a person via its current token
+     *
+     * @param token current token of the person to be found
+     * @return person if found, otherwise nothing
+     */
     public Optional<Person> findByToken(UUID token) {
         // TODO: Should this also get a Username and check if the Token is associated with the given username?
         //       Theoretically not needed because the Token has a unique Constraint
@@ -59,7 +77,13 @@ public class PersonService {
                 .map(personRepository::findByToken)
                 .flatMap(Function.identity());
     }
-    
+
+    /**
+     * Find a person with its id
+     *
+     * @param id id of the person to be found
+     * @return person if found, otherwise nothing
+     */
     public Optional<Person> findById(UUID id) {
         return personRepository.findById(id);
     }

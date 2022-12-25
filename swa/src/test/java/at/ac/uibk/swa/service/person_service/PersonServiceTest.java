@@ -166,9 +166,29 @@ public class PersonServiceTest {
         assertTrue(personService.create(person), "Unable to create user for test");
         Optional<Person> maybePerson = personService.login(username, password);
         assertTrue(maybePerson.isPresent(), "Could not login");
-        UUID token = maybePerson.get().getToken();
+        Person loggedInPerson = maybePerson.get();
+        UUID token = loggedInPerson.getToken();
 
         // when: logging out
+        assertTrue(personService.logout(loggedInPerson), "Could not log out");
+
+        // then: retrieving user by token should not be possible anymore
+        Optional<Person> maybeLoggedOutPerson = personService.findByToken(token);
+        assertTrue(maybeLoggedOutPerson.isEmpty(), "Token still valid after logout");
+    }
+
+    @Test
+    public void testLogoutWithToken() {
+        // given: demo user in database, logged in
+        String username = "person-testLogoutWithToken";
+        String password = StringGenerator.password();
+        Person person = new Person(username, StringGenerator.email(), password, Set.of());
+        assertTrue(personService.create(person), "Unable to create user for test");
+        Optional<Person> maybePerson = personService.login(username, password);
+        assertTrue(maybePerson.isPresent(), "Could not login");
+        UUID token = maybePerson.get().getToken();
+
+        // when: logging out with token directly
         assertTrue(personService.logout(token), "Could not log out");
 
         // then: retrieving user by token should not be possible anymore
