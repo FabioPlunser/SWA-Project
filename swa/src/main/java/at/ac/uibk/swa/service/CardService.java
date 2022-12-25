@@ -16,7 +16,7 @@ public class CardService {
     @Autowired
     CardRepository cardRepository;
     @Autowired
-    DeckService deckService;
+    UserDeckService userDeckService;
     @Autowired
     PersonService personService;
     @Autowired
@@ -40,7 +40,7 @@ public class CardService {
      */
     // TODO: Shouldn't this first check if the Deck is blocked and return an empty List if it is?
     public List<Card> getAllCards(UUID deckId) {
-        return deckService.findById(deckId)
+        return userDeckService.findById(deckId)
                 .map(Deck::getCards)
                 .orElse(new ArrayList<>());
     }
@@ -68,7 +68,7 @@ public class CardService {
      * @return
      */
     public List<Card> getAllCardsToLearn(UUID deckId) {
-        Optional<Deck> maybeDeck = deckService.findById(deckId);
+        Optional<Deck> maybeDeck = userDeckService.findById(deckId);
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
 
         if (maybeDeck.isPresent() && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
@@ -88,7 +88,7 @@ public class CardService {
      *         This contains Cards whose nextLearn Date is due and cards which haven't been learned yet.
      */
     public List<Card> getAllCardsToLearn(UUID deckId, UUID personId) {
-        Optional<Deck> maybeDeck = deckService.findById(deckId);
+        Optional<Deck> maybeDeck = userDeckService.findById(deckId);
         Optional<Person> maybePerson = personService.findById(personId);
 
         if (maybeDeck.isPresent() && maybePerson.isPresent()) {
