@@ -1,39 +1,33 @@
 package at.ac.uibk.swa.service;
 
 import at.ac.uibk.swa.models.Deck;
-import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-@Service("deckService")
-public class DeckService {
+@Service("userDeckService")
+public class UserDeckService {
     @Autowired
     DeckRepository deckRepository;
-    @Autowired
-    PersonService personService;
     @Autowired
     PersonRepository personRepository;
 
     /**
-     * Gets all decks from the repository no matter if deleted, blocked, published, etc.
+     * Finds a deck within the repository by its id
      *
-     * @return  a list of all decks
+     * @param id id of the deck to be return
+     * @return deck with given id (if found), otherwise nothing
      */
-    public List<Deck> getAllSavedDecks() {
-        return deckRepository.findAll();
+    public Optional<Deck> findById(UUID id) {
+        return deckRepository.findById(id);
     }
 
     /**
@@ -72,22 +66,12 @@ public class DeckService {
     }
 
     /**
-     * Finds a deck within the repository by its id
-     *
-     * @param id id of the deck to be return
-     * @return deck with given id (if found), otherwise nothing
-     */
-    public Optional<Deck> findById(UUID id) {
-        return deckRepository.findById(id);
-    }
-
-    /**
      * Saves a deck to the repository
      *
      * @param deck deck to save
-     * @return true if deck has been saved, false otherwise
+     * @return deck that has been saved if successfull, null otherwise
      */
-    public Deck save(Deck deck) {
+    private Deck save(Deck deck) {
         try {
             return deckRepository.save(deck);
         } catch (Exception e) {
@@ -95,6 +79,12 @@ public class DeckService {
         }
     }
 
+    /**
+     * Creates a new deck in the repository
+     *
+     * @param deck deck to be created
+     * @return true if deck has been created, false otherwise
+     */
     public boolean create(Deck deck) {
         Deck savedDeck = save(deck);
         System.out.println("Saved deck: " + savedDeck);
@@ -139,42 +129,6 @@ public class DeckService {
             if (deck.isDeleted()) return false;
             deck.setDeleted(true);
             unsubscribeFromDeck(deck, deck.getCreator());
-            return save(deck) != null;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Blocks a deck in the repository
-     * Already blocked deck cannot be blocked again
-     * NOTE: No permission check is done within this method - check before, if execution is allowed!
-     *
-     * @param deck deck to be blockes
-     * @return true if deck has been blocked, false otherwise
-     */
-    public boolean block(Deck deck) {
-        if (deck != null && deck.getDeckId() != null) {
-            if (deck.isBlocked()) return false;
-            deck.setBlocked(true);
-            return save(deck) != null;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Unlocks a deck in the repository
-     * Already unblocked deck cannot be unblocked again
-     * NOTE: No permission check is done within this method - check before, if execution is allowed!
-     *
-     * @param deck deck to unblock
-     * @return true if deck has been unblocked, false otherwise
-     */
-    public boolean unblock(Deck deck) {
-        if (deck != null && deck.getDeckId() != null) {
-            if (!deck.isBlocked()) return false;
-            deck.setBlocked(false);
             return save(deck) != null;
         } else {
             return false;

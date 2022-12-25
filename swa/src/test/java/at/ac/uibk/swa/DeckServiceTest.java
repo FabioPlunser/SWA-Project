@@ -4,7 +4,6 @@ import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.CardService;
-import at.ac.uibk.swa.service.DeckService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
