@@ -222,21 +222,34 @@ public class CardService {
             }
         );
 
-        return save(card);
+        return save(card) != null;
+    }
+
+    /**
+     * creates a new card within the repository
+     *
+     * @param card card to be created
+     * @return true if card has been created, false otherwise
+     */
+    public boolean create(Card card) {
+        if (card != null && card.getCardId() == null) {
+            return save(card) != null;
+        } else {
+            return false;
+        }
     }
 
     /**
      * Saves a card to the repository
      *
      * @param card card to be saved
-     * @return true if card has been saved, false otherwise
+     * @return saved card if it has been saved, null otherwise
      */
-    public boolean save(Card card) {
+    private Card save(Card card) {
         try {
-            this.cardRepository.save(card);
-            return true;
+            return cardRepository.save(card);
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 
@@ -260,7 +273,7 @@ public class CardService {
                 if (frontText !=  null) card.setFrontText(frontText);
                 if (backText != null) card.setBackText(backText);
                 card.setFlipped(isFlipped);
-                return save(card);
+                return save(card) != null;
             }
         } catch (Exception e) {
             return false;
