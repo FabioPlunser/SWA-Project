@@ -6,9 +6,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
-import java.util.UUID;
 import java.util.Date;
-import java.util.function.Function;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -18,27 +17,32 @@ import java.util.function.Function;
 @Table(name = "learning_progress")
 public class LearningProgress implements Serializable {
     @Id
+    @Setter(AccessLevel.PACKAGE)
     @Column(name = "progress_id", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID learningProgressId;
 
     @Setter
+    @Builder.Default
     @Column(name = "learning_interval", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int interval = 0;
 
     @Setter
+    @Builder.Default
     @Column(name = "e_factor", nullable = false)
     @JdbcTypeCode(SqlTypes.DOUBLE)
     private double eFactor = 2.5;
 
     @Setter
+    @Builder.Default
     @Column(name = "num_repetitions", nullable = false)
     @JdbcTypeCode(SqlTypes.BIGINT)
     private int repetitions = 0;
 
     @Setter
+    @Builder.Default
     @Column(name = "next_learn", nullable = false)
     @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private Date nextLearn = new Date();

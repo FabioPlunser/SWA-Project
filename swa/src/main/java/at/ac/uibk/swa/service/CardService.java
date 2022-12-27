@@ -48,10 +48,10 @@ public class CardService {
     }
 
     /**
-     * Gets all cards that should be learnt from a specific deck from the repository for the logged in user.
+     * Gets all cards that should be learnt from a specific deck for the logged in user.
      *
-     * @param deck
-     * @return
+     * @param deck The Deck from which to get the cards to learn.
+     * @return A List of cards that are supposed to be learned.
      */
     public List<Card> getAllCardsToLearn(Deck deck) {
         Optional maybeUser = AuthContext.getCurrentUser();
@@ -66,8 +66,8 @@ public class CardService {
     /**
      * Gets all cards that should be learnt from a specific deck from the repository for the logged in user.
      *
-     * @param deckId
-     * @return
+     * @param deckId The ID of the Deck from which to get the cards to learn.
+     * @return A List of cards that are supposed to be learned.
      */
     public List<Card> getAllCardsToLearn(UUID deckId) {
         Optional<Deck> maybeDeck = userDeckService.findById(deckId);
@@ -110,17 +110,18 @@ public class CardService {
      *         This contains Cards whose nextLearn Date is due and cards which haven't been learned yet.
      */
     public List<Card> getAllCardsToLearn(Deck deck, Person person) {
-            Date now = new Date();
-            return getAllCards(deck, person).stream()
-                    .filter(card -> card.getLearningProgress(person)
-                            .map(
-                                    // If a Learning Progress is present, check if it's nextLearn is due.
-                                    // If it is due, return null => Optional will be empty
-                                    lp -> lp.getNextLearn().before(now) ? null : lp
-                            )
-                            // If no Learning Progress is present, the card hasn't been learned.
-                            .isEmpty()
-                    ).toList();
+        // Get the current date to compare to the one's stored in the LearningProgress's.
+        Date now = new Date();
+        return getAllCards(deck, person).stream()
+                .filter(card -> card.getLearningProgress(person)
+                        .map(
+                                // If a Learning Progress is present, check if it's nextLearn is due.
+                                // If it is due, return null => Optional will be empty
+                                lp -> lp.getNextLearn().before(now) ? null : lp
+                        )
+                        // If no Learning Progress is present, the card hasn't been learned.
+                        .isEmpty()
+                ).toList();
     }
 
 
@@ -142,6 +143,12 @@ public class CardService {
                 .flatMap(Function.identity());
     }
 
+    /**
+     * Get the Learning Progress associated with the Card given using the ID and the currently logged in user.
+     *
+     * @param cardId The ID of the card to get the Learning Progress from.
+     * @return The Learning Progress associated with the given Person and Card if it exists.
+     */
     public Optional<LearningProgress> getLearningProgress(UUID cardId) {
         Optional<Card> maybeCard = cardRepository.findById(cardId);
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
@@ -153,6 +160,13 @@ public class CardService {
         return Optional.empty();
     }
 
+    /**
+     * Get the Learning Progress associated with the Card and User using their given ID's.
+     *
+     * @param cardId The ID of the card to get the Learning Progress from.
+     * @param personId The ID of the person to get the Learning Progress for.
+     * @return The Learning Progress associated with the given Person and Card if it exists.
+     */
     public Optional<LearningProgress> getLearningProgress(UUID cardId, UUID personId) {
         Optional<Card> maybeCard = cardRepository.findById(cardId);
         Optional<Person> maybePerson = personService.findById(personId);
@@ -178,10 +192,10 @@ public class CardService {
     /**
      * Give feedback on the learning of a specific card for a specific person
      *
-     * @param cardId
-     * @param personId
-     * @param difficulty
-     * @return
+     * @param cardId The ID of the card to learn.
+     * @param personId The ID of the person that is learning.
+     * @param difficulty The difficulty that the user gave.
+     * @return true if the card was learned, false otherwise.
      */
     public boolean learn(UUID cardId, UUID personId, int difficulty) {
         Optional<Card> maybeCard = findById(cardId);
@@ -194,6 +208,13 @@ public class CardService {
         }
     }
 
+    /**
+     * Give feedback on the learning of a specific card for the currently logged-in user.
+     *
+     * @param card The card to learn.
+     * @param difficulty The difficulty that the user gave.
+     * @return true if the card was learned, false otherwise.
+     */
     public boolean learn(Card card, int difficulty) {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
 
@@ -204,6 +225,13 @@ public class CardService {
         }
     }
 
+    /**
+     * Give feedback on the learning of a specific card for the currently logged-in user.
+     *
+     * @param cardId The ID of the card to learn.
+     * @param difficulty The difficulty that the user gave.
+     * @return true if the card was learned, false otherwise.
+     */
     public boolean learn(UUID cardId, int difficulty) {
         Optional<Card> maybeCard = findById(cardId);
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
@@ -215,23 +243,27 @@ public class CardService {
         }
     }
 
+    /**
+     * Give feedback on the learning of a specific card and user.
+     *
+     * @param card The card to learn.
+     * @param person The Person that was learning.
+     * @param difficulty The difficulty that the user gave.
+     * @return true if the card was learned, false otherwise.
+     */
     public boolean learn(Card card, Person person, int difficulty) {
-        card.setLearningProgress(
+        final Function<LearningProgress, LearningProgress> updateLearningProgress =
+            lp -> LearningAlgorithm.getUpdatedLearningProgress(
+                    card.getLearningProgress(person).orElseGet(LearningProgress::new),
+                    difficulty
+            );
+
+        LearningProgress newLp = card.updateLearningProgress(
                 person,
-                LearningAlgorithm.getUpdatedLearningProgress(
-                        card.getLearningProgress(person).orElseGet(LearningProgress::new),
-                        difficulty
-                )
+                updateLearningProgress
         );
 
-        // TODO: check if there is way around that
-        try {
-            learningProgressRepository.save(card.getLearningProgress(person).get());
-        } catch (Exception e) {
-            return false;
-        }
-
-        return save(card) != null;
+        return learningProgressRepository.save(newLp) != null;
     }
 
     /**
@@ -244,6 +276,7 @@ public class CardService {
         if (card != null && card.getCardId() == null) {
             Card savedCard = save(card);
             if (savedCard != null) {
+                // TODO: You should not need to save the deck, you only need to save the card with the right deck reference.
                 savedCard.getDeck().getCards().add(savedCard);
                 try {
                     deckRepository.save(savedCard.getDeck());
