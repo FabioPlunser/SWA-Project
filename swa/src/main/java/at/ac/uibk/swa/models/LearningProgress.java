@@ -44,7 +44,8 @@ public class LearningProgress implements Serializable {
     @Setter
     @Builder.Default
     @Column(name = "next_learn", nullable = false)
-    @JdbcTypeCode(SqlTypes.TIMESTAMP)
+    @JdbcTypeCode(SqlTypes.DATE)
+    @Temporal(TemporalType.DATE)
     private Date nextLearn = new Date();
 
     public void update(LearningProgress newLearningProgress) {
