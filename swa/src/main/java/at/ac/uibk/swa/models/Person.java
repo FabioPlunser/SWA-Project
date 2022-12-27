@@ -55,6 +55,14 @@ public class Person extends Authenticable implements Serializable {
     )
     private List<Deck> savedDecks = new ArrayList<>();
 
+    /**
+     * Gets the Person's ID.
+     * This method is a renamed version of {@link Authenticable#getId()} so the ID field will be
+     * included in the JSON-Serialization of a {@link Person}.
+     *
+     * @implNote This may return null if the {@link Person} was not saved to the Database.
+     * @return The ID of the Person.
+     */
     @JsonInclude
     public UUID getPersonId() {
         return this.getId();
