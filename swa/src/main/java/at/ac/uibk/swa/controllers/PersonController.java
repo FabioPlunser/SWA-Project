@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.registerEndpoint;
+
 /**
  * Controller handling {@link Person} related Information (e.g. creating, updating, deleting {@link Person})
  *
@@ -41,7 +43,7 @@ public class PersonController {
      * @param email The new Users email.
      * @return A RestResponse indicating whether the user could be created or not.
      */
-    @PostMapping("/api/register")
+    @PostMapping(registerEndpoint)
     public RestResponse register(
             @RequestParam("username") final String username,
             @RequestParam("password") final String password,

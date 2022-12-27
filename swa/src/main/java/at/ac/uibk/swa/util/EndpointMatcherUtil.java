@@ -18,7 +18,7 @@ public class EndpointMatcherUtil {
 
     //region Login-, register-, and logout-Endpoints
     public static final String loginEndpoint = "/api/login";
-    public static final String logoutEndpoint = "/api/login";
+    public static final String logoutEndpoint = "/api/logout";
     public static final String registerEndpoint = "/api/register";
     //endregion
 
