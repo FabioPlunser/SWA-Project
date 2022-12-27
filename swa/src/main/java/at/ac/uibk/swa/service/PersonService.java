@@ -105,6 +105,7 @@ public class PersonService {
 
     /**
      * Logout a user
+     *
      * @param token token of the user to be logged out
      * @return true if user has been logged out, false otherwise
      */
@@ -121,18 +122,7 @@ public class PersonService {
      */
     public boolean create(Person person) {
         if (person != null && person.getPersonId() == null) {
-            // person is created with password in plain text
-            // encode to hash before proceeding
-            String password = person.getPasswdHash();
-            person.setPasswdHash(passwordEncoder.encode(password));
-
-            // save the person
-            boolean success = (save(person) != null);
-
-            // reset password to original one so hash cannot be
-            person.setPasswdHash(password);
-
-            return success;
+            return saveWithHashedPassword(person) != null;
         } else {
             return false;
         }
@@ -142,7 +132,7 @@ public class PersonService {
      * Saves a person to the repository
      *
      * @param person person to save
-     * @return person that has been saved if successful, null otherwise
+     * @return the person that has been saved if successful, null otherwise
      */
     private Person save(Person person) {
         try {
@@ -153,29 +143,57 @@ public class PersonService {
     }
 
     /**
+     * Saves a person to the repository.
+     * Automatically hashes the Person's Password.
+     *
+     * @param person person to save
+     * @return the person that has been saved if successful, null otherwise
+     */
+    private Person saveWithHashedPassword(Person person) {
+        // Get the unhashed Password
+        String password = person.getPasswdHash();
+
+        // Hash the Password using the Autowired Password Encoder.
+        person.setPasswdHash(passwordEncoder.encode(password));
+
+        // Try to save the Person
+        if (save(person) != null) {
+            // If the Person was saved successfully, reset the Password in the Person to the unhashed one
+            // and return the person.
+            person.setPasswdHash(password);
+            return person;
+        }
+
+        // If the save failed return null.
+        return null;
+    }
+
+    /**
      * Updates a Person with the values given as Parameters.
      * The User is given directly
      * The other Parameters are used to change the user.
      * Parameters that are set to null are left unchanged.
      *
+     * @implNote This method does not check if the current user is permitted to delete the given user.
      * @param person The person to update
      * @param username The new Username.
      * @param permissions The set of new permissions.
      * @param password The new Password.
      * @return true if the user could be found and could be updated, false otherwise.
      */
-    // TODO: Maybe add email address
     public boolean update(Person person, String username, Set<Permission> permissions, String password) {
         if(person != null && person.getPersonId() != null) {
             if (username    != null) person.setUsername(username);
             if (permissions != null) person.setPermissions(permissions);
-            if (password    != null) person.setPasswdHash(passwordEncoder.encode(password));
 
-            boolean success = save(person) != null;
-
-            if (password != null) person.setPasswdHash(password);
-
-            return success;
+            if (password    != null) {
+                // If a new Password was chosen, ensure that the Password is hashed.
+                person.setPasswdHash(password);
+                return saveWithHashedPassword(person) != null;
+            } else {
+                // If the old Password was kept, don't hash the Password again.
+                return save(person) != null;
+            }
         }
 
         return false;
@@ -184,8 +202,8 @@ public class PersonService {
     /**
      * updates a person with the values given as parameters
      * person is identified by id
-     * NOTE: this is an admin function!
      *
+     * @implNote This method does not check if the current user is permitted to delete the given user.
      * @param personId id of the person to update
      * @param username new username
      * @param permissions set of new permissions
@@ -197,6 +215,13 @@ public class PersonService {
         return maybePerson.filter(person -> update(person, username, permissions, password)).isPresent();
     }
 
+    /**
+     * Deletes a Person from the Database (hard delete).
+     *
+     * @implNote This method does not check if the current user is permitted to delete the given user.
+     * @param personId The ID of the Person to delete.
+     * @return true if the person was deleted, false otherwise.
+     */
     public boolean delete(UUID personId) {
         try {
             this.personRepository.deleteById(personId);
