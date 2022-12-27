@@ -10,8 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.*;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.*;
 
+/**
+ * Controller for sending Error Responses.
+ *
+ * @author David Rieser
+ */
 @Controller
 @SuppressWarnings("unused")
 public class SwaErrorController implements ErrorController {

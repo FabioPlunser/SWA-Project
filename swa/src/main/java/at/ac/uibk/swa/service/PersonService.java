@@ -142,7 +142,7 @@ public class PersonService {
      * Saves a person to the repository
      *
      * @param person person to save
-     * @return person that has been saved if successfull, null otherwise
+     * @return person that has been saved if successful, null otherwise
      */
     private Person save(Person person) {
         try {

@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Controller handling {@link Deck} related Information (e.g. creating, updating, deleting {@link Deck}s)
+ *
+ * @author Fabian Magreiter
+ */
 @RestController
 @SuppressWarnings("unused")
 public class DeckController {

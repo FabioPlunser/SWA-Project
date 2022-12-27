@@ -9,8 +9,16 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.authorizationErrorEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.authorizationErrorEndpoint;
 
+
+/**
+ * Handler for catching {@link AccessDeniedException}s and returning an appropriate Response.
+ *
+ * @author David Rieser
+ * @see AccessDeniedException
+ * @see AccessDeniedHandlerImpl
+ */
 @Component
 public class RestAccessDeniedHandler extends AccessDeniedHandlerImpl {
 

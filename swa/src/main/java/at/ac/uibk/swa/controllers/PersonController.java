@@ -19,7 +19,9 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 /**
- * Controller responsible for creating and deleting Users.
+ * Controller handling {@link Person} related Information (e.g. creating, updating, deleting {@link Person})
+ *
+ * @author David Rieser
  */
 @SuppressWarnings("unused")
 @RestController

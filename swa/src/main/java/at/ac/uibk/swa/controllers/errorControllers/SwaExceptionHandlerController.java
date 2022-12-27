@@ -14,16 +14,19 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.authenticationErrorEndpoint;
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.authorizationErrorEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.authenticationErrorEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.authorizationErrorEndpoint;
 
-
+/**
+ * Controller Advice for catching Exceptions and sending the appropriate Responses.
+ *
+ * @author David Rieser
+ */
 @ControllerAdvice
 @SuppressWarnings("unused")
 public class SwaExceptionHandlerController extends ResponseEntityExceptionHandler {
 
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
-
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationException.class)
     public void handleAuthenticationException(

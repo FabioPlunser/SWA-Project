@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.config.filters;
 
-import at.ac.uibk.swa.util.UUIDConversionUtil;
+import at.ac.uibk.swa.util.ConversionUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -18,6 +18,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
+/**
+ * Filter for trying to get a Token from the Cookies of a Request.
+ *
+ * @author David Rieser
+ * @see AbstractAuthenticationProcessingFilter
+ */
 public class CookieTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public CookieTokenAuthenticationFilter(final RequestMatcher requiresAuth) {
@@ -33,16 +39,16 @@ public class CookieTokenAuthenticationFilter extends AbstractAuthenticationProce
 
         if (cookies != null) {
             Optional<UsernamePasswordAuthenticationToken> authenticationToken =
-                    // Iterate over a List of all Cookies sent with the Request
+                    // Iterate over the List of Cookies that were sent with the Request
                     Arrays.stream(cookies)
                             // Get only the Cookies that have a Token
                             .filter(x -> x.getName().equals("Token"))
-                            // Get the Values of the Cookie
-                            .map(Cookie::getValue)
                             // Get the first Cookie that contains a Token
                             .findFirst()
+                            // Get the Value of the Cookie
+                            .map(Cookie::getValue)
                             // Try to parse the Cookie as a Token
-                            .map(UUIDConversionUtil::tryConvertUUID)
+                            .map(ConversionUtil::tryConvertUUID)
                             // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
                             .map(token -> new UsernamePasswordAuthenticationToken(null, token));
 

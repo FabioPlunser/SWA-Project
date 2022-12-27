@@ -1,0 +1,4 @@
+- Fabian: JWT Json Web Token?
+- Fabio: Error Page mit message Request Parameter?
+- David: Spezieller AuthenticationToken fuer Token/User/etc.
+- David: Checks auf PersonAuthenticationToken mithilfe von "instanceof"

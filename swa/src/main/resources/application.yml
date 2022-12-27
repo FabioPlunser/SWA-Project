@@ -6,8 +6,7 @@ spring:
   profiles.include: 'secrets'
   datasource:
     driver-class: org.mariadb.jdbc.Driver
-    # url: "jdbc:mariadb://mariadb.fabioplunser.com/swa"
-    url: "jdbc:mariadb://localhost/swa"
+    url: "jdbc:mariadb://mariadb.fabioplunser.com/swa"
   jpa:
     hibernate:
       ddl-auto: none

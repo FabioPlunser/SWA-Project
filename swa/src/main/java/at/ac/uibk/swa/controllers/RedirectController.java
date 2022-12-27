@@ -5,6 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * Controller redirecting from Folders to their appropriate Index-Sites.
+ *
+ * @author Fabio Plunser
+ */
 @RestController
 @SuppressWarnings("unused")
 public class RedirectController {

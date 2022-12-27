@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller handling {@link Card} related Information (e.g. creating, updating, deleting {@link Card}s)
+ *
+ * @author Fabian Magreiter
+ */
 @RestController
 public class CardController {
 

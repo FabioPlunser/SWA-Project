@@ -8,8 +8,15 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.authenticationErrorEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.authenticationErrorEndpoint;
 
+/**
+ * Handler for {@link AuthenticationException}s inside the filters of the Security Chain.
+ *
+ * @author David Rieser
+ * @see AuthenticationException
+ * @see AuthenticationFailureHandler
+ */
 @Component
 public class RestAuthenticationFailureHandler implements AuthenticationFailureHandler {
 

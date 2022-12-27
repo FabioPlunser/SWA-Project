@@ -8,8 +8,17 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.authenticationErrorEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.authenticationErrorEndpoint;
 
+/**
+ * The Authentication Entry Point of the Spring Security Chain.
+ * <br/>
+ * This is used for catching {@link AuthenticationException}s.
+ *
+ * @author David Rieser
+ * @see AuthenticationException
+ * @see AuthenticationEntryPoint
+ */
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

@@ -17,8 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 import java.util.UUID;
 
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.loginEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.logoutEndpoint;
+
 /**
- * Controller responsible for creating and deleting Authentication Tokens.
+ * Controller handling the login-, and logout-process.
+ *
+ * @author David Rieser
+ * @see at.ac.uibk.swa.util.EndpointMatcherUtil
  */
 @SuppressWarnings("unused")
 @RestController
@@ -35,7 +41,7 @@ public class LoginController {
      * @return A Token if the user credentials are correct, otherwise an error.
      */
     @SneakyThrows
-    @PostMapping({"/api/login", "/token"})
+    @PostMapping(loginEndpoint)
     public RestResponse getToken(
             HttpServletResponse response,
             @RequestParam("username") final String username,
@@ -55,7 +61,7 @@ public class LoginController {
      *
      * @return A Message saying whether the Logout was successful or not.
      */
-    @PostMapping("/api/logout")
+    @PostMapping(logoutEndpoint)
     public RestResponse deleteToken() {
         Optional<UUID> token = AuthContext.getLoginToken();
 

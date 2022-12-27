@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.config.filters;
 
-import at.ac.uibk.swa.util.UUIDConversionUtil;
+import at.ac.uibk.swa.util.ConversionUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,13 +19,9 @@ import java.util.Optional;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
- * <p>
- * Class responsible for getting the Authentication Token from the Request.
- * </p>
- * <p>
- * The Token is the then passed onto the AuthenticationProvider.
- * </p>
+ * Filter for trying to get a Bearer Token from a Request.
  *
+ * @author David Rieser
  * @see AbstractAuthenticationProcessingFilter
  */
 public class BearerTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
@@ -39,13 +35,15 @@ public class BearerTokenAuthenticationFilter extends AbstractAuthenticationProce
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse
     ) throws AuthenticationException {
+        // Try to find the Bearer-Token
         Optional<UsernamePasswordAuthenticationToken> authenticationToken =
                 // Get the Authorization Header
                 Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION))
-                        // Remove the
+                        // The Bearer Token is a UUID and stored in the Authorization Header
+                        // It has the form: "Bearer <Token>"
                         .map(header -> header.substring("Bearer".length()).trim())
-                        // Try to convert the Token given in the Header to a UUID
-                        .map(UUIDConversionUtil::tryConvertUUID)
+                        // Try to convert the Token given in the Authorization-Header to a UUID
+                        .map(ConversionUtil::tryConvertUUID)
                         // If the Token is a valid UUID then pass it onto the AuthenticationFilter
                         .map(token -> new UsernamePasswordAuthenticationToken(null, token));
 

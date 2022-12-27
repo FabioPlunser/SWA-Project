@@ -4,6 +4,7 @@ import at.ac.uibk.swa.config.exceptionHandling.RestAccessDeniedHandler;
 import at.ac.uibk.swa.config.filters.BearerTokenAuthenticationFilter;
 import at.ac.uibk.swa.config.filters.CookieTokenAuthenticationFilter;
 import at.ac.uibk.swa.models.Permission;
+import at.ac.uibk.swa.util.EndpointMatcherUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,19 +24,17 @@ import static at.ac.uibk.swa.util.EndpointMatcherUtil.ADMIN_ROUTES;
 import static at.ac.uibk.swa.util.EndpointMatcherUtil.PROTECTED_API_ROUTES;
 
 /**
- * <p>
- *     Class for configuring the Authentication Process of the Web-Server.
- * </p>
- * <p>
- *     All API-Paths (except for "/api/login") are secured using an Authentication Token.
- * </p>
- * <p>
- *     The Front-End can fetch a Token from "/api/login" using a User's username and password-Hash.
- * </p>
- * <p>
- *     This Token can then be used in the Authentication Header as a Bearer Token to authenticate
- *     the user for the API.
- * </p>
+ * Class for configuring the Authentication Process of the Web-Server.
+ * <br/>
+ * All API-Paths (except for Exceptions specified in {@link EndpointMatcherUtil}) are secured using an Authentication Token.
+ * <br/>
+ * The Front-End can fetch a Token from "/api/login" using a User's username and password.
+ * <br/>
+ * This Token can then be used in the Authentication Header as a Bearer Token to authenticate
+ * the user for the API.
+ *
+ * @author David Rieser
+ * @see at.ac.uibk.swa.util.EndpointMatcherUtil
  */
 @Configuration
 @EnableMethodSecurity
@@ -90,7 +89,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Use the custom AuthenticationProvider and AuthenticationFilter
+                // Register the custom AuthenticationProvider and AuthenticationFilter
                 .authenticationProvider(provider)
                 .addFilterBefore(bearerAuthenticationFilter(http), AnonymousAuthenticationFilter.class)
                 .addFilterBefore(cookieAuthenticationFilter(http), AnonymousAuthenticationFilter.class)
@@ -111,6 +110,7 @@ public class SecurityConfiguration {
                 .logout().disable()
         ;
 
+        // Register the custom Authentication Entry Point and Access Denied Handler.
         http.exceptionHandling()
                 .authenticationEntryPoint(entryPoint)
                 .accessDeniedHandler(accessDeniedHandler)
