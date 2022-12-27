@@ -70,30 +70,31 @@ public class Card implements Serializable {
     }
 
     /**
-     * updates the learning progress to the values of the other progress
-     * creates a new progress if no progress is found
+     * Updates the LearningProgress associated with the given Person in the Card.
+     * If no LearningProgress is found, a new one is created.
      *
-     * doing it like below is necessary to leave the id unchanged
-     * updating by replacing the learning progress in the map of card will leave the old learning progress undeleted
-     * database will be polluted over time
-     *
-     * unittest is in place to monitor the correct handling of this issue
-     * @see at.ac.uibk.swa.service.card_service.CardServiceTestLearning#testLearnMultipleTimesMonitorLearningProgressEntities()
-     *
+     * @implNote The ID of the LearningProgress is preserved.
      * @param person person for which the learning progress should be updated
-     * @param learningProgress new learning progress from which the values are taken - does not need to be saved to repository
+     * @param func A Function to compute the new LearningProgress.
+     * @return The new LearningProgress
      */
-    public void setLearningProgress(Person person, LearningProgress learningProgress) {
-        // updating the learning progress like this is required because otherwise new learning progresses with new
-        // ids are created each time and pollute the database
-        //
-        // unittest (CardServiceTestLearning.testLearnMultipleTimesMonitorLearningProgressEntities) is in place
-        // to check this issue
-        if (learningProgresses.containsKey(person)) {
-            learningProgresses.get(person).update(learningProgress);
-        } else {
-            learningProgresses.put(person, learningProgress);
-        }
+    public LearningProgress updateLearningProgress(Person person, Function<LearningProgress, LearningProgress> func) {
+        return learningProgresses.compute(person, (p, lp) -> {
+            // If the User has not learned this card, create an empty LearningProgress.
+            if (lp == null)
+                return func.apply(new LearningProgress());
+
+            // Preserve the ID of the LearningProgress.
+            UUID oldId = lp.getLearningProgressId();
+
+            // If the card has already been learned, pass in the old Learning Progress.
+            LearningProgress newLp = func.apply(lp);
+
+            // Set the old ID
+            newLp.setLearningProgressId(oldId);
+
+            return newLp;
+        });
     }
 
     @Override
