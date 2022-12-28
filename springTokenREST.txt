@@ -1,4 +1,0 @@
-https://www.javadevjournal.com/spring/securing-a-restful-web-service-with-spring-security/
-https://www.bezkoder.com/spring-boot-jwt-authentication/
-https://www.bezkoder.com/websecurityconfigureradapter-deprecated-spring-boot/
-https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
