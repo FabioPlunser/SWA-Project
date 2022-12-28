@@ -54,6 +54,7 @@ public class Card implements Serializable {
     private Deck deck;
 
     @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER)
     @Builder.Default

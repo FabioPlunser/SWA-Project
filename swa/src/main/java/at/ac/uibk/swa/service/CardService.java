@@ -136,9 +136,8 @@ public class CardService {
     }
 
     public Optional<LearningProgress> getLearningProgress(Card card) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        Optional<Person> maybeUser = AuthContext.getCurrentPerson();
         return maybeUser
-                .map(user -> user instanceof Person person ? person : null)
                 .map(person -> getLearningProgress(card, person))
                 .flatMap(Function.identity());
     }
@@ -153,7 +152,8 @@ public class CardService {
         Optional<Card> maybeCard = cardRepository.findById(cardId);
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
 
-        if (maybeCard.isPresent() && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        if (maybeCard.isPresent() && maybeUser.isPresent() &&
+                maybeUser.get() instanceof Person person) {
             return getLearningProgress(maybeCard.get(), person);
         }
 
@@ -252,15 +252,9 @@ public class CardService {
      * @return true if the card was learned, false otherwise.
      */
     public boolean learn(Card card, Person person, int difficulty) {
-        final Function<LearningProgress, LearningProgress> updateLearningProgress =
-            lp -> LearningAlgorithm.getUpdatedLearningProgress(
-                    card.getLearningProgress(person).orElseGet(LearningProgress::new),
-                    difficulty
-            );
-
         LearningProgress newLp = card.updateLearningProgress(
                 person,
-                updateLearningProgress
+                lp -> LearningAlgorithm.getUpdatedLearningProgress(lp, difficulty)
         );
 
         return learningProgressRepository.save(newLp) != null;

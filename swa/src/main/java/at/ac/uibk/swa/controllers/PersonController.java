@@ -105,7 +105,7 @@ public class PersonController {
     @Admin
     @PostMapping("/api/updateUser")
     public RestResponse updateUser(
-            @RequestParam("personId") final UUID personId,
+            @RequestParam(name = "personId") final UUID personId,
             @RequestParam(name = "username", required = false) final String username,
             @RequestParam(name = "email", required = false) final String email,
             @RequestParam(name = "permissions", required = false) final Set<Permission> permissions,
