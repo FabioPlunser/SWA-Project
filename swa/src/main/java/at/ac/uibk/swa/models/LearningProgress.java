@@ -6,7 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "learning_progress")
-public class LearningProgress implements Serializable {
+public class LearningProgress implements Serializable, Cloneable {
     @Id
     @Setter(AccessLevel.PACKAGE)
     @Column(name = "progress_id", nullable = false)
@@ -35,7 +35,6 @@ public class LearningProgress implements Serializable {
     @JdbcTypeCode(SqlTypes.DOUBLE)
     private double eFactor = 2.5;
 
-    @Setter
     @Builder.Default
     @Column(name = "num_repetitions", nullable = false)
     @JdbcTypeCode(SqlTypes.BIGINT)
@@ -43,10 +42,12 @@ public class LearningProgress implements Serializable {
 
     @Setter
     @Builder.Default
-    @Column(name = "next_learn", nullable = false)
-    @JdbcTypeCode(SqlTypes.DATE)
-    @Temporal(TemporalType.DATE)
-    private Date nextLearn = new Date();
+    @Column(name = "next_learn", nullable = false, columnDefinition = "TIMESTAMP")
+    private LocalDateTime nextLearn = LocalDateTime.now();
+
+    public void incrementRepetitions() {
+        this.repetitions++;
+    }
 
     public void update(LearningProgress newLearningProgress) {
         this.interval = newLearningProgress.interval;
@@ -64,5 +65,30 @@ public class LearningProgress implements Serializable {
     @Override
     public int hashCode() {
         return learningProgressId != null ? learningProgressId.hashCode() : 0;
+    }
+
+    @SneakyThrows
+    public LearningProgress copy() {
+        return (LearningProgress) this.clone();
+    }
+
+    @Override
+    public Object clone()
+            throws CloneNotSupportedException
+    {
+        LearningProgress lp = (LearningProgress) super.clone();
+
+        // NOTE: Using the same reference to the UUID is safe, because UUID is immutable.
+        lp.learningProgressId = this.learningProgressId;
+
+        // These are primitive Types and therefore will be implicitly cloned.
+        lp.interval = this.interval;
+        lp.eFactor = this.eFactor;
+        lp.repetitions = this.repetitions;
+
+        // NOTE: Using the same reference to the LocalDateTime is safe, because LocalDateTime is immutable.
+        lp.nextLearn = this.nextLearn;
+
+        return lp;
     }
 }
