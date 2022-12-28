@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.service.user_deck_service;
 
+import at.ac.uibk.swa.config.personAuthentication.AuthContext;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
@@ -7,13 +8,17 @@ import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
+import at.ac.uibk.swa.util.MockAuthContext;
 import at.ac.uibk.swa.util.StringGenerator;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,24 +35,32 @@ public class UserDeckServiceTestGetAll {
     @Autowired
     private PersonService personService;
 
-    private Person createUser(String username) {
-        Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
+    private Person createUserAndLogin(String username) {
+        String password = StringGenerator.password();
+        Person person = new Person(username, StringGenerator.email(), password, Set.of(Permission.USER));
         assertTrue(personService.create(person), "Unable to create user");
-        return person;
+        return (Person) MockAuthContext.setLoggedInUser(person);
+    }
+
+    @AfterEach
+    public void logout() {
+        personService.logout();
     }
 
     @Test
     public void testGetAllDecksCreatedUnpublished() {
         // given: a user that has created a deck and not published it
-        Person person = createUser("person-testGetAllDecksCreatedUnpublished");
+        Person person = createUserAndLogin("person-testGetAllDecksCreatedUnpublished");
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksCreatedUnpublished", deckDescription, person);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
 
         // when: loading all decks for that user
-        List<Deck> decks = userDeckService.getAllSavedDecks(person);
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
 
         // then: the user should be able to see that deck (and only that) without a change to its description
+        assertTrue(maybeDecks.isPresent(), "Unable to load decks");
+        List<Deck> decks = maybeDecks.get();
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
         assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has changed");
@@ -56,16 +69,18 @@ public class UserDeckServiceTestGetAll {
     @Test
     public void testGetAllDecksCreatedPublished() {
         // given: a user that has created a deck and published it
-        Person person = createUser("person-testGetAllDecksCreatedPublished");
+        Person person = createUserAndLogin("person-testGetAllDecksCreatedPublished");
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksCreatedPublished", deckDescription, person);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck), "Unable to publish deck");
 
         // when: loading all decks for that user
-        List<Deck> decks = userDeckService.getAllSavedDecks(person);
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
 
         // then: the user should be able to see that deck (and only that) without a change to its description
+        assertTrue(maybeDecks.isPresent(), "Unable to load decks");
+        List<Deck> decks = maybeDecks.get();
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
         assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has changed");
@@ -74,17 +89,19 @@ public class UserDeckServiceTestGetAll {
     @Test
     public void testGetAllDecksCreatedBlocked() {
         // given: a user that has created a deck, but the deck has been blocked
-        Person person = createUser("person-testGetAllDecksCreatedBlocked");
+        Person person = createUserAndLogin("person-testGetAllDecksCreatedBlocked");
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksCreatedBlocked", deckDescription, person);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
         // when: loading all decks for that user
-        List<Deck> decks = userDeckService.getAllSavedDecks(person);
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
 
         // then: the user should be able to see that deck (and only that), but the description should be changed
         // and contain info on the blocking
+        assertTrue(maybeDecks.isPresent(), "Unable to load decks");
+        List<Deck> decks = maybeDecks.get();
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
         assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");
@@ -94,37 +111,43 @@ public class UserDeckServiceTestGetAll {
     @Test
     public void testGetAllDecksCreatedDeleted() {
         // given: a user that has created a deck, but then the deck has been deleted (only possible by the user)
-        Person person = createUser("person-testGetAllDecksCreatedDeleted");
+        Person person = createUserAndLogin("person-testGetAllDecksCreatedDeleted");
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksCreatedDeleted", deckDescription, person);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.delete(deck), "Unable to delete deck");
 
         // when: loading all decks for that user
-        List<Deck> decks = userDeckService.getAllSavedDecks(person);
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
 
         // then: the user should not be able to see that deck
+        assertTrue(maybeDecks.isPresent(), "Unable to load decks");
+        List<Deck> decks = maybeDecks.get();
         assertEquals(0, decks.size(), "Found more decks than expected");
     }
 
     @Test
     public void testGetAllDecksSubscribedUnpublished() {
-        // given: a published deck from another user, to which a user has subscribed and afterwards the creator
+        // given: a published deck from a creator, to which a user has subscribed and afterwards the creator
         // unpublished the deck
-        Person person = createUser("person-testGetAllDecksSubscribedUnpublished");
-        Person otherPerson = createUser("person-testGetAllDecksSubscribedUnpublished-other");
+        Person creator = createUserAndLogin("person-testGetAllDecksSubscribedUnpublished");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedUnpublished", deckDescription, otherPerson);
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedUnpublished", deckDescription, creator);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        Person person = createUserAndLogin("person-testGetAllDecksSubscribedUnpublished-other");
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+        MockAuthContext.setLoggedInUser(creator);
         assertTrue(userDeckService.unpublish(deck), "Unable to unpublish deck");
+        MockAuthContext.setLoggedInUser(person);
 
         // when: loading all decks for the user
-        List<Deck> decks = userDeckService.getAllSavedDecks(person);
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
 
         // then: the user should be able to see the deck (and only that), but the description should be changed and
         // contain info on unpublishing
+        assertTrue(maybeDecks.isPresent(), "Unable to load decks");
+        List<Deck> decks = maybeDecks.get();
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
         assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");
@@ -134,8 +157,8 @@ public class UserDeckServiceTestGetAll {
     @Test
     public void testGetAllDecksSubscribedPublished() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
-        Person person = createUser("person-testGetAllDecksSubscribedPublished");
-        Person otherPerson = createUser("person-testGetAllDecksSubscribedPublished-other");
+        Person person = createUserAndLogin("person-testGetAllDecksSubscribedPublished");
+        Person otherPerson = createUserAndLogin("person-testGetAllDecksSubscribedPublished-other");
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksSubscribedPublished", deckDescription, otherPerson);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
@@ -143,9 +166,11 @@ public class UserDeckServiceTestGetAll {
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
 
         // when: loading all decks for the user
-        List<Deck> decks = userDeckService.getAllSavedDecks(person);
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
 
         // then: the user should be able to see that deck (and only that) without a change to its description
+        assertTrue(maybeDecks.isPresent(), "Unable to load decks");
+        List<Deck> decks = maybeDecks.get();
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
         assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has changed");
@@ -155,8 +180,8 @@ public class UserDeckServiceTestGetAll {
     public void testGetAllDecksSubscribedBlocked() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
         // and afterwards the deck has been blocked
-        Person person = createUser("person-testGetAllDecksSubscribedBlocked");
-        Person otherPerson = createUser("person-testGetAllDecksSubscribedBlocked-other");
+        Person person = createUserAndLogin("person-testGetAllDecksSubscribedBlocked");
+        Person otherPerson = createUserAndLogin("person-testGetAllDecksSubscribedBlocked-other");
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksSubscribedBlocked", deckDescription, otherPerson);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
@@ -165,10 +190,12 @@ public class UserDeckServiceTestGetAll {
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
         // when: loading all decks for the user
-        List<Deck> decks = userDeckService.getAllSavedDecks(person);
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
 
         // then: the user should be able to see that deck (and only that), but the description should be changed and
         // contain info on blocking
+        assertTrue(maybeDecks.isPresent(), "Unable to load decks");
+        List<Deck> decks = maybeDecks.get();
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
         assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");
@@ -179,20 +206,24 @@ public class UserDeckServiceTestGetAll {
     public void testGetAllDecksSubscribedDeleted() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
         // and afterwards the deck has been deleted
-        Person person = createUser("person-testGetAllDecksSubscribedDeleted");
-        Person otherPerson = createUser("person-testGetAllDecksSubscribedDeleted-other");
+        Person creator = createUserAndLogin("person-testGetAllDecksSubscribedDeleted-creator");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedDeleted", deckDescription, otherPerson);
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedDeleted", deckDescription, creator);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        Person person = createUserAndLogin("person-testGetAllDecksSubscribedDeleted");
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+        MockAuthContext.setLoggedInUser(creator);
         assertTrue(userDeckService.delete(deck), "Unable to delete deck");
+        MockAuthContext.setLoggedInUser(person);
 
         // when: loading all decks for the user
-        List<Deck> decks = userDeckService.getAllSavedDecks(person);
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
 
         // then: the user should be able to see that deck (and only that), but the description should be changed and
         // contain info on deleting
+        assertTrue(maybeDecks.isPresent(), "Unable to load decks");
+        List<Deck> decks = maybeDecks.get();
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
         assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");

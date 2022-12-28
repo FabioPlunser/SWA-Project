@@ -1,5 +1,7 @@
 package at.ac.uibk.swa.service;
 
+import at.ac.uibk.swa.config.personAuthentication.AuthContext;
+import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.DeckRepository;
@@ -47,23 +49,24 @@ public class UserDeckService {
     }
 
     /**
-     * Gets all decks to which a person has subscribed, but might alter description, depending on deck status
+     * Gets all decks to which the currently logged in user has subscribed, but might alter description, depending on
+     * deck status
      *  - isDeleted: info, that deck has been deleted
      *  - isBlocked: info, that deck has been blocked
      *  - !isPublished: info, that deck has been unpublished, if not creator
      *
-     * @param person person that wants to get all the decks
-     * @return a list of all decks to which that person has subscribed
+     * @return a list of all decks to which that person has subscribed or nothing is nobody is logged in
      */
-    public List<Deck> getAllSavedDecks(Person person) {
-        if (person != null && person.getPersonId() != null) {
-            return person.getSavedDecks().stream()
+    public Optional<List<Deck>> getAllSavedDecks() {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            return Optional.of(person.getSavedDecks().stream()
                     .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) d.setDescription("Deck has been unpublished"); return d;})
                     .map(d -> {if (d.isBlocked()) d.setDescription("Deck has been blocked"); return d;})
                     .map(d -> {if (d.isDeleted()) d.setDescription("Deck has been deleted"); return d;})
-                    .toList();
+                    .toList());
         } else {
-            return new ArrayList<>();
+            return Optional.empty();
         }
     }
 
