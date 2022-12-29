@@ -53,7 +53,7 @@ public class UserDeckServiceTestGetAll {
         // given: a user that has created a deck and not published it
         Person person = createUserAndLogin("person-testGetAllDecksCreatedUnpublished");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksCreatedUnpublished", deckDescription, person);
+        Deck deck = new Deck("deck-testGetAllDecksCreatedUnpublished", deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
 
         // when: loading all decks for that user
@@ -72,7 +72,7 @@ public class UserDeckServiceTestGetAll {
         // given: a user that has created a deck and published it
         Person person = createUserAndLogin("person-testGetAllDecksCreatedPublished");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksCreatedPublished", deckDescription, person);
+        Deck deck = new Deck("deck-testGetAllDecksCreatedPublished", deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
 
@@ -92,7 +92,7 @@ public class UserDeckServiceTestGetAll {
         // given: a user that has created a deck, but the deck has been blocked
         Person person = createUserAndLogin("person-testGetAllDecksCreatedBlocked");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksCreatedBlocked", deckDescription, person);
+        Deck deck = new Deck("deck-testGetAllDecksCreatedBlocked", deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
@@ -133,7 +133,7 @@ public class UserDeckServiceTestGetAll {
         // unpublished the deck
         Person creator = createUserAndLogin("person-testGetAllDecksSubscribedUnpublished");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedUnpublished", deckDescription, creator);
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedUnpublished", deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetAllDecksSubscribedUnpublished-other");
@@ -162,7 +162,7 @@ public class UserDeckServiceTestGetAll {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
         Person creator = createUserAndLogin("person-testGetAllDecksSubscribedPublished-other");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedPublished", deckDescription, creator);
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedPublished", deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetAllDecksSubscribedPublished");
@@ -185,7 +185,7 @@ public class UserDeckServiceTestGetAll {
         // and afterwards the deck has been blocked
         Person creator = createUserAndLogin("person-testGetAllDecksSubscribedBlocked-creator");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedBlocked", deckDescription, creator);
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedBlocked", deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetAllDecksSubscribedBlocked");
@@ -213,7 +213,7 @@ public class UserDeckServiceTestGetAll {
         // and afterwards the deck has been deleted
         Person creator = createUserAndLogin("person-testGetAllDecksSubscribedDeleted-creator");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedDeleted", deckDescription, creator);
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedDeleted", deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetAllDecksSubscribedDeleted");

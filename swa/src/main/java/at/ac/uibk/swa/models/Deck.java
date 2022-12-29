@@ -20,12 +20,14 @@ import java.util.UUID;
 public class Deck implements Serializable {
 
     // TODO: Remove this constructor - creator of deck should be set via service method only
+    /*
     public Deck(String name, String description, Person creator) {
         this(null, name, description,
              false, false, false,
              creator, new ArrayList<>(), new ArrayList<>()
         );
     }
+     */
 
     public Deck(String name, String description) {
         this(null, name, description, false, false, false, null, new ArrayList<>(), new ArrayList<>());

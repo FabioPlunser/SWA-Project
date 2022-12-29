@@ -50,8 +50,7 @@ public class UserDeckServiceTestGeneral {
             for (int j = 0; j < numberOfDecksPerCreator; j++) {
                 Deck deck = new Deck(
                         "deck-TestSaveAndGetDecks-" + (j+1),
-                        StringGenerator.deckDescription(),
-                        creator
+                        StringGenerator.deckDescription()
                 );
                 assertTrue(userDeckService.create(deck), "Unable to create deck");
                 savedDecks.put(creator, deck);

@@ -126,8 +126,8 @@ public class PersonServiceTestGeneral {
         person.setUsername("new");
         person.setPasswdHash("new");
         person.setPermissions(Set.of(Permission.USER, Permission.ADMIN));
-        person.getCreatedDecks().add(new Deck("deck-1", StringGenerator.deckDescription(), person));
-        person.getSavedDecks().add(new Deck("deck-2", StringGenerator.deckDescription(), person));
+        person.getCreatedDecks().add(new Deck("deck-1", StringGenerator.deckDescription()));
+        person.getSavedDecks().add(new Deck("deck-2", StringGenerator.deckDescription()));
 
         // then: saving the modification via create() should not be possible
         assertFalse(personService.create(person), "Changed person got created again");
