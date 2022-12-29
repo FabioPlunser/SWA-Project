@@ -1,5 +1,7 @@
 package at.ac.uibk.swa.service;
 
+import at.ac.uibk.swa.config.personAuthentication.AuthContext;
+import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.PersonRepository;
@@ -90,6 +92,7 @@ public class PersonService {
 
     /**
      * Logout a user
+     * TODO: Required? Maybe from admin side?
      *
      * @param person user to be logged out
      * @return true if user has been logged out, false otherwise
@@ -105,6 +108,7 @@ public class PersonService {
 
     /**
      * Logout a user
+     * TODO: Required?
      *
      * @param token token of the user to be logged out
      * @return true if user has been logged out, false otherwise
@@ -112,6 +116,20 @@ public class PersonService {
     public boolean logout(UUID token) {
         Optional<Person> maybePerson = personRepository.findByToken(token);
         return maybePerson.filter(this::logout).isPresent();
+    }
+
+    /**
+     * Logout the currently logged in user
+     *
+     * @return true if user has been logged out, false otherwise
+     */
+    public boolean logout() {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            return logout(person);
+        } else {
+            return false;
+        }
     }
 
     /**

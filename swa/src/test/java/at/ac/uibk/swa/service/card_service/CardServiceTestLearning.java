@@ -5,6 +5,7 @@ import at.ac.uibk.swa.repositories.LearningProgressRepository;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
+import at.ac.uibk.swa.util.MockAuthContext;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +31,14 @@ public class CardServiceTestLearning {
     @Autowired
     LearningProgressRepository learningProgressRepository;
 
-    private Person createUser(String username) {
+    private Person createUserAndLogin(String username) {
         Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
         assertTrue(personService.create(person), "Unable to create user");
-        return person;
+        return (Person) MockAuthContext.setLoggedInUser(person);
     }
 
-    private Deck createDeck(String name, Person creator) {
-        Deck deck = new Deck(name, StringGenerator.deckDescription(), creator);
+    private Deck createDeck(String name) {
+        Deck deck = new Deck(name, StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         return deck;
     }
@@ -56,10 +57,8 @@ public class CardServiceTestLearning {
     @Test
     public void testGetInitialLearningProgress() {
         // given: a deck created by a user with a single card and another user
-        int numberOfCards = 1;
-        Deck deck = createDeck("deck-testGetInitialLearningProgressOfDeck", createUser("creator-testGetInitialLearningProgressOfDeck"));
-        Card card = createCard(deck);
-        Person person = createUser("person-testGetInitialLearningProgressOfDeck");
+        Person person = createUserAndLogin("person-testGetInitialLearningProgressOfDeck");
+        Card card = createCard(createDeck("deck-testGetInitialLearningProgressOfDeck"));
 
         // when: loading the learning progress for that card
         Optional<LearningProgress> maybeLearningProgress = cardService.getLearningProgress(card, person);
@@ -72,15 +71,15 @@ public class CardServiceTestLearning {
     public void testGetInitialCardsToLearn() {
         // given: a public deck created by a user with a number of cards and another user, subscribed to that deck
         int numberOfCards = 10;
-        Person creator = createUser("creator-testGetInitialCardsToLearn");
-        Deck deck = createDeck("deck-testGetInitialCardsToLearn", creator);
+        Person creator = createUserAndLogin("creator-testGetInitialCardsToLearn");
+        Deck deck = createDeck("deck-testGetInitialCardsToLearn");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numberOfCards; i++) {
             cards.add(createCard(deck));
         }
-        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
-        Person person = createUser("person-testGetInitialCardsToLearn");
-        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+        assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
+        Person person = createUserAndLogin("person-testGetInitialCardsToLearn");
+        assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
 
         // when: loading all the cards to learn from that deck
         List<Card> cardsToLearn = cardService.getAllCardsToLearn(deck, person);
@@ -95,8 +94,8 @@ public class CardServiceTestLearning {
     @Test
     public void testLearnUnlearntCard() {
         // given: a deck created by a user with one single card
-        Person person = createUser("person-testLearnUnlearntCard");
-        Deck deck = createDeck("deck-testLearnUnlearntCard", person);
+        Person person = createUserAndLogin("person-testLearnUnlearntCard");
+        Deck deck = createDeck("deck-testLearnUnlearntCard");
         Card card = createCard(deck);
 
         // when: learning that one single card
@@ -112,8 +111,8 @@ public class CardServiceTestLearning {
     @Test
     public void testLearnMultipleTimesMonitorLearningProgressEntities() {
         // given: a deck created by a user with one single card
-        Person person = createUser("person-testLearnMultipleTimesMonitorLearningProgressEntities");
-        Deck deck = createDeck("deck-testLearnMultipleTimesMonitorLearningProgressEntities", person);
+        Person person = createUserAndLogin("person-testLearnMultipleTimesMonitorLearningProgressEntities");
+        Deck deck = createDeck("deck-testLearnMultipleTimesMonitorLearningProgressEntities");
         Card card = createCard(deck);
 
         // when: learning the card n times

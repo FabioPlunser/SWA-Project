@@ -6,8 +6,10 @@ import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
+import at.ac.uibk.swa.util.MockAuthContext;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,10 +28,14 @@ public class AdminDeckServiceGeneral {
     @Autowired
     PersonService personService;
 
-    private Deck createDeck(String name, String creatorName) {
-        Person creator = new Person(creatorName, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
-        assertTrue(personService.create(creator), "Unable to create user");
-        Deck deck = new Deck(StringGenerator.deckDescription(), StringGenerator.deckDescription(), creator);
+    private Person createUserAndLogin(String username) {
+        Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
+        assertTrue(personService.create(person), "Unable to create user");
+        return (Person) MockAuthContext.setLoggedInUser(person);
+    }
+
+    private Deck createDeck(String name) {
+        Deck deck = new Deck(name, StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         return deck;
     }
@@ -37,8 +43,10 @@ public class AdminDeckServiceGeneral {
     @Test
     public void testGetDeckByIdAsAdmin() {
         // given: a deck in the repository
-        Deck deck = createDeck("deck-testGetDeckByIdAsAdmin", "person-testGetDeckByIdAsAdmin");
+        createUserAndLogin("person-testGetDeckByIdAsAdmin");
+        Deck deck = createDeck("deck-testGetDeckByIdAsAdmin");
         UUID id = deck.getDeckId();
+        MockAuthContext.setLoggedInUser(null);
 
         // when: trying to load that deck by id from the repository
         Optional<Deck> maybeDeck = adminDeckService.findById(id);
@@ -51,8 +59,10 @@ public class AdminDeckServiceGeneral {
     @Test
     public void testBlockDeck() {
         // given: a deck in the repository
-        Deck deck = createDeck("deck-testBlockDeck", "person-testBlockDeck");
+        createUserAndLogin("person-testBlockDeck");
+        Deck deck = createDeck("deck-testBlockDeck");
         UUID id = deck.getDeckId();
+        MockAuthContext.setLoggedInUser(null);
 
         // when: blocking that deck
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
@@ -66,8 +76,10 @@ public class AdminDeckServiceGeneral {
     @Test
     public void testUnblockDeck() {
         // given: a deck in the repository, that was blocked
-        Deck deck = createDeck("deck-testUnblockDeck", "person-testUnblockDeck");
+        createUserAndLogin("person-testUnblockDeck");
+        Deck deck = createDeck("deck-testUnblockDeck");
         UUID id = deck.getDeckId();
+        MockAuthContext.setLoggedInUser(null);
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
         // when: unblocking that deck
@@ -82,14 +94,16 @@ public class AdminDeckServiceGeneral {
     @Test
     public void testFindAllDecksAsAdmin() {
         // given: a number of decks in the repository, where one was deleted, one was blocked and one was published
-        int numberOfDecks = 10;
+        int numberOfDecks = 4;
         List<Deck> decks = new ArrayList<>();
+        Person creator = createUserAndLogin("person-testFindAllDecksAsAdmin");
         for (int i = 0; i < numberOfDecks; i++) {
-            decks.add(createDeck("test-testFindAllDecksAsAdmin-"+(i+1), "person-testFindAllDecksAsAdmin-"+(i+1)));
+            decks.add(createDeck("test-testFindAllDecksAsAdmin-"+(i+1)));
         }
-        assertTrue(userDeckService.delete(decks.get(0)));
+        assertTrue(userDeckService.delete(decks.get(0).getDeckId()));
         Deck deletedDeck = decks.remove(0);
-        assertTrue(userDeckService.publish(decks.get(0)));
+        assertTrue(userDeckService.publish(decks.get(0).getDeckId()));
+        MockAuthContext.setLoggedInUser(null);
         assertTrue(adminDeckService.block(decks.get(1)));
 
         // when: loading all decks within the repository
