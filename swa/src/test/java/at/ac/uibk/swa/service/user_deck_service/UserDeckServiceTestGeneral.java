@@ -217,6 +217,7 @@ public class UserDeckServiceTestGeneral {
         Deck deletedDeck = new Deck("deck-findAllAvailableDecks-deleted", "deleted");
         assertTrue(userDeckService.create(deletedDeck), "Unable to create deck");
         assertTrue(userDeckService.delete(deletedDeck.getDeckId()), "Unable to delete deck");
+        MockAuthContext.setLoggedInUser(null);
 
         // when: searching for decks available for subscription
         List<Deck> availableDecks = userDeckService.findAllAvailableDecks();

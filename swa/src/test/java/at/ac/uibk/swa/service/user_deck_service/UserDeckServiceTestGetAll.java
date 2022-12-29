@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.service.user_deck_service;
 
 import at.ac.uibk.swa.config.personAuthentication.AuthContext;
+import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
@@ -113,7 +114,7 @@ public class UserDeckServiceTestGetAll {
         // given: a user that has created a deck, but then the deck has been deleted (only possible by the user)
         Person person = createUserAndLogin("person-testGetAllDecksCreatedDeleted");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksCreatedDeleted", deckDescription, person);
+        Deck deck = new Deck("deck-testGetAllDecksCreatedDeleted", deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
 
@@ -136,9 +137,11 @@ public class UserDeckServiceTestGetAll {
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetAllDecksSubscribedUnpublished-other");
-        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+        assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
         assertTrue(userDeckService.unpublish(deck.getDeckId()), "Unable to unpublish deck");
+        // workaround, as mocking does currently not allow for reloading the deck from the repository
+        person.getSavedDecks().get(0).setPublished(false);
         MockAuthContext.setLoggedInUser(person);
 
         // when: loading all decks for the user
@@ -157,13 +160,13 @@ public class UserDeckServiceTestGetAll {
     @Test
     public void testGetAllDecksSubscribedPublished() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
-        Person person = createUserAndLogin("person-testGetAllDecksSubscribedPublished");
-        Person otherPerson = createUserAndLogin("person-testGetAllDecksSubscribedPublished-other");
+        Person creator = createUserAndLogin("person-testGetAllDecksSubscribedPublished-other");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedPublished", deckDescription, otherPerson);
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedPublished", deckDescription, creator);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+        Person person = createUserAndLogin("person-testGetAllDecksSubscribedPublished");
+        assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
 
         // when: loading all decks for the user
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
@@ -180,14 +183,16 @@ public class UserDeckServiceTestGetAll {
     public void testGetAllDecksSubscribedBlocked() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
         // and afterwards the deck has been blocked
-        Person person = createUserAndLogin("person-testGetAllDecksSubscribedBlocked");
-        Person otherPerson = createUserAndLogin("person-testGetAllDecksSubscribedBlocked-other");
+        Person creator = createUserAndLogin("person-testGetAllDecksSubscribedBlocked-creator");
         String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedBlocked", deckDescription, otherPerson);
+        Deck deck = new Deck("deck-testGetAllDecksSubscribedBlocked", deckDescription, creator);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+        Person person = createUserAndLogin("person-testGetAllDecksSubscribedBlocked");
+        assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
+        // workaround, as mocking does currently not allow for reloading the deck from the repository
+        person.getSavedDecks().get(0).setBlocked(true);
 
         // when: loading all decks for the user
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
@@ -212,9 +217,11 @@ public class UserDeckServiceTestGetAll {
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetAllDecksSubscribedDeleted");
-        assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
+        assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
         assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
+        // workaround, as mocking does currently not allow for reloading the deck from the repository
+        person.getSavedDecks().get(0).setDeleted(true);
         MockAuthContext.setLoggedInUser(person);
 
         // when: loading all decks for the user

@@ -40,9 +40,9 @@ public class UserDeckService {
      * @return list of all available decks
      */
     public List<Deck> findAllAvailableDecks() {
-        List<Deck> allDecks = deckRepository.findAll();
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         return deckRepository.findAll().stream()
-                .filter(Deck::isPublished)
+                .filter(d -> d.isPublished() || (maybeUser.isPresent() && d.getCreator().equals(maybeUser.get())))
                 .filter(Predicate.not(Deck::isBlocked))
                 .filter(Predicate.not(Deck::isDeleted))
                 .toList();
@@ -113,13 +113,14 @@ public class UserDeckService {
             deck.setCreator(person);
             Deck savedDeck = save(deck);
             if (savedDeck != null) {
-                savedDeck.getCreator().getCreatedDecks().add(savedDeck);
+                person.getCreatedDecks().add(savedDeck);
+                person.getSavedDecks().add(savedDeck);
                 try {
-                    personRepository.save(savedDeck.getCreator());
+                    personRepository.save(person);
                 } catch (Exception e) {
                     return false;
                 }
-                return subscribe(savedDeck, savedDeck.getCreator());
+                return true;
             } else {
                 return false;
             }
@@ -140,7 +141,7 @@ public class UserDeckService {
     public boolean update(UUID deckId, String name, String description) {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
-            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId() == deckId).findFirst().orElse(null);
+            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null) {
                 if (deck.isBlocked() || deck.isDeleted()) return false;
                 if (name != null) deck.setName(name);
@@ -164,12 +165,22 @@ public class UserDeckService {
     public boolean delete(UUID deckId) {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
-            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId() == deckId).findFirst().orElse(null);
+            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null) {
                 if (deck.isDeleted()) return false;
                 deck.setDeleted(true);
-                unsubscribe(deck, deck.getCreator());
-                return save(deck) != null;
+                Deck savedDeck = save(deck);
+                if (savedDeck != null) {
+                    person.getSavedDecks().remove(savedDeck);
+                    try {
+                        personRepository.save(person);
+                    } catch (Exception e) {
+                        return false;
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -188,7 +199,7 @@ public class UserDeckService {
     public boolean publish(UUID deckId) {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
-            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId() == deckId).findFirst().orElse(null);
+            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null) {
                 if (deck.isPublished()) return false;
                 deck.setPublished(true);
@@ -211,7 +222,7 @@ public class UserDeckService {
     public boolean unpublish(UUID deckId) {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
-            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId() == deckId).findFirst().orElse(null);
+            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null) {
                 if (!deck.isPublished()) return false;
                 deck.setPublished(false);
@@ -225,22 +236,27 @@ public class UserDeckService {
     }
 
     /**
-     * Subscribe a person in the repository to a deck in the repository
-     * A person that is already subscribed to a deck cannot subscribe again
+     * Subscribe the logged in user to a deck available for subscription
+     * It is not possible to subscribe to a deck twice
      *
-     * @param deck deck to subscribe to
-     * @param person person to subscribe to
+     * @param deckId id of the deck to subscribe to
      * @return true if the person has been subscribed, false otherwise
      */
-    public boolean subscribe(Deck deck, Person person) {
-        if (deck != null && deck.getDeckId() != null && person != null && person.getPersonId() != null) {
-            if (!person.getSavedDecks().contains(deck)) {
-                person.getSavedDecks().add(deck);
-                try {
-                    Person savedPerson = personRepository.save(person);
-                    savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().add(savedPerson);
-                    return true;
-                } catch (Exception e) {
+    public boolean subscribe(UUID deckId) {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            Deck deck = findAllAvailableDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
+            if (deck != null && deck.getDeckId() != null && person.getPersonId() != null) {
+                if (!person.getSavedDecks().contains(deck)) {
+                    person.getSavedDecks().add(deck);
+                    try {
+                        Person savedPerson = personRepository.save(person);
+                        savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().add(savedPerson);
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                } else {
                     return false;
                 }
             } else {
@@ -252,23 +268,27 @@ public class UserDeckService {
     }
 
     /**
-     * Unsubscribe a person in the repository from a deck in the repository
-     * Only persons that have subscribed to a deck can unsubscribe from it
+     * Unsubscribe the logged in person from one if their subscribed decks
      * The creator of a deck cannot unsubscribe from the deck
      *
-     * @param deck deck to unsubscribe from
-     * @param person to unsubsubscribe from
+     * @param deckId id of the deck to unsubscribe from
      * @return true if the person has been unsubscribed, false otherwise
      */
-    public boolean unsubscribe(Deck deck, Person person) {
-        if (deck != null && deck.getDeckId() != null && person != null && person.getPersonId() != null) {
-            if (person.getSavedDecks().contains(deck)) {
-                person.getSavedDecks().remove(deck);
-                try {
-                    Person savedPerson = personRepository.save(person);
-                    savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().remove(savedPerson);
-                    return true;
-                } catch (Exception e) {
+    public boolean unsubscribe(UUID deckId) {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            Deck deck = person.getSavedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
+            if (deck != null && deck.getDeckId() != null && person.getPersonId() != null) {
+                if (person.getSavedDecks().contains(deck)) {
+                    person.getSavedDecks().remove(deck);
+                    try {
+                        Person savedPerson = personRepository.save(person);
+                        savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().remove(savedPerson);
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                } else {
                     return false;
                 }
             } else {

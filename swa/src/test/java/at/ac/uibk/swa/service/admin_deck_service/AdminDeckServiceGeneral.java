@@ -35,7 +35,7 @@ public class AdminDeckServiceGeneral {
     }
 
     private Deck createDeck(String name) {
-        Deck deck = new Deck(StringGenerator.deckDescription(), StringGenerator.deckDescription());
+        Deck deck = new Deck(name, StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         return deck;
     }
@@ -97,7 +97,6 @@ public class AdminDeckServiceGeneral {
         int numberOfDecks = 4;
         List<Deck> decks = new ArrayList<>();
         Person creator = createUserAndLogin("person-testFindAllDecksAsAdmin");
-        MockAuthContext.setLoggedInUser(creator);
         for (int i = 0; i < numberOfDecks; i++) {
             decks.add(createDeck("test-testFindAllDecksAsAdmin-"+(i+1)));
         }
