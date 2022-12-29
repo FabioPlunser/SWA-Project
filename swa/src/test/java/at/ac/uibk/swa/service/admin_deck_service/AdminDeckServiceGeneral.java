@@ -103,7 +103,7 @@ public class AdminDeckServiceGeneral {
         }
         assertTrue(userDeckService.delete(decks.get(0).getDeckId()));
         Deck deletedDeck = decks.remove(0);
-        assertTrue(userDeckService.publish(decks.get(0)));
+        assertTrue(userDeckService.publish(decks.get(0).getDeckId()));
         MockAuthContext.setLoggedInUser(null);
         assertTrue(adminDeckService.block(decks.get(1)));
 

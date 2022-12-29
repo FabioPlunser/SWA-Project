@@ -172,7 +172,7 @@ public class UserDeckServiceTestGeneral {
         UUID id = deck.getDeckId();
 
         // when: publishing that deck
-        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
 
         // then: deck should be set to published
         Optional<Deck> maybeDeck = userDeckService.findById(id);
@@ -186,7 +186,7 @@ public class UserDeckServiceTestGeneral {
         Person creator = createUserAndLogin("person-testUnpublishDeck");
         Deck deck = new Deck("deck-testUnpublishDeck", StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
-        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         UUID id = deck.getDeckId();
 
         // when: unpublishing that deck
@@ -208,7 +208,7 @@ public class UserDeckServiceTestGeneral {
         Person person = createUserAndLogin("person-testFindAllAvailableDecks");
         Deck publishedDeck = new Deck("deck-findAllAvailableDecks-published", "published");
         assertTrue(userDeckService.create(publishedDeck), "Unable to create deck");
-        assertTrue(userDeckService.publish(publishedDeck), "Unable to publish deck");
+        assertTrue(userDeckService.publish(publishedDeck.getDeckId()), "Unable to publish deck");
         Deck unpublishedDeck = new Deck("deck-findAllAvailableDecks-published", "unpublished");
         assertTrue(userDeckService.create(unpublishedDeck), "Unable to create deck");
         Deck blockedDeck = new Deck("deck-findAllAvailableDecks-blocked", "blocked");

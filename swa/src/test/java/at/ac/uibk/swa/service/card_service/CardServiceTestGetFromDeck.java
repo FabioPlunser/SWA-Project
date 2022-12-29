@@ -130,7 +130,7 @@ public class CardServiceTestGetFromDeck {
             assertTrue(cardService.create(card), "Unable to create card");
             cards.add(card);
         }
-        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetCardsFromDeckSubscribedPublished");
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
 
@@ -156,7 +156,7 @@ public class CardServiceTestGetFromDeck {
             assertTrue(cardService.create(card), "Unable to create card");
             cards.add(card);
         }
-        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetCardsFromDeckSubscribedUnpublished");
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
@@ -182,7 +182,7 @@ public class CardServiceTestGetFromDeck {
             assertTrue(cardService.create(card), "Unable to create card");
             cards.add(card);
         }
-        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetCardsFromDeckSubscribedBlocked");
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
@@ -206,7 +206,7 @@ public class CardServiceTestGetFromDeck {
             assertTrue(cardService.create(card), "Unable to create card");
             cards.add(card);
         }
-        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetCardsFromDeckSubscribedDeleted");
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
@@ -232,7 +232,7 @@ public class CardServiceTestGetFromDeck {
             assertTrue(cardService.create(card), "Unable to create card");
             cards.add(card);
         }
-        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetDeletedCardsFromDeck");
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
@@ -286,7 +286,7 @@ public class CardServiceTestGetFromDeck {
             assertTrue(cardService.create(card), "Unable to create card");
             cards.add(card);
         }
-        assertTrue(userDeckService.publish(deck), "Unable to publish deck");
+        assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person admin = createAdminAndLogin("person-testGetCardsFromPublishedDeckAsAdmin-admin");
 
         // when: retrieving all cards for the admin and deck

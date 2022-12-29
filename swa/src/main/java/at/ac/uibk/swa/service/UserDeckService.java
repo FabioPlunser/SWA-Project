@@ -179,18 +179,23 @@ public class UserDeckService {
     }
 
     /**
-     * Publishes a deck in the repository
+     * Publishes one of the decks owned by the logged in user in the repository
      * Already published deck cannot be published again
-     * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param deck deck to publish
+     * @param deckId if of the deck to publish
      * @return true if deck has been published, false otherwise
      */
-    public boolean publish(Deck deck) {
-        if (deck != null && deck.getDeckId() != null) {
-            if (deck.isPublished()) return false;
-            deck.setPublished(true);
-            return save(deck) != null;
+    public boolean publish(UUID deckId) {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId() == deckId).findFirst().orElse(null);
+            if (deck != null && deck.getDeckId() != null) {
+                if (deck.isPublished()) return false;
+                deck.setPublished(true);
+                return save(deck) != null;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
