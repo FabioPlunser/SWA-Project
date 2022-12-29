@@ -44,13 +44,8 @@ public class CardServiceTestLearning {
     }
 
     private Card createCard(Deck deck) {
-        Card card = new Card(
-                StringGenerator.cardText(),
-                StringGenerator.cardText(),
-                false,
-                deck
-        );
-        assertTrue(cardService.create(card), "Unable to create card");
+        Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+        assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
         return card;
     }
     
@@ -61,7 +56,7 @@ public class CardServiceTestLearning {
         Card card = createCard(createDeck("deck-testGetInitialLearningProgressOfDeck"));
 
         // when: loading the learning progress for that card
-        Optional<LearningProgress> maybeLearningProgress = cardService.getLearningProgress(card, person);
+        Optional<LearningProgress> maybeLearningProgress = cardService.getLearningProgress(card.getCardId());
 
         // then: no learning progress must be returned
         assertTrue(maybeLearningProgress.isEmpty(), "Got progress on a card that has never been learnt");
@@ -82,9 +77,11 @@ public class CardServiceTestLearning {
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
 
         // when: loading all the cards to learn from that deck
-        List<Card> cardsToLearn = cardService.getAllCardsToLearn(deck, person);
+        Optional<List<Card>> maybeCardsToLearn = cardService.getAllCardsToLearn(deck.getDeckId());
 
         // then: all cards from the deck must be loaded
+        assertTrue(maybeCardsToLearn.isPresent(), "Unable to load cards");
+        List<Card> cardsToLearn = maybeCardsToLearn.get();
         assertEquals(cards.size(), cardsToLearn.size(), "Got more/less cards than expected");
         for (Card card : cards) {
             assertTrue(cardsToLearn.contains(card), "Unable to find card");
@@ -99,10 +96,10 @@ public class CardServiceTestLearning {
         Card card = createCard(deck);
 
         // when: learning that one single card
-        assertTrue(cardService.learn(card, person, 0), "Unable to learn card");
+        assertTrue(cardService.learn(card.getCardId(), 0), "Unable to learn card");
 
         // then: learning progress shall be updated
-        Optional<LearningProgress> maybeLearningProgress = cardService.getLearningProgress(card, person);
+        Optional<LearningProgress> maybeLearningProgress = cardService.getLearningProgress(card.getCardId());
         assertTrue(maybeLearningProgress.isPresent(), "Did not find any learning progress");
         LearningProgress learningProgress = maybeLearningProgress.get();
         assertEquals(1, learningProgress.getRepetitions(), "Number of repetitions other than expected");
@@ -119,7 +116,7 @@ public class CardServiceTestLearning {
         long numberOfLearningProgressEntitiesBefore = learningProgressRepository.count();
         int numberOfLearningRepetitions = 10;
         for (int i = 0; i < numberOfLearningRepetitions; i++) {
-            assertTrue(cardService.learn(card, person, 0), "Unable to learn card");
+            assertTrue(cardService.learn(card.getCardId(), 0), "Unable to learn card");
         }
 
         // then: only a single learning progress entity must be created
