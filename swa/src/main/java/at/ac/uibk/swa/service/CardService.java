@@ -89,6 +89,17 @@ public class CardService {
             return Optional.empty();
         }
     }
+    //TODO: vielleicht mit normaler Liste arbeiten die im Zweifelsfall leer ist? -->selbiges für andere Optional Listen
+    //deck Objekt statt deckId
+    /*
+        List<Card> cards = deck.getCards()
+            .stream()
+            .filter(i -> {
+                var p = i.getLearningProgress(person);
+                return p.isPresent() && p.get().getNextLearn().isBefore(LocalDateTime.now());
+            })
+            .collect(Collectors.toList());
+     */
 
     /**
      * Finds a card within the repository by its id
