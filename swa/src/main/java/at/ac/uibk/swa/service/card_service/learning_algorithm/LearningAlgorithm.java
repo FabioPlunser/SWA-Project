@@ -5,6 +5,15 @@ import at.ac.uibk.swa.models.LearningProgress;
 import java.time.LocalDateTime;
 
 public class LearningAlgorithm {
+
+    /**
+     * This Method computes the next learning date given the current learning progress of a card and the user-set difficulty
+     *
+     * @param current current learning progress
+     * @param difficulty difficulty set by user
+     *
+     * @return the new LearningProgress object with updated attributes
+     */
     public static LearningProgress getUpdatedLearningProgress(
             LearningProgress current,
             int difficulty
