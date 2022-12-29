@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.controllers;
 
+import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.PersonService;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
@@ -23,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -32,8 +35,9 @@ class DeckControllerTest {
     private PersonService personService;
     @Autowired
     private WebApplicationContext webApplicationContext;
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    private MockMvc mockMvc;    // ignore if error shown by intellij
+    private MockMvc mockMvc;
 
     private String createUserAndGetToken() throws Exception {
         String username = StringGenerator.username();
@@ -52,14 +56,14 @@ class DeckControllerTest {
         String token = createUserAndGetToken();
 
         // when: creating a new deck
-        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders
-                .put("/api/createDeck")
-                        .header("Authorization", token)
-                        .param("name", "test")
-                        .param("description", "test")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/createDeck")
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .param("name", "test")
+                .param("description", "test")
                 .contentType(MediaType.APPLICATION_JSON)
-        ).andReturn().getResponse();
-
-        System.out.println(response.getContentAsString());
+        // then:
+        ).andExpectAll(
+                status().isOk()
+        );
     }
 }

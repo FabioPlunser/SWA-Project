@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +25,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,13 +52,14 @@ class LoginControllerTest {
         personService.create(new Person(username, StringGenerator.email(), password, permissions));
 
         // when: logging in as that user
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(EndpointMatcherUtil.LOGIN_ENDPOINT)
+                        .param("username", username)
+                        .param("password", password)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
         // then: status code 200 must be returned, token must be in body and correct permissions must be returned
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .post(EndpointMatcherUtil.LOGIN_ENDPOINT)
-                .param("username", username)
-                .param("password", password)
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpectAll(
+        .andExpectAll(
                 status().isOk(),
                 jsonPath("$.token").exists(),
                 jsonPath("$.permissions").isArray(),
@@ -69,7 +73,97 @@ class LoginControllerTest {
     }
 
     @Test
-    public void testLoginInvalidCredentials() throws Exception {
+    public void testLoginWrongPassword() throws Exception {
+        // given: user created in database
+        String username = StringGenerator.username();
+        String password = StringGenerator.password();
+        Set<Permission> permissions = Set.of(Permission.USER);
+        personService.create(new Person(username, StringGenerator.email(), password, permissions));
 
+        // when: trying to log in as that user with wrong password
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(EndpointMatcherUtil.LOGIN_ENDPOINT)
+                        .param("username", username)
+                        .param("password", "wrong-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+        // then: status code 403 must be returned, token must not be contained in body
+        .andExpectAll(
+                status().isForbidden(),
+                jsonPath("$.token").doesNotExist()
+        );
+    }
+
+    @Test
+    public void testLoginRandomCredentials() throws Exception {
+        // given: default setup
+
+        // when: trying to log in as that user with wrong password
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(EndpointMatcherUtil.LOGIN_ENDPOINT)
+                        .param("username", StringGenerator.username())
+                        .param("password", StringGenerator.password())
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+        // then: status code 403 must be returned, token must not be contained in body
+        .andExpectAll(
+                status().isForbidden(),
+                jsonPath("$.token").doesNotExist()
+        );
+    }
+
+    @Test
+    public void testLogout() throws Exception {
+        // given: a logged in user with a token
+        String username = StringGenerator.username();
+        String password = StringGenerator.password();
+        Set<Permission> permissions = Set.of(Permission.USER);
+        Person person = new Person(username, StringGenerator.email(), password, permissions);
+        assertTrue(personService.create(person), "Unable to create user");
+        Optional<Person> maybePerson = personService.login(username, password);
+        assertTrue(maybePerson.isPresent(), "Unable to login");
+        String token = "Bearer " + maybePerson.get().getToken().toString();
+
+        // when: logging out that user
+        mockMvc.perform(MockMvcRequestBuilders
+                .post(EndpointMatcherUtil.LOGOUT_ENDPOINT)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        // then: status code 200 must be returned
+        .andExpectAll(
+                status().isOk()
+        );
+    }
+
+    @Test
+    public void testLogoutWithRandomToken() throws Exception {
+        // given: default setting
+
+        // when: logging out with random token
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(EndpointMatcherUtil.LOGOUT_ENDPOINT)
+                        .header(HttpHeaders.AUTHORIZATION, UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+        // then: status code 403 must be returned
+        .andExpectAll(
+                status().isForbidden()
+        );
+    }
+
+    @Test
+    public void testLogoutWithoutAnyToken() throws Exception {
+        // given: default setting
+
+        // when: logging out without token
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(EndpointMatcherUtil.LOGOUT_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+        // then: status code 401 must be returned
+        .andExpectAll(
+                status().isUnauthorized()
+        );
     }
 }
