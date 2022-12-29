@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,8 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class LoginControllerTest {
     @Autowired
     private PersonService personService;
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    private MockMvc mockMvc;    // ignore if error shown by intellij
+    private MockMvc mockMvc;
 
 
     @Test
@@ -47,7 +49,7 @@ class LoginControllerTest {
         personService.create(new Person(username, StringGenerator.email(), password, permissions));
 
         // when: logging in as that user
-        // then: status code 200 must be returned and token must be in body
+        // then: status code 200 must be returned, token must be in body and correct permissions must be returned
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .post(EndpointMatcherUtil.LOGIN_ENDPOINT)
                 .param("username", username)
@@ -56,8 +58,13 @@ class LoginControllerTest {
         ).andExpectAll(
                 status().isOk(),
                 jsonPath("$.token").exists(),
-                jsonPath("$.permissions").isArray()
-                // TODO: check contents of permissions
+                jsonPath("$.permissions").isArray(),
+                jsonPath("$.permissions[*]").value(
+                        Matchers.hasItems(
+                            Permission.USER.toString(),
+                            Permission.ADMIN.toString()
+                        )
+                )
         );
     }
 
