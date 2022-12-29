@@ -22,8 +22,6 @@ public class CardService {
     @Autowired
     private UserDeckService userDeckService;
     @Autowired
-    private PersonService personService;
-    @Autowired
     private DeckRepository deckRepository;
     @Autowired
     private LearningProgressRepository learningProgressRepository;
