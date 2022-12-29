@@ -4,14 +4,18 @@ import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.annotations.HasPermission;
-import at.ac.uibk.swa.models.restResponses.ListResponse;
-import at.ac.uibk.swa.models.restResponses.MessageResponse;
-import at.ac.uibk.swa.models.restResponses.RestResponse;
+import at.ac.uibk.swa.models.rest_responses.ListResponse;
+import at.ac.uibk.swa.models.rest_responses.MessageResponse;
+import at.ac.uibk.swa.models.rest_responses.RestResponse;
+import at.ac.uibk.swa.service.AdminDeckService;
+import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.UserDeckService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -22,56 +26,76 @@ import java.util.UUID;
 @RestController
 @SuppressWarnings("unused")
 public class DeckController {
-    @Autowired
-    UserDeckService deckService;
 
-    @PutMapping("/api/createDeck")
+    @Autowired
+    private UserDeckService userDeckService;
+    @Autowired
+    private AdminDeckService adminDeckService;
+    @Autowired
+    private CardService cardService;
+
+    @PostMapping("/api/createDeck")
     public RestResponse createDeck(
-            @RequestParam("name") final String name,
-            @RequestParam("description") final String description
+            @RequestBody final Deck deck
     ) {
-        Deck deck = new Deck (name, description);
-        boolean success = deckService.create(deck);
-        return new MessageResponse(success, "id: " + deck.getDeckId());
+        if (userDeckService.create(deck)) {
+            return new MessageResponse(true, "Deck created");
+        }
+        return new MessageResponse(false, "Deck not created");
     }
 
     @PostMapping("/api/updateDeck")
     public RestResponse updateDeck(
-            @RequestParam(name = "deck") final Deck deck
+            @RequestBody final Deck deck
     ) {
-        return new MessageResponse(true, "");
+        if (userDeckService.update(deck.getDeckId(), deck.getName(), deck.getDescription())) {
+            return new MessageResponse(true, "Deck updated");
+        }
+        return new MessageResponse(false, "Deck not updated");
     }
 
     @PutMapping("/api/setPublicity")
     public RestResponse setPublicity(
-            @RequestParam(name = "deck") final Deck deck
+            @RequestParam(name = "deckId") final UUID deckId
     ) {
-        return new MessageResponse(true, "Changed Deck Publicity");
+        if (userDeckService.publish(deckId)) {
+            return new MessageResponse(true, "Deck publicity changed");
+        }
+        return new MessageResponse(false, "Deck publicity not changed");
     }
 
     @DeleteMapping("/api/deleteDeck")
     public RestResponse deleteDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
-        return new MessageResponse(true, "");
+        if (userDeckService.delete(deckId)) {
+            return new MessageResponse(true, "Deck deleted");
+        }
+        return new MessageResponse(false, "Deck not deleted");
     }
 
     @GetMapping("/api/getUserDecks")
     public RestResponse getUserDecks(
             @RequestParam(name = "personId") final UUID personId
-    ) {
-        return new MessageResponse(true, "getUserDecks" + personId);
+    ) throws JsonProcessingException {
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllOwnedDecks();
+        if (maybeDecks.isPresent()) {
+            List<Deck> decks = maybeDecks.get();
+            return new ListResponse<>(decks);
+        }
+        //TODO warum hier personId zurückgeben?
+        return new MessageResponse(false, "getUserDecks" + personId + " failed");
     }
 
     @GetMapping("/api/getPublishedDecks")
     public RestResponse getPublishedDecks() {
-        return new MessageResponse(true, "");
+        return new ListResponse<>(userDeckService.findAllAvailableDecks());
     }
 
     @HasPermission(Permission.ADMIN)
     @GetMapping("/api/getAllDecks")
     public RestResponse getAllDecks() {
-        return new MessageResponse(true, "getAllDecks");
+        return new ListResponse<>(adminDeckService.findAll());
     }
 
     /**
@@ -84,6 +108,13 @@ public class DeckController {
     public RestResponse getAllCardsToLearn(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
-        return new ListResponse<Card>(List.of());
+        Optional<List<Card>> maybeCards = cardService.getAllCardsToLearn(deckId);
+        if (maybeCards.isPresent()) {
+            List<Card> cards = maybeCards.get();
+            return new ListResponse<>(cards);
+        }
+        return new MessageResponse(false, "getAllCardsToLearn failed");
+
     }
 }
+

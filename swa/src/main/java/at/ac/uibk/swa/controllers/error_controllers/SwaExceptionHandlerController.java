@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.controllers.errorControllers;
+package at.ac.uibk.swa.controllers.error_controllers;
 
 import at.ac.uibk.swa.util.EndpointMatcherUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,8 +14,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.authenticationErrorEndpoint;
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.authorizationErrorEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.AUTHENTICATION_ERROR_ENDPOINT;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.AUTHORIZATION_ERROR_ENDPOINT;
 
 /**
  * Controller Advice for catching Exceptions and sending the appropriate Responses.
@@ -34,7 +34,7 @@ public class SwaExceptionHandlerController extends ResponseEntityExceptionHandle
             HttpServletResponse response
     ) throws IOException {
         if (EndpointMatcherUtil.isApiRoute(request)) {
-            response.sendRedirect(authenticationErrorEndpoint);
+            response.sendRedirect(AUTHENTICATION_ERROR_ENDPOINT);
         } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Forbidden!");
         }
@@ -46,7 +46,7 @@ public class SwaExceptionHandlerController extends ResponseEntityExceptionHandle
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
-        response.sendRedirect(authorizationErrorEndpoint);
+        response.sendRedirect(AUTHORIZATION_ERROR_ENDPOINT);
     }
 
     @ResponseBody

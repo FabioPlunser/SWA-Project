@@ -1,7 +1,7 @@
-package at.ac.uibk.swa.controllers.errorControllers;
+package at.ac.uibk.swa.controllers.error_controllers;
 
-import at.ac.uibk.swa.models.restResponses.MessageResponse;
-import at.ac.uibk.swa.models.restResponses.RestResponse;
+import at.ac.uibk.swa.models.rest_responses.MessageResponse;
+import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
@@ -22,28 +22,28 @@ import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.*;
 public class SwaErrorController implements ErrorController {
 
     @ResponseBody
-    @RequestMapping(authenticationErrorEndpoint)
+    @RequestMapping(AUTHENTICATION_ERROR_ENDPOINT)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public RestResponse handleAuthenticationError(HttpServletRequest request) {
         return new MessageResponse(false, "Authentication failed!");
     }
 
     @ResponseBody
-    @RequestMapping(authorizationErrorEndpoint)
+    @RequestMapping(AUTHORIZATION_ERROR_ENDPOINT)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public RestResponse handleAuthorizationError(HttpServletRequest request) {
         return new MessageResponse(false, "Insufficient Privileges!");
     }
 
     @ResponseBody
-    @RequestMapping(notFoundErrorEndpoint)
+    @RequestMapping(NOT_FOUND_ERROR_ENDPOINT)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public RestResponse handleNotFoundError(HttpServletRequest request) {
         return new MessageResponse(false, "Endpoint not found!");
     }
 
     @ResponseBody
-    @RequestMapping(errorEndpoint)
+    @RequestMapping(ERROR_ENDPOINT)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public RestResponse handleError(HttpServletRequest request) {
         return new MessageResponse(false, "Internal Server Error!");

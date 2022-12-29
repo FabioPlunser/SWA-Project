@@ -16,6 +16,25 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "learning_progress")
 public class LearningProgress implements Serializable, Cloneable {
+
+    /**
+     * Deep Copy Constructor for LearningProgress.
+     *
+     * @param lp The LearningProgress to copy.
+     */
+    public LearningProgress(LearningProgress lp) {
+        // NOTE: Using the same reference to the UUID is safe, because UUID is immutable.
+        this.learningProgressId = lp.learningProgressId;
+
+        // These are primitive Types and therefore will be implicitly cloned.
+        this.interval = lp.interval;
+        this.eFactor = lp.eFactor;
+        this.repetitions = lp.repetitions;
+
+        // NOTE: Using the same reference to the LocalDateTime is safe, because LocalDateTime is immutable.
+        this.nextLearn = lp.nextLearn;
+    }
+
     @Id
     @Setter(AccessLevel.PACKAGE)
     @Column(name = "progress_id", nullable = false)
@@ -65,11 +84,6 @@ public class LearningProgress implements Serializable, Cloneable {
     @Override
     public int hashCode() {
         return learningProgressId != null ? learningProgressId.hashCode() : 0;
-    }
-
-    @SneakyThrows
-    public LearningProgress copy() {
-        return (LearningProgress) this.clone();
     }
 
     @Override

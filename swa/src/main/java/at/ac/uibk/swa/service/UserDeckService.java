@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.service;
 
-import at.ac.uibk.swa.config.personAuthentication.AuthContext;
+import at.ac.uibk.swa.config.person_authentication.AuthContext;
 import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Person;
@@ -9,7 +9,6 @@ import at.ac.uibk.swa.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -61,9 +60,9 @@ public class UserDeckService {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
             return Optional.of(person.getSavedDecks().stream()
-                    .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) d.setDescription("Deck has been unpublished"); return d;})
-                    .map(d -> {if (d.isBlocked()) d.setDescription("Deck has been blocked"); return d;})
-                    .map(d -> {if (d.isDeleted()) d.setDescription("Deck has been deleted"); return d;})
+                    .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) { d.setDescription("Deck has been unpublished"); } return d;})
+                    .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
+                    .map(d -> {if (d.isDeleted()) { d.setDescription("Deck has been deleted"); } return d;})
                     .toList());
         } else {
             return Optional.empty();
@@ -80,7 +79,7 @@ public class UserDeckService {
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
             return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
-                    .map(d -> {if (d.isBlocked()) d.setDescription("Deck has been blocked"); return d;})
+                    .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
                     .toList());
         } else {
             return Optional.empty();

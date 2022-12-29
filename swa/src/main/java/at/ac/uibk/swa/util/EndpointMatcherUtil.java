@@ -17,20 +17,21 @@ import java.util.Arrays;
 public class EndpointMatcherUtil {
 
     //region Login-, register-, and logout-Endpoints
-    public static final String loginEndpoint = "/api/login";
-    public static final String logoutEndpoint = "/api/logout";
-    public static final String registerEndpoint = "/api/register";
+    public static final String LOGIN_ENDPOINT = "/api/login";
+    public static final String LOGOUT_ENDPOINT = "/api/logout";
+    public static final String REGISTER_ENDPOINT = "/api/register";
     //endregion
 
     //region Error Endpoints
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class ErrorEndpoints {
-        public static final String authenticationErrorEndpoint = "/api/unauthorized";
-        public static final String authorizationErrorEndpoint = "/api/forbidden";
-        public static final String notFoundErrorEndpoint = "/api/notFound";
-        public static final String errorEndpoint = "/api/error";
+        public static final String AUTHENTICATION_ERROR_ENDPOINT = "/api/unauthorized";
+        public static final String AUTHORIZATION_ERROR_ENDPOINT = "/api/forbidden";
+        public static final String NOT_FOUND_ERROR_ENDPOINT = "/api/notFound";
+        public static final String ERROR_ENDPOINT = "/api/error";
     }
 
-    private static final String[] errorEndpoints =
+    private static final String[] ERROR_ENDPOINTS =
             // Get all Error Routes defined in this Class using Runtime Reflection
             Arrays.stream(ErrorEndpoints.class.getDeclaredFields())
                 // Only get static Fields of type <String> which contain the Error Endpoints.
@@ -41,8 +42,8 @@ public class EndpointMatcherUtil {
                 .toArray(String[]::new);
 
     private static final RequestMatcher ERROR_ROUTES = new OrRequestMatcher(
-            Arrays.stream(errorEndpoints)
-                    .map(x ->new AntPathRequestMatcher(x))
+            Arrays.stream(ERROR_ENDPOINTS)
+                    .map(AntPathRequestMatcher::new)
                     .toArray(AntPathRequestMatcher[]::new)
     );
     //endregion
@@ -53,9 +54,9 @@ public class EndpointMatcherUtil {
     public static final RequestMatcher ADMIN_ROUTES = new AntPathRequestMatcher("/admin/**");
 
     private static final RequestMatcher PUBLIC_API_ROUTES = new OrRequestMatcher(
-            new AntPathRequestMatcher(loginEndpoint),
-            new AntPathRequestMatcher(logoutEndpoint),
-            new AntPathRequestMatcher(registerEndpoint),
+            new AntPathRequestMatcher(LOGIN_ENDPOINT),
+            new AntPathRequestMatcher(LOGOUT_ENDPOINT),
+            new AntPathRequestMatcher(REGISTER_ENDPOINT),
             ERROR_ROUTES
     );
 

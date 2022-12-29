@@ -49,7 +49,7 @@ class LoginControllerTest {
         // when: logging in as that user
         // then: status code 200 must be returned and token must be in body
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .post(EndpointMatcherUtil.loginEndpoint)
+                .post(EndpointMatcherUtil.LOGIN_ENDPOINT)
                 .param("username", username)
                 .param("password", password)
                 .contentType(MediaType.APPLICATION_JSON)

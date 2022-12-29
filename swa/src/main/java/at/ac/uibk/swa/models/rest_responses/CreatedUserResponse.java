@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.models.restResponses;
+package at.ac.uibk.swa.models.rest_responses;
 
 import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Permission;

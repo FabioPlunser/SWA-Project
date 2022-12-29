@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.config.exceptionHandling;
+package at.ac.uibk.swa.config.exception_handling;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.authorizationErrorEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.AUTHORIZATION_ERROR_ENDPOINT;
 
 
 /**
@@ -28,11 +28,6 @@ public class RestAccessDeniedHandler extends AccessDeniedHandlerImpl {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) throws IOException, ServletException {
-        response.sendRedirect(authorizationErrorEndpoint);
-    }
-
-    @Override
-    public void setErrorPage(String errorPage) {
-        super.setErrorPage(errorPage);
+        response.sendRedirect(AUTHORIZATION_ERROR_ENDPOINT);
     }
 }
