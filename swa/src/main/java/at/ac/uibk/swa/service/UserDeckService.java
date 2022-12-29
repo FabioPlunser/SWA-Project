@@ -155,19 +155,24 @@ public class UserDeckService {
     }
 
     /**
-     * Deletes a deck (soft delete) in the repository
+     * Deletes one of the owned decks of the logged in user in the repository
      * Already deleted deck cannot be deleted again
-     * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param deck deck to delete
+     * @param deckId id of the deck to be deleted
      * @return true if deck has been deleted, false otherwise
      */
-    public boolean delete(Deck deck) {
-        if (deck != null && deck.getDeckId() != null) {
-            if (deck.isDeleted()) return false;
-            deck.setDeleted(true);
-            unsubscribe(deck, deck.getCreator());
-            return save(deck) != null;
+    public boolean delete(UUID deckId) {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId() == deckId).findFirst().orElse(null);
+            if (deck != null && deck.getDeckId() != null) {
+                if (deck.isDeleted()) return false;
+                deck.setDeleted(true);
+                unsubscribe(deck, deck.getCreator());
+                return save(deck) != null;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

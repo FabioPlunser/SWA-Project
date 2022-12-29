@@ -127,7 +127,7 @@ public class UserDeckServiceTestGetOwned {
             assertTrue(userDeckService.create(deck), "Unable to create deck");
             createdDecks.add(deck);
         }
-        assertTrue(userDeckService.delete(createdDecks.get(0)), "Unable to delete deck");
+        assertTrue(userDeckService.delete(createdDecks.get(0).getDeckId()), "Unable to delete deck");
 
         // when: loading all owned decks from the repository
         Optional<List<Deck>> maybeOwnedDecks = userDeckService.getAllOwnedDecks();

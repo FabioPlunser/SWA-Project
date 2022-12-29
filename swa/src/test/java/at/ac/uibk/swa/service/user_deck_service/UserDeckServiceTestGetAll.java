@@ -115,7 +115,7 @@ public class UserDeckServiceTestGetAll {
         String deckDescription = "Description";
         Deck deck = new Deck("deck-testGetAllDecksCreatedDeleted", deckDescription, person);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
-        assertTrue(userDeckService.delete(deck), "Unable to delete deck");
+        assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
 
         // when: loading all decks for that user
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
@@ -214,7 +214,7 @@ public class UserDeckServiceTestGetAll {
         Person person = createUserAndLogin("person-testGetAllDecksSubscribedDeleted");
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
-        assertTrue(userDeckService.delete(deck), "Unable to delete deck");
+        assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
         MockAuthContext.setLoggedInUser(person);
 
         // when: loading all decks for the user

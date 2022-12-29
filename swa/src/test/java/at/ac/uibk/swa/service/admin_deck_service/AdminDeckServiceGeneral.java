@@ -101,7 +101,7 @@ public class AdminDeckServiceGeneral {
         for (int i = 0; i < numberOfDecks; i++) {
             decks.add(createDeck("test-testFindAllDecksAsAdmin-"+(i+1)));
         }
-        assertTrue(userDeckService.delete(decks.get(0)));
+        assertTrue(userDeckService.delete(decks.get(0).getDeckId()));
         Deck deletedDeck = decks.remove(0);
         assertTrue(userDeckService.publish(decks.get(0)));
         MockAuthContext.setLoggedInUser(null);

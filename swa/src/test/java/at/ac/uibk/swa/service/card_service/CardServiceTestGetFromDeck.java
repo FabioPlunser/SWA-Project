@@ -109,7 +109,7 @@ public class CardServiceTestGetFromDeck {
             assertTrue(cardService.create(card), "Unable to create card");
             cards.add(card);
         }
-        assertTrue(userDeckService.delete(deck), "Unable to delete deck");
+        assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
 
         // when: retrieving all cards for that user and deck
         List<Card> loadedCards = cardService.getAllCards(deck, person);
@@ -210,7 +210,7 @@ public class CardServiceTestGetFromDeck {
         Person person = createUserAndLogin("person-testGetCardsFromDeckSubscribedDeleted");
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
-        assertTrue(userDeckService.delete(deck), "Unable to delete deck");
+        assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
         MockAuthContext.setLoggedInUser(person);
 
         // when: retrieving all cards for that user and deck
@@ -336,7 +336,7 @@ public class CardServiceTestGetFromDeck {
             assertTrue(cardService.create(card), "Unable to create card");
             cards.add(card);
         }
-        assertTrue(userDeckService.delete(deck), "Unable to delete deck");
+        assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
         Person admin = createAdminAndLogin("person-testGetCardsFromDeletedDeckAsAdmin-admin");
 
         // when: retrieving all cards for that user and deck

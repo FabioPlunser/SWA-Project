@@ -155,7 +155,7 @@ public class UserDeckServiceTestGeneral {
         UUID id = deck.getDeckId();
 
         // when: deleting that deck
-        assertTrue(userDeckService.delete(deck), "Unable to delete deck");
+        assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
 
         // then: deck should be set to deleted
         Optional<Deck> maybeDeck = userDeckService.findById(id);
@@ -216,7 +216,7 @@ public class UserDeckServiceTestGeneral {
         assertTrue(adminDeckService.block(blockedDeck), "Unable to block deck");
         Deck deletedDeck = new Deck("deck-findAllAvailableDecks-deleted", "deleted");
         assertTrue(userDeckService.create(deletedDeck), "Unable to create deck");
-        assertTrue(userDeckService.delete(deletedDeck), "Unable to delete deck");
+        assertTrue(userDeckService.delete(deletedDeck.getDeckId()), "Unable to delete deck");
 
         // when: searching for decks available for subscription
         List<Deck> availableDecks = userDeckService.findAllAvailableDecks();
