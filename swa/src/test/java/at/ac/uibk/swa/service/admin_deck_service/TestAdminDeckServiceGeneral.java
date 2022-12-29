@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class AdminDeckServiceGeneral {
+public class TestAdminDeckServiceGeneral {
     @Autowired
     AdminDeckService adminDeckService;
     @Autowired

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class CardServiceTestGeneral {
+public class TestCardServiceGeneral {
     @Autowired
     private UserDeckService userDeckService;
     @Autowired

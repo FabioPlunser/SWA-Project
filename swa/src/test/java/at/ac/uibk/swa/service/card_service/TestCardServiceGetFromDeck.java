@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class CardServiceTestGetFromDeck {
+public class TestCardServiceGetFromDeck {
     @Autowired
     private UserDeckService userDeckService;
     @Autowired

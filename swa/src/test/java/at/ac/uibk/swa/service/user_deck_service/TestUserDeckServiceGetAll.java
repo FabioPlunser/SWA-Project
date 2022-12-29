@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class UserDeckServiceTestGetAll {
+public class TestUserDeckServiceGetAll {
     @Autowired
     private DeckRepository deckRepository;
     @Autowired

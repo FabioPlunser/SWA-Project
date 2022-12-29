@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class PersonServiceTestSecurity {
+public class TestPersonServiceSecurity {
     @Autowired
     private PersonService personService;
 
