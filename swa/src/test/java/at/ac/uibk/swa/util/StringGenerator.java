@@ -14,6 +14,11 @@ public class StringGenerator {
         return sb.toString();
     }
 
+    public static String username() {
+        int usernameLength = 10;
+        return StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, usernameLength);
+    }
+
     public static String email() {
         int lengthLocalPart = 20;
         int lengthDomainPart = 8;

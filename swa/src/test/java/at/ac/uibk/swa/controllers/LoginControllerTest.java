@@ -35,13 +35,8 @@ class LoginControllerTest {
     @Autowired
     private PersonService personService;
     @Autowired
-    private WebApplicationContext webApplicationContext;
-    private MockMvc mockMvc;
+    private MockMvc mockMvc;    // ignore if error shown by intellij
 
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
 
     @Test
     public void testLogin() throws Exception {
@@ -55,8 +50,8 @@ class LoginControllerTest {
         // then: status code 200 must be returned and token must be in body
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .post(EndpointMatcherUtil.loginEndpoint)
-                        .param("username", username)
-                        .param("password", password)
+                .param("username", username)
+                .param("password", password)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpectAll(
                 status().isOk(),

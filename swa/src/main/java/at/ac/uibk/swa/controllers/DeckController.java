@@ -7,6 +7,8 @@ import at.ac.uibk.swa.models.annotations.HasPermission;
 import at.ac.uibk.swa.models.restResponses.ListResponse;
 import at.ac.uibk.swa.models.restResponses.MessageResponse;
 import at.ac.uibk.swa.models.restResponses.RestResponse;
+import at.ac.uibk.swa.service.UserDeckService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,11 +22,17 @@ import java.util.UUID;
 @RestController
 @SuppressWarnings("unused")
 public class DeckController {
+    @Autowired
+    UserDeckService deckService;
+
     @PutMapping("/api/createDeck")
     public RestResponse createDeck(
-            @RequestParam(name = "deck") final Deck deck
+            @RequestParam("name") final String name,
+            @RequestParam("description") final String description
     ) {
-        return new MessageResponse(true, "");
+        Deck deck = new Deck (name, description);
+        boolean success = deckService.create(deck);
+        return new MessageResponse(success, "id: " + deck.getDeckId());
     }
 
     @PostMapping("/api/updateDeck")
