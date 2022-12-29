@@ -64,6 +64,7 @@ public class Card implements Serializable {
             joinColumns = {@JoinColumn(name = "card_id", referencedColumnName = "card_id")},
             inverseJoinColumns = {@JoinColumn(name = "progress_id", referencedColumnName = "progress_id")}
     )
+
     @MapKeyJoinColumn(name = "person_id")
     private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
 
