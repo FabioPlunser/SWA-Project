@@ -190,7 +190,7 @@ public class UserDeckServiceTestGeneral {
         UUID id = deck.getDeckId();
 
         // when: unpublishing that deck
-        assertTrue(userDeckService.unpublish(deck), "Unable to unpublish deck");
+        assertTrue(userDeckService.unpublish(deck.getDeckId()), "Unable to unpublish deck");
 
         // then: deck should be set to published
         Optional<Deck> maybeDeck = userDeckService.findById(id);

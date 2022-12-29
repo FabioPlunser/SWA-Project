@@ -160,7 +160,7 @@ public class CardServiceTestGetFromDeck {
         Person person = createUserAndLogin("person-testGetCardsFromDeckSubscribedUnpublished");
         assertTrue(userDeckService.subscribe(deck, person), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
-        assertTrue(userDeckService.unpublish(deck), "Unable to unpublish deck");
+        assertTrue(userDeckService.unpublish(deck.getDeckId()), "Unable to unpublish deck");
         MockAuthContext.setLoggedInUser(person);
 
         // when: retrieving all cards for that user and deck
