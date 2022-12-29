@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,15 +62,17 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromDeckOwned");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
 
         // when: retrieving all cards for that user and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, person);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: all cards must be loaded again
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(cards.size(), loadedCards.size(), "Got wrong number of cards");
         for (Card card : cards) {
             assertTrue(loadedCards.contains(card), "Unable to find a card");
@@ -84,16 +87,18 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromDeckOwnedBlocked");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
         // when: retrieving all cards for that user and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, person);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: no cards must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(0, loadedCards.size(), "Got wrong number of cards");
     }
 
@@ -105,16 +110,18 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromDeckOwnedDeleted");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
 
         // when: retrieving all cards for that user and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, person);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: no cards must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(0, loadedCards.size(), "Got wrong number of cards");
     }
 
@@ -126,8 +133,8 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromDeckSubscribedPublished");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
@@ -135,9 +142,11 @@ public class CardServiceTestGetFromDeck {
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
 
         // when: retrieving all cards for that user and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, person);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: all cards must be loaded again
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(cards.size(), loadedCards.size(), "Got wrong number of cards");
         for (Card card : cards) {
             assertTrue(loadedCards.contains(card), "Unable to find a card");
@@ -152,8 +161,8 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromDeckSubscribedUnpublished");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
@@ -164,9 +173,11 @@ public class CardServiceTestGetFromDeck {
         MockAuthContext.setLoggedInUser(person);
 
         // when: retrieving all cards for that user and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, person);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: no cards must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(0, loadedCards.size(), "Got wrong number of cards");
     }
 
@@ -178,8 +189,8 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromDeckSubscribedBlocked");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
@@ -188,9 +199,11 @@ public class CardServiceTestGetFromDeck {
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
         // when: retrieving all cards for that user and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, person);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: no cards must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(0, loadedCards.size(), "Got wrong number of cards");
     }
 
@@ -202,8 +215,8 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromDeckSubscribedDeleted");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
@@ -214,9 +227,11 @@ public class CardServiceTestGetFromDeck {
         MockAuthContext.setLoggedInUser(person);
 
         // when: retrieving all cards for that user and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, person);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: no cards must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(0, loadedCards.size(), "Got wrong number of cards");
     }
 
@@ -228,22 +243,24 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetDeletedCardsFromDeck");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin("person-testGetDeletedCardsFromDeck");
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
-        assertTrue(cardService.delete(cards.get(0)), "Unable to delete card");
+        assertTrue(cardService.delete(cards.get(0).getCardId()), "Unable to delete card");
         cards.remove(0);
         MockAuthContext.setLoggedInUser(person);
 
         // when: retrieving all cards for that user and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, person);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: all cards, except the deleted card must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(cards.size(), loadedCards.size(), "Got wrong number of cards");
         for (Card card : cards) {
             assertTrue(loadedCards.contains(card), "Unable to find card");
@@ -258,16 +275,18 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromUnpublishedDeckAsAdmin");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         Person admin = createAdminAndLogin("person-testGetCardsFromUnpublishedDeckAsAdmin-admin");
 
         // when: retrieving all cards for the admin and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, admin);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: all cards must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(cards.size(), loadedCards.size(), "Got wrong number of cards");
         for (Card card : cards) {
             assertTrue(loadedCards.contains(card), "Unable to find card");
@@ -282,17 +301,19 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromPublishedDeckAsAdmin");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person admin = createAdminAndLogin("person-testGetCardsFromPublishedDeckAsAdmin-admin");
 
         // when: retrieving all cards for the admin and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, admin);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: all cards must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(cards.size(), loadedCards.size(), "Got wrong number of cards");
         for (Card card : cards) {
             assertTrue(loadedCards.contains(card), "Unable to find card");
@@ -307,17 +328,19 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromBlockedDeckAsAdmin");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         Person admin = createAdminAndLogin("person-testGetCardsFromBlockedDeckAsAdmin-admin");
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
         // when: retrieving all cards for the admin and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, admin);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: all cards must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(cards.size(), loadedCards.size(), "Got wrong number of cards");
         for (Card card : cards) {
             assertTrue(loadedCards.contains(card), "Unable to find card");
@@ -332,17 +355,19 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetCardsFromDeletedDeckAsAdmin");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
         assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
         Person admin = createAdminAndLogin("person-testGetCardsFromDeletedDeckAsAdmin-admin");
 
         // when: retrieving all cards for that user and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, admin);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: no cards must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(0, loadedCards.size(), "Got wrong number of cards");
     }
 
@@ -354,18 +379,20 @@ public class CardServiceTestGetFromDeck {
         Deck deck = createDeck("deck-testGetDeletedCardsFromDeckAsAdmin");
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
-            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-            assertTrue(cardService.create(card), "Unable to create card");
+            Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+            assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
-        assertTrue(cardService.delete(cards.get(0)), "Unable to delete card");
+        assertTrue(cardService.delete(cards.get(0).getCardId()), "Unable to delete card");
         cards.remove(0);
         Person admin = createAdminAndLogin("person-testGetDeletedCardsFromDeckAsAdmin-admin");
 
         // when: retrieving all cards for the admin and deck
-        List<Card> loadedCards = cardService.getAllCards(deck, admin);
+        Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
         // then: all cards, except the deleted card must be loaded
+        assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
+        List<Card> loadedCards = maybeLoadedCards.get();
         assertEquals(cards.size(), loadedCards.size(), "Got wrong number of cards");
         for (Card card : cards) {
             assertTrue(loadedCards.contains(card), "Unable to find card");

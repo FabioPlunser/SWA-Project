@@ -65,8 +65,8 @@ public class CardServiceTestGeneral {
                 Deck deck = createDeck("deck-TestSaveAndGetCards-" + (j+1));
                 decks.put(creator, deck);
                 for (int k = 0; k < numberOfCardsPerDeck; k++) {
-                    Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
-                    assertTrue(cardService.create(card), "Could not create card");
+                    Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
+                    assertTrue(cardService.create(card, deck.getDeckId()), "Could not create card");
                     savedCards.put(deck, card);
                 }
             }
@@ -92,13 +92,13 @@ public class CardServiceTestGeneral {
     public void testGetCardById() {
         // given: a card in the database
         createUserAndLogin("person-testGetCardById");
+        Deck deck = createDeck("deck-testGetCardById");
         Card card = new Card(
                 StringGenerator.deckDescription(),
                 StringGenerator.deckDescription(),
-                false,
-                createDeck("deck-testGetCardById")
+                false
         );
-        assertTrue(cardService.create(card), "Unable to create card");
+        assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
         UUID id = card.getCardId();
 
         // when: retrieving card from database by id
@@ -113,19 +113,15 @@ public class CardServiceTestGeneral {
     public void testUpdateCard() {
         // given: a card in the database
         createUserAndLogin("person-testUpdateCard");
-        Card card = new Card(
-                StringGenerator.deckDescription(),
-                StringGenerator.deckDescription(),
-                false,
-                createDeck("deck-testUpdateCard")
-        );
-        assertTrue(cardService.create(card), "Unable to create card");
+        Deck deck = createDeck("person-testUpdateCard");
+        Card card = new Card(StringGenerator.deckDescription(), StringGenerator.deckDescription(),false);
+        assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
 
         // when: updating the card
         String frontText = "new front text";
         String backText = "new back text";
         boolean isFlipped = true;
-        assertTrue(cardService.update(card, frontText, backText, isFlipped));
+        assertTrue(cardService.update(card.getCardId(), frontText, backText, isFlipped));
 
         // then: the card should still be available in the repository and attributes should be correct
         Optional<Card> maybeCard = cardService.findById(card.getCardId());
@@ -143,13 +139,9 @@ public class CardServiceTestGeneral {
         String originalFrontText = StringGenerator.deckDescription();
         String originalBackText = StringGenerator.deckDescription();
         boolean originalIsFlipped = false;
-        Card card = new Card(
-                originalFrontText,
-                originalBackText,
-                originalIsFlipped,
-                createDeck("deck-testUpdateCardViaCreate")
-        );
-        assertTrue(cardService.create(card), "Unable to create card");
+        Deck deck = createDeck("deck-testUpdateCardViaCreate");
+        Card card = new Card(originalFrontText, originalBackText, originalIsFlipped);
+        assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
         UUID id = card.getCardId();
 
         // when: changing the card by interfering with the card directly
@@ -158,7 +150,7 @@ public class CardServiceTestGeneral {
         card.setFlipped(true);
 
         // then: saving the modification via create() should not be possible
-        assertFalse(cardService.create(card), "Changed card got created again");
+        assertFalse(cardService.create(card, deck.getDeckId()), "Changed card got created again");
         Optional<Card> maybeCard = cardService.findById(card.getCardId());
         assertTrue(maybeCard.isPresent(), "Unable to find original card in repository");
         Card foundCard = maybeCard.get();
@@ -171,17 +163,13 @@ public class CardServiceTestGeneral {
     public void testDeleteCard() {
         // given: a card in the database
         createUserAndLogin("person-testDeleteCard");
-        Card card = new Card(
-                StringGenerator.deckDescription(),
-                StringGenerator.deckDescription(),
-                false,
-                createDeck("deck-testDeleteCard")
-        );
-        assertTrue(cardService.create(card), "Unable to create card");
+        Deck deck = createDeck("deck-testDeleteCard");
+        Card card = new Card( StringGenerator.deckDescription(), StringGenerator.deckDescription(), false);
+        assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
         UUID id = card.getCardId();
 
         // when: deleting the card
-        assertTrue(cardService.delete(card));
+        assertTrue(cardService.delete(card.getCardId()));
 
         // then: card should not be available anymore
         assertTrue(cardService.findById(id).isEmpty(), "Found card");
@@ -191,13 +179,9 @@ public class CardServiceTestGeneral {
     public void testDeleteCardViaId() {
         // given: a card in the database
         createUserAndLogin("person-testDeleteCardViaId");
-        Card card = new Card(
-                StringGenerator.deckDescription(),
-                StringGenerator.deckDescription(),
-                false,
-                createDeck("deck-testDeleteCardViaId")
-        );
-        assertTrue(cardService.create(card), "Unable to create card");
+        Deck deck = createDeck("deck-testDeleteCardViaId");
+        Card card = new Card( StringGenerator.deckDescription(), StringGenerator.deckDescription(),false);
+        assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
         UUID id = card.getCardId();
 
         // when: deleting the card via id
