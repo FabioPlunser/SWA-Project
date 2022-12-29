@@ -2,7 +2,7 @@ package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
-import at.ac.uibk.swa.models.annotations.Admin;
+import at.ac.uibk.swa.models.annotations.HasPermission;
 import at.ac.uibk.swa.models.restResponses.CreatedUserResponse;
 import at.ac.uibk.swa.models.restResponses.ListResponse;
 import at.ac.uibk.swa.models.restResponses.MessageResponse;
@@ -64,7 +64,7 @@ public class PersonController {
      * @param permissions The Permissions the new User should have.
      * @return A RestResponse indicating whether the user could be created or not.
      */
-    @Admin
+    @HasPermission(Permission.ADMIN)
     @PostMapping("/api/createUser")
     public RestResponse create(
             @RequestParam("username") final String username,
@@ -102,7 +102,7 @@ public class PersonController {
      * @param permissions The new Permissions
      * @return A RESTResponse indicating Success
      */
-    @Admin
+    @HasPermission(Permission.ADMIN)
     @PostMapping("/api/updateUser")
     public RestResponse updateUser(
             @RequestParam(name = "personId") final UUID personId,
@@ -125,7 +125,7 @@ public class PersonController {
      * @param personId The ID of the User to delete
      * @return A RestResponse indicating whether the operation was successful or not.
      */
-    @Admin
+    @HasPermission(Permission.ADMIN)
     @PostMapping("/api/deleteUser")
     public RestResponse deleteUser(
             @RequestParam("personId") final UUID personId
@@ -143,7 +143,7 @@ public class PersonController {
      *
      * @return A RestReponse containing a List of all users.
      */
-    @Admin
+    @HasPermission(Permission.ADMIN)
     @GetMapping("/api/getAllUsers")
     public RestResponse getAllUsers() {
         return new ListResponse<>(personService.getPersons());
@@ -154,7 +154,7 @@ public class PersonController {
      *
      * @return A List of all possible Permissions.
      */
-    @Admin
+    @HasPermission(Permission.ADMIN)
     @GetMapping("/api/getAllPermissions")
     public RestResponse getAllPermissions() {
         return new ListResponse<>(Stream.of(Permission.values()).map(Enum::name).toList());

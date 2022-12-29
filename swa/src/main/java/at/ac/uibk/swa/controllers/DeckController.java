@@ -2,7 +2,8 @@ package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
-import at.ac.uibk.swa.models.annotations.Admin;
+import at.ac.uibk.swa.models.Permission;
+import at.ac.uibk.swa.models.annotations.HasPermission;
 import at.ac.uibk.swa.models.restResponses.ListResponse;
 import at.ac.uibk.swa.models.restResponses.MessageResponse;
 import at.ac.uibk.swa.models.restResponses.RestResponse;
@@ -59,7 +60,7 @@ public class DeckController {
         return new MessageResponse(true, "");
     }
 
-    @Admin
+    @HasPermission(Permission.ADMIN)
     @GetMapping("/api/getAllDecks")
     public RestResponse getAllDecks() {
         return new MessageResponse(true, "getAllDecks");
