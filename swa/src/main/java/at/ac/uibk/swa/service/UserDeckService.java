@@ -102,13 +102,15 @@ public class UserDeckService {
     }
 
     /**
-     * Creates a new deck in the repository
+     * Creates a new deck in the repository owned by the currently logged in user
      *
      * @param deck deck to be created
      * @return true if deck has been created, false otherwise
      */
     public boolean create(Deck deck) {
-        if (deck.getDeckId() == null) {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (deck != null && deck.getDeckId() == null && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            deck.setCreator(person);
             Deck savedDeck = save(deck);
             if (savedDeck != null) {
                 savedDeck.getCreator().getCreatedDecks().add(savedDeck);

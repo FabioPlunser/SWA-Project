@@ -9,6 +9,7 @@ import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
+import at.ac.uibk.swa.util.MockAuthContext;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +35,14 @@ public class CardServiceTestGeneral {
     @Autowired
     private CardRepository cardRepository;
 
-    private Person createUser(String username) {
+    private Person createUserAndLogin(String username) {
         Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
         assertTrue(personService.create(person), "Unable to create user");
-        return person;
+        return (Person) MockAuthContext.setLoggedInUser(person);
     }
 
-    private Deck createDeck(String name, Person creator) {
-        Deck deck = new Deck(name, StringGenerator.deckDescription(), creator);
+    private Deck createDeck(String name) {
+        Deck deck = new Deck(name, StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         return deck;
     }
@@ -58,10 +59,10 @@ public class CardServiceTestGeneral {
         Map<Deck, Card> savedCards = new HashMap<>();
 
         for (int i = 0; i < numberOfCreators; i++) {
-            Person creator = createUser("person-TestSaveAndGetCards-" + (i+1));
+            Person creator = createUserAndLogin("person-TestSaveAndGetCards-" + (i+1));
             creators.add(creator);
             for (int j = 0; j < numberOfDecksPerCreator; j++) {
-                Deck deck = createDeck("deck-TestSaveAndGetCards-" + (j+1), creator);
+                Deck deck = createDeck("deck-TestSaveAndGetCards-" + (j+1));
                 decks.put(creator, deck);
                 for (int k = 0; k < numberOfCardsPerDeck; k++) {
                     Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false, deck);
@@ -90,11 +91,12 @@ public class CardServiceTestGeneral {
     @Test
     public void testGetCardById() {
         // given: a card in the database
+        createUserAndLogin("person-testGetCardById");
         Card card = new Card(
                 StringGenerator.deckDescription(),
                 StringGenerator.deckDescription(),
                 false,
-                createDeck("deck-testGetCardById", createUser("person-testGetCardById"))
+                createDeck("deck-testGetCardById")
         );
         assertTrue(cardService.create(card), "Unable to create card");
         UUID id = card.getCardId();
@@ -110,12 +112,12 @@ public class CardServiceTestGeneral {
     @Test
     public void testUpdateCard() {
         // given: a card in the database
-        // given: a card in the database
+        createUserAndLogin("person-testUpdateCard");
         Card card = new Card(
                 StringGenerator.deckDescription(),
                 StringGenerator.deckDescription(),
                 false,
-                createDeck("deck-testUpdateCard", createUser("person-testUpdateCard"))
+                createDeck("deck-testUpdateCard")
         );
         assertTrue(cardService.create(card), "Unable to create card");
 
@@ -137,6 +139,7 @@ public class CardServiceTestGeneral {
     @Test
     public void testUpdateCardViaCreate() {
         // given: a card in the database
+        createUserAndLogin("person-testUpdateCardViaCreate");
         String originalFrontText = StringGenerator.deckDescription();
         String originalBackText = StringGenerator.deckDescription();
         boolean originalIsFlipped = false;
@@ -144,7 +147,7 @@ public class CardServiceTestGeneral {
                 originalFrontText,
                 originalBackText,
                 originalIsFlipped,
-                createDeck("deck-testUpdateCardViaCreate", createUser("person-testUpdateCardViaCreate"))
+                createDeck("deck-testUpdateCardViaCreate")
         );
         assertTrue(cardService.create(card), "Unable to create card");
         UUID id = card.getCardId();
@@ -167,11 +170,12 @@ public class CardServiceTestGeneral {
     @Test
     public void testDeleteCard() {
         // given: a card in the database
+        createUserAndLogin("person-testDeleteCard");
         Card card = new Card(
                 StringGenerator.deckDescription(),
                 StringGenerator.deckDescription(),
                 false,
-                createDeck("deck-testDeleteCard", createUser("person-testDeleteCard"))
+                createDeck("deck-testDeleteCard")
         );
         assertTrue(cardService.create(card), "Unable to create card");
         UUID id = card.getCardId();
@@ -186,11 +190,12 @@ public class CardServiceTestGeneral {
     @Test
     public void testDeleteCardViaId() {
         // given: a card in the database
+        createUserAndLogin("person-testDeleteCardViaId");
         Card card = new Card(
                 StringGenerator.deckDescription(),
                 StringGenerator.deckDescription(),
                 false,
-                createDeck("deck-testDeleteCardViaId", createUser("person-testDeleteCardViaId"))
+                createDeck("deck-testDeleteCardViaId")
         );
         assertTrue(cardService.create(card), "Unable to create card");
         UUID id = card.getCardId();
