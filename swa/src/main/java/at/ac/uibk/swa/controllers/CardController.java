@@ -1,8 +1,8 @@
 package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.models.Card;
-import at.ac.uibk.swa.models.restResponses.MessageResponse;
-import at.ac.uibk.swa.models.restResponses.RestResponse;
+import at.ac.uibk.swa.models.rest_responses.MessageResponse;
+import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;

@@ -1,17 +1,12 @@
 package at.ac.uibk.swa.service.card_service.learning_algorithm;
 
-import at.ac.uibk.swa.config.personAuthentication.AuthContext;
-import at.ac.uibk.swa.models.Authenticable;
-import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.LearningProgress;
-import at.ac.uibk.swa.models.Person;
-import at.ac.uibk.swa.service.CardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LearningAlgorithm {
 
     /**
@@ -27,7 +22,7 @@ public class LearningAlgorithm {
             int difficulty
     ) {
         // Copy the old LearningProgress
-        LearningProgress newLearningProgress = current.copy();
+        LearningProgress newLearningProgress = new LearningProgress(current);
 
         // Increment the number of times this card was learned
         newLearningProgress.incrementRepetitions();
@@ -53,7 +48,7 @@ public class LearningAlgorithm {
         // Card was not learned enough => Enqueue Card again.
         if (difficulty < 4) {
             // Adding the Card to the Queue again is implemented on the Front-End.
-            // But if the user does not learn the Card, ensure that the card's nextLearn Date is not changed.
+            // But if the user does not learn the Card, ensure that the card's nextLearn Date is due.
             return newLearningProgress;
         }
 

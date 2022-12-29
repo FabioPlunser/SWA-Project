@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.config.exceptionHandling;
+package at.ac.uibk.swa.config.exception_handling;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.authenticationErrorEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.AUTHENTICATION_ERROR_ENDPOINT;
 
 /**
  * Handler for {@link AuthenticationException}s inside the filters of the Security Chain.
@@ -24,6 +24,6 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
     public void onAuthenticationFailure(
             HttpServletRequest request, HttpServletResponse response, AuthenticationException authException
     ) throws IOException {
-        response.sendRedirect(authenticationErrorEndpoint);
+        response.sendRedirect(AUTHENTICATION_ERROR_ENDPOINT);
     }
 }

@@ -4,9 +4,9 @@ import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.annotations.HasPermission;
-import at.ac.uibk.swa.models.restResponses.ListResponse;
-import at.ac.uibk.swa.models.restResponses.MessageResponse;
-import at.ac.uibk.swa.models.restResponses.RestResponse;
+import at.ac.uibk.swa.models.rest_responses.ListResponse;
+import at.ac.uibk.swa.models.rest_responses.MessageResponse;
+import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

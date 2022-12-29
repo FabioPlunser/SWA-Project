@@ -72,4 +72,14 @@ public class Person extends Authenticable implements Serializable {
     public String toString() {
         return this.getUsername();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

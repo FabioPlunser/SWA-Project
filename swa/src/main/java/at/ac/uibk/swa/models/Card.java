@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 @Getter
 @Entity
@@ -80,7 +80,7 @@ public class Card implements Serializable {
      * @param func A Function to compute the new LearningProgress.
      * @return The new LearningProgress
      */
-    public LearningProgress updateLearningProgress(Person person, Function<LearningProgress, LearningProgress> func) {
+    public LearningProgress updateLearningProgress(Person person, UnaryOperator<LearningProgress> func) {
         return learningProgresses.compute(person, (p, lp) -> {
             // If the User has not learned this card, create an empty LearningProgress.
             if (lp == null)

@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.models.annotations.aspects;
 
-import at.ac.uibk.swa.config.personAuthentication.AuthContext;
+import at.ac.uibk.swa.config.person_authentication.AuthContext;
 import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.annotations.HasPermission;

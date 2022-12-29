@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.service;
 
-import at.ac.uibk.swa.config.personAuthentication.AuthContext;
+import at.ac.uibk.swa.config.person_authentication.AuthContext;
 import at.ac.uibk.swa.models.*;
 import at.ac.uibk.swa.repositories.CardRepository;
 import at.ac.uibk.swa.repositories.DeckRepository;
@@ -9,10 +9,11 @@ import at.ac.uibk.swa.service.card_service.learning_algorithm.LearningAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 @Service("cardService")
@@ -172,7 +173,7 @@ public class CardService {
                 card.setDeck(deck);
                 return save(card) != null;
             } else {
-                // logged in user has not created the given deck or deck is blocked/deleted - therefore no write access
+                // logged-in user has not created the given deck or deck is blocked/deleted - therefore no write access
                 return false;
             }
         } else {

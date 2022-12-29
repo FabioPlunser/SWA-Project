@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.models.restResponses;
+package at.ac.uibk.swa.models.rest_responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
@@ -21,7 +21,7 @@ public class ListResponse<T extends Serializable> extends RestResponse implement
     /**
      * Tell the Front-End that the received Response is a List.
      */
-    private static final String type = "List";
+    private static final String TYPE = "List";
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<T> items;
