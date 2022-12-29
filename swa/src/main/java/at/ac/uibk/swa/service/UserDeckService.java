@@ -129,21 +129,26 @@ public class UserDeckService {
     }
 
     /**
-     * Updates a deck in the repository with the given parameters
+     * Updates one of the owned decks of the logged in user in the repository with the given parameters
      * Deleted and blocked decks cannot be updated
-     * NOTE: No permission check is done within this method - check before, if execution is allowed!
      *
-     * @param deck deck that is to be updated
+     * @param deckId id of the deck that is to be updated
      * @param name new name of the deck, set to null if no change is desired
      * @param description new description of the deck, set to null if no change is desired
      * @return true if the deck was updated, false otherwise
      */
-    public boolean update(Deck deck, String name, String description) {
-        if (deck != null && deck.getDeckId() != null) {
-            if (deck.isBlocked() || deck.isDeleted()) return false;
-            if (name != null) deck.setName(name);
-            if (description != null) deck.setDescription(description);
-            return save(deck) != null;
+    public boolean update(UUID deckId, String name, String description) {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId() == deckId).findFirst().orElse(null);
+            if (deck != null && deck.getDeckId() != null) {
+                if (deck.isBlocked() || deck.isDeleted()) return false;
+                if (name != null) deck.setName(name);
+                if (description != null) deck.setDescription(description);
+                return save(deck) != null;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

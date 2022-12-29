@@ -102,7 +102,7 @@ public class UserDeckServiceTestGeneral {
         // when: updating the deck
         String updatedName = "updated-name";
         String updatedDescription = "updated-description";
-        assertTrue(userDeckService.update(deck, updatedName, updatedDescription), "Unable to update deck");
+        assertTrue(userDeckService.update(deck.getDeckId(), updatedName, updatedDescription), "Unable to update deck");
 
         // then: the deck should still be available in the repository and new attributes should be set
         Optional<Deck> maybeDeck = userDeckService.findById(deck.getDeckId());
