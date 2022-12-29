@@ -21,13 +21,6 @@ import java.util.function.Function;
 @Table(name = "card")
 public class Card implements Serializable {
 
-    // TODO: Remove this constructor - deck should be set via service automatically
-    /*
-    public Card(String frontText, String backText, boolean isFlipped, Deck deck) {
-        this(null, frontText, backText, isFlipped, deck, new HashMap<>());
-    }
-    */
-
     public Card(String frontText, String backText, boolean isFlipped) {
         this(null, frontText, backText, isFlipped, null, new HashMap<>());
     }
