@@ -1,10 +1,27 @@
 package at.ac.uibk.swa.service.card_service.learning_algorithm;
 
+import at.ac.uibk.swa.config.personAuthentication.AuthContext;
+import at.ac.uibk.swa.models.Authenticable;
+import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.LearningProgress;
+import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.service.CardService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
 public class LearningAlgorithm {
+
+    /**
+     * This Method computes the next learning date given the current learning progress of a card and the user-set difficulty
+     *
+     * @param current current learning progress
+     * @param difficulty difficulty set by user
+     *
+     * @return the new LearningProgress object with updated attributes
+     */
     public static LearningProgress getUpdatedLearningProgress(
             LearningProgress current,
             int difficulty
