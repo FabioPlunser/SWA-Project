@@ -49,8 +49,10 @@ public class LoginController {
     ) {
         Optional<Person> maybePerson = personService.login(username, password);
 
-        if(maybePerson.isEmpty())
+        if(maybePerson.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return new AuthFailedResponse("Username or Password are wrong!");
+        }
 
         return new LoginResponse(maybePerson.get());
     }
@@ -62,11 +64,15 @@ public class LoginController {
      * @return A Message saying whether the Logout was successful or not.
      */
     @PostMapping(logoutEndpoint)
-    public RestResponse deleteToken() {
+    public RestResponse deleteToken(
+            HttpServletResponse response
+    ) {
         Optional<UUID> token = AuthContext.getLoginToken();
 
-        if (token.isEmpty() || !personService.logout(token.get()))
+        if (token.isEmpty() || !personService.logout(token.get())) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return new MessageResponse(false, "No matching Token!");
+        }
 
         return new MessageResponse(true, "Successfully logged out!");
     }
