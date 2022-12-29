@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,9 +52,11 @@ public class UserDeckServiceTestGetOwned {
         }
 
         // when: loading all owned decks from the repository
-        List<Deck> ownedDecks = userDeckService.getAllOwnedDecks(creator);
+        Optional<List<Deck>> maybeOwnedDecks = userDeckService.getAllOwnedDecks();
 
         // then: all decks must be included
+        assertTrue(maybeOwnedDecks.isPresent(), "Decks could not be loaded");
+        List<Deck> ownedDecks = maybeOwnedDecks.get();
         assertEquals(createdDecks.size(), ownedDecks.size(), "Found more/less decks than expected");
         for (Deck createdDeck : createdDecks) {
             assertTrue(ownedDecks.contains(createdDeck), "Unable to find deck " + createdDeck);
@@ -74,9 +77,11 @@ public class UserDeckServiceTestGetOwned {
         assertTrue(userDeckService.publish(createdDecks.get(0)), "Unable to publish deck");
 
         // when: loading all owned decks from the repository
-        List<Deck> ownedDecks = userDeckService.getAllOwnedDecks(creator);
+        Optional<List<Deck>> maybeOwnedDecks = userDeckService.getAllOwnedDecks();
 
         // then: all decks must be included
+        assertTrue(maybeOwnedDecks.isPresent(), "Decks could not be loaded");
+        List<Deck> ownedDecks = maybeOwnedDecks.get();
         assertEquals(createdDecks.size(), ownedDecks.size(), "Found more/less decks than expected");
         for (Deck createdDeck : createdDecks) {
             assertTrue(ownedDecks.contains(createdDeck), "Unable to find deck " + createdDeck);
@@ -97,9 +102,11 @@ public class UserDeckServiceTestGetOwned {
         assertTrue(adminDeckService.block(createdDecks.get(0)), "Unable to block deck");
 
         // when: loading all owned decks from the repository
-        List<Deck> ownedDecks = userDeckService.getAllOwnedDecks(creator);
+        Optional<List<Deck>> maybeOwnedDecks = userDeckService.getAllOwnedDecks();
 
         // then: all decks must be included, but description should be changed on blocked deck
+        assertTrue(maybeOwnedDecks.isPresent(), "Decks could not be loaded");
+        List<Deck> ownedDecks = maybeOwnedDecks.get();
         assertEquals(createdDecks.size(), ownedDecks.size(), "Found more/less decks than expected");
         for (Deck createdDeck : createdDecks) {
             assertTrue(ownedDecks.contains(createdDeck), "Unable to find deck " + createdDeck);
@@ -123,9 +130,11 @@ public class UserDeckServiceTestGetOwned {
         assertTrue(userDeckService.delete(createdDecks.get(0)), "Unable to delete deck");
 
         // when: loading all owned decks from the repository
-        List<Deck> ownedDecks = userDeckService.getAllOwnedDecks(creator);
+        Optional<List<Deck>> maybeOwnedDecks = userDeckService.getAllOwnedDecks();
 
         // then: all but the deleted deck must be included
+        assertTrue(maybeOwnedDecks.isPresent(), "Decks could not be loaded");
+        List<Deck> ownedDecks = maybeOwnedDecks.get();
         assertEquals(createdDecks.size() - 1, ownedDecks.size(), "Found more/less decks than expected");
         for (Deck createdDeck : createdDecks) {
             if (createdDeck.isDeleted()) {

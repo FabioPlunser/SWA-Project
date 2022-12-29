@@ -55,7 +55,7 @@ public class UserDeckService {
      *  - isBlocked: info, that deck has been blocked
      *  - !isPublished: info, that deck has been unpublished, if not creator
      *
-     * @return a list of all decks to which that person has subscribed or nothing is nobody is logged in
+     * @return a list of all decks to which that person has subscribed or nothing if nobody is logged in
      */
     public Optional<List<Deck>> getAllSavedDecks() {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
@@ -71,19 +71,19 @@ public class UserDeckService {
     }
 
     /**
-     * Gets all decks owned by a specific user from the repository
+     * Gets all decks owned by the logged in user from the repository
      *
-     * @param person person for which the owned decks should be found
-     * @return list of owned decks, empty list if none have been found or person has not been found
+     * @return list of owned decks or nothing if nobody is logged in
      */
-    public List<Deck> getAllOwnedDecks(Person person) {
-        if (person != null && person.getPersonId() != null) {
-            return person.getCreatedDecks().stream()
+    public Optional<List<Deck>> getAllOwnedDecks() {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
                     .map(d -> {if (d.isBlocked()) d.setDescription("Deck has been blocked"); return d;})
-                    .toList();
+                    .toList());
         } else {
-            return new ArrayList<>();
+            return Optional.empty();
         }
     }
 

@@ -11,11 +11,11 @@ import java.util.UUID;
 
 public class MockAuthContext {
     /**
-     * Sets the currently logged in user
+     * Sets the currently logged in user so that it can be retrieved by AuthContext.getCurrentUser()
      * Logs out any other user that is currently logged in
      *
      * @param user user to be logged in
-     * @return logged in user if successfull, otherwise null
+     * @return AuthContext.getCurrentUser().get() or null if none has be returned
      */
     public static Authenticable setLoggedInUser(Authenticable user) {
         SecurityContextHolder.setContext(new SecurityContext() {
