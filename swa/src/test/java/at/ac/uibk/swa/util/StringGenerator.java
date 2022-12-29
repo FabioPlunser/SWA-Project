@@ -15,7 +15,7 @@ public class StringGenerator {
     }
 
     public static String username() {
-        int usernameLength = 10;
+        int usernameLength = 30;
         return StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, usernameLength);
     }
 
@@ -28,7 +28,7 @@ public class StringGenerator {
     }
 
     public static String password() {
-        int passwordLength = 16;
+        int passwordLength = 30;
         return StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, passwordLength);
     }
 

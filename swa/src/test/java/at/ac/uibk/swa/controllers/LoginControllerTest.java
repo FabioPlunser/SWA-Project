@@ -43,7 +43,7 @@ class LoginControllerTest {
     @Test
     public void testLogin() throws Exception {
         // given: user created in database
-        String username = "user-testLogin";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         Set<Permission> permissions = Set.of(Permission.USER, Permission.ADMIN);
         personService.create(new Person(username, StringGenerator.email(), password, permissions));
