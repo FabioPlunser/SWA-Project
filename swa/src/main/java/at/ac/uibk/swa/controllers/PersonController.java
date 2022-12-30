@@ -9,10 +9,7 @@ import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import at.ac.uibk.swa.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 import java.util.UUID;
@@ -65,7 +62,7 @@ public class PersonController {
      * @return A RestResponse indicating whether the user could be created or not.
      */
     @HasPermission(Permission.ADMIN)
-    @PostMapping("/api/createUser")
+    @PostMapping("/api/create-user")
     public RestResponse create(
             @RequestParam("username") final String username,
             @RequestParam("password") final String password,
@@ -103,7 +100,7 @@ public class PersonController {
      * @return A RESTResponse indicating Success
      */
     @HasPermission(Permission.ADMIN)
-    @PostMapping("/api/updateUser")
+    @PostMapping("/api/update-user")
     public RestResponse updateUser(
             @RequestParam(name = "personId") final UUID personId,
             @RequestParam(name = "username", required = false) final String username,
@@ -126,7 +123,7 @@ public class PersonController {
      * @return A RestResponse indicating whether the operation was successful or not.
      */
     @HasPermission(Permission.ADMIN)
-    @PostMapping("/api/deleteUser")
+    @DeleteMapping("/api/delete-user")
     public RestResponse deleteUser(
             @RequestParam("personId") final UUID personId
     ) {
@@ -144,7 +141,7 @@ public class PersonController {
      * @return A RestReponse containing a List of all users.
      */
     @HasPermission(Permission.ADMIN)
-    @GetMapping("/api/getAllUsers")
+    @GetMapping("/api/get-all-users")
     public RestResponse getAllUsers() {
         return new ListResponse<>(personService.getPersons());
     }
@@ -155,7 +152,7 @@ public class PersonController {
      * @return A List of all possible Permissions.
      */
     @HasPermission(Permission.ADMIN)
-    @GetMapping("/api/getAllPermissions")
+    @GetMapping("/api/get-all-permissions")
     public RestResponse getAllPermissions() {
         return new ListResponse<>(Stream.of(Permission.values()).map(Enum::name).toList());
     }

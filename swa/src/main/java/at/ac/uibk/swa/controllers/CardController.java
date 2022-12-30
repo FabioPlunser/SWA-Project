@@ -24,7 +24,7 @@ public class CardController {
     @Autowired
     private CardService cardService;
 
-    @PostMapping("/api/createCard")
+    @PostMapping("/api/create-card")
     public RestResponse createCard(
             @RequestBody final Card card,
             @RequestParam(name = "deckId") final UUID deckId
@@ -35,7 +35,7 @@ public class CardController {
         return new MessageResponse(false, "Card not created");
     }
 
-    @PutMapping("/api/updateCard")
+    @PutMapping("/api/update-card")
     public RestResponse updateCard(
             @RequestBody final Card card
     ) {
@@ -45,7 +45,7 @@ public class CardController {
         return new MessageResponse(false, "Card not updated");
     }
 
-    @DeleteMapping("/api/deleteCard")
+    @DeleteMapping("/api/delete-card")
     public RestResponse deleteCard(
             @RequestParam(name = "cardId") final UUID cardId
     ) {
