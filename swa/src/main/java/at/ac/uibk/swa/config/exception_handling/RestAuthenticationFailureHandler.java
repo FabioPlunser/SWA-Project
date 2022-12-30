@@ -1,14 +1,14 @@
 package at.ac.uibk.swa.config.exception_handling;
 
+import at.ac.uibk.swa.controllers.error_controllers.SwaErrorController;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.AUTHENTICATION_ERROR_ENDPOINT;
 
 /**
  * Handler for {@link AuthenticationException}s inside the filters of the Security Chain.
@@ -20,10 +20,15 @@ import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.AUTHENTICAT
 @Component
 public class RestAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
+    @Autowired
+    private SwaErrorController errorController;
+
     @Override
     public void onAuthenticationFailure(
-            HttpServletRequest request, HttpServletResponse response, AuthenticationException authException
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticationException authException
     ) throws IOException {
-        response.sendRedirect(AUTHENTICATION_ERROR_ENDPOINT);
+        errorController.handleErrorManual(request, response, authException);
     }
 }
