@@ -25,7 +25,7 @@ public class TestPersonServiceSecurity {
     public void testLoginWithValidCredentials() {
         // given: demo user in database (and additional anonymous user)
         int numberOfOtherPersons = 20;
-        String username = "person-TestLoginWithValidCredentials";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.create(person), "Unable to create user " + person);
@@ -50,8 +50,8 @@ public class TestPersonServiceSecurity {
     public void testLoginWithInvalidCredentials() {
         // given: demo user in database
         int numberOfOtherPersons = 20;
-        String username = "person-TestLoginWithInvalidCredentials";
-        String password = "password";
+        String username = StringGenerator.username();
+        String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.create(person), "Unable to create user " + person);
 
@@ -72,7 +72,7 @@ public class TestPersonServiceSecurity {
     @Test
     public void testGetPersonByToken() {
         // given: demo user in database
-        String username = "person-TestGetPersonByToken";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
@@ -91,7 +91,7 @@ public class TestPersonServiceSecurity {
     @Test
     public void testLogout() {
         // given: demo user in database, logged in
-        String username = "person-TestLogout";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
@@ -111,7 +111,7 @@ public class TestPersonServiceSecurity {
     @Test
     public void testLogoutWithToken() {
         // given: demo user in database, logged in
-        String username = "person-testLogoutWithToken";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");

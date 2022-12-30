@@ -27,7 +27,7 @@ public class TestPersonServiceGeneral {
         List<Person> savedPersons = new ArrayList<>();
         for (int i = 0; i < numberOfDemoPersons; i++) {
             Person person = new Person(
-                    "person-TestSaveAndGetPersons-" + (i+1),
+                    StringGenerator.username(),
                     StringGenerator.email(),
                     StringGenerator.password(),
                     Set.of()
@@ -53,7 +53,7 @@ public class TestPersonServiceGeneral {
     @Test
     public void testCreateTwoIdenticalUsernames() {
         // given: one demo user already in the database
-        String username = "person-TestCreateTwoIdenticalUsernames";
+        String username = StringGenerator.username();
         Person person = new Person(
                 username,
                 StringGenerator.email(),
@@ -77,7 +77,7 @@ public class TestPersonServiceGeneral {
     @Test
     public void testGetPersonById() {
         // given: demo user in database
-        Person person = new Person("person-TestGetPersonById", StringGenerator.email(), StringGenerator.password(), Set.of());
+        Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
         UUID id = person.getPersonId();
 
@@ -92,14 +92,14 @@ public class TestPersonServiceGeneral {
     @Test
     public void testUpdatePerson() {
         // given: demo user in database
-        String username = "person-TestUpdatePerson";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         String email = StringGenerator.email();
         Person person = new Person(username, email, password, Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
 
         // when: updating the person
-        String newUsername = "person-TestUpdatePerson-new";
+        String newUsername = StringGenerator.username();
         String newPassword = StringGenerator.password();
         Set<Permission> newPermissions = Set.of(Permission.ADMIN, Permission.USER);
         assertTrue(personService.update(person, newUsername, newPermissions, newPassword), "Could not update user");
@@ -115,7 +115,7 @@ public class TestPersonServiceGeneral {
     @Test
     public void testUpdatePersonViaCreate() {
         // given: demo user in database
-        String username = "person-testUpdatePersonViaCreate";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         String email = StringGenerator.email();
         Person person = new Person(username, email, password, Set.of());
@@ -145,7 +145,7 @@ public class TestPersonServiceGeneral {
     @Test
     public void testDeletePerson() {
         // given: demo user in database
-        Person person = new Person("person-TestDeletePerson", StringGenerator.email(), StringGenerator.password(), Set.of());
+        Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
 
         // when: deleting that user
