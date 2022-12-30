@@ -91,7 +91,7 @@ public class TestCardServiceGetFromDeck {
             assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
-        assertTrue(adminDeckService.block(deck), "Unable to block deck");
+        assertTrue(adminDeckService.block(deck.getDeckId()), "Unable to block deck");
 
         // when: retrieving all cards for that user and deck
         Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
@@ -196,7 +196,7 @@ public class TestCardServiceGetFromDeck {
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
-        assertTrue(adminDeckService.block(deck), "Unable to block deck");
+        assertTrue(adminDeckService.block(deck.getDeckId()), "Unable to block deck");
 
         // when: retrieving all cards for that user and deck
         Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
@@ -333,7 +333,7 @@ public class TestCardServiceGetFromDeck {
             cards.add(card);
         }
         Person admin = createAdminAndLogin();
-        assertTrue(adminDeckService.block(deck), "Unable to block deck");
+        assertTrue(adminDeckService.block(deck.getDeckId()), "Unable to block deck");
 
         // when: retrieving all cards for the admin and deck
         Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());

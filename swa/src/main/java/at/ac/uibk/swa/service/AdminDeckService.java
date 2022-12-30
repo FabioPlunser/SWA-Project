@@ -20,6 +20,7 @@ public class AdminDeckService {
 
     /**
      * Finds a deck within the repository by its id
+     * NOTE: Only call this method within admin API routes
      *
      * @param id id of the deck to be return
      * @return deck with given id (if found), otherwise nothing
@@ -30,6 +31,7 @@ public class AdminDeckService {
 
     /**
      * Finds all decks within the repository, except deleted decks
+     * NOTE: Only call this method within admin API routes
      *
      * @return list of all found decks
      */
@@ -56,16 +58,22 @@ public class AdminDeckService {
     /**
      * Blocks a deck in the repository
      * Already blocked deck cannot be blocked again
-     * NOTE: No permission check is done within this method - check before, if execution is allowed!
+     * NOTE: Only call this method within admin API routes
      *
-     * @param deck deck to be blockes
+     * @param deckId if of the deck to be blocked
      * @return true if deck has been blocked, false otherwise
      */
-    public boolean block(Deck deck) {
-        if (deck != null && deck.getDeckId() != null) {
-            if (deck.isBlocked()) return false;
-            deck.setBlocked(true);
-            return save(deck) != null;
+    public boolean block(UUID deckId) {
+        Optional<Deck> maybeDeck = findById(deckId);
+        if (maybeDeck.isPresent()) {
+            Deck deck = maybeDeck.get();
+            if (deck != null && deck.getDeckId() != null) {
+                if (deck.isBlocked()) return false;
+                deck.setBlocked(true);
+                return save(deck) != null;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -74,16 +82,22 @@ public class AdminDeckService {
     /**
      * Unblocks a deck in the repository
      * Already unblocked deck cannot be unblocked again
-     * NOTE: No permission check is done within this method - check before, if execution is allowed!
+     * NOTE: Only call this method within admin API routes
      *
-     * @param deck deck to unblock
+     * @param deckId id of the deck to unblock
      * @return true if deck has been unblocked, false otherwise
      */
-    public boolean unblock(Deck deck) {
-        if (deck != null && deck.getDeckId() != null) {
-            if (!deck.isBlocked()) return false;
-            deck.setBlocked(false);
-            return save(deck) != null;
+    public boolean unblock(UUID deckId) {
+        Optional<Deck> maybeDeck = findById(deckId);
+        if (maybeDeck.isPresent()) {
+            Deck deck = maybeDeck.get();
+            if (deck != null && deck.getDeckId() != null) {
+                if (!deck.isBlocked()) return false;
+                deck.setBlocked(false);
+                return save(deck) != null;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
