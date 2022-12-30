@@ -23,6 +23,10 @@ public class Deck implements Serializable {
         this(null, name, description, false, false, false, null, new ArrayList<>(), new ArrayList<>());
     }
 
+    public Deck(String name, String description, Person creator) {
+        this(null, name, description, false, false, false, creator, new ArrayList<>(), new ArrayList<>());
+    }
+
     @Id
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "deck_id", nullable = false)
