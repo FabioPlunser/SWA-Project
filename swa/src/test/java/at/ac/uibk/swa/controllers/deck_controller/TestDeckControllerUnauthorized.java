@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * (Most) deck controller methods should only be accessible by authorized persons
  * The included tests try to access these methods without a token
- * It is in all cases expected that status code 401 (Unauthorized) is returnd
+ * It is in all cases expected that status code 401 (Unauthorized) is returned
  *
  */
 @SpringBootTest
