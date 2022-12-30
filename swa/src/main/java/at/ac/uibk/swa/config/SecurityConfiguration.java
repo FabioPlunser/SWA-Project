@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.config;
 
-import at.ac.uibk.swa.config.exceptionHandling.RestAccessDeniedHandler;
+import at.ac.uibk.swa.config.exception_handling.RestAccessDeniedHandler;
 import at.ac.uibk.swa.config.filters.BearerTokenAuthenticationFilter;
 import at.ac.uibk.swa.config.filters.CookieTokenAuthenticationFilter;
 import at.ac.uibk.swa.models.Permission;

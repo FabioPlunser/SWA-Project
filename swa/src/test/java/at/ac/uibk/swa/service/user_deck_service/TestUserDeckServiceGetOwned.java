@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class UserDeckServiceTestGetOwned {
+public class TestUserDeckServiceGetOwned {
     @Autowired
     private DeckRepository deckRepository;
     @Autowired
@@ -33,20 +33,20 @@ public class UserDeckServiceTestGetOwned {
     @Autowired
     private PersonService personService;
 
-    private Person createUserAndLogin(String username) {
-        Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
+    private Person createUserAndLogin() {
+        Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
         assertTrue(personService.create(person), "Unable to create user");
         return (Person) MockAuthContext.setLoggedInUser(person);
     }
 
     @Test
-    public void testGetAllOwnedDecksUnpublished() {
+    public void getAllOwnedDecksUnpublished() {
         // given: a user that created a number of decks
         int numberOfDecks = 10;
         List<Deck> createdDecks = new ArrayList<>();
-        Person creator = createUserAndLogin("person-testGetAllOwnedDecksUnpublished");
+        Person creator = createUserAndLogin();
         for (int i = 0; i < numberOfDecks; i++) {
-            Deck deck = new Deck("deck-testGetAllOwnedDecksUnpublished-" + (i+1), StringGenerator.deckDescription());
+            Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
             assertTrue(userDeckService.create(deck), "Unable to create deck");
             createdDecks.add(deck);
         }
@@ -64,13 +64,13 @@ public class UserDeckServiceTestGetOwned {
     }
 
     @Test
-    public void testGetAllOwnedDecksPublished() {
+    public void getAllOwnedDecksPublished() {
         // given: a user that created a number of decks of which 1 has been published
         int numberOfDecks = 10;
         List<Deck> createdDecks = new ArrayList<>();
-        Person creator = createUserAndLogin("person-testGetAllOwnedDecksPublished");
+        Person creator = createUserAndLogin();
         for (int i = 0; i < numberOfDecks; i++) {
-            Deck deck = new Deck("deck-testGetAllOwnedDecksPublished-" + (i+1), StringGenerator.deckDescription());
+            Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
             assertTrue(userDeckService.create(deck), "Unable to create deck");
             createdDecks.add(deck);
         }
@@ -89,13 +89,13 @@ public class UserDeckServiceTestGetOwned {
     }
 
     @Test
-    public void testGetAllOwnedDecksBlocked() {
+    public void getAllOwnedDecksBlocked() {
         // given: a user that created a number of decks of which 1 has been blocked
         int numberOfDecks = 10;
         List<Deck> createdDecks = new ArrayList<>();
-        Person creator = createUserAndLogin("person-testGetAllOwnedDecksBlocked");
+        Person creator = createUserAndLogin();
         for (int i = 0; i < numberOfDecks; i++) {
-            Deck deck = new Deck("deck-testGetAllOwnedDecksBlocked-" + (i+1), StringGenerator.deckDescription());
+            Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
             assertTrue(userDeckService.create(deck), "Unable to create deck");
             createdDecks.add(deck);
         }
@@ -117,13 +117,13 @@ public class UserDeckServiceTestGetOwned {
     }
 
     @Test
-    public void testGetAllOwnedDecksDeleted() {
+    public void getAllOwnedDecksDeleted() {
         // given: a user that created a number of decks of which 1 has been deleted
         int numberOfDecks = 10;
         List<Deck> createdDecks = new ArrayList<>();
-        Person creator = createUserAndLogin("person-testGetAllOwnedDecksDeleted");
+        Person creator = createUserAndLogin();
         for (int i = 0; i < numberOfDecks; i++) {
-            Deck deck = new Deck("deck-testGetAllOwnedDecksDeleted-" + (i+1), StringGenerator.deckDescription());
+            Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
             assertTrue(userDeckService.create(deck), "Unable to create deck");
             createdDecks.add(deck);
         }

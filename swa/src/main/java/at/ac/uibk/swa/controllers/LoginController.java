@@ -1,11 +1,11 @@
 package at.ac.uibk.swa.controllers;
 
-import at.ac.uibk.swa.config.personAuthentication.AuthContext;
+import at.ac.uibk.swa.config.person_authentication.AuthContext;
 import at.ac.uibk.swa.models.Person;
-import at.ac.uibk.swa.models.restResponses.AuthFailedResponse;
-import at.ac.uibk.swa.models.restResponses.LoginResponse;
-import at.ac.uibk.swa.models.restResponses.MessageResponse;
-import at.ac.uibk.swa.models.restResponses.RestResponse;
+import at.ac.uibk.swa.models.rest_responses.AuthFailedResponse;
+import at.ac.uibk.swa.models.rest_responses.LoginResponse;
+import at.ac.uibk.swa.models.rest_responses.MessageResponse;
+import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import at.ac.uibk.swa.service.PersonService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 import java.util.UUID;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.loginEndpoint;
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.logoutEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.LOGIN_ENDPOINT;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.LOGOUT_ENDPOINT;
 
 /**
  * Controller handling the login-, and logout-process.
@@ -41,7 +41,7 @@ public class LoginController {
      * @return A Token if the user credentials are correct, otherwise an error.
      */
     @SneakyThrows
-    @PostMapping(loginEndpoint)
+    @PostMapping(LOGIN_ENDPOINT)
     public RestResponse getToken(
             HttpServletResponse response,
             @RequestParam("username") final String username,
@@ -63,7 +63,7 @@ public class LoginController {
      *
      * @return A Message saying whether the Logout was successful or not.
      */
-    @PostMapping(logoutEndpoint)
+    @PostMapping(LOGOUT_ENDPOINT)
     public RestResponse deleteToken(
             HttpServletResponse response
     ) {

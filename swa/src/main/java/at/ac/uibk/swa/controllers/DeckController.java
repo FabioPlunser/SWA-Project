@@ -3,25 +3,20 @@ package at.ac.uibk.swa.controllers;
 import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
-import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.models.annotations.HasPermission;
-import at.ac.uibk.swa.models.restResponses.ListResponse;
-import at.ac.uibk.swa.models.restResponses.MessageResponse;
-import at.ac.uibk.swa.models.restResponses.RestResponse;
+import at.ac.uibk.swa.models.rest_responses.ListResponse;
+import at.ac.uibk.swa.models.rest_responses.MessageResponse;
+import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.UserDeckService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Controller handling {@link Deck} related Information (e.g. creating, updating, deleting {@link Deck}s)

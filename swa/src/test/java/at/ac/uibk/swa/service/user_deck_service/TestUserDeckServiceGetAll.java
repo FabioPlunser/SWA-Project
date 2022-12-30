@@ -1,7 +1,5 @@
 package at.ac.uibk.swa.service.user_deck_service;
 
-import at.ac.uibk.swa.config.personAuthentication.AuthContext;
-import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
@@ -13,7 +11,6 @@ import at.ac.uibk.swa.util.MockAuthContext;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class UserDeckServiceTestGetAll {
+public class TestUserDeckServiceGetAll {
     @Autowired
     private DeckRepository deckRepository;
     @Autowired
@@ -36,9 +33,9 @@ public class UserDeckServiceTestGetAll {
     @Autowired
     private PersonService personService;
 
-    private Person createUserAndLogin(String username) {
+    private Person createUserAndLogin() {
         String password = StringGenerator.password();
-        Person person = new Person(username, StringGenerator.email(), password, Set.of(Permission.USER));
+        Person person = new Person(StringGenerator.username(), StringGenerator.email(), password, Set.of(Permission.USER));
         assertTrue(personService.create(person), "Unable to create user");
         return (Person) MockAuthContext.setLoggedInUser(person);
     }
@@ -49,11 +46,11 @@ public class UserDeckServiceTestGetAll {
     }
 
     @Test
-    public void testGetAllDecksCreatedUnpublished() {
+    public void getAllDecksCreatedUnpublished() {
         // given: a user that has created a deck and not published it
-        Person person = createUserAndLogin("person-testGetAllDecksCreatedUnpublished");
-        String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksCreatedUnpublished", deckDescription);
+        Person person = createUserAndLogin();
+        String deckDescription = StringGenerator.deckDescription();
+        Deck deck = new Deck(StringGenerator.deckName(), deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
 
         // when: loading all decks for that user
@@ -68,11 +65,11 @@ public class UserDeckServiceTestGetAll {
     }
 
     @Test
-    public void testGetAllDecksCreatedPublished() {
+    public void getAllDecksCreatedPublished() {
         // given: a user that has created a deck and published it
-        Person person = createUserAndLogin("person-testGetAllDecksCreatedPublished");
-        String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksCreatedPublished", deckDescription);
+        Person person = createUserAndLogin();
+        String deckDescription = StringGenerator.deckDescription();
+        Deck deck = new Deck(StringGenerator.deckName(), deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
 
@@ -88,11 +85,11 @@ public class UserDeckServiceTestGetAll {
     }
 
     @Test
-    public void testGetAllDecksCreatedBlocked() {
+    public void getAllDecksCreatedBlocked() {
         // given: a user that has created a deck, but the deck has been blocked
-        Person person = createUserAndLogin("person-testGetAllDecksCreatedBlocked");
-        String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksCreatedBlocked", deckDescription);
+        Person person = createUserAndLogin();
+        String deckDescription = StringGenerator.deckDescription();
+        Deck deck = new Deck(StringGenerator.deckName(), deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
@@ -110,11 +107,11 @@ public class UserDeckServiceTestGetAll {
     }
 
     @Test
-    public void testGetAllDecksCreatedDeleted() {
+    public void getAllDecksCreatedDeleted() {
         // given: a user that has created a deck, but then the deck has been deleted (only possible by the user)
-        Person person = createUserAndLogin("person-testGetAllDecksCreatedDeleted");
-        String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksCreatedDeleted", deckDescription);
+        Person person = createUserAndLogin();
+        String deckDescription = StringGenerator.deckDescription();
+        Deck deck = new Deck(StringGenerator.deckName(), deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
 
@@ -128,15 +125,15 @@ public class UserDeckServiceTestGetAll {
     }
 
     @Test
-    public void testGetAllDecksSubscribedUnpublished() {
+    public void getAllDecksSubscribedUnpublished() {
         // given: a published deck from a creator, to which a user has subscribed and afterwards the creator
         // unpublished the deck
-        Person creator = createUserAndLogin("person-testGetAllDecksSubscribedUnpublished");
-        String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedUnpublished", deckDescription);
+        Person creator = createUserAndLogin();
+        String deckDescription = StringGenerator.deckDescription();
+        Deck deck = new Deck(StringGenerator.deckName(), deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        Person person = createUserAndLogin("person-testGetAllDecksSubscribedUnpublished-other");
+        Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
         assertTrue(userDeckService.unpublish(deck.getDeckId()), "Unable to unpublish deck");
@@ -158,14 +155,14 @@ public class UserDeckServiceTestGetAll {
     }
 
     @Test
-    public void testGetAllDecksSubscribedPublished() {
+    public void getAllDecksSubscribedPublished() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
-        Person creator = createUserAndLogin("person-testGetAllDecksSubscribedPublished-other");
-        String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedPublished", deckDescription);
+        Person creator = createUserAndLogin();
+        String deckDescription = StringGenerator.deckDescription();
+        Deck deck = new Deck(StringGenerator.deckName(), deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        Person person = createUserAndLogin("person-testGetAllDecksSubscribedPublished");
+        Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
 
         // when: loading all decks for the user
@@ -180,15 +177,15 @@ public class UserDeckServiceTestGetAll {
     }
 
     @Test
-    public void testGetAllDecksSubscribedBlocked() {
+    public void getAllDecksSubscribedBlocked() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
         // and afterwards the deck has been blocked
-        Person creator = createUserAndLogin("person-testGetAllDecksSubscribedBlocked-creator");
-        String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedBlocked", deckDescription);
+        Person creator = createUserAndLogin();
+        String deckDescription = StringGenerator.deckDescription();
+        Deck deck = new Deck(StringGenerator.deckName(), deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        Person person = createUserAndLogin("person-testGetAllDecksSubscribedBlocked");
+        Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
         // workaround, as mocking does currently not allow for reloading the deck from the repository
@@ -208,15 +205,15 @@ public class UserDeckServiceTestGetAll {
     }
 
     @Test
-    public void testGetAllDecksSubscribedDeleted() {
+    public void getAllDecksSubscribedDeleted() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
         // and afterwards the deck has been deleted
-        Person creator = createUserAndLogin("person-testGetAllDecksSubscribedDeleted-creator");
-        String deckDescription = "Description";
-        Deck deck = new Deck("deck-testGetAllDecksSubscribedDeleted", deckDescription);
+        Person creator = createUserAndLogin();
+        String deckDescription = StringGenerator.deckDescription();
+        Deck deck = new Deck(StringGenerator.deckName(), deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        Person person = createUserAndLogin("person-testGetAllDecksSubscribedDeleted");
+        Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
         assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");

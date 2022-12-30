@@ -3,10 +3,10 @@ package at.ac.uibk.swa.controllers;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.models.annotations.HasPermission;
-import at.ac.uibk.swa.models.restResponses.CreatedUserResponse;
-import at.ac.uibk.swa.models.restResponses.ListResponse;
-import at.ac.uibk.swa.models.restResponses.MessageResponse;
-import at.ac.uibk.swa.models.restResponses.RestResponse;
+import at.ac.uibk.swa.models.rest_responses.CreatedUserResponse;
+import at.ac.uibk.swa.models.rest_responses.ListResponse;
+import at.ac.uibk.swa.models.rest_responses.MessageResponse;
+import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import at.ac.uibk.swa.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.registerEndpoint;
+import static at.ac.uibk.swa.util.EndpointMatcherUtil.REGISTER_ENDPOINT;
 
 /**
  * Controller handling {@link Person} related Information (e.g. creating, updating, deleting {@link Person})
@@ -43,7 +43,7 @@ public class PersonController {
      * @param email The new Users email.
      * @return A RestResponse indicating whether the user could be created or not.
      */
-    @PostMapping(registerEndpoint)
+    @PostMapping(REGISTER_ENDPOINT)
     public RestResponse register(
             @RequestParam("username") final String username,
             @RequestParam("password") final String password,

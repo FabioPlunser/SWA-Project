@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.util;
 
-import at.ac.uibk.swa.config.personAuthentication.AuthContext;
+import at.ac.uibk.swa.config.person_authentication.AuthContext;
 import at.ac.uibk.swa.models.Authenticable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
