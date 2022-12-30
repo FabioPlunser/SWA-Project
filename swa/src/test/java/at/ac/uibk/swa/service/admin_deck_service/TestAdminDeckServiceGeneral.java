@@ -28,14 +28,14 @@ public class TestAdminDeckServiceGeneral {
     @Autowired
     PersonService personService;
 
-    private Person createUserAndLogin(String username) {
-        Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
+    private Person createUserAndLogin() {
+        Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
         assertTrue(personService.create(person), "Unable to create user");
         return (Person) MockAuthContext.setLoggedInUser(person);
     }
 
-    private Deck createDeck(String name) {
-        Deck deck = new Deck(name, StringGenerator.deckDescription());
+    private Deck createDeck() {
+        Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         return deck;
     }
@@ -43,8 +43,8 @@ public class TestAdminDeckServiceGeneral {
     @Test
     public void testGetDeckByIdAsAdmin() {
         // given: a deck in the repository
-        createUserAndLogin("person-testGetDeckByIdAsAdmin");
-        Deck deck = createDeck("deck-testGetDeckByIdAsAdmin");
+        createUserAndLogin();
+        Deck deck = createDeck();
         UUID id = deck.getDeckId();
         MockAuthContext.setLoggedInUser(null);
 
@@ -59,8 +59,8 @@ public class TestAdminDeckServiceGeneral {
     @Test
     public void testBlockDeck() {
         // given: a deck in the repository
-        createUserAndLogin("person-testBlockDeck");
-        Deck deck = createDeck("deck-testBlockDeck");
+        createUserAndLogin();
+        Deck deck = createDeck();
         UUID id = deck.getDeckId();
         MockAuthContext.setLoggedInUser(null);
 
@@ -76,8 +76,8 @@ public class TestAdminDeckServiceGeneral {
     @Test
     public void testUnblockDeck() {
         // given: a deck in the repository, that was blocked
-        createUserAndLogin("person-testUnblockDeck");
-        Deck deck = createDeck("deck-testUnblockDeck");
+        createUserAndLogin();
+        Deck deck = createDeck();
         UUID id = deck.getDeckId();
         MockAuthContext.setLoggedInUser(null);
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
@@ -96,9 +96,9 @@ public class TestAdminDeckServiceGeneral {
         // given: a number of decks in the repository, where one was deleted, one was blocked and one was published
         int numberOfDecks = 4;
         List<Deck> decks = new ArrayList<>();
-        Person creator = createUserAndLogin("person-testFindAllDecksAsAdmin");
+        Person creator = createUserAndLogin();
         for (int i = 0; i < numberOfDecks; i++) {
-            decks.add(createDeck("test-testFindAllDecksAsAdmin-"+(i+1)));
+            decks.add(createDeck());
         }
         assertTrue(userDeckService.delete(decks.get(0).getDeckId()));
         Deck deletedDeck = decks.remove(0);
