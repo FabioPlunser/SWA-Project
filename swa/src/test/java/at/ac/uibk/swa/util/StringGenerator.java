@@ -14,6 +14,11 @@ public class StringGenerator {
         return sb.toString();
     }
 
+    public static String username() {
+        int usernameLength = 30;
+        return "username-" + StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, usernameLength);
+    }
+
     public static String email() {
         int lengthLocalPart = 20;
         int lengthDomainPart = 8;
@@ -23,8 +28,13 @@ public class StringGenerator {
     }
 
     public static String password() {
-        int passwordLength = 16;
+        int passwordLength = 30;
         return StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, passwordLength);
+    }
+
+    public static String deckName() {
+        int deckNameLength = 30;
+        return "Random deck name: " + StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS, deckNameLength);
     }
 
     public static String deckDescription() {
