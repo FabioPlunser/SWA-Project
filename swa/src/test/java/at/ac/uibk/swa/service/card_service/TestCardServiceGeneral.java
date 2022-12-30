@@ -48,7 +48,7 @@ public class TestCardServiceGeneral {
     }
 
     @Test
-    public void testSaveAndGetCards() {
+    public void saveAndGetCards() {
         // given: demo creators, decks and cards saved to database
         int numberOfCreators = 5;
         int numberOfDecksPerCreator = 5;
@@ -89,7 +89,7 @@ public class TestCardServiceGeneral {
     }
 
     @Test
-    public void testGetCardById() {
+    public void getCardById() {
         // given: a card in the database
         createUserAndLogin();
         Deck deck = createDeck();
@@ -110,7 +110,7 @@ public class TestCardServiceGeneral {
     }
 
     @Test
-    public void testUpdateCard() {
+    public void updateCard() {
         // given: a card in the database
         createUserAndLogin();
         Deck deck = createDeck();
@@ -133,7 +133,7 @@ public class TestCardServiceGeneral {
     }
 
     @Test
-    public void testUpdateCardViaCreate() {
+    public void updateCardViaCreate() {
         // given: a card in the database
         createUserAndLogin();
         String originalFrontText = StringGenerator.deckDescription();
@@ -160,7 +160,7 @@ public class TestCardServiceGeneral {
     }
 
     @Test
-    public void testDeleteCard() {
+    public void deleteCard() {
         // given: a card in the database
         createUserAndLogin();
         Deck deck = createDeck();
@@ -176,7 +176,7 @@ public class TestCardServiceGeneral {
     }
 
     @Test
-    public void testDeleteCardViaId() {
+    public void deleteCardViaId() {
         // given: a card in the database
         createUserAndLogin();
         Deck deck = createDeck();

@@ -41,7 +41,7 @@ public class TestAdminDeckServiceGeneral {
     }
 
     @Test
-    public void testGetDeckByIdAsAdmin() {
+    public void getDeckByIdAsAdmin() {
         // given: a deck in the repository
         createUserAndLogin();
         Deck deck = createDeck();
@@ -57,7 +57,7 @@ public class TestAdminDeckServiceGeneral {
     }
 
     @Test
-    public void testBlockDeck() {
+    public void blockDeck() {
         // given: a deck in the repository
         createUserAndLogin();
         Deck deck = createDeck();
@@ -74,7 +74,7 @@ public class TestAdminDeckServiceGeneral {
     }
 
     @Test
-    public void testUnblockDeck() {
+    public void unblockDeck() {
         // given: a deck in the repository, that was blocked
         createUserAndLogin();
         Deck deck = createDeck();
@@ -92,7 +92,7 @@ public class TestAdminDeckServiceGeneral {
     }
 
     @Test
-    public void testFindAllDecksAsAdmin() {
+    public void findAllDecksAsAdmin() {
         // given: a number of decks in the repository, where one was deleted, one was blocked and one was published
         int numberOfDecks = 4;
         List<Deck> decks = new ArrayList<>();

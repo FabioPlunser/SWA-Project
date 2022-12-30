@@ -40,7 +40,7 @@ public class TestUserDeckServiceGetOwned {
     }
 
     @Test
-    public void testGetAllOwnedDecksUnpublished() {
+    public void getAllOwnedDecksUnpublished() {
         // given: a user that created a number of decks
         int numberOfDecks = 10;
         List<Deck> createdDecks = new ArrayList<>();
@@ -64,7 +64,7 @@ public class TestUserDeckServiceGetOwned {
     }
 
     @Test
-    public void testGetAllOwnedDecksPublished() {
+    public void getAllOwnedDecksPublished() {
         // given: a user that created a number of decks of which 1 has been published
         int numberOfDecks = 10;
         List<Deck> createdDecks = new ArrayList<>();
@@ -89,7 +89,7 @@ public class TestUserDeckServiceGetOwned {
     }
 
     @Test
-    public void testGetAllOwnedDecksBlocked() {
+    public void getAllOwnedDecksBlocked() {
         // given: a user that created a number of decks of which 1 has been blocked
         int numberOfDecks = 10;
         List<Deck> createdDecks = new ArrayList<>();
@@ -117,7 +117,7 @@ public class TestUserDeckServiceGetOwned {
     }
 
     @Test
-    public void testGetAllOwnedDecksDeleted() {
+    public void getAllOwnedDecksDeleted() {
         // given: a user that created a number of decks of which 1 has been deleted
         int numberOfDecks = 10;
         List<Deck> createdDecks = new ArrayList<>();

@@ -46,7 +46,7 @@ public class TestUserDeckServiceGetAll {
     }
 
     @Test
-    public void testGetAllDecksCreatedUnpublished() {
+    public void getAllDecksCreatedUnpublished() {
         // given: a user that has created a deck and not published it
         Person person = createUserAndLogin();
         String deckDescription = StringGenerator.deckDescription();
@@ -65,7 +65,7 @@ public class TestUserDeckServiceGetAll {
     }
 
     @Test
-    public void testGetAllDecksCreatedPublished() {
+    public void getAllDecksCreatedPublished() {
         // given: a user that has created a deck and published it
         Person person = createUserAndLogin();
         String deckDescription = StringGenerator.deckDescription();
@@ -85,7 +85,7 @@ public class TestUserDeckServiceGetAll {
     }
 
     @Test
-    public void testGetAllDecksCreatedBlocked() {
+    public void getAllDecksCreatedBlocked() {
         // given: a user that has created a deck, but the deck has been blocked
         Person person = createUserAndLogin();
         String deckDescription = StringGenerator.deckDescription();
@@ -107,7 +107,7 @@ public class TestUserDeckServiceGetAll {
     }
 
     @Test
-    public void testGetAllDecksCreatedDeleted() {
+    public void getAllDecksCreatedDeleted() {
         // given: a user that has created a deck, but then the deck has been deleted (only possible by the user)
         Person person = createUserAndLogin();
         String deckDescription = StringGenerator.deckDescription();
@@ -125,7 +125,7 @@ public class TestUserDeckServiceGetAll {
     }
 
     @Test
-    public void testGetAllDecksSubscribedUnpublished() {
+    public void getAllDecksSubscribedUnpublished() {
         // given: a published deck from a creator, to which a user has subscribed and afterwards the creator
         // unpublished the deck
         Person creator = createUserAndLogin();
@@ -155,7 +155,7 @@ public class TestUserDeckServiceGetAll {
     }
 
     @Test
-    public void testGetAllDecksSubscribedPublished() {
+    public void getAllDecksSubscribedPublished() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
         Person creator = createUserAndLogin();
         String deckDescription = StringGenerator.deckDescription();
@@ -177,7 +177,7 @@ public class TestUserDeckServiceGetAll {
     }
 
     @Test
-    public void testGetAllDecksSubscribedBlocked() {
+    public void getAllDecksSubscribedBlocked() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
         // and afterwards the deck has been blocked
         Person creator = createUserAndLogin();
@@ -205,7 +205,7 @@ public class TestUserDeckServiceGetAll {
     }
 
     @Test
-    public void testGetAllDecksSubscribedDeleted() {
+    public void getAllDecksSubscribedDeleted() {
         // given: a user and another user that has created a deck and published it, when the user subscribed to it
         // and afterwards the deck has been deleted
         Person creator = createUserAndLogin();

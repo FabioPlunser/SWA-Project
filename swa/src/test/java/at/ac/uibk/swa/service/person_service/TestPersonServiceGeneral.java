@@ -21,7 +21,7 @@ public class TestPersonServiceGeneral {
     private PersonService personService;
 
     @Test
-    public void testSaveAndGetPersons() {
+    public void saveAndGetPersons() {
         // given: some demo users stored in database
         int numberOfDemoPersons = 20;
         List<Person> savedPersons = new ArrayList<>();
@@ -51,7 +51,7 @@ public class TestPersonServiceGeneral {
     }
 
     @Test
-    public void testCreateTwoIdenticalUsernames() {
+    public void createTwoIdenticalUsernames() {
         // given: one demo user already in the database
         String username = StringGenerator.username();
         Person person = new Person(
@@ -75,7 +75,7 @@ public class TestPersonServiceGeneral {
     }
 
     @Test
-    public void testGetPersonById() {
+    public void getPersonById() {
         // given: demo user in database
         Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
@@ -90,7 +90,7 @@ public class TestPersonServiceGeneral {
     }
 
     @Test
-    public void testUpdatePerson() {
+    public void updatePerson() {
         // given: demo user in database
         String username = StringGenerator.username();
         String password = StringGenerator.password();
@@ -113,7 +113,7 @@ public class TestPersonServiceGeneral {
     }
 
     @Test
-    public void testUpdatePersonViaCreate() {
+    public void updatePersonViaCreate() {
         // given: demo user in database
         String username = StringGenerator.username();
         String password = StringGenerator.password();
@@ -143,7 +143,7 @@ public class TestPersonServiceGeneral {
     }
 
     @Test
-    public void testDeletePerson() {
+    public void deletePerson() {
         // given: demo user in database
         Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");

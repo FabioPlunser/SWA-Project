@@ -22,7 +22,7 @@ public class TestPersonServiceSecurity {
     private PersonService personService;
 
     @Test
-    public void testLoginWithValidCredentials() {
+    public void loginWithValidCredentials() {
         // given: demo user in database (and additional anonymous user)
         int numberOfOtherPersons = 20;
         String username = StringGenerator.username();
@@ -47,7 +47,7 @@ public class TestPersonServiceSecurity {
     }
 
     @Test
-    public void testLoginWithInvalidCredentials() {
+    public void loginWithInvalidCredentials() {
         // given: demo user in database
         int numberOfOtherPersons = 20;
         String username = StringGenerator.username();
@@ -70,7 +70,7 @@ public class TestPersonServiceSecurity {
     }
 
     @Test
-    public void testGetPersonByToken() {
+    public void getPersonByToken() {
         // given: demo user in database
         String username = StringGenerator.username();
         String password = StringGenerator.password();
@@ -89,7 +89,7 @@ public class TestPersonServiceSecurity {
     }
 
     @Test
-    public void testLogout() {
+    public void logout() {
         // given: demo user in database, logged in
         String username = StringGenerator.username();
         String password = StringGenerator.password();
@@ -109,7 +109,7 @@ public class TestPersonServiceSecurity {
     }
 
     @Test
-    public void testLogoutWithToken() {
+    public void logoutWithToken() {
         // given: demo user in database, logged in
         String username = StringGenerator.username();
         String password = StringGenerator.password();

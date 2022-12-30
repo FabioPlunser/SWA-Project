@@ -55,7 +55,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromOwnedDeck() {
+    public void getCardsFromOwnedDeck() {
         // given: a user, that created a deck with multiple cards
         int numCardsPerDeck = 10;
         Person person = createUserAndLogin();
@@ -80,7 +80,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromOwnedBlockedDeck() {
+    public void getCardsFromOwnedBlockedDeck() {
         // given: a user, that created a deck with multiple cards, where the deck got blocked after creation
         int numCardsPerDeck = 10;
         Person person = createUserAndLogin();
@@ -103,7 +103,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromOwnedDeletedDeck() {
+    public void getCardsFromOwnedDeletedDeck() {
         // given: a user, that created a deck with multiple cards, where the deck got deleted after creation
         int numCardsPerDeck = 10;
         Person person = createUserAndLogin();
@@ -126,7 +126,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromSubscribedPublishedDeck() {
+    public void getCardsFromSubscribedPublishedDeck() {
         // given: a user, that subscribed to a deck with multiple cards
         int numCardsPerDeck = 10;
         Person creator = createUserAndLogin();
@@ -154,7 +154,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromSubscribedUnpublishedDeck() {
+    public void getCardsFromSubscribedUnpublishedDeck() {
         // given: a user, that subscribed to a deck with multiple cards, but the deck was unpublished after subscription
         int numCardsPerDeck = 10;
         Person creator = createUserAndLogin();
@@ -182,7 +182,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromSubscribedBlockedDeck() {
+    public void getCardsFromSubscribedBlockedDeck() {
         // given: a user, that subscribed to a deck with multiple cards, but the deck was blocked after subscription
         int numCardsPerDeck = 10;
         Person creator = createUserAndLogin();
@@ -208,7 +208,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromSubscribedDeletedDeck() {
+    public void getCardsFromSubscribedDeletedDeck() {
         // given: a user, that subscribed to a deck with multiple cards, but the deck was blocked after subscription
         int numCardsPerDeck = 10;
         Person creator = createUserAndLogin();
@@ -236,7 +236,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetDeletedCardsFromDeck() {
+    public void getDeletedCardsFromDeck() {
         // given: a user, that a deck with multiple cards and deleted a card after creation
         int numCardsPerDeck = 10;
         Person creator = createUserAndLogin();
@@ -268,7 +268,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromUnpublishedDeckAsAdmin() {
+    public void getCardsFromUnpublishedDeckAsAdmin() {
         // given: an admin and an unpublished deck created by a user
         int numCardsPerDeck = 10;
         Person creator = createUserAndLogin();
@@ -294,7 +294,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromPublishedDeckAsAdmin() {
+    public void getCardsFromPublishedDeckAsAdmin() {
         // given: an admin and an published deck created by a user
         int numCardsPerDeck = 10;
         Person creator = createUserAndLogin();
@@ -321,7 +321,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromBlockedDeckAsAdmin() {
+    public void getCardsFromBlockedDeckAsAdmin() {
         // given: an admin and a blocked deck created by a user
         int numCardsPerDeck = 10;
         Person creator = createUserAndLogin();
@@ -348,7 +348,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetCardsFromDeletedDeckAsAdmin() {
+    public void getCardsFromDeletedDeckAsAdmin() {
         // given: an admin and a deleted deck created by a user
         int numCardsPerDeck = 10;
         Person creator = createUserAndLogin();
@@ -372,7 +372,7 @@ public class TestCardServiceGetFromDeck {
     }
 
     @Test
-    public void testGetDeletedCardsFromDeckAsAdmin() {
+    public void getDeletedCardsFromDeckAsAdmin() {
         // given: an admin and a deck created by a user, where a card was deleted
         int numCardsPerDeck = 10;
         Person creator = createUserAndLogin();

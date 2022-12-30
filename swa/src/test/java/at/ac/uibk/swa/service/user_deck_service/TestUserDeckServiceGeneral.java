@@ -38,7 +38,7 @@ public class TestUserDeckServiceGeneral {
     }
 
     @Test
-    public void testSaveAndGetDecks() {
+    public void saveAndGetDecks() {
         // given: demo creators and decks saved to database
         int numberOfCreators = 5;
         int numberOfDecksPerCreator = 10;
@@ -76,7 +76,7 @@ public class TestUserDeckServiceGeneral {
     }
 
     @Test
-    public void testGetDeckById() {
+    public void getDeckById() {
         // given: a user in the database that created a deck
         Person creator = createUserAndLogin();
         Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
@@ -92,7 +92,7 @@ public class TestUserDeckServiceGeneral {
     }
 
     @Test
-    public void testUpdateDeck() {
+    public void updateDeck() {
         // given: a user that created a deck in the repository
         Person creator = createUserAndLogin();
         Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
@@ -116,7 +116,7 @@ public class TestUserDeckServiceGeneral {
     }
 
     @Test
-    public void testUpdateDeckViaCreate() {
+    public void updateDeckViaCreate() {
         // given: a user that created a deck in the repository
         Person creator = createUserAndLogin();
         String originalName = StringGenerator.deckName();
@@ -146,7 +146,7 @@ public class TestUserDeckServiceGeneral {
     }
 
     @Test
-    public void testDeleteDeck() {
+    public void deleteDeck() {
         // given: a user that created a deck in the database
         Person creator = createUserAndLogin();
         Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
@@ -163,7 +163,7 @@ public class TestUserDeckServiceGeneral {
     }
 
     @Test
-    public void testPublishDeck() {
+    public void publishDeck() {
         // given: a user that created a deck in the database
         Person creator = createUserAndLogin();
         Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
@@ -180,7 +180,7 @@ public class TestUserDeckServiceGeneral {
     }
 
     @Test
-    public void testUnpublishDeck() {
+    public void unpublishDeck() {
         // given: a user that created a deck in the database and published it
         Person creator = createUserAndLogin();
         Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
@@ -198,7 +198,7 @@ public class TestUserDeckServiceGeneral {
     }
 
     @Test
-    public void testFindAllAvailableDecks() {
+    public void findAllAvailableDecks() {
         // given: a user in the database, where the user has created 4 decks:
         //  - published
         //  - unpublished

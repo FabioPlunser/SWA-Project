@@ -50,7 +50,7 @@ public class TestCardServiceLearning {
     }
     
     @Test
-    public void testGetInitialLearningProgress() {
+    public void getInitialLearningProgress() {
         // given: a deck created by a user with a single card and another user
         Person person = createUserAndLogin();
         Card card = createCard(createDeck());
@@ -63,7 +63,7 @@ public class TestCardServiceLearning {
     }
 
     @Test
-    public void testGetInitialCardsToLearn() {
+    public void getInitialCardsToLearn() {
         // given: a public deck created by a user with a number of cards and another user, subscribed to that deck
         int numberOfCards = 10;
         Person creator = createUserAndLogin();
@@ -89,7 +89,7 @@ public class TestCardServiceLearning {
     }
 
     @Test
-    public void testLearnUnlearntCard() {
+    public void learnUnlearntCard() {
         // given: a deck created by a user with one single card
         Person person = createUserAndLogin();
         Deck deck = createDeck();
@@ -106,7 +106,7 @@ public class TestCardServiceLearning {
     }
 
     @Test
-    public void testLearnMultipleTimesMonitorLearningProgressEntities() {
+    public void learnMultipleTimesMonitorLearningProgressEntities() {
         // given: a deck created by a user with one single card
         Person person = createUserAndLogin();
         Deck deck = createDeck();
