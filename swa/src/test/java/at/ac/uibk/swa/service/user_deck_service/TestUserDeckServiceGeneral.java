@@ -31,8 +31,8 @@ public class TestUserDeckServiceGeneral {
     @Autowired
     private PersonService personService;
 
-    private Person createUserAndLogin(String username) {
-        Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
+    private Person createUserAndLogin() {
+        Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
         assertTrue(personService.create(person), "Unable to create user");
         return (Person) MockAuthContext.setLoggedInUser(person);
     }
@@ -45,11 +45,11 @@ public class TestUserDeckServiceGeneral {
         List<Person> creators = new ArrayList<>();
         Map<Person, Deck> savedDecks = new HashMap<>();
         for (int i = 0; i < numberOfCreators; i++) {
-            Person creator = createUserAndLogin("person-TestSaveAndGetDecks-" + (i+1));
+            Person creator = createUserAndLogin();
             creators.add(creator);
             for (int j = 0; j < numberOfDecksPerCreator; j++) {
                 Deck deck = new Deck(
-                        "deck-TestSaveAndGetDecks-" + (j+1),
+                        StringGenerator.deckName() + (j+1),
                         StringGenerator.deckDescription()
                 );
                 assertTrue(userDeckService.create(deck), "Unable to create deck");
@@ -78,8 +78,8 @@ public class TestUserDeckServiceGeneral {
     @Test
     public void testGetDeckById() {
         // given: a user in the database that created a deck
-        Person creator = createUserAndLogin("person-testGetDeckById");
-        Deck deck = new Deck("deck-testGetDeckById", StringGenerator.deckDescription());
+        Person creator = createUserAndLogin();
+        Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         UUID id = deck.getDeckId();
 
@@ -94,13 +94,13 @@ public class TestUserDeckServiceGeneral {
     @Test
     public void testUpdateDeck() {
         // given: a user that created a deck in the repository
-        Person creator = createUserAndLogin("person-testUpdateDeck");
-        Deck deck = new Deck("deck-testUpdateDeck", StringGenerator.deckDescription());
+        Person creator = createUserAndLogin();
+        Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
 
         // when: updating the deck
-        String updatedName = "updated-name";
-        String updatedDescription = "updated-description";
+        String updatedName = StringGenerator.deckName();
+        String updatedDescription = StringGenerator.deckDescription();
         assertTrue(userDeckService.update(deck.getDeckId(), updatedName, updatedDescription), "Unable to update deck");
 
         // then: the deck should still be available in the repository and new attributes should be set
@@ -118,8 +118,8 @@ public class TestUserDeckServiceGeneral {
     @Test
     public void testUpdateDeckViaCreate() {
         // given: a user that created a deck in the repository
-        Person creator = createUserAndLogin("person-testUpdateDeckViaCreate");
-        String originalName = "deck-testUpdateDeckViaCreate";
+        Person creator = createUserAndLogin();
+        String originalName = StringGenerator.deckName();
         String originalDescription = StringGenerator.deckDescription();
         Deck deck = new Deck(originalName, originalDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
@@ -148,8 +148,8 @@ public class TestUserDeckServiceGeneral {
     @Test
     public void testDeleteDeck() {
         // given: a user that created a deck in the database
-        Person creator = createUserAndLogin("person-testDeleteDecK");
-        Deck deck = new Deck("deck-testDeleteDeck", StringGenerator.deckDescription());
+        Person creator = createUserAndLogin();
+        Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         UUID id = deck.getDeckId();
 
@@ -165,8 +165,8 @@ public class TestUserDeckServiceGeneral {
     @Test
     public void testPublishDeck() {
         // given: a user that created a deck in the database
-        Person creator = createUserAndLogin("person-testPublishDeck");
-        Deck deck = new Deck("deck-testPublishDeck", StringGenerator.deckDescription());
+        Person creator = createUserAndLogin();
+        Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         UUID id = deck.getDeckId();
 
@@ -182,8 +182,8 @@ public class TestUserDeckServiceGeneral {
     @Test
     public void testUnpublishDeck() {
         // given: a user that created a deck in the database and published it
-        Person creator = createUserAndLogin("person-testUnpublishDeck");
-        Deck deck = new Deck("deck-testUnpublishDeck", StringGenerator.deckDescription());
+        Person creator = createUserAndLogin();
+        Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         UUID id = deck.getDeckId();
@@ -204,16 +204,16 @@ public class TestUserDeckServiceGeneral {
         //  - unpublished
         //  - blocked
         //  - deleted
-        Person person = createUserAndLogin("person-testFindAllAvailableDecks");
-        Deck publishedDeck = new Deck("deck-findAllAvailableDecks-published", "published");
+        Person person = createUserAndLogin();
+        Deck publishedDeck = new Deck(StringGenerator.deckName(), "published");
         assertTrue(userDeckService.create(publishedDeck), "Unable to create deck");
         assertTrue(userDeckService.publish(publishedDeck.getDeckId()), "Unable to publish deck");
-        Deck unpublishedDeck = new Deck("deck-findAllAvailableDecks-published", "unpublished");
+        Deck unpublishedDeck = new Deck(StringGenerator.deckName(), "unpublished");
         assertTrue(userDeckService.create(unpublishedDeck), "Unable to create deck");
-        Deck blockedDeck = new Deck("deck-findAllAvailableDecks-blocked", "blocked");
+        Deck blockedDeck = new Deck(StringGenerator.deckName(), "blocked");
         assertTrue(userDeckService.create(blockedDeck), "Unable to create deck");
         assertTrue(adminDeckService.block(blockedDeck), "Unable to block deck");
-        Deck deletedDeck = new Deck("deck-findAllAvailableDecks-deleted", "deleted");
+        Deck deletedDeck = new Deck(StringGenerator.deckName(), "deleted");
         assertTrue(userDeckService.create(deletedDeck), "Unable to create deck");
         assertTrue(userDeckService.delete(deletedDeck.getDeckId()), "Unable to delete deck");
         MockAuthContext.setLoggedInUser(null);
