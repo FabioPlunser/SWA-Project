@@ -34,7 +34,7 @@ public class DeckController {
     @Autowired
     private CardService cardService;
 
-    @PostMapping("/api/createDeck")
+    @PostMapping("/api/create-deck")
     public RestResponse createDeck(
             @RequestBody final Deck deck
     ) {
@@ -44,7 +44,7 @@ public class DeckController {
         return new MessageResponse(false, "Deck not created");
     }
 
-    @PostMapping("/api/updateDeck")
+    @PostMapping("/api/update-deck")
     public RestResponse updateDeck(
             @RequestBody final Deck deck
     ) {
@@ -54,7 +54,7 @@ public class DeckController {
         return new MessageResponse(false, "Deck not updated");
     }
 
-    @PutMapping("/api/setPublicity")
+    @PutMapping("/api/set-publicity")
     public RestResponse setPublicity(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
@@ -64,7 +64,7 @@ public class DeckController {
         return new MessageResponse(false, "Deck publicity not changed");
     }
 
-    @DeleteMapping("/api/deleteDeck")
+    @DeleteMapping("/api/delete-deck")
     public RestResponse deleteDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
@@ -74,7 +74,7 @@ public class DeckController {
         return new MessageResponse(false, "Deck not deleted");
     }
 
-    @GetMapping("/api/getUserDecks")
+    @GetMapping("/api/get-user-decks")
     public RestResponse getUserDecks(
             @RequestParam(name = "personId") final UUID personId
     ) throws JsonProcessingException {
@@ -87,13 +87,13 @@ public class DeckController {
         return new MessageResponse(false, "getUserDecks" + personId + " failed");
     }
 
-    @GetMapping("/api/getPublishedDecks")
+    @GetMapping("/api/get-published-decks")
     public RestResponse getPublishedDecks() {
         return new ListResponse<>(userDeckService.findAllAvailableDecks());
     }
 
     @HasPermission(Permission.ADMIN)
-    @GetMapping("/api/getAllDecks")
+    @GetMapping("/api/get-all-decks")
     public RestResponse getAllDecks() {
         return new ListResponse<>(adminDeckService.findAll());
     }
@@ -104,7 +104,7 @@ public class DeckController {
      *
      * @return A List of Cards that should be learned sorted by nextLearn-Date.
      */
-    @GetMapping("/api/getAllCardsToLearn")
+    @GetMapping("/api/get-all-cards-to-learn")
     public RestResponse getAllCardsToLearn(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
