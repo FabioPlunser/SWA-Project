@@ -6,9 +6,14 @@ import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.util.EndpointMatcherUtil;
 import at.ac.uibk.swa.util.StringGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DeckControllerTest {
     @Autowired
     private PersonService personService;
@@ -38,6 +44,19 @@ class DeckControllerTest {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
+
+    private ObjectWriter writer;
+
+    @BeforeAll
+    public void setup() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        this.writer = mapper.writer().withDefaultPrettyPrinter();
+    }
+
+    private String toJson(Object object) throws JsonProcessingException {
+        return writer.writeValueAsString(object);
+    }
 
     private String createUserAndGetToken() throws Exception {
         String username = StringGenerator.username();
@@ -57,10 +76,9 @@ class DeckControllerTest {
 
         // when: creating a new deck
         mockMvc.perform(MockMvcRequestBuilders.post("/api/createDeck")
-                .header(HttpHeaders.AUTHORIZATION, token)
-                .param("name", "test")
-                .param("description", "test")
-                .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .content(toJson(new Deck("name", "description")))
+                        .contentType(MediaType.APPLICATION_JSON)
         // then:
         ).andExpectAll(
                 status().isOk()
