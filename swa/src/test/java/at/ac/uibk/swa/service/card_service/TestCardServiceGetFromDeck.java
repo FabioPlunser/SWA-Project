@@ -36,20 +36,20 @@ public class TestCardServiceGetFromDeck {
     @Autowired
     private PersonService personService;
 
-    private Person createUserAndLogin(String username) {
-        Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
+    private Person createUserAndLogin() {
+        Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
         assertTrue(personService.create(person), "Unable to create user");
         return (Person) MockAuthContext.setLoggedInUser(person);
     }
 
-    private Person createAdminAndLogin(String username) {
-        Person person = new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of(Permission.ADMIN));
+    private Person createAdminAndLogin() {
+        Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of(Permission.ADMIN));
         assertTrue(personService.create(person), "Unable to create user");
         return (Person) MockAuthContext.setLoggedInUser(person);
     }
 
-    private Deck createDeck(String name) {
-        Deck deck = new Deck(name, StringGenerator.deckDescription());
+    private Deck createDeck() {
+        Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
         assertTrue(userDeckService.create(deck), "Unable to create deck");
         return deck;
     }
@@ -58,8 +58,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromOwnedDeck() {
         // given: a user, that created a deck with multiple cards
         int numCardsPerDeck = 10;
-        Person person = createUserAndLogin("person-testGetCardsFromDeckOwned");
-        Deck deck = createDeck("deck-testGetCardsFromDeckOwned");
+        Person person = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -83,8 +83,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromOwnedBlockedDeck() {
         // given: a user, that created a deck with multiple cards, where the deck got blocked after creation
         int numCardsPerDeck = 10;
-        Person person = createUserAndLogin("person-testGetCardsFromDeckOwnedBlocked");
-        Deck deck = createDeck("deck-testGetCardsFromDeckOwnedBlocked");
+        Person person = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -106,8 +106,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromOwnedDeletedDeck() {
         // given: a user, that created a deck with multiple cards, where the deck got deleted after creation
         int numCardsPerDeck = 10;
-        Person person = createUserAndLogin("person-testGetCardsFromDeckOwnedDeleted");
-        Deck deck = createDeck("deck-testGetCardsFromDeckOwnedDeleted");
+        Person person = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -129,8 +129,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromSubscribedPublishedDeck() {
         // given: a user, that subscribed to a deck with multiple cards
         int numCardsPerDeck = 10;
-        Person creator = createUserAndLogin("person-testGetCardsFromDeckSubscribedPublished-creator");
-        Deck deck = createDeck("deck-testGetCardsFromDeckSubscribedPublished");
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -138,7 +138,7 @@ public class TestCardServiceGetFromDeck {
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        Person person = createUserAndLogin("person-testGetCardsFromDeckSubscribedPublished");
+        Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
 
         // when: retrieving all cards for that user and deck
@@ -157,8 +157,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromSubscribedUnpublishedDeck() {
         // given: a user, that subscribed to a deck with multiple cards, but the deck was unpublished after subscription
         int numCardsPerDeck = 10;
-        Person creator = createUserAndLogin("person-testGetCardsFromDeckSubscribedUnpublished-creator");
-        Deck deck = createDeck("deck-testGetCardsFromDeckSubscribedUnpublished");
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -166,7 +166,7 @@ public class TestCardServiceGetFromDeck {
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        Person person = createUserAndLogin("person-testGetCardsFromDeckSubscribedUnpublished");
+        Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
         assertTrue(userDeckService.unpublish(deck.getDeckId()), "Unable to unpublish deck");
@@ -185,8 +185,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromSubscribedBlockedDeck() {
         // given: a user, that subscribed to a deck with multiple cards, but the deck was blocked after subscription
         int numCardsPerDeck = 10;
-        Person creator = createUserAndLogin("person-testGetCardsFromDeckSubscribedBlocked-creator");
-        Deck deck = createDeck("deck-testGetCardsFromDeckSubscribedBlocked");
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -194,7 +194,7 @@ public class TestCardServiceGetFromDeck {
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        Person person = createUserAndLogin("person-testGetCardsFromDeckSubscribedBlocked");
+        Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
@@ -211,8 +211,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromSubscribedDeletedDeck() {
         // given: a user, that subscribed to a deck with multiple cards, but the deck was blocked after subscription
         int numCardsPerDeck = 10;
-        Person creator = createUserAndLogin("person-testGetCardsFromDeckSubscribedDeleted-creator");
-        Deck deck = createDeck("deck-testGetCardsFromDeckSubscribedDeleted");
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -220,7 +220,7 @@ public class TestCardServiceGetFromDeck {
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        Person person = createUserAndLogin("person-testGetCardsFromDeckSubscribedDeleted");
+        Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
         assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
@@ -239,8 +239,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetDeletedCardsFromDeck() {
         // given: a user, that a deck with multiple cards and deleted a card after creation
         int numCardsPerDeck = 10;
-        Person creator = createUserAndLogin("person-testGetDeletedCardsFromDeck-creator");
-        Deck deck = createDeck("deck-testGetDeletedCardsFromDeck");
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -248,7 +248,7 @@ public class TestCardServiceGetFromDeck {
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        Person person = createUserAndLogin("person-testGetDeletedCardsFromDeck");
+        Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
         assertTrue(cardService.delete(cards.get(0).getCardId()), "Unable to delete card");
@@ -271,15 +271,15 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromUnpublishedDeckAsAdmin() {
         // given: an admin and an unpublished deck created by a user
         int numCardsPerDeck = 10;
-        Person creator = createUserAndLogin("person-testGetCardsFromUnpublishedDeckAsAdmin-creator");
-        Deck deck = createDeck("deck-testGetCardsFromUnpublishedDeckAsAdmin");
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
             assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
-        Person admin = createAdminAndLogin("person-testGetCardsFromUnpublishedDeckAsAdmin-admin");
+        Person admin = createAdminAndLogin();
 
         // when: retrieving all cards for the admin and deck
         Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
@@ -297,8 +297,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromPublishedDeckAsAdmin() {
         // given: an admin and an published deck created by a user
         int numCardsPerDeck = 10;
-        Person creator = createUserAndLogin("person-testGetCardsFromPublishedDeckAsAdmin-creator");
-        Deck deck = createDeck("deck-testGetCardsFromPublishedDeckAsAdmin");
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -306,7 +306,7 @@ public class TestCardServiceGetFromDeck {
             cards.add(card);
         }
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
-        Person admin = createAdminAndLogin("person-testGetCardsFromPublishedDeckAsAdmin-admin");
+        Person admin = createAdminAndLogin();
 
         // when: retrieving all cards for the admin and deck
         Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
@@ -324,15 +324,15 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromBlockedDeckAsAdmin() {
         // given: an admin and a blocked deck created by a user
         int numCardsPerDeck = 10;
-        Person creator = createUserAndLogin("person-testGetCardsFromBlockedDeckAsAdmin-creator");
-        Deck deck = createDeck("deck-testGetCardsFromBlockedDeckAsAdmin");
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
             assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
             cards.add(card);
         }
-        Person admin = createAdminAndLogin("person-testGetCardsFromBlockedDeckAsAdmin-admin");
+        Person admin = createAdminAndLogin();
         assertTrue(adminDeckService.block(deck), "Unable to block deck");
 
         // when: retrieving all cards for the admin and deck
@@ -351,8 +351,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetCardsFromDeletedDeckAsAdmin() {
         // given: an admin and a deleted deck created by a user
         int numCardsPerDeck = 10;
-        Person creator = createUserAndLogin("person-testGetCardsFromDeletedDeckAsAdmin-creator");
-        Deck deck = createDeck("deck-testGetCardsFromDeletedDeckAsAdmin");
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -360,7 +360,7 @@ public class TestCardServiceGetFromDeck {
             cards.add(card);
         }
         assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
-        Person admin = createAdminAndLogin("person-testGetCardsFromDeletedDeckAsAdmin-admin");
+        Person admin = createAdminAndLogin();
 
         // when: retrieving all cards for that user and deck
         Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
@@ -375,8 +375,8 @@ public class TestCardServiceGetFromDeck {
     public void testGetDeletedCardsFromDeckAsAdmin() {
         // given: an admin and a deck created by a user, where a card was deleted
         int numCardsPerDeck = 10;
-        Person creator = createUserAndLogin("person-testGetDeletedCardsFromDeckAsAdmin-creator");
-        Deck deck = createDeck("deck-testGetDeletedCardsFromDeckAsAdmin");
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numCardsPerDeck; i++) {
             Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(),false);
@@ -385,7 +385,7 @@ public class TestCardServiceGetFromDeck {
         }
         assertTrue(cardService.delete(cards.get(0).getCardId()), "Unable to delete card");
         cards.remove(0);
-        Person admin = createAdminAndLogin("person-testGetDeletedCardsFromDeckAsAdmin-admin");
+        Person admin = createAdminAndLogin();
 
         // when: retrieving all cards for the admin and deck
         Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
