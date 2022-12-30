@@ -17,15 +17,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class PersonServiceTestSecurity {
+public class TestPersonServiceSecurity {
     @Autowired
     private PersonService personService;
 
     @Test
-    public void testLoginWithValidCredentials() {
+    public void loginWithValidCredentials() {
         // given: demo user in database (and additional anonymous user)
         int numberOfOtherPersons = 20;
-        String username = "person-TestLoginWithValidCredentials";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.create(person), "Unable to create user " + person);
@@ -47,11 +47,11 @@ public class PersonServiceTestSecurity {
     }
 
     @Test
-    public void testLoginWithInvalidCredentials() {
+    public void loginWithInvalidCredentials() {
         // given: demo user in database
         int numberOfOtherPersons = 20;
-        String username = "person-TestLoginWithInvalidCredentials";
-        String password = "password";
+        String username = StringGenerator.username();
+        String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.create(person), "Unable to create user " + person);
 
@@ -70,9 +70,9 @@ public class PersonServiceTestSecurity {
     }
 
     @Test
-    public void testGetPersonByToken() {
+    public void getPersonByToken() {
         // given: demo user in database
-        String username = "person-TestGetPersonByToken";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
@@ -89,9 +89,9 @@ public class PersonServiceTestSecurity {
     }
 
     @Test
-    public void testLogout() {
+    public void logout() {
         // given: demo user in database, logged in
-        String username = "person-TestLogout";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
@@ -109,9 +109,9 @@ public class PersonServiceTestSecurity {
     }
 
     @Test
-    public void testLogoutWithToken() {
+    public void logoutWithToken() {
         // given: demo user in database, logged in
-        String username = "person-testLogoutWithToken";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         Person person = new Person(username, StringGenerator.email(), password, Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");

@@ -16,18 +16,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class PersonServiceTestGeneral {
+public class TestPersonServiceGeneral {
     @Autowired
     private PersonService personService;
 
     @Test
-    public void testSaveAndGetPersons() {
+    public void saveAndGetPersons() {
         // given: some demo users stored in database
         int numberOfDemoPersons = 20;
         List<Person> savedPersons = new ArrayList<>();
         for (int i = 0; i < numberOfDemoPersons; i++) {
             Person person = new Person(
-                    "person-TestSaveAndGetPersons-" + (i+1),
+                    StringGenerator.username(),
                     StringGenerator.email(),
                     StringGenerator.password(),
                     Set.of()
@@ -51,9 +51,9 @@ public class PersonServiceTestGeneral {
     }
 
     @Test
-    public void testCreateTwoIdenticalUsernames() {
+    public void createTwoIdenticalUsernames() {
         // given: one demo user already in the database
-        String username = "person-TestCreateTwoIdenticalUsernames";
+        String username = StringGenerator.username();
         Person person = new Person(
                 username,
                 StringGenerator.email(),
@@ -75,9 +75,9 @@ public class PersonServiceTestGeneral {
     }
 
     @Test
-    public void testGetPersonById() {
+    public void getPersonById() {
         // given: demo user in database
-        Person person = new Person("person-TestGetPersonById", StringGenerator.email(), StringGenerator.password(), Set.of());
+        Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
         UUID id = person.getPersonId();
 
@@ -90,16 +90,16 @@ public class PersonServiceTestGeneral {
     }
 
     @Test
-    public void testUpdatePerson() {
+    public void updatePerson() {
         // given: demo user in database
-        String username = "person-TestUpdatePerson";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         String email = StringGenerator.email();
         Person person = new Person(username, email, password, Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
 
         // when: updating the person
-        String newUsername = "person-TestUpdatePerson-new";
+        String newUsername = StringGenerator.username();
         String newPassword = StringGenerator.password();
         Set<Permission> newPermissions = Set.of(Permission.ADMIN, Permission.USER);
         assertTrue(personService.update(person, newUsername, newPermissions, newPassword), "Could not update user");
@@ -113,9 +113,9 @@ public class PersonServiceTestGeneral {
     }
 
     @Test
-    public void testUpdatePersonViaCreate() {
+    public void updatePersonViaCreate() {
         // given: demo user in database
-        String username = "person-testUpdatePersonViaCreate";
+        String username = StringGenerator.username();
         String password = StringGenerator.password();
         String email = StringGenerator.email();
         Person person = new Person(username, email, password, Set.of());
@@ -143,9 +143,9 @@ public class PersonServiceTestGeneral {
     }
 
     @Test
-    public void testDeletePerson() {
+    public void deletePerson() {
         // given: demo user in database
-        Person person = new Person("person-TestDeletePerson", StringGenerator.email(), StringGenerator.password(), Set.of());
+        Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of());
         assertTrue(personService.create(person), "Unable to create user for test");
 
         // when: deleting that user

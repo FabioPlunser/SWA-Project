@@ -16,7 +16,7 @@ public class StringGenerator {
 
     public static String username() {
         int usernameLength = 30;
-        return StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, usernameLength);
+        return "username-" + StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, usernameLength);
     }
 
     public static String email() {
@@ -30,6 +30,11 @@ public class StringGenerator {
     public static String password() {
         int passwordLength = 30;
         return StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS, passwordLength);
+    }
+
+    public static String deckName() {
+        int deckNameLength = 30;
+        return "Random deck name: " + StringGenerator.base(SMALL_LETTERS + CAPITAL_LETTERS, deckNameLength);
     }
 
     public static String deckDescription() {
