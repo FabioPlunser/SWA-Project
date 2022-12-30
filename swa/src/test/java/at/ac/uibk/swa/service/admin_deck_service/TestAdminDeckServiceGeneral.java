@@ -65,7 +65,7 @@ public class TestAdminDeckServiceGeneral {
         MockAuthContext.setLoggedInUser(null);
 
         // when: blocking that deck
-        assertTrue(adminDeckService.block(deck), "Unable to block deck");
+        assertTrue(adminDeckService.block(deck.getDeckId()), "Unable to block deck");
 
         // then: deck must be set as blocked within the repository
         Optional<Deck> maybeDeck = adminDeckService.findById(id);
@@ -80,10 +80,10 @@ public class TestAdminDeckServiceGeneral {
         Deck deck = createDeck();
         UUID id = deck.getDeckId();
         MockAuthContext.setLoggedInUser(null);
-        assertTrue(adminDeckService.block(deck), "Unable to block deck");
+        assertTrue(adminDeckService.block(deck.getDeckId()), "Unable to block deck");
 
         // when: unblocking that deck
-        assertTrue(adminDeckService.unblock(deck), "Unable to unblock deck");
+        assertTrue(adminDeckService.unblock(deck.getDeckId()), "Unable to unblock deck");
 
         // then: deck must be set as unblocked within the repository
         Optional<Deck> maybeDeck = adminDeckService.findById(id);
@@ -104,7 +104,7 @@ public class TestAdminDeckServiceGeneral {
         Deck deletedDeck = decks.remove(0);
         assertTrue(userDeckService.publish(decks.get(0).getDeckId()));
         MockAuthContext.setLoggedInUser(null);
-        assertTrue(adminDeckService.block(decks.get(1)));
+        assertTrue(adminDeckService.block(decks.get(1).getDeckId()));
 
         // when: loading all decks within the repository
         List<Deck> loadedDecks = adminDeckService.findAll();
