@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.controllers;
+package at.ac.uibk.swa.controllers.login_controller;
 
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-class TestLoginController {
+class TestLoginControllerGeneral {
     @Autowired
     private PersonService personService;
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")

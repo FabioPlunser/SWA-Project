@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.controllers;
+package at.ac.uibk.swa.controllers.deck_controller;
 
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TestDeckController {
+class TestDeckControllerGeneral {
     @Autowired
     private PersonService personService;
     @Autowired
