@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-class LoginControllerTest {
+class TestLoginController {
     @Autowired
     private PersonService personService;
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -44,7 +44,7 @@ class LoginControllerTest {
 
 
     @Test
-    public void testLogin() throws Exception {
+    public void login() throws Exception {
         // given: user created in database
         String username = StringGenerator.username();
         String password = StringGenerator.password();
@@ -73,7 +73,7 @@ class LoginControllerTest {
     }
 
     @Test
-    public void testLoginWrongPassword() throws Exception {
+    public void loginWrongPassword() throws Exception {
         // given: user created in database
         String username = StringGenerator.username();
         String password = StringGenerator.password();
@@ -95,7 +95,7 @@ class LoginControllerTest {
     }
 
     @Test
-    public void testLoginRandomCredentials() throws Exception {
+    public void loginRandomCredentials() throws Exception {
         // given: default setup
 
         // when: trying to log in as that user with wrong password
@@ -113,7 +113,7 @@ class LoginControllerTest {
     }
 
     @Test
-    public void testLogout() throws Exception {
+    public void logout() throws Exception {
         // given: a logged in user with a token
         String username = StringGenerator.username();
         String password = StringGenerator.password();

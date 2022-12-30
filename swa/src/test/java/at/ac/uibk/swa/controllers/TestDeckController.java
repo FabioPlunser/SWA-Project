@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class DeckControllerTest {
+class TestDeckController {
     @Autowired
     private PersonService personService;
     @Autowired
