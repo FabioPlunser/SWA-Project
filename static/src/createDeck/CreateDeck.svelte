@@ -36,29 +36,26 @@
     const action = event.target.action;
     const method = event.target.method;
     const myHeader = new Headers()
+    myHeader.append("Content-Type", "application/json");
     myHeader.append("Authorization", "Bearer " + $tokenStore);
     
     const formData = new FormData(event.target);
-    console.log(cards);
-
-    formData.append("cards", JSON.stringify(cards));
     
     var object = {};
     formData.forEach((value, key) => object[key] = value);
-    var stringify = JSON.stringify(object);
-    let json = JSON.parse(stringify);
-    console.log(json);
+    object.cards = cards; 
+    var data = JSON.stringify(object);
+    
 
     
     const requestOptions = {
       method: method, 
       headers: myHeader,
-      body: formData,
+      body: data,
     }
 
     let res = await fetch(action, requestOptions);
     res = await res.json();
-    console.log(res);
     
     //if success reset form
     if(res.success){
