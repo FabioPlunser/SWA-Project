@@ -55,7 +55,8 @@ public class EndpointMatcherUtil {
 
     private static final RequestMatcher PUBLIC_API_ROUTES = new OrRequestMatcher(
             new AntPathRequestMatcher(LOGIN_ENDPOINT),
-            new AntPathRequestMatcher(LOGOUT_ENDPOINT),
+            // NOTE: DON'T ADD LOGOUT-ENDPOINT TO PUBLIC ROUTES, THE LOGOUT IS DONE USING THE TOKEN FROM THE REQUEST.
+            // new AntPathRequestMatcher(LOGOUT_ENDPOINT),
             new AntPathRequestMatcher(REGISTER_ENDPOINT),
             ERROR_ROUTES
     );

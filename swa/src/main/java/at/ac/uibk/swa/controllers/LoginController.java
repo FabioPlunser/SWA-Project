@@ -48,7 +48,6 @@ public class LoginController {
         Optional<Person> maybePerson = personService.login(username, password);
 
         if(maybePerson.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return AuthFailedResponse.builder()
                     .statusCode(HttpStatus.UNAUTHORIZED)
                     .message("Username or Password are wrong!")
