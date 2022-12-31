@@ -1,6 +1,5 @@
 package at.ac.uibk.swa.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
@@ -24,43 +24,38 @@ public class Deck implements Serializable {
     }
 
     @Id
+    @Setter(AccessLevel.PRIVATE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "deck_id", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID deckId;
 
-    @Setter
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Setter
     @Lob
     // @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Setter
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "is_published", nullable = false)
     private boolean isPublished;
 
-    @Setter
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "is_blocked", nullable = false)
     private boolean isBlocked;
 
-    @Setter
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "creator_id", nullable = false)
     private Person creator;
 
-    @JsonIgnore
+    @Setter(AccessLevel.PRIVATE)
     @Builder.Default
     @OneToMany(
             mappedBy = "deck",
@@ -69,6 +64,7 @@ public class Deck implements Serializable {
     )
     private List<Card> cards = new ArrayList<>();
 
+    @Setter(AccessLevel.PRIVATE)
     @Builder.Default
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Person> subscribedPersons = new ArrayList<>();

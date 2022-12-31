@@ -1,6 +1,5 @@
 package at.ac.uibk.swa.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,6 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
@@ -33,12 +33,13 @@ public class Person extends Authenticable implements Serializable {
         this(username, email, passwdHash, null, permissions);
     }
 
+    @Setter(AccessLevel.PRIVATE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "email", nullable = false)
     private String email;
 
-    @JsonIgnore
     @Builder.Default
+    @Setter(AccessLevel.PRIVATE)
     @OneToMany(
             mappedBy = "creator",
             cascade = CascadeType.ALL,
@@ -46,7 +47,7 @@ public class Person extends Authenticable implements Serializable {
     )
     private List<Deck> createdDecks = new ArrayList<>();
 
-    @JsonIgnore
+    @Setter(AccessLevel.PRIVATE)
     @Builder.Default
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "person_saved_deck",

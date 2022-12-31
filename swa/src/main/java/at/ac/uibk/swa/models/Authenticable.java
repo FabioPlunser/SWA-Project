@@ -9,6 +9,7 @@ import org.hibernate.type.SqlTypes;
 import java.util.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
@@ -28,30 +29,27 @@ public abstract class Authenticable {
     }
 
     @Id
+    // NOTE: This JsonIgnore is fine because this is an abstract Class
+    //       Classes that extend this should create a Getter with @JsonInclude to rename the ID.
     @JsonIgnore
+    @Setter(AccessLevel.PRIVATE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "auth_id", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID id;
 
-    @Setter
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Setter
-    @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "password_hash", nullable = false)
     private String passwdHash;
 
-    @Setter
-    @JsonIgnore
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "token", nullable = true, unique = true)
     private UUID token;
 
-    @Setter
     @Column(name = "name", nullable = false)
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)

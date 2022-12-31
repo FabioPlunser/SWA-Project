@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.function.UnaryOperator;
 
 @Getter
+@Setter
 @Entity
 @Builder
 @AllArgsConstructor
@@ -26,37 +27,33 @@ public class Card implements Serializable {
     }
 
     @Id
+    @Setter(AccessLevel.PRIVATE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "card_id", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID cardId;
 
-    @Setter
     @Lob
     // @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "front_text", nullable = false)
     private String frontText;
 
-    @Setter
     @Lob
     // @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "back_text", nullable = false)
     private String backText;
 
-    @Setter
-    @Column(name = "is_flipped", nullable = false)
     @JdbcTypeCode(SqlTypes.BOOLEAN)
+    @Column(name = "is_flipped", nullable = false)
     private boolean isFlipped;
 
-    @Setter
-    @JsonIgnore
     @JoinColumn(name = "deck_id", nullable = false)
     @ManyToOne(optional = false)
     private Deck deck;
 
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
+    // NOTE: This JsonIgnore is ok, because this is a Map which we don't want to override in any case.
     @JsonIgnore
+    @Setter(AccessLevel.PRIVATE)
     @OneToMany(fetch = FetchType.EAGER)
     @Builder.Default
     @JoinTable(
@@ -64,7 +61,6 @@ public class Card implements Serializable {
             joinColumns = {@JoinColumn(name = "card_id", referencedColumnName = "card_id")},
             inverseJoinColumns = {@JoinColumn(name = "progress_id", referencedColumnName = "progress_id")}
     )
-
     @MapKeyJoinColumn(name = "person_id")
     private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
 
