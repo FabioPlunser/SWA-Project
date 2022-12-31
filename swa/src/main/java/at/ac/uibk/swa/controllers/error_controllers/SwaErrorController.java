@@ -88,7 +88,7 @@ public class SwaErrorController implements ErrorController {
         }
 
         try {
-            response.setStatus(restResponse.getStatusCode());
+            response.setStatus(restResponse.getStatusCode().value());
 
             String responseBody = SerializationUtil.serializeJSON(restResponse);
             if (responseBody != null) {

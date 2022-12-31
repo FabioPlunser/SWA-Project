@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,13 +16,9 @@ import java.util.Optional;
  * Only if the success-Field is set to true then a List is sent.
  */
 @Getter
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.MODULE)
 public class ListResponse<T extends Serializable> extends RestResponse implements Serializable {
-
-    /**
-     * Tell the Front-End that the received Response is a List.
-     */
-    private static final String TYPE = "List";
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<T> items;
