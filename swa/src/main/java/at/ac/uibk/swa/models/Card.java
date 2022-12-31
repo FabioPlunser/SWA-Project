@@ -47,6 +47,7 @@ public class Card implements Serializable {
     @Column(name = "is_flipped", nullable = false)
     private boolean isFlipped;
 
+    @Getter(onMethod = @__( @JsonIgnore ))
     @JoinColumn(name = "deck_id", nullable = false)
     @ManyToOne(optional = false)
     private Deck deck;
