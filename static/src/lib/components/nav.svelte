@@ -12,7 +12,7 @@
 
     <div class="menu menu-horizontal">
       {#each buttons as button}
-        <button class="flex justify-center btn btn-primary mx-2" on:click={button.action}>{button.text}</button>
+        <button class="flex justify-center btn btn-primary mx-2" on:click={button.action}>{@html button.text}</button>
       {/each}
     </div>
 </div>

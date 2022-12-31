@@ -1,13 +1,22 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
     export let card;
-    let {id, question, answer} = card;
+
+    function handleDeleteCard(card) {
+        dispatch('deleteCard', card);
+    }
 </script>
 
 
-<div class="card bg-gray-900 p-8 w-auto">
-    <div class="flex flex-row w-auto p-2">
-        <div class="grid flex-grow h-32 card bg-base-300 rounded-box justify-center w-auto">{question}</div> 
-        <div class="divider divider-horizontal"></div> 
-        <div class="grid flex-grow h-32 card bg-base-300 rounded-box justify-center w-atuo">{answer}</div>
+<div class="card bg-slate-800 p-5 w-fit">
+    <h1 class="flex justify-center text-xl">Card {card.cardId}</h1>
+    <div class="flex flex-row p-2">
+      <textarea name="question" required bind:value={card.frontText} placeholder="question" class="input input-bordered w-fit bg-slate-900" />
+      <div class="divider divider-horizontal"></div> 
+      <textarea name="answer" required bind:value={card.backText} placeholder="answer" class="input input-bordered w-fit bg-slate-900" />
     </div>
+    <div class="flex justify-center">
+        <button class="btn btn-accent" type="button" on:click={()=>handleDeleteCard(card)}>Delete Card</button>
+      </div>
 </div>

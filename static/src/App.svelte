@@ -4,134 +4,136 @@
 	import Modal from './lib/components/modal.svelte';
 	import MediaQuery from './lib/utils/mediaQuery.svelte';
 	import SvelteToast from './lib/components/SvelteToast.svelte';
-	import { addToast } from './lib/utils/addToStore';
+	import { addToast, addToastByRes } from './lib/utils/addToStore';
 	
 	import { redirect } from "./lib/utils/redirect";
 	import { tokenStore } from "./lib/stores/tokenStore";
 	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
   	import { handleLogout } from './lib/utils/handleLogout';
   	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
+  	import { personIdStore } from './lib/stores/personIdStore';
+
 
 	$: if($tokenStore.length < 30) redirect("login");
+	$: getUserDecks();
+	$: getPublicDecks();
+
 
 	let showEditDeckModal = false;
 	let selectedDeck = null;
 	let showPublicDecks = false;
-	let searchPublicDeckTitle = "";
+	let searchPublicDeckName = "";
 	let publicDecks = [];
+	let userDecks = [];
+	let subscribedDecks = [];
+	let selectedPublicDeck = false;
 
 	let navButtons = [
-		{ text: "Public Decks", action: () => { showPublicDecks = true; getPublicDecks()}},
-		{ text: "Create Deck", action: () => redirect("createDeck") },
+		{ text: `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`, action: () => { showPublicDecks = true; getPublicDecks()}},
+		{ text: "Create Deck", action: () => redirect("create-deck") },
 		{ text: "Logout", action: () => handleLogout()}
 	]
-	if ($userPermissionsStore.includes("ADMIN")) {
-		navButtons.splice(1, 0, { text: "Admin", action: () => redirect("admin") });
+
+	if (navigator.userAgent.indexOf("Mac") != -1) {
+		navButtons[0].text = `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`;
 	}
+	else{
+		navButtons[0].text = `Public Decks  <kbd class="ml-2 kbd">Ctrl+K</kbd>`;
+	}
+
+	if ($userPermissionsStore.includes("ADMIN")) {
+		navButtons.splice(2, 0, { text: "Admin", action: () => redirect("admin") });
+	}
+
+	const myHeaders = new Headers();
+	myHeaders.append("Authorization", "Bearer " + $tokenStore);
 	
 	async function getUserDecks(){
-		//TODO get user decks
-		// const myHeaders = new Headers();
-		// myHeaders.append("Authorization", "Bearer " + $tokenStore);
-		// if($userPermissionsStore.includes('ADMIN')){
-		// 	let res = await fetch("/api/getAllDecks", {
-		// 		method: "GET",
-		// 		headers: myHeaders,
-		// 	});
-		// 	let data = await res.json();
-		// 	console.log(data);
-		// }
-		// else{
-		// 	let res = await fetch("/api/getUserDecks/?personId=" + personId, {
-		// 		method: "GET",
-		// 		headers: myHeaders,
-		// 	});
-		// 	let data = await res.json();
-		// 	console.log(data);
-		// }
+		
+		if($userPermissionsStore.includes('ADMIN')){
+			let res = await fetch("/api/get-all-decks", {
+				method: "GET",
+				headers: myHeaders,
+			});
+			res = await res.json();
+			userDecks = res.items;
+		}
+		else{
+			let res = await fetch("/api/get-user-decks", {
+				method: "GET",
+				headers: myHeaders,
+			});
+			res = await res.json();
+			userDecks = res.items;
+
+			let res2 = await fetch("/api/get-subscribed-decks", {
+				method: "GET",
+				headers: myHeaders,
+			});
+			res2 = await res2.json();
+			subscribedDecks = res2.items;
+		}
 	}
+
+
+
 
 	async function getPublicDecks(){
-		// TODO get public decks
+		let res = await fetch("/api/get-published-decks", {
+			method: "GET",
+			headers: myHeaders,
+		});
+		res = await res.json();
+		publicDecks = res.items;
 	}
-	function handleSubmit(event) {
+
+	
+	async function handleSubmit(event) {
 		const action = event.target.action;
 		const method = event.target.method.toUpperCase();
-
-		console.log(event);
-
-		addToast(method + " " + action.split("/").pop() + " Failed", "alert-error");
+		const formData = new FormData(event.target);
+		
+		let res = await fetch(action, {
+			method: method,
+			headers: myHeaders,
+			body: formData,
+		});
+		res = await res.json();
+		addToastByRes(res);
 	}
 
-	let privateDecks = [
-		{ 
-			id: 1,
-			title: "Softwarearchitecture",
-			description: "A deck to learn softwarearchitecture",
-			numberOfCardsLearned: 4,
-			numberOfCardsToLearn: 8,
-			published: false,
-			cards: [
-				{ id: 1, question: "Deck1 Question1", answer: "Deck1 Answer1" },
-				{ id: 2, question: "Deck1 Question2", answer: "Deck1 Answer2" },
-				{ id: 3, question: "Deck1 Question3", answer: "Deck1 Answer3" },
-				{ id: 4, question: "Deck1 Question4", answer: "Deck1 Answer4" },
-				{ id: 5, question: "Deck1 Question5", answer: "Deck1 Answer5" },
-				{ id: 6, question: "Deck1 Question6", answer: "Deck1 Answer6" },
-				{ id: 7, question: "Deck1 Question7", answer: "Deck1 Answer7" },
-				{ id: 8, question: "Deck1 Question8", answer: "Deck1 Answer8" },
-			]
-		},
-		{ 
-			id: 2,
-			title: "Databasesystems",
-			description: "A deck to learn databasesystems",
-			numberOfCardsLearned: 1,
-			numberOfCardsToLearn: 20,
-			published: false,
-			cards: [
-				{ id: 1, question: "Deck2 Question1", answer: "Deck2 Answer1" },
-				{ id: 2, question: "Deck2 Question2", answer: "Deck2 Answer2" },
-				{ id: 3, question: "Deck2 Question3", answer: "Deck2 Answer3" },
-				{ id: 4, question: "Deck2 Question4", answer: "Deck2 Answer4" },
-				{ id: 5, question: "Deck2 Question5", answer: "Deck2 Answer5" },
-				{ id: 6, question: "Deck2 Question6", answer: "Deck2 Answer6" },
-				{ id: 7, question: "Deck2 Question7", answer: "Deck2 Answer7" },
-				{ id: 8, question: "Deck2 Question8", answer: "Deck2 Answer8" },
-				{ id: 9, question: "Deck2 Question9", answer: "Deck2 Answer9" },
-				{ id: 10, question: "Deck2 Question10", answer: "Deck2 Answer10" },
-				{ id: 11, question: "Deck2 Question11", answer: "Deck2 Answer11" },
-				{ id: 12, question: "Deck2 Question12", answer: "Deck2 Answer12" },
-				{ id: 13, question: "Deck2 Question13", answer: "Deck2 Answer13" },
-				{ id: 14, question: "Deck2 Question14", answer: "Deck2 Answer14" },
-				{ id: 15, question: "Deck2 Question15", answer: "Deck2 Answer15" },
-				{ id: 16, question: "Deck2 Question16", answer: "Deck2 Answer16" },
-				{ id: 17, question: "Deck2 Question17", answer: "Deck2 Answer17" },
-				{ id: 18, question: "Deck2 Question18", answer: "Deck2 Answer18" },
-				{ id: 19, question: "Deck2 Question19", answer: "Deck2 Answer19" },
-			]
-		},
-		{ 
-			id: 3,
-			title: "Cisco",
-			description: "A deck to learn cisco",
-			numberOfCardsLearned: 1,
-			numberOfCardsToLearn: 4,
-			published: true,
-			cards: [
-				{ id: 1, question: "Deck3 Question1", answer: "Deck3 Answer1" },
-				{ id: 2, question: "Deck3 Question2", answer: "Deck3 Answer2" },
-				{ id: 3, question: "Deck3 Question3", answer: "Deck3 Answer3" },
-				{ id: 4, question: "Deck3 Question4", answer: "Deck3 Answer4" },
-			]
-		},
-	]
+	async function handleSubscribe(deck){
+		console.log(deck);
+		let res = await fetch(`/api/subscribe-deck?deckId=${deck.deckId}`, {
+			method: "PUT",
+			headers: myHeaders,
+		});
+		res = await res.json();
+		addToastByRes(res);
+	}
 
-	privateDecks.sort((a, b) => (a.numberOfCardsLearned > b.numberOfCardsLearned) ? 1 : -1)
-	publicDecks = privateDecks.filter(deck => deck.published);
-	//TODO get Decks from server 
-	//TODO send edited decks to server
-	
+	async function handleUnsubscribe(deck){
+		console.log(deck);
+
+		let res = await fetch(`/api/unsubscribe-deck?deckId=${deck.deckId}`, {
+			method: "PUT",
+			headers: myHeaders,
+		});
+		res = await res.json();
+		addToastByRes(res);
+	}
+	$: {
+		//set correct in userDeck array to selectedDeck
+		if(selectedDeck != null){
+			userDecks.forEach((deck, index) => {
+				if(deck.deckId == selectedDeck.deckId){
+					userDecks[index] = selectedDeck;
+				}
+			});
+		}
+	}
+
+	$: console.log(publicDecks);
 </script>
 
 <svelte:head>
@@ -148,24 +150,24 @@
 		<Modal open={showEditDeckModal} on:close={()=> showEditDeckModal = false} closeOnBodyClick={false}>
 			<h1 class="flex justify-center text-2xl underline">Edit Deck</h1>
 			<br class="pt-4"/>
-			<form class="flex justify-center" method="POST" action="api/editDeck" on:submit|preventDefault={handleSubmit}>
-				<input name="personId" type="hidden" required>
+			<form class="flex justify-center" method="POST" action="api/update-deck" on:submit|preventDefault={handleSubmit}>
+				<input name="deckId" bind:value={selectedDeck.deckId} type="hidden" required>
 				<div class="flex flex-col">
 					<div class="form-control">
 						<label class="input-group">
-						<span class="w-36">Title</span>
-						<input bind:value={selectedDeck.title} name="Title" required type="text" placeholder="Softwarearchitecture" class="input input-bordered w-full" />
+						<span class="w-36">Name</span>
+						<input bind:value={selectedDeck.name} name="name" required type="text" placeholder="Softwarearchitecture" class="input input-bordered w-full" />
 						</label>
 					</div>
 					<br class="pt-4"/>
 					<div class="form-control">
 						<label class="input-group">
 						<span class="w-36">Description</span>
-						<textarea bind:value={selectedDeck.description} name="description" required type="text" placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full" />
+						<textarea bind:value={selectedDeck.description} name="description" required placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full" />
 						</label>
 					</div>
 					<br class="pt-2"/>
-					<button class="btn btn-primary" on:click={()=>{$userSelectedDeckStore = selectedDeck; redirect("listcards")}}>Edit Cards</button>
+					<button class="btn btn-primary" on:click={()=>{$userSelectedDeckStore = selectedDeck; redirect("list-cards")}}>Edit Cards</button>
 					<br class="pt-4"/>
 					<div class="flex justify-between">
 						<button type="submit" class="btn btn-primary" on:click={()=>showEditDeckModal=false}>Update</button>
@@ -178,41 +180,70 @@
 		</Modal>
 	{/if}
 	{#if showPublicDecks}
-		<Modal open={showPublicDecks} on:close={()=>showPublicDecks=false} closeOnBodyClick={false} >
-			<div class="flex flex-col">
+		<Modal open={showPublicDecks} on:close={()=>showPublicDecks=false} closeOnBodyClick={false}>
+			<div class="flex flex-col min-w-fit">
 				<h1 class="flex justify-center text-2xl underline">Public Decks</h1>
 				<br class="mt-4"/>
-				<input bind:value={searchPublicDeckTitle} placeholder="title" class="input w-full"/>
+				<input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
 				<br class="mt-4"/>
-				<div class="grid grid-cols-2 gap-2">
-					{#each publicDecks as deck}
-						{#if deck.title.includes(searchPublicDeckTitle)}
-							<div class="card bg-gray-600 p-5 w-auto">
-								<h1 class="card-title">{deck.title}</h1>
-								<p class="card-subtitle">{deck.description}</p>
-								{#if privateDecks.includes(deck)}
-									<button class="btn btn-secondary">Unsubscribe</button>
-								{:else}
-								<button class="btn btn-primary">Subscribe</button>
-								{/if}
-							</div>
-						{/if}
-					{/each}
+				<div class="grid grid-cols-4 gap-2">
+					{#key publicDecks}
+						{#each publicDecks as deck}
+							{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
+								<div class="card bg-gray-700 p-5 w-fit min-w-fit">
+									<h1 class="card-title">{deck.name}</h1>
+									<p class="card-subtitle">{deck.description}</p>
+									{#if deck.subscribedPersons.filter(person => person.peronId == $personIdStore).length > 0}
+										<button class="btn btn-secondary" on:click={()=> handleUnsubscribe(deck)}>Unsubscribe</button>
+									{:else}
+									<button class="btn btn-primary" on:click={()=> handleSubscribe(deck)}>Subscribe</button>
+									{/if}
+								</div>
+							{/if}	
+						{/each}
+					{/key}
 				</div>
 			</div>
-			<button class="fixed btn btn-primary bottom-0 right-0 m-2" on:click={()=> showPublicDecks = false}>Close</button>
+
+			<div class="modal-action">
+				<button class="fixed btn btn-primary bottom-0 right-0 m-2 mt-12" on:click={()=> showPublicDecks = false}>Close</button>
+			</div>
 		</Modal>
 	{/if}
-	<div class="grid grid-cols-4 gap-4">
-		{#each privateDecks as deck}
-			<Deck 
-				{deck}
-				on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
-				on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-				on:listCards={()=> {$userSelectedDeckStore = deck; redirect("listcards")}}
-			/>
-		{/each}
+	<div>
+		<h1 class="text-4xl underline flex justify-center m-2">MyDecks</h1>
+		<div class="grid grid-cols-4 gap-4">
+			{#key userDecks}
+				{#each userDecks as deck}
+					<Deck 
+						{deck}
+						on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+						on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+						on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
+						on:deleteDeck={()=> getUserDecks()}
+					/>
+				{/each}
+			{/key}
+		</div>	
 	</div>
+
+	<div>
+		<h1 class="text-4xl underline flex justify-center m-2">Subscribed Decks</h1>
+		<div class="grid grid-cols-4 gap-4">
+			{#key subscribedDecks}
+				{#each subscribedDecks as deck}
+					<Deck 
+						{deck}
+						on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+						on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+						on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
+						on:deleteDeck={()=> getUserDecks()}
+					/>
+				{/each}
+			{/key}
+		</div>	
+	</div>
+
 </main>
 {/if}
 </MediaQuery>
