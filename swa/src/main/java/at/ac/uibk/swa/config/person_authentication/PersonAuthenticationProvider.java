@@ -73,8 +73,7 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
      * @return A List of the User's Permissions as Strings.
      * @see org.springframework.security.access.prepost.PreAuthorize
      * @see Permission
-     * @see at.ac.uibk.swa.models.annotations.Admin
-     * @see at.ac.uibk.swa.models.annotations.User
+     * @see at.ac.uibk.swa.models.annotations.HasPermission
      */
     private static Collection<GrantedAuthority> getAuthorities(Authenticable authenticable) {
         return AuthorityUtils.createAuthorityList(authenticable
