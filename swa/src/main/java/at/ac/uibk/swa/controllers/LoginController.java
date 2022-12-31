@@ -2,14 +2,12 @@ package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.config.person_authentication.AuthContext;
 import at.ac.uibk.swa.models.Person;
-import at.ac.uibk.swa.models.rest_responses.AuthFailedResponse;
-import at.ac.uibk.swa.models.rest_responses.LoginResponse;
-import at.ac.uibk.swa.models.rest_responses.MessageResponse;
-import at.ac.uibk.swa.models.rest_responses.RestResponse;
+import at.ac.uibk.swa.models.rest_responses.*;
 import at.ac.uibk.swa.service.PersonService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +40,7 @@ public class LoginController {
      */
     @SneakyThrows
     @PostMapping(LOGIN_ENDPOINT)
-    public RestResponse getToken(
+    public RestResponseEntity getToken(
             HttpServletResponse response,
             @RequestParam("username") final String username,
             @RequestParam("password") final String password
@@ -51,10 +49,16 @@ public class LoginController {
 
         if(maybePerson.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return new AuthFailedResponse("Username or Password are wrong!");
+            return AuthFailedResponse.builder()
+                    .statusCode(HttpStatus.UNAUTHORIZED)
+                    .message("Username or Password are wrong!")
+                    .toEntity();
         }
 
-        return new LoginResponse(maybePerson.get());
+        return LoginResponse.builder()
+                .ok()
+                .person(maybePerson.get())
+                .toEntity();
     }
 
     /**
@@ -64,16 +68,21 @@ public class LoginController {
      * @return A Message saying whether the Logout was successful or not.
      */
     @PostMapping(LOGOUT_ENDPOINT)
-    public RestResponse deleteToken(
+    public RestResponseEntity deleteToken(
             HttpServletResponse response
     ) {
         Optional<UUID> token = AuthContext.getLoginToken();
 
         if (token.isEmpty() || !personService.logout(token.get())) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return new MessageResponse(false, "No matching Token!");
+            return MessageResponse.builder()
+                    .statusCode(HttpStatus.UNAUTHORIZED)
+                    .message("No matching Token!")
+                    .toEntity();
         }
 
-        return new MessageResponse(true, "Successfully logged out!");
+        return MessageResponse.builder()
+                .ok()
+                .message("Successfully logged out!")
+                .toEntity();
     }
 }

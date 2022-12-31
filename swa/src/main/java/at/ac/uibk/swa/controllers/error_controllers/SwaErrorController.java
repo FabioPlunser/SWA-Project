@@ -1,7 +1,7 @@
 package at.ac.uibk.swa.controllers.error_controllers;
 
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
-import at.ac.uibk.swa.models.rest_responses.RestResponse;
+import at.ac.uibk.swa.models.rest_responses.RestResponseEntity;
 import at.ac.uibk.swa.util.SerializationUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,44 +32,57 @@ public class SwaErrorController implements ErrorController {
     @ResponseBody
     @RequestMapping(AUTHENTICATION_ERROR_ENDPOINT)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public RestResponse handleAuthenticationError(
+    public RestResponseEntity handleAuthenticationError(
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException accessDeniedException
     ) {
-        return new MessageResponse(false, "Authentication failed!");
+        return MessageResponse.builder()
+                .message("Authentication failed!")
+                .statusCode(HttpStatus.UNAUTHORIZED)
+                .toEntity();
     }
 
     @ResponseBody
     @RequestMapping(AUTHORIZATION_ERROR_ENDPOINT)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public RestResponse handleAuthorizationError(
+    public RestResponseEntity handleAuthorizationError(
             HttpServletRequest request,
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) {
-        return new MessageResponse(false, "Insufficient Privileges!");
+        return MessageResponse.builder()
+                .message("Insufficient Privileges!")
+                .statusCode(HttpStatus.FORBIDDEN)
+                .toEntity();
     }
 
     @ResponseBody
     @RequestMapping(NOT_FOUND_ERROR_ENDPOINT)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public RestResponse handleNotFoundError(
+    public RestResponseEntity handleNotFoundError(
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        return new MessageResponse(false, "Endpoint not found!");
+        return MessageResponse.builder()
+                .message("Endpoint not found!")
+                .statusCode(HttpStatus.NOT_FOUND)
+                .toEntity();
     }
 
     @ResponseBody
     @RequestMapping(ERROR_ENDPOINT)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public RestResponse handleError(
+    public RestResponseEntity handleError(
             HttpServletRequest request,
             HttpServletResponse response,
             Exception exception
     ) {
-        return new MessageResponse(false, "Internal Server Error!");
+        return MessageResponse.builder()
+                .success(false)
+                .message("Internal Server Error!")
+                .statusCode(HttpStatus.UNAUTHORIZED)
+                .toEntity();
     }
 
     public void handleErrorManual(
@@ -77,20 +90,20 @@ public class SwaErrorController implements ErrorController {
             HttpServletResponse response,
             Exception exception
     ) throws IOException {
-        RestResponse restResponse;
+        RestResponseEntity responseEntity;
 
         if (exception instanceof AuthenticationException authenticationException) {
-            restResponse = handleAuthenticationError(request, response, authenticationException);
+            responseEntity = handleAuthenticationError(request, response, authenticationException);
         } else if (exception instanceof AccessDeniedException accessDeniedException) {
-            restResponse = handleAuthorizationError(request, response, accessDeniedException);
+            responseEntity = handleAuthorizationError(request, response, accessDeniedException);
         } else {
-            restResponse = handleError(request, response, exception);
+            responseEntity = handleError(request, response, exception);
         }
 
         try {
-            response.setStatus(restResponse.getStatusCode().value());
+            response.setStatus(responseEntity.getStatusCode().value());
 
-            String responseBody = SerializationUtil.serializeJSON(restResponse);
+            String responseBody = SerializationUtil.serializeJSON(responseEntity.getBody());
             if (responseBody != null) {
                 try (PrintWriter writer = response.getWriter()) {
                     writer.write(responseBody);
