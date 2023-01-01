@@ -101,16 +101,20 @@ public class Card implements Serializable {
 
     @Override
     public String toString() {
-        return cardId.toString();
+        String front = this.isFlipped ? this.frontText : this.backText;
+        String back = !this.isFlipped ? this.frontText : this.backText;
+
+        return String.format("%s - %s", front, back);
     }
 
     @Override
     public boolean equals(Object o) {
-        return (this == o) || ((o instanceof Card c) && (this.cardId.equals(c.cardId)));
+        return (this == o) || ((o instanceof Card c) && (this.cardId != null) && (this.cardId.equals(c.cardId)));
     }
 
     @Override
     public int hashCode() {
-        return cardId.hashCode();
+        // NOTE: This will intentionally throw an Exception if cardId is null.
+        return this.cardId.hashCode();
     }
 }

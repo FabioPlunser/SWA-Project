@@ -73,16 +73,17 @@ public class Deck implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s - %s", name, description);
+        return String.format("%s - %s", this.name, this.description);
     }
 
     @Override
     public boolean equals(Object o) {
-        return (this == o) || ((o instanceof Deck d) && (this.deckId.equals(d.deckId)));
+        return (this == o) || ((o instanceof Deck d) && (this.deckId != null) && (this.deckId.equals(d.deckId)));
     }
 
     @Override
     public int hashCode() {
-        return deckId.hashCode();
+        // NOTE: This will intentionally throw an Exception if deckId is null.
+        return this.deckId.hashCode();
     }
 }

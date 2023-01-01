@@ -1,6 +1,5 @@
 package at.ac.uibk.swa.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -78,12 +77,25 @@ public class LearningProgress implements Serializable, Cloneable {
     @Override
     public boolean equals(Object o) {
         return (this == o) || ((o instanceof LearningProgress a) &&
+                (this.learningProgressId != null) &&
                 (this.learningProgressId.equals(a.learningProgressId)));
     }
 
     @Override
     public int hashCode() {
-        return learningProgressId != null ? learningProgressId.hashCode() : 0;
+        // NOTE: This will intentionally throw an Exception if learningProgressId is null.
+        return this.learningProgressId.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        // Auto-Generated
+        return "LearningProgress{" +
+                "learningProgressId=" + learningProgressId +
+                ", interval=" + interval +
+                ", eFactor=" + eFactor +
+                ", repetitions=" + repetitions +
+                '}';
     }
 
     @Override
