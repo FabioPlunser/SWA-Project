@@ -51,7 +51,7 @@ public class AuthContext {
      * @see Authenticable
      */
     public static Optional<Authenticable> getCurrentUser() {
-        return getAuthentication().map(x -> (Authenticable) x.getDetails());
+        return getAuthentication().map(x -> (Authenticable) x.getPrincipal());
     }
 
     /**
@@ -70,7 +70,7 @@ public class AuthContext {
      * @return The Token sent with the request (if a valid one was sent).
      */
     public static Optional<UUID> getLoginToken() {
-        return getAuthentication().map(x -> ((Authenticable) x.getDetails()).getToken());
+        return getCurrentUser().map(x -> x.getToken());
     }
 
     /**
