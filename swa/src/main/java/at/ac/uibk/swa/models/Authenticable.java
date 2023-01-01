@@ -6,7 +6,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +23,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Authenticable implements UserDetails, CredentialsContainer {
+// TODO: Rework Password Storing
+public abstract class Authenticable implements UserDetails /*, CredentialsContainer */ {
 
     @Serial
     private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
@@ -125,9 +125,12 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
         return true;
     }
 
+    /*
+    // TODO: Rework Password Storing
     @Override
     public void eraseCredentials() {
         this.passwdHash = null;
     }
+    */
     //endregion
 }
