@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,21 +18,22 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "person")
+// NOTE: This changes the name of the "id"-Column inherited from Authenticable to "person_id"
 @AttributeOverride(name = "id", column = @Column(name = "person_id"))
 public class Person extends Authenticable implements Serializable {
 
-    public Person(String username, String email, String passwdHash, UUID token, Set<Permission> permissions) {
+    public Person(String username, String email, String passwdHash, UUID token, Set<GrantedAuthority> permissions) {
         super(username, passwdHash, token, permissions);
         this.email = email;
         this.createdDecks = new ArrayList<>();
         this.savedDecks = new ArrayList<>();
     }
 
-    public Person(String username, String email, String passwdHash, Set<Permission> permissions) {
+    public Person(String username, String email, String passwdHash, Set<GrantedAuthority> permissions) {
         this(username, email, passwdHash, null, permissions);
     }
 

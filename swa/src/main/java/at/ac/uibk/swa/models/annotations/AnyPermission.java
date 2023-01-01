@@ -4,8 +4,8 @@ import at.ac.uibk.swa.models.Permission;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HasPermission {
+public @interface AnyPermission {
     Permission[] value();
 }

@@ -3,7 +3,7 @@ package at.ac.uibk.swa.controllers;
 import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
-import at.ac.uibk.swa.models.annotations.HasPermission;
+import at.ac.uibk.swa.models.annotations.AnyPermission;
 import at.ac.uibk.swa.models.rest_responses.ListResponse;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponse;
@@ -92,7 +92,7 @@ public class DeckController {
         return new ListResponse<>(userDeckService.findAllAvailableDecks());
     }
 
-    @HasPermission(Permission.ADMIN)
+    @AnyPermission(Permission.ADMIN)
     @GetMapping("/api/get-all-decks")
     public RestResponse getAllDecks() {
         return new ListResponse<>(adminDeckService.findAll());

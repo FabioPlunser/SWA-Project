@@ -1,13 +1,13 @@
 package at.ac.uibk.swa.models.rest_responses;
 
 import at.ac.uibk.swa.models.Authenticable;
-import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -22,7 +22,7 @@ public class CreatedUserResponse extends RestResponse implements Serializable {
     private String username;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID token;
-    private Set<Permission> permissions;
+    private Set<GrantedAuthority> permissions;
 
     public CreatedUserResponse(Authenticable authenticable) {
         super.setSuccess(true);
