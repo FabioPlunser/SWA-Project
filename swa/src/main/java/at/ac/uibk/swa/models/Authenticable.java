@@ -3,24 +3,37 @@ package at.ac.uibk.swa.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.security.core.CredentialsContainer;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.SpringSecurityCoreVersion;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.io.Serial;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Authenticable {
+public abstract class Authenticable implements UserDetails, CredentialsContainer {
 
-    protected Authenticable(String username, String password, UUID token, Set<Permission> permissions) {
-        this(null, username, password, token, permissions);
+    @Serial
+    private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
+    
+    protected Authenticable(String username, String password, UUID token, Set<GrantedAuthority> permissions) {
+        this(username, password, permissions);
     }
 
-    protected Authenticable(String username, String password, Set<Permission> permissions) {
+    protected Authenticable(String username, String password, Set<GrantedAuthority> permissions) {
         this(null, username, password, null, permissions);
     }
 
@@ -54,7 +67,12 @@ public abstract class Authenticable {
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "auth_id"))
-    private Set<Permission> permissions = new HashSet<>();
+    private Set<GrantedAuthority> permissions = new HashSet<>();
+
+    public void setPermissions(Set<Permission> permissions) {
+        // SAFETY: Permission implements GrantedAuthority
+        this.permissions = (Set<GrantedAuthority>) (Set) permissions;
+    }
 
     @Override
     public boolean equals(Object o) {
