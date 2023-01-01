@@ -87,4 +87,46 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     public String toString() {
         return this.username;
     }
+
+    //region UserDetails Implementation
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.passwdHash;
+    }
+
+    @Override
+    public Collection<GrantedAuthority> getAuthorities() {
+        return this.permissions;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public void eraseCredentials() {
+        this.passwdHash = null;
+    }
+    //endregion
 }
