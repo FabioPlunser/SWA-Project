@@ -71,6 +71,10 @@ public class Deck implements Serializable {
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Person> subscribedPersons = new ArrayList<>();
 
+    public boolean isCreator(Person person) {
+        return this.creator.equals(person);
+    }
+
     @Override
     public String toString() {
         return String.format("%s - %s", this.name, this.description);

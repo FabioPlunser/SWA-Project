@@ -87,6 +87,24 @@ public class UserDeckService {
     }
 
     /**
+     * Gets all decks to which the currently logged-in user has subscribed to but did not create, but might alter description, depending on
+     * deck status
+     *  - isDeleted: info, that deck has been deleted
+     *  - isBlocked: info, that deck has been blocked
+     *  - !isPublished: info, that deck has been unpublished, if not creator
+     *
+     * @return a list of all decks to which that person has subscribed to (but did not create) or nothing if nobody is logged in
+     */
+    // TODO: Rename this Method to something more fitting
+    public Optional<List<Deck>> getSavedNotOwnedDecks() {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            return getAllSavedDecks().map(decks -> decks.stream().filter(Predicate.not(d -> d.isCreator(person))).toList());
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Saves a deck to the repository
      *
      * @param deck deck to save
