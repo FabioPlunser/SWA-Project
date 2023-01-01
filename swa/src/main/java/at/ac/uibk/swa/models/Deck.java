@@ -75,7 +75,7 @@ public class Deck implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s - %s", name, description);
+        return String.format("Name: %s - Description: %s - isDeleted: %s - isBlocked: %s - is Published: %s - Creator: %s - Cards: %s \n", name, description, isDeleted, isBlocked, isPublished, creator, cards);
     }
 
     @Override

@@ -27,7 +27,7 @@
 
     async function getCardsFromDecK(){
        
-        let res = await fetch("/api/getCardsFromDeck?deckId=" + $userSelectedDeckStore.deckId, {
+        let res = await fetch("/api/get-cards-from-deck?deckId=" + $userSelectedDeckStore.deckId, {
             method: "GET",
             headers: myHeaders,
         });

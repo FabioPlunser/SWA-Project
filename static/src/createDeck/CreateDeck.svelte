@@ -21,13 +21,13 @@
   let id = 0;
 
   function addCard() {
-    cards.push({cardId: id, frontText: "", backText: ""});
+    cards.push({id: id, frontText: "SOLID", backText: "Single Responsibility"});
     cards = [...cards];
     id++;
   }
 
   function handleDeleteCard(card) {
-    cards = cards.filter(c => c.cardId !== card.cardId);
+    cards = cards.filter(c => c.id !== card.id);
     cards = [...cards];
 
   }
@@ -42,10 +42,11 @@
     const formData = new FormData(event.target);
     
     var object = {};
+
     formData.forEach((value, key) => object[key] = value);
     object.cards = cards; 
     var data = JSON.stringify(object);
-    
+    console.log(object);
 
     
     const requestOptions = {
@@ -99,8 +100,8 @@
         <label class="input-group">
         <span class="w-36">Publish</span>
         <select name="isPublished" class="flex input w-full bg-slate-900" required>
-            <option selected>false</option>
-            <option>true</option>
+            <option selected value={false}>false</option>
+            <option value={true}>true</option>
         </select>
         </label>
       </div>

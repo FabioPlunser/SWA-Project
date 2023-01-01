@@ -12,9 +12,9 @@
 <div class="card bg-slate-800 p-5 w-fit">
     <h1 class="flex justify-center text-xl">Card {card.cardId}</h1>
     <div class="flex flex-row p-2">
-      <textarea name="question" required bind:value={card.frontText} placeholder="question" class="input input-bordered w-fit bg-slate-900" />
+      <h1 contenteditable="true" bind:innerHTML={card.frontText} placeholder="question" class="" />
       <div class="divider divider-horizontal"></div> 
-      <textarea name="answer" required bind:value={card.backText} placeholder="answer" class="input input-bordered w-fit bg-slate-900" />
+      <h1 contenteditable="true" bind:innerHTML={card.backText} placeholder="answer" class="" />
     </div>
     <div class="flex justify-center">
         <button class="btn btn-accent" type="button" on:click={()=>handleDeleteCard(card)}>Delete Card</button>

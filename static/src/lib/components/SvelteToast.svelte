@@ -15,7 +15,7 @@
 </script>
   
 <div class="fixed z-50">
-  <ul class="toast toast-top toast-end">
+  <ul class="toast toast-top toast-end mt-14">
     {#each items as item (item.id)}
       <li
         class={item.classes.join(' ')}

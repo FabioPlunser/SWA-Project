@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.models.Card;
+import at.ac.uibk.swa.models.rest_responses.ListResponse;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +12,8 @@ import at.ac.uibk.swa.service.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -54,5 +57,17 @@ public class CardController {
             return new MessageResponse(true, "Card deleted");
         }
         return new MessageResponse(false, "Card not deleted");
+    }
+
+    @GetMapping("/api/get-cards-from-deck")
+    public RestResponse getCardsByDeck(
+            @RequestParam(name = "deckId") final UUID deckId
+    ) {
+
+        Optional<List<Card>> maybeCards = cardService.getAllCards(deckId);
+        if (maybeCards.isPresent()) {
+            return new ListResponse<>(maybeCards.get());
+        }
+        return new MessageResponse(false, "No cards found");
     }
 }
