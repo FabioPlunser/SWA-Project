@@ -1,34 +1,40 @@
 package at.ac.uibk.swa.config.person_authentication;
 
 import at.ac.uibk.swa.models.Authenticable;
-import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Helper Class for accessing security Information contained in the current request.
  *
  * @author David Rieser
+ * @version 1.1
  */
+// All your constructors are belong to us!
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthContext {
-
-    // All your constructors are belong to us!
-    private AuthContext() {}
 
     /**
      * Check whether the User that made the current Request is authenticated.
-     * A User is authenticated if he is logged-in with Username and Password (and in turn with his Token.
+     * A User is authenticated if he is logged-in with Username and Password (and in turn with his Token).
      * Otherwise, the Request is anonymous.
      *
      * @return true if a logged-in user made the request, false if the request is anonymous or if the Authentication failed.
      */
     public static boolean isAuthenticated() {
-        return !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken);
+        // Get the Authentication set by the FilterChain.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Ensure that the Authentication succeeded by ensuring it is not null and that
+        // the Authentication is not anonymous.
+        return authentication != null && !(authentication instanceof AnonymousAuthenticationToken);
     }
 
     /**
@@ -61,7 +67,7 @@ public class AuthContext {
      * @see Person
      */
     public static Optional<Person> getCurrentPerson() {
-        return Optional.ofNullable(getCurrentUser().orElse(null) instanceof Person p ? p : null);
+        return getCurrentUser().map(a -> a instanceof Person p ? p : null);
     }
 
     /**
@@ -70,7 +76,7 @@ public class AuthContext {
      * @return The Token sent with the request (if a valid one was sent).
      */
     public static Optional<UUID> getLoginToken() {
-        return getCurrentUser().map(x -> x.getToken());
+        return (Optional) getAuthentication().map(Authentication::getCredentials);
     }
 
     /**
@@ -78,12 +84,59 @@ public class AuthContext {
      * This method also works if the user is not logged-in or anonymous (and will return false in those cases).
      *
      * @param required The Permission that the User needs to have.
-     * @return true if the user has the required Permissions, false otherwise.
+     * @return true if the user has the required Permission, false otherwise.
      */
-    public static boolean hasPermission(Permission required) {
+    public static boolean hasPermission(GrantedAuthority required) {
+        return anyPermission(List.of(required));
+    }
+
+    /**
+     * Checks whether the currently logged-in user has any of the required Permissions.
+     * This method also works if the user is not logged-in or anonymous (and will return false in those cases).
+     *
+     * @param required The Permissions that the User needs to have.
+     * @return true if the user has any of the required Permissions, false otherwise.
+     */
+    public static boolean anyPermission(Collection<GrantedAuthority> required) {
         return getCurrentUser()
                 .map(Authenticable::getPermissions)
-                .map(permissions -> permissions.contains(required))
+                .map(permissions -> required.stream().anyMatch(r -> permissions.contains(r)))
                 .orElse(false);
+    }
+
+    /**
+     * Checks whether the currently logged-in user has all the required Permissions.
+     * This method also works if the user is not logged-in or anonymous (and will return false in those cases).
+     *
+     * @param required The Permissions that the User needs to have.
+     * @return true if the user has all the required Permissions, false otherwise.
+     */
+    public static boolean allPermissions(Collection<GrantedAuthority> required) {
+        return getCurrentUser()
+                .map(Authenticable::getPermissions)
+                .map(permissions -> required.stream().allMatch(r -> permissions.contains(r)))
+                .orElse(false);
+    }
+
+    /**
+     * Checks whether the currently logged-in user does not have the required Permission.
+     * This method also works if the user is not logged-in or anonymous (and will return false in those cases).
+     *
+     * @param permission The Permission that the User needs to miss.
+     * @return true if the user does not have the required Permissions, false otherwise.
+     */
+    public static boolean missingPermission(GrantedAuthority permission) {
+        return !anyPermission(Set.of(permission));
+    }
+
+    /**
+     * Checks whether the currently logged-in user does not have the required Permissions.
+     * This method also works if the user is not logged-in or anonymous (and will return false in those cases).
+     *
+     * @param permissions The Permissions that the User needs to miss.
+     * @return true if the user does not have any of the required Permissions, false otherwise.
+     */
+    public static boolean missingPermissions(Collection<GrantedAuthority> permissions) {
+        return !anyPermission(permissions);
     }
 }

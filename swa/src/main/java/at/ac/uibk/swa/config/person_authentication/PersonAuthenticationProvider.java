@@ -51,11 +51,7 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
         // Try to find the User with the given Session Token
         Optional<Person> maybePerson = loginService.findByToken(token);
-        return maybePerson.orElseThrow(
-                () -> new BadCredentialsException(
-                        String.format("Cannot find user with authentication token: <%s>", token.toString())
-                )
-        );
+        return maybePerson.orElseThrow(() -> new BadCredentialsException(formatTokenError(token)));
     }
 
     /**
@@ -63,7 +59,7 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
      * using the PreAuthorize-Annotation.
      *
      * @param authenticable The User whose Permissions should be converted.
-     * @return A List of the User's Permissions as Strings.
+     * @return A List of the User's Authorities.
      * @see org.springframework.security.access.prepost.PreAuthorize
      * @see Permission
      * @see AnyPermission
@@ -71,5 +67,9 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
      */
     private static Collection<GrantedAuthority> getAuthorities(Authenticable authenticable) {
         return authenticable.getPermissions();
+    }
+
+    private static String formatTokenError(UUID token) {
+        return String.format("Cannot find user with authentication token: <%s>", token.toString());
     }
 }
