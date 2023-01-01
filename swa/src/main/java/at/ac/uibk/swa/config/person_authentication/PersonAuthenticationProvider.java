@@ -44,25 +44,18 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
     @Override
     protected UserDetails retrieveUser(
-            String userName, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+            String userName,
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
     ) {
         UUID token = (UUID) usernamePasswordAuthenticationToken.getCredentials();
 
         // Try to find the User with the given Session Token
         Optional<Person> maybePerson = loginService.findByToken(token);
-        if (maybePerson.isPresent()) {
-            // If the Customer was found, successfully authenticate them by returning to the AuthenticationFilter.
-            Person person = maybePerson.get();
-            // Store the Person in the details-Field of the Authentication Token so the AuthContext can easily access it.
-            usernamePasswordAuthenticationToken.setDetails(person);
-            return new User(
-                    person.getUsername(), person.getPasswdHash(),
-                    true, true, true, true,
-                    getAuthorities(person)
-            );
-        }
-
-        throw new BadCredentialsException(String.format("Cannot find user with authentication token: <%s>", token.toString()));
+        return maybePerson.orElseThrow(
+                () -> new BadCredentialsException(
+                        String.format("Cannot find user with authentication token: <%s>", token.toString())
+                )
+        );
     }
 
     /**
@@ -76,10 +69,6 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
      * @see at.ac.uibk.swa.models.annotations.HasPermission
      */
     private static Collection<GrantedAuthority> getAuthorities(Authenticable authenticable) {
-        return AuthorityUtils.createAuthorityList(authenticable
-                .getPermissions()
-                .stream()
-                .map(Permission::toString)
-                .toArray(String[]::new));
+        return authenticable.getPermissions();
     }
 }
