@@ -3,14 +3,14 @@ package at.ac.uibk.swa.config.person_authentication;
 import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.models.annotations.AllPermission;
+import at.ac.uibk.swa.models.annotations.AnyPermission;
 import at.ac.uibk.swa.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -66,7 +66,8 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
      * @return A List of the User's Permissions as Strings.
      * @see org.springframework.security.access.prepost.PreAuthorize
      * @see Permission
-     * @see at.ac.uibk.swa.models.annotations.HasPermission
+     * @see AnyPermission
+     * @see AllPermission
      */
     private static Collection<GrantedAuthority> getAuthorities(Authenticable authenticable) {
         return authenticable.getPermissions();

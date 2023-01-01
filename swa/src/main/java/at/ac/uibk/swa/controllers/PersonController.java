@@ -2,7 +2,7 @@ package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
-import at.ac.uibk.swa.models.annotations.HasPermission;
+import at.ac.uibk.swa.models.annotations.AnyPermission;
 import at.ac.uibk.swa.models.rest_responses.CreatedUserResponse;
 import at.ac.uibk.swa.models.rest_responses.ListResponse;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
@@ -47,7 +47,7 @@ public class PersonController {
             @RequestParam("email") final String email
     ) {
         UUID token = UUID.randomUUID();
-        Person person = new Person(username, email, password, token, Permission.defaultPermissions());
+        Person person = new Person(username, email, password, token, (Set) Permission.defaultPermissions());
 
         return createUser(person);
     }
@@ -61,7 +61,7 @@ public class PersonController {
      * @param permissions The Permissions the new User should have.
      * @return A RestResponse indicating whether the user could be created or not.
      */
-    @HasPermission(Permission.ADMIN)
+    @AnyPermission(Permission.ADMIN)
     @PostMapping("/api/create-user")
     public RestResponse create(
             @RequestParam("username") final String username,
@@ -69,7 +69,7 @@ public class PersonController {
             @RequestParam("email") final String email,
             @RequestParam("permissions") final Set<Permission> permissions
     ) {
-        Person person = new Person(username, email, password, permissions);
+        Person person = new Person(username, email, password, (Set) permissions);
 
         return createUser(person);
     }
@@ -99,7 +99,7 @@ public class PersonController {
      * @param permissions The new Permissions
      * @return A RESTResponse indicating Success
      */
-    @HasPermission(Permission.ADMIN)
+    @AnyPermission(Permission.ADMIN)
     @PostMapping("/api/update-user")
     public RestResponse updateUser(
             @RequestParam(name = "personId") final UUID personId,
@@ -122,7 +122,7 @@ public class PersonController {
      * @param personId The ID of the User to delete
      * @return A RestResponse indicating whether the operation was successful or not.
      */
-    @HasPermission(Permission.ADMIN)
+    @AnyPermission(Permission.ADMIN)
     @DeleteMapping("/api/delete-user")
     public RestResponse deleteUser(
             @RequestParam("personId") final UUID personId
@@ -140,7 +140,7 @@ public class PersonController {
      *
      * @return A RestReponse containing a List of all users.
      */
-    @HasPermission(Permission.ADMIN)
+    @AnyPermission(Permission.ADMIN)
     @GetMapping("/api/get-all-users")
     public RestResponse getAllUsers() {
         return new ListResponse<>(personService.getPersons());
@@ -151,7 +151,7 @@ public class PersonController {
      *
      * @return A List of all possible Permissions.
      */
-    @HasPermission(Permission.ADMIN)
+    @AnyPermission(Permission.ADMIN)
     @GetMapping("/api/get-all-permissions")
     public RestResponse getAllPermissions() {
         return new ListResponse<>(Stream.of(Permission.values()).map(Enum::name).toList());
