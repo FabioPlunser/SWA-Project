@@ -30,11 +30,11 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
     
     protected Authenticable(String username, String password, UUID token, Set<GrantedAuthority> permissions) {
-        this(username, password, permissions);
+        this(null, username, password, token, permissions);
     }
 
     protected Authenticable(String username, String password, Set<GrantedAuthority> permissions) {
-        this(null, username, password, null, permissions);
+        this(username, password, null, permissions);
     }
 
     protected Authenticable(String username, String passwdHash) {
@@ -63,11 +63,12 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     @Column(name = "token", nullable = true, unique = true)
     private UUID token;
 
+    @Builder.Default
     @Column(name = "name", nullable = false)
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "auth_id"))
-    private Set<GrantedAuthority> permissions = new HashSet<>();
+    private Set<GrantedAuthority> permissions = Permission.defaultAuthorities();
 
     public void setPermissions(Set<Permission> permissions) {
         // SAFETY: Permission implements GrantedAuthority

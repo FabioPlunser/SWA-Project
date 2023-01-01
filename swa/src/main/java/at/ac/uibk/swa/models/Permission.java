@@ -12,7 +12,7 @@ public enum Permission implements GrantedAuthority {
         return Set.of(USER);
     }
 
-    public static Set<Permission> defaultAuthorities() {
+    public static Set<GrantedAuthority> defaultAuthorities() {
         return Set.of(USER);
     }
 
