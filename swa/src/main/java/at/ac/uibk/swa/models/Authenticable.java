@@ -1,5 +1,7 @@
 package at.ac.uibk.swa.models;
 
+import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
+import at.ac.uibk.swa.models.annotations.OnlySerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -55,10 +57,12 @@ public abstract class Authenticable implements UserDetails /*, CredentialsContai
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
+    @OnlyDeserialize
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "password_hash", nullable = false)
     private String passwdHash;
 
+    @OnlySerialize
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "token", nullable = true, unique = true)
     private UUID token;

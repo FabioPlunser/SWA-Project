@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.models;
 
+import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,7 +48,7 @@ public class Card implements Serializable {
     @Column(name = "is_flipped", nullable = false)
     private boolean isFlipped;
 
-    @Getter(onMethod = @__( @JsonIgnore ))
+    @OnlyDeserialize
     @JoinColumn(name = "deck_id", nullable = false)
     @ManyToOne(optional = false)
     private Deck deck;
@@ -65,6 +66,7 @@ public class Card implements Serializable {
     @MapKeyJoinColumn(name = "person_id")
     private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
 
+    @JsonIgnore
     public Optional<LearningProgress> getLearningProgress(Person person) {
         return Optional.ofNullable(this.learningProgresses.getOrDefault(person, null));
     }

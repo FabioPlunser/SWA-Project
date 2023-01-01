@@ -1,7 +1,8 @@
 package at.ac.uibk.swa.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -43,7 +44,7 @@ public class Person extends Authenticable implements Serializable {
     private String email;
 
     @Builder.Default
-    @Getter(onMethod = @__( @JsonIgnore ))
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(
             mappedBy = "creator",
@@ -53,7 +54,7 @@ public class Person extends Authenticable implements Serializable {
     private List<Deck> createdDecks = new ArrayList<>();
 
     @Setter(AccessLevel.PRIVATE)
-    @Getter(onMethod = @__( @JsonIgnore))
+    @OnlyDeserialize
     @Builder.Default
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "person_saved_deck",
