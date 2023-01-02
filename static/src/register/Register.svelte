@@ -13,8 +13,9 @@
             alert(res.message);
             return;
         }
+        console.log(res);
         $tokenStore = res.token;
-        $personIdStore = res.personId;
+        $personIdStore = res.id;
         $userPermissionsStore= res.permissions;
 	}
     $: if($tokenStore.length > 30) redirect("");

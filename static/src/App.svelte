@@ -104,9 +104,10 @@
 
 	async function handleSubscribe(deck){
 		console.log(deck);
-		let res = await fetch(`/api/subscribe-deck?deckId=${deck.deckId}`, {
+		let res = await fetch(`/api/subscribe-deck`, {
 			method: "PUT",
 			headers: myHeaders,
+			body: JSON.stringify({deckId: deck.deckId})
 		});
 		res = await res.json();
 		addToastByRes(res);
@@ -193,7 +194,7 @@
 								<div class="card bg-gray-700 p-5 w-fit min-w-fit">
 									<h1 class="card-title">{deck.name}</h1>
 									<p class="card-subtitle">{deck.description}</p>
-									{#if deck.subscribedPersons.filter(person => person.peronId == $personIdStore).length > 0}
+									{#if deck.subscribed}
 										<button class="btn btn-secondary" on:click={()=> handleUnsubscribe(deck)}>Unsubscribe</button>
 									{:else}
 									<button class="btn btn-primary" on:click={()=> handleSubscribe(deck)}>Subscribe</button>

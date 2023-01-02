@@ -11,7 +11,6 @@
   
   let items
   $: items = $toast.filter((i) => i.target === target)
-  const getCss = (theme) => Object.keys(theme).reduce((a, c) => `${a}${c}:${theme[c]};`, '')
 </script>
   
 <div class="fixed z-50">

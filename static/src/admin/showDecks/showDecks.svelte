@@ -93,7 +93,7 @@
               <p class="card-text">{deck.description}</p>
               <div class="card-actions">
                 <button class="btn btn-primary" on:click={()=>deck.blocked = !deck.blocked}>Unblock</button>
-                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/showcards")}}>ShowCards</button>
+                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
               </div>
             </div>
         </div>
@@ -104,7 +104,7 @@
               <p class="card-text">{deck.description}</p>
               <div class="card-actions">
                 <button class="btn btn-primary" on:click={()=>deck.blocked = !deck.blocked}>Block</button>
-                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/showcards")}}>ShowCards</button>
+                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
               </div>
             </div>
         </div>

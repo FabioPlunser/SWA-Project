@@ -33,7 +33,7 @@
         published = !published;
         let res = await fetch(`/api/set-publicity?deckId=${deckId}&isPublished=${published}`, {
             method: "PUT",
-            headers: myHeaders,
+            headers: myHeaders,            
         });
         res = await res.json();
         addToastByRes(res);
@@ -59,9 +59,6 @@
         dispatch('learnDeck', "learnDeck");
     }
     
-    // TODO add delete Deck functionality
-    // TODO add edit Deck modal 
-    // TODO add publish Deck functionality
 </script>
 
 
@@ -73,13 +70,14 @@
             <p>{description}</p>
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4">
-                <div class="grid grid-rows-5 gap-2">
+                <div class="grid grid-rows-3 gap-2">
+                    <div class="badge badge-primary">Cards to learn: </div>
                     {#if published}
-                        <div class="badge badge-info">Published</div>
+                    <div class="badge badge-info">Published</div>
                     {:else}
-                        <div class="badge badge-error">Not Published</div>
+                    <div class="badge badge-error">Not Published</div>
                     {/if}
-                    <!-- <progress class="progress progress-success w-56 bg-gray-600 border-gray-600 border-1" value="{numberOfCardsLearned}" max="{cards.length}"></progress> -->
+                    Progress: <progress class="progress progress-success bg-gray-700" value={50} max={100}></progress>
                 </div>
             </div>
         </div>
