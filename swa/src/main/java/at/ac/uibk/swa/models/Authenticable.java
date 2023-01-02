@@ -96,6 +96,7 @@ public abstract class Authenticable implements UserDetails /*, CredentialsContai
 
     //region UserDetails Implementation
     @Override
+    @JsonIgnore
     public String getUsername() {
         return this.username;
     }
@@ -111,21 +112,25 @@ public abstract class Authenticable implements UserDetails /*, CredentialsContai
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
