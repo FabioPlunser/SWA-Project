@@ -34,6 +34,12 @@ public class DeckController {
     @Autowired
     private CardService cardService;
 
+
+    /**
+     * Creates a new Deck with all the given Cards.
+     * @param deck
+     * @return A MessageResponse indicating success or failure.
+     */
     @PostMapping("/api/create-deck")
     public RestResponse createDeck(
             @RequestBody final Deck deck
@@ -48,6 +54,13 @@ public class DeckController {
         return new MessageResponse(false, "Deck created");
     }
 
+    /**
+     * Updates the given Deck and cards of that Deck.
+     * The Deck must be owned by the current User.
+     *
+     * @param deck The Deck to update.
+     * @return A MessageResponse indicating success or failure.
+     */
     @PostMapping("/api/update-deck")
     public RestResponse updateDeck(
             @RequestBody final Deck deck
@@ -58,6 +71,12 @@ public class DeckController {
         return new MessageResponse(false, "Deck not updated");
     }
 
+
+    /**
+     * Sets the publicity of the given Deck.
+     * @param deckId
+     * @return
+     */
     @PutMapping("/api/set-publicity")
     public RestResponse setPublicity(
             @RequestParam(name = "deckId") final UUID deckId
@@ -68,6 +87,11 @@ public class DeckController {
         return new MessageResponse(false, "Deck publicity not changed");
     }
 
+    /**
+     * Deletes the given Deck.
+     * @param deckId
+     * @return
+     */
     @DeleteMapping("/api/delete-deck")
     public RestResponse deleteDeck(
             @RequestParam(name = "deckId") final UUID deckId
@@ -79,7 +103,8 @@ public class DeckController {
     }
 
     /**
-     * Gets all Decks that the current User can see.
+     * Gets all Decks that the current User is subscribed to or created.
+     * @return A List of Decks.
      */
     @GetMapping("/api/get-user-decks")
     public RestResponse getUserDecks()  {
@@ -92,6 +117,8 @@ public class DeckController {
 
     /**
      * Gets all Decks that the current User is subscribed to.
+     *
+     * @return A List of Decks.
      */
     @GetMapping("/api/get-subscribed-decks")
     public RestResponse getSubscribedDecks()  {
@@ -103,7 +130,8 @@ public class DeckController {
     }
 
     /**
-     * Gets all Decks that were created by the current User.
+     * Gets all Decks that the current User created.
+     * @return A List of Decks.
      */
     @GetMapping("/api/get-created-decks")
     public RestResponse getCreatedDecks()  {
@@ -114,11 +142,20 @@ public class DeckController {
         return new MessageResponse(false, "Could not get decks");
     }
 
+
+    /**
+     * Get all Decks a user has set to public.
+     * @return A List of Decks.
+     */
     @GetMapping("/api/get-published-decks")
     public RestResponse getPublishedDecks() {
         return new ListResponse<>(userDeckService.findAllAvailableDecks());
     }
 
+    /**
+     * Gets all Decks.
+     * @return A List of Decks.
+     */
     @AnyPermission(Permission.ADMIN)
     @GetMapping("/api/get-all-decks")
     public RestResponse getAllDecks() {
