@@ -8,6 +8,7 @@ import at.ac.uibk.swa.repositories.LearningProgressRepository;
 import at.ac.uibk.swa.service.card_service.learning_algorithm.LearningAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -177,6 +178,7 @@ public class CardService {
      * @param card card to be created
      * @return true if card has been created, false otherwise
      */
+    @Transactional
     public boolean create(Card card, UUID deckId) {
         if (card != null && card.getCardId() == null) {
             Deck deck = getDeckIfWriteAccess(deckId).orElse(null);

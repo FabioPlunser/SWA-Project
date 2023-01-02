@@ -8,6 +8,7 @@ import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -106,6 +107,7 @@ public class UserDeckService {
      * @param deck deck to be created
      * @return true if deck has been created, false otherwise
      */
+    @Transactional
     public boolean create(Deck deck) {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (deck != null && deck.getDeckId() == null && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {

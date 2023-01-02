@@ -11,9 +11,13 @@ import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.UserDeckService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,10 +42,18 @@ public class DeckController {
     public RestResponse createDeck(
             @RequestBody final Deck deck
     ) {
-        if (userDeckService.create(deck)) {
-            return new MessageResponse(true, "Deck created");
+        if (!userDeckService.create(deck)) {
+            return new MessageResponse(false, "Deck not created");
         }
-        return new MessageResponse(false, "Deck not created");
+        if (!deck.getCards().isEmpty()) {
+            for (Card card : deck.getCards()) {
+                if (!cardService.create(card, deck.getDeckId())) {
+                    return new MessageResponse(true, "Deck created " + deck.getDeckId() + " but unable to create cards");
+                }
+            }
+        }
+
+        return new MessageResponse(true, "Deck created " + deck.getDeckId());
     }
 
     @PostMapping("/api/updateDeck")

@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -64,8 +65,9 @@ public class Deck implements Serializable {
     @JoinColumn(name = "creator_id", nullable = false)
     private Person creator;
 
-    @JsonIgnore
+    @JsonIgnoreProperties(allowSetters = true)
     @Builder.Default
+    @Setter
     @OneToMany(
             mappedBy = "deck",
             orphanRemoval = true,

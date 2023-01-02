@@ -1,13 +1,19 @@
 package at.ac.uibk.swa.controllers.deck_controller;
 
+import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.repositories.CardRepository;
+import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.util.StringGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -25,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -39,6 +46,11 @@ class TestDeckControllerGeneral {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    DeckRepository deckRepository;
+    @Autowired
+    CardRepository cardRepository;
 
     private ObjectWriter writer;
 
@@ -69,15 +81,32 @@ class TestDeckControllerGeneral {
         // given: user created in database, logged in
         String token = createUserAndGetToken();
 
-        // when: creating a new deck
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode content = mapper.createObjectNode();
+        content.put("name", StringGenerator.deckName());
+        content.put("description", StringGenerator.deckDescription());
+        content.put("isPublic", true);
+        ArrayNode cards = mapper.createArrayNode();
+        for (int i = 0; i < 3; i++) {
+            ObjectNode card = mapper.createObjectNode();
+            card.put("frontText", StringGenerator.cardText());
+            card.put("backText", StringGenerator.cardText());
+            cards.addPOJO(card);
+        }
+        content.putPOJO("cards", cards);
+
+        // when: creating a new deck with 2 cards
+        String card = "{\"frontText\": \"" + StringGenerator.cardText() + "\", \"backText\": \"" + StringGenerator.cardText() + "\"}";
         mockMvc.perform(MockMvcRequestBuilders.post("/api/createDeck")
                         .header(HttpHeaders.AUTHORIZATION, token)
-                        .param("name", StringGenerator.deckName())
-                        .param("description", StringGenerator.deckDescription())
+                        .content(content.toString())
                         .contentType(MediaType.APPLICATION_JSON)
         // then:
         ).andExpectAll(
                 status().isOk()
-        );
+        ).andDo(print());
+
+        System.out.println(deckRepository.count());
+        System.out.println(cardRepository.count());
     }
 }
