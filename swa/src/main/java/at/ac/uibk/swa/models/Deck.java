@@ -71,6 +71,10 @@ public class Deck implements Serializable {
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Person> subscribedPersons = new ArrayList<>();
 
+    public boolean isCreator(Person person) {
+        return this.creator.equals(person);
+    }
+
     @Override
     public String toString() {
         return String.format("Name: %s - Description: %s - isDeleted: %s - isBlocked: %s - is Published: %s - Creator: %s - Cards: %s \n", name, description, isDeleted, isBlocked, isPublished, creator, cards);
@@ -78,11 +82,12 @@ public class Deck implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return (this == o) || ((o instanceof Deck d) && (this.deckId.equals(d.deckId)));
+        return (this == o) || ((o instanceof Deck d) && (this.deckId != null) && (this.deckId.equals(d.deckId)));
     }
 
     @Override
     public int hashCode() {
-        return deckId.hashCode();
+        // NOTE: This will intentionally throw an Exception if deckId is null.
+        return this.deckId.hashCode();
     }
 }

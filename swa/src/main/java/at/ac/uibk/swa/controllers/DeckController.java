@@ -10,10 +10,10 @@ import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.UserDeckService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -78,17 +78,40 @@ public class DeckController {
         return new MessageResponse(false, "Deck not deleted");
     }
 
+    /**
+     * Gets all Decks that the current User can see.
+     */
     @GetMapping("/api/get-user-decks")
-    public RestResponse getUserDecks(
-            @RequestParam(name = "personId") final UUID personId
-    ) throws JsonProcessingException {
+    public RestResponse getUserDecks()  {
+        Optional<List<Deck>> maybeDecks = userDeckService.getSavedNotOwnedDecks();
+        if (maybeDecks.isPresent()) {
+            return new ListResponse<>(maybeDecks.get());
+        }
+        return new MessageResponse(false, "Could not get decks");
+    }
+
+    /**
+     * Gets all Decks that the current User is subscribed to.
+     */
+    @GetMapping("/api/get-subscribed-decks")
+    public RestResponse getSubscribedDecks()  {
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        if (maybeDecks.isPresent()) {
+            return new ListResponse<>(maybeDecks.get());
+        }
+        return new MessageResponse(false, "Could not get decks");
+    }
+
+    /**
+     * Gets all Decks that were created by the current User.
+     */
+    @GetMapping("/api/get-created-decks")
+    public RestResponse getCreatedDecks()  {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllOwnedDecks();
         if (maybeDecks.isPresent()) {
-            List<Deck> decks = maybeDecks.get();
-            return new ListResponse<>(decks);
+            return new ListResponse<>(maybeDecks.get());
         }
-        //TODO warum hier personId zurückgeben?
-        return new MessageResponse(false, "getUserDecks" + personId + " failed");
+        return new MessageResponse(false, "Could not get decks");
     }
 
     @GetMapping("/api/get-published-decks")
@@ -104,7 +127,7 @@ public class DeckController {
 
     /**
      * Gets the Cards from the given Deck which should be learned.
-     * A Card should be learned if it's nextLearn-Date is before LocalDateTime.NOW
+     * A Card should be learned if it's nextLearn-Date is before {@link LocalDateTime#now()}
      *
      * @return A List of Cards that should be learned sorted by nextLearn-Date.
      */

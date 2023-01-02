@@ -78,7 +78,7 @@ public class Person extends Authenticable implements Serializable {
 
     @Override
     public String toString() {
-        return this.getUsername();
+        return super.toString();
     }
 
     @Override

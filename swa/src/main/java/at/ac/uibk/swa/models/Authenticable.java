@@ -81,12 +81,13 @@ public abstract class Authenticable implements UserDetails /*, CredentialsContai
 
     @Override
     public boolean equals(Object o) {
-        return (this == o) || ((o instanceof Authenticable a) && (this.id.equals(a.id)));
+        return (this == o) || ((o instanceof Authenticable a) && (this.id != null) && (this.id.equals(a.id)));
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        // NOTE: This will intentionally throw an Exception if cardId is null.
+        return this.id.hashCode();
     }
 
     public String toString() {
