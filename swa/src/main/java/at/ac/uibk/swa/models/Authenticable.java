@@ -24,7 +24,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 // TODO: Rework Password Storing
 public abstract class Authenticable implements UserDetails /*, CredentialsContainer */ {
 
