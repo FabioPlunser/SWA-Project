@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.models.Card;
+import at.ac.uibk.swa.models.annotations.BearerToken;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import at.ac.uibk.swa.service.CardService;
@@ -21,6 +22,7 @@ public class LearnController {
     @Autowired
     private CardService cardService;
 
+    @BearerToken
     @PutMapping("/api/learn")
     @ResponseStatus(HttpStatus.OK)
     public RestResponse learn(
