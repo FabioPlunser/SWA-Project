@@ -3,7 +3,6 @@ package at.ac.uibk.swa.controllers;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.models.annotations.AnyPermission;
-import at.ac.uibk.swa.models.annotations.BearerToken;
 import at.ac.uibk.swa.models.rest_responses.CreatedUserResponse;
 import at.ac.uibk.swa.models.rest_responses.ListResponse;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
@@ -62,7 +61,6 @@ public class PersonController {
      * @param permissions The Permissions the new User should have.
      * @return A RestResponse indicating whether the user could be created or not.
      */
-    @BearerToken
     @AnyPermission(Permission.ADMIN)
     @PostMapping("/api/create-user")
     public RestResponse create(
@@ -101,7 +99,6 @@ public class PersonController {
      * @param permissions The new Permissions
      * @return A RESTResponse indicating Success
      */
-    @BearerToken
     @AnyPermission(Permission.ADMIN)
     @PostMapping("/api/update-user")
     public RestResponse updateUser(
@@ -125,7 +122,6 @@ public class PersonController {
      * @param personId The ID of the User to delete
      * @return A RestResponse indicating whether the operation was successful or not.
      */
-    @BearerToken
     @AnyPermission(Permission.ADMIN)
     @DeleteMapping("/api/delete-user")
     public RestResponse deleteUser(
@@ -144,7 +140,6 @@ public class PersonController {
      *
      * @return A RestReponse containing a List of all users.
      */
-    @BearerToken
     @AnyPermission(Permission.ADMIN)
     @GetMapping("/api/get-all-users")
     public RestResponse getAllUsers() {
@@ -156,7 +151,6 @@ public class PersonController {
      *
      * @return A List of all possible Permissions.
      */
-    @BearerToken
     @AnyPermission(Permission.ADMIN)
     @GetMapping("/api/get-all-permissions")
     public RestResponse getAllPermissions() {

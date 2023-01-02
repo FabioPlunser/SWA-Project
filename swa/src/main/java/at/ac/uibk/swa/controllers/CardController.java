@@ -1,14 +1,9 @@
 package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.models.Card;
-import at.ac.uibk.swa.models.annotations.BearerToken;
 import at.ac.uibk.swa.models.rest_responses.ListResponse;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponse;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import at.ac.uibk.swa.service.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +23,6 @@ public class CardController {
     @Autowired
     private CardService cardService;
 
-    @BearerToken
     @PostMapping("/api/create-card")
     public RestResponse createCard(
             @RequestBody final Card card,
@@ -40,7 +34,6 @@ public class CardController {
         return new MessageResponse(false, "Card not created");
     }
 
-    @BearerToken
     @PutMapping("/api/update-card")
     public RestResponse updateCard(
             @RequestBody final Card card
@@ -51,7 +44,6 @@ public class CardController {
         return new MessageResponse(false, "Card not updated");
     }
 
-    @BearerToken
     @DeleteMapping("/api/delete-card")
     public RestResponse deleteCard(
             @RequestParam(name = "cardId") final UUID cardId
@@ -63,7 +55,6 @@ public class CardController {
         return new MessageResponse(false, "Card not deleted");
     }
 
-    @BearerToken
     @GetMapping("/api/get-cards-from-deck")
     public RestResponse getCardsByDeck(
             @RequestParam(name = "deckId") final UUID deckId

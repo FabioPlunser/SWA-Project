@@ -4,7 +4,6 @@ import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.annotations.AnyPermission;
-import at.ac.uibk.swa.models.annotations.BearerToken;
 import at.ac.uibk.swa.models.rest_responses.ListResponse;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponse;
@@ -35,7 +34,6 @@ public class DeckController {
     @Autowired
     private CardService cardService;
 
-    @BearerToken
     @PostMapping("/api/create-deck")
     public RestResponse createDeck(
             @RequestBody final Deck deck
@@ -50,7 +48,6 @@ public class DeckController {
         return new MessageResponse(false, "Deck created");
     }
 
-    @BearerToken
     @PostMapping("/api/update-deck")
     public RestResponse updateDeck(
             @RequestBody final Deck deck
@@ -61,7 +58,6 @@ public class DeckController {
         return new MessageResponse(false, "Deck not updated");
     }
 
-    @BearerToken
     @PutMapping("/api/set-publicity")
     public RestResponse setPublicity(
             @RequestParam(name = "deckId") final UUID deckId
@@ -72,7 +68,6 @@ public class DeckController {
         return new MessageResponse(false, "Deck publicity not changed");
     }
 
-    @BearerToken
     @DeleteMapping("/api/delete-deck")
     public RestResponse deleteDeck(
             @RequestParam(name = "deckId") final UUID deckId
@@ -86,7 +81,6 @@ public class DeckController {
     /**
      * Gets all Decks that the current User can see.
      */
-    @BearerToken
     @GetMapping("/api/get-user-decks")
     public RestResponse getUserDecks()  {
         Optional<List<Deck>> maybeDecks = userDeckService.getSavedNotOwnedDecks();
@@ -99,7 +93,6 @@ public class DeckController {
     /**
      * Gets all Decks that the current User is subscribed to.
      */
-    @BearerToken
     @GetMapping("/api/get-subscribed-decks")
     public RestResponse getSubscribedDecks()  {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
@@ -112,7 +105,6 @@ public class DeckController {
     /**
      * Gets all Decks that were created by the current User.
      */
-    @BearerToken
     @GetMapping("/api/get-created-decks")
     public RestResponse getCreatedDecks()  {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllOwnedDecks();
@@ -122,13 +114,11 @@ public class DeckController {
         return new MessageResponse(false, "Could not get decks");
     }
 
-    @BearerToken
     @GetMapping("/api/get-published-decks")
     public RestResponse getPublishedDecks() {
         return new ListResponse<>(userDeckService.findAllAvailableDecks());
     }
 
-    @BearerToken
     @AnyPermission(Permission.ADMIN)
     @GetMapping("/api/get-all-decks")
     public RestResponse getAllDecks() {
@@ -141,7 +131,6 @@ public class DeckController {
      *
      * @return A List of Cards that should be learned sorted by nextLearn-Date.
      */
-    @BearerToken
     @GetMapping("/api/get-all-cards-to-learn")
     public RestResponse getAllCardsToLearn(
             @RequestParam(name = "deckId") final UUID deckId
