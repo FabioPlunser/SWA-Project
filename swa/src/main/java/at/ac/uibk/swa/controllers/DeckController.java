@@ -38,10 +38,14 @@ public class DeckController {
     public RestResponse createDeck(
             @RequestBody final Deck deck
     ) {
-        if (userDeckService.create(deck)) {
-            return new MessageResponse(true, "Deck created");
+        List<Card> cards = deck.getCards();
+        System.out.println(deck);
+
+        if (!userDeckService.create(deck)) {
+            return new MessageResponse(false, "Deck not created");
         }
-        return new MessageResponse(false, "Deck not created");
+
+        return new MessageResponse(false, "Deck created");
     }
 
     @PostMapping("/api/update-deck")

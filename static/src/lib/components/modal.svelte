@@ -32,14 +32,14 @@
 <svelte:window on:keydown={handleKeyDown}/>
 
 {#if closeOnBodyClick}
-<div class="modal cursor-pointer" class:modal-open={open} on:keydown={handleKeyDown} on:click={close} >
-    <div transition:scale={{duration:150}} class="modal-box relative overflow-auto bg-slate-900">
+<div class="modal min-w-fit cursor-pointer max-w-none" class:modal-open={open} on:keydown={handleKeyDown} on:click={close} >
+    <div transition:scale={{duration:150}} class="modal-box w-auto relative overflow-auto bg-slate-900 max-w-none">
             <slot/>
     </div>
 </div>
 {:else}
-<div class="modal cursor-pointer" class:modal-open={open} on:keydown={handleKeyDown} on:click|self={close} >
-    <div transition:scale={{duration:150}} class="modal-box relative overflow-auto bg-slate-900">
+<div class="modal min-w-fit cursor-pointer max-w-none" class:modal-open={open} on:keydown={handleKeyDown} on:click|self={close} >
+    <div transition:scale={{duration:150}} class="modal-box w-auto relative overflow-auto bg-slate-900 max-w-none">
             <slot/>
     </div>
 </div>

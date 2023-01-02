@@ -3,7 +3,7 @@
 	import { redirect } from '../lib/utils/redirect';
     import { formFetch } from "../lib/utils/formFetch";
     import { tokenStore } from "../lib/stores/tokenStore";
-    import { personIdStore } from "../lib/stores/peronsIdStore";
+    import { personIdStore } from "../lib/stores/personIdStore";
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
 
     // TODO add validation
@@ -13,8 +13,9 @@
             alert(res.message);
             return;
         }
+        console.log(res);
         $tokenStore = res.token;
-        $personIdStore = res.personId;
+        $personIdStore = res.id;
         $userPermissionsStore= res.permissions;
 	}
     $: if($tokenStore.length > 30) redirect("");
