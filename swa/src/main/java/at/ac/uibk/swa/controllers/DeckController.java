@@ -88,6 +88,70 @@ public class DeckController {
     }
 
     /**
+     * Subscribes the current User to the given Deck.
+     * @param deckId
+     * @return
+     */
+    @PutMapping("/api/subscribe-deck")
+    public RestResponse subscribeDeck(
+            @RequestParam(name = "deckId") final UUID deckId
+    ) {
+        if (userDeckService.subscribe(deckId)) {
+            return new MessageResponse(true, "Deck subscribed");
+        }
+        return new MessageResponse(false, "Deck not subscribed");
+    }
+
+    /**
+     * Unsubscribes the current User from the given Deck.
+     * @param deckId
+     * @return
+     */
+    @PutMapping("/api/unsubscribe-deck")
+    public RestResponse unsubscribeDeck(
+            @RequestParam(name = "deckId") final UUID deckId
+    ) {
+        if (userDeckService.unsubscribe(deckId)) {
+            return new MessageResponse(true, "Deck unsubscribed");
+        }
+        return new MessageResponse(false, "Deck not unsubscribed");
+    }
+
+    /**
+     * Blocks the given Deck.
+     * Only Admins can block Decks.
+     * @param deckId
+     * @return
+     */
+    @AnyPermission(Permission.ADMIN)
+    @PutMapping("/api/block-deck")
+    public RestResponse blockDeck(
+            @RequestParam(name = "deckId") final UUID deckId
+    ) {
+        if (adminDeckService.block(deckId)) {
+            return new MessageResponse(true, "Deck blocked");
+        }
+        return new MessageResponse(false, "Deck not blocked");
+    }
+
+    /**
+     * Unblocks the given Deck.
+     * Only Admins can unblock Decks.
+     * @param deckId
+     * @return
+     */
+    @AnyPermission(Permission.ADMIN)
+    @PutMapping("/api/unblock-deck")
+    public RestResponse unblockDeck(
+            @RequestParam(name = "deckId") final UUID deckId
+    ) {
+        if (adminDeckService.unblock(deckId)) {
+            return new MessageResponse(true, "Deck unblocked");
+        }
+        return new MessageResponse(false, "Deck not unblocked");
+    }
+
+    /**
      * Deletes the given Deck.
      * @param deckId
      * @return
