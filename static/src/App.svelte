@@ -113,10 +113,9 @@
 	}
 
 	async function handleSubscribe(deck){
-		let res = await fetch(`/api/subscribe-deck`, {
+		let res = await fetch(`/api/subscribe-deck?deckId=${deck.deckId}`, {
 			method: "PUT",
 			headers: myHeaders,
-			body: JSON.stringify({deckId: deck.deckId})
 		});
 		res = await res.json();
 		addToastByRes(res);
@@ -129,6 +128,18 @@
 		});
 		res = await res.json();
 		addToastByRes(res);
+	}
+
+	function checkDeckInUserDeck(deck){
+		let found = false;
+		userDecks.then((decks) => {
+			decks.forEach((userDeck) => {
+				if(userDeck.deckId == deck.deckId){
+					found = true;
+				}
+			});
+		});
+		return found;
 	}
 	$: {
 		//set correct in userDeck array to selectedDeck
@@ -201,17 +212,20 @@
 					{:then publicDecks}
 						{#key publicDecks}
 							{#each publicDecks as deck}
-								{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
-									<div class="card bg-gray-700 p-5 w-fit min-w-fit">
-										<h1 class="card-title">{deck.name}</h1>
-										<p class="card-subtitle">{deck.description}</p>
-										{#if deck.subscribed}
-											<button class="btn btn-secondary" on:click={()=> handleUnsubscribe(deck)}>Unsubscribe</button>
-										{:else}
-										<button class="btn btn-primary" on:click={()=> handleSubscribe(deck)}>Subscribe</button>
-										{/if}
-									</div>
-								{/if}	
+								<!-- Only show Decks that are not created by logged in User -->
+								{#if checkDeckInUserDeck(deck)}
+									{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
+										<div class="card bg-gray-700 p-5 w-fit min-w-fit">
+											<h1 class="card-title">{deck.name}</h1>
+											<p class="card-subtitle">{deck.description}</p>
+											{#if deck.subscribed}
+												<button class="btn btn-secondary" on:click={()=> handleUnsubscribe(deck)}>Unsubscribe</button>
+											{:else}
+											<button class="btn btn-primary" on:click={()=> handleSubscribe(deck)}>Subscribe</button>
+											{/if}
+										</div>
+									{/if}	
+								{/if}
 							{/each}
 						{/key}
 					{/await}
