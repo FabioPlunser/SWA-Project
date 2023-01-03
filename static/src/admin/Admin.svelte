@@ -9,6 +9,8 @@
   import { get } from 'svelte/store';
   import { tokenStore } from '../lib/stores/tokenStore';
 	import { adminSelectedUserStore} from '../lib/stores/adminSelectedUserStore';
+  import Spinner from '../lib/components/Spinner.svelte';
+  import { addToastByRes } from '../lib/utils/addToStore';
   
   $: tokenValue = get(tokenStore);
   $: console.log($adminSelectedUserStore);
@@ -47,8 +49,8 @@
 
     let res = await fetch("api/get-all-users", requestOptions)
     res = await res.json();
-    users = res.items;
-
+    if(res.success) users = res.items;
+    else addToastByRes(res);
   }
 
   async function getAllPermission(){
@@ -62,7 +64,8 @@
 
     let res = await fetch("api/get-all-permissions", requestOptions)
     res = await res.json();
-    permissions = res.items;
+    if(res.success) permissions = res.items;
+    else addToastByRes(res);
     
   }
 
@@ -109,7 +112,6 @@
 
   }
 
-  $: console.log(users);
 </script>
 
 <svelte:head>
@@ -255,6 +257,9 @@
           </tr>
         </thead>
         <tbody>
+          {#if users.length === 0}
+            <Spinner/>
+          {:else}
           {#key users}
               {#each users as user}
                   {#if user.username.toLowerCase().includes(searchUsername.toLowerCase()) && user.email.toLowerCase().includes(searchEmail.toLowerCase()) && user.permissions.toString().toLowerCase().includes(searchPermission.toLowerCase())}
@@ -272,6 +277,7 @@
                   {/if}
               {/each}
             {/key}
+          {/if}
         </tbody>
       </table>
     </div>

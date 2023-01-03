@@ -182,6 +182,23 @@ public class DeckController {
     }
 
     /**
+     * Gets all Decks that given user has subscribed to or created.
+     * @return A List of Decks.
+     */
+    @AnyPermission(Permission.ADMIN)
+    @GetMapping("/api/get-given-user-decks")
+    public RestResponse getGivenUserDecks(
+            @RequestParam(name = "personId") final UUID personId
+    ){
+        //TODO add service method to get all decks of a given user
+        Optional<List<Deck>> maybeDecks = userDeckService.getDecksOfGivenPerson(personId);
+        if (maybeDecks.isPresent()) {
+            return new ListResponse<>(maybeDecks.get());
+        }
+        return new MessageResponse(false, "Could not get decks");
+    }
+
+    /**
      * Gets all Decks that the current User is subscribed to.
      *
      * @return A List of Decks.

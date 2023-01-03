@@ -7,72 +7,69 @@
   import { adminSelectedUserStore } from '../../lib/stores/adminSelectedUserStore';
 	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
   import { onMount } from "svelte";
+  import { addToastByRes } from "../../lib/utils/addToStore";
+  import Spinner from "../../lib/components/Spinner.svelte";
+
+  $: selectedUser = $adminSelectedUserStore;
+  $: {
+    if (!$tokenStore) {
+      redirect("login");
+    }
+  }
+  $: fetchDecks();
+
+
 
   let buttons = [
     { text: "Admin", action: () => redirect("admin") },
     { text: "Home", action: () => redirect("") },
     { text: "Logout",action: () => handleLogout()}
   ];
+  
+  let decks = [];
 
- 
-  $: selectedUser = $adminSelectedUserStore;
-  onMount(async () => {
-    await fetchDecks();
-  });
-
-  $: {
-    if (!$tokenStore) {
-      redirect("login");
-    }
-  }
-
-  let decks = [
-    {
-      id: 1, 
-      title: "Deck1",
-      description: "This is a deck",
-      blocked: false,
-      cards: [
-        { id: 1, question: "Deck1 question1", answer: "Deck1 answer1" },
-        { id: 2, question: "Deck1 question2", answer: "Deck1 answer2" }
-      ]
-    },
-    {
-      id: 2, 
-      title: "Deck2",
-      description: "This is a deck",
-      blocked: true,
-      cards: [
-        { id: 1, question: "Deck2 question1", answer: "Deck2 answer1" },
-        { id: 2, question: "Deck2 question2", answer: "Deck2 answer2" }
-      ]
-    },
-    {
-      id: 3, 
-      title: "Deck3",
-      blocked: false,
-      description: "This is a deck",
-      cards: [
-        { id: 1, question: "Deck3 question1", answer: "Deck3 answer1" },
-        { id: 2, question: "Deck3 question2", answer: "Deck3 answer2" }
-      ]
-    }
-  ]
+  const myHeaders = new Headers();
+  myHeaders.append("Authorization", "Bearer " + $tokenStore);
 
   async function fetchDecks(){
     selectedUser = $adminSelectedUserStore;
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + $tokenStore);
-    myHeaders.append("Content-Type", "application/json");
-
-    let res = await fetch("api/getUserDecks/personId " +  selectedUser.peronId, {
+  
+    let res = await fetch(`/api/get-given-user-decks?personId=${selectedUser.personId} `, {
       method: "GET",
       headers: myHeaders,
     });
     res = await res.json(); 
+    if(res.success) decks = res.items;
+    else addToastByRes(res);
   }
 
-  
+
+  async function blockDeck(deck){
+    let res = await fetch(`/api/block-deck?deckId=${deck.deckId} `, {
+      method: "PUT",
+      headers: myHeaders,
+    });
+    res = await res.json(); 
+    if(res.success) fetchDecks();
+    else{
+      addToastByRes(res);
+      
+    } 
+  }
+
+  async function unblockDeck(deck){
+    let res = await fetch(`/api/unblock-deck?deckId=${deck.deckId} `, {
+      method: "PUT",
+      headers: myHeaders,
+    });
+    res = await res.json(); 
+    if(res.success) fetchDecks();
+    else{
+      addToastByRes(res);
+    } 
+  }
+
+  $: console.log($adminSelectedDeckStore);
 </script>
 
 <svelte:head>
@@ -85,30 +82,38 @@
   <h1 class="flex justify-center text-2xl underline">Decks of {selectedUser.username}</h1>
   <br/>
   <div class="grid grid-cols-4 gap-4">
-    {#each decks as deck}
-      {#if deck.blocked}
-          <div class="card bg-slate-900 rounded-xl shadow-xl opacity-50">
-            <div class="card-body">
-              <h2 class="card-title">{deck.title}</h2>
-              <p class="card-text">{deck.description}</p>
-              <div class="card-actions">
-                <button class="btn btn-primary" on:click={()=>deck.blocked = !deck.blocked}>Unblock</button>
-                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
-              </div>
+    {#if decks.length === 0}
+      <Spinner/>
+    {:else}
+      {#key decks}
+        {#each decks as deck}
+          {#if deck.blocked}
+              <div class="card bg-slate-900 rounded-xl shadow-xl opacity-50">
+                <div class="card-body">
+                  <h2 class="card-title">{deck.name}</h2>
+                  <p class="card-text">{deck.description}</p>
+                  <div class="card-actions">
+                    <button class="btn btn-primary" on:click={()=>unblockDeck(deck)}>Unblock</button>
+                    <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
+                  </div>
+                </div>
             </div>
-        </div>
-      {:else}
-        <div class="card bg-slate-900 rounded-xl shadow-xl">
-            <div class="card-body">
-              <h2 class="card-title">{deck.title}</h2>
-              <p class="card-text">{deck.description}</p>
-              <div class="card-actions">
-                <button class="btn btn-primary" on:click={()=>deck.blocked = !deck.blocked}>Block</button>
-                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
-              </div>
+          {:else}
+            <div class="card bg-slate-900 rounded-xl shadow-xl">
+                <div class="card-body">
+                  <h2 class="card-title">{deck.name}</h2>
+                  <p class="card-text">{deck.description}</p>
+                  <div class="card-actions">
+                    <button class="btn btn-primary" on:click={()=>blockDeck(deck)}>Block</button>
+                    <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
+                  </div>
+                </div>
             </div>
-        </div>
-      {/if}
-    {/each}
+          {/if}
+        {/each}
+      {/key}
+    {/if}
+   
+
   </div>
 </main>

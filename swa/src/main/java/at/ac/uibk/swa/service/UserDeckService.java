@@ -9,6 +9,7 @@ import at.ac.uibk.swa.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -104,6 +105,22 @@ public class UserDeckService {
         return Optional.empty();
     }
 
+    /**
+     * Gets all decks a given user has created
+     * @param personId
+     * @return
+     */
+    public Optional<List<Deck>> getDecksOfGivenPerson(UUID personId){
+        Optional<Person> maybeUser = personRepository.findById(personId);
+        if (maybeUser.isPresent()) {
+            Person person = maybeUser.get();
+            return Optional.of(person.getCreatedDecks().stream()
+                    .filter(Predicate.not(Deck::isDeleted))
+                    .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
+                    .toList());
+        }
+        return Optional.empty();
+    }
     /**
      * Saves a deck to the repository
      *

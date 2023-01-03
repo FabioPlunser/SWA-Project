@@ -5,12 +5,10 @@
     import { tokenStore } from "../stores/tokenStore";
     import { addToast, addToastByRes } from '../utils/addToStore';
 
-
-
     export let deck; 
 
     console.log("deck", deck);
-    let { deckId, name, description, published} = deck;
+    let { deckId, name, description, published, blocked} = deck;
     
     
     let hover = false
@@ -63,6 +61,7 @@
 
 
 <!-- svelte-ignore a11y-mouse-events-have-key-events -->
+{#if !blocked}
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
         <div class="{hover ? "hidden" : "block"}" >
             <h1 class="underline flex justify-center text-xl">{name}</h1>
@@ -90,3 +89,14 @@
                 <button class="btn btn-primary" on:click={handleDeleteDeck}>Delete Deck</button>
         </div>
 </div>
+{/if}
+
+{#if blocked}
+<div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative opacity-50">
+    <div >
+        <h1 class="underline flex justify-center text-xl">{name}</h1>
+        <br class="my-4"/>
+        <p>{description}</p>
+    </div>
+</div>
+{/if}
