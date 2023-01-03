@@ -95,7 +95,6 @@ public abstract class Authenticable implements UserDetails /*, CredentialsContai
 
     //region UserDetails Implementation
     @Override
-    @JsonIgnore
     public String getUsername() {
         return this.username;
     }
