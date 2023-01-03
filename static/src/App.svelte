@@ -80,6 +80,7 @@
 			headers: myHeaders,
 		});
 		res = await res.json();
+		console.log(res);
 		if(res.success){
 			userDecks = res.items;
 			return res.items;
@@ -135,6 +136,7 @@
 			body: formData,
 		});
 		res = await res.json();
+		console.log(res);
 		addToastByRes(res);
 	}
 
@@ -158,24 +160,12 @@
 
 	function checkDeckInUserDeck(deck){
 		let found = false;
-		userDecks.then((decks) => {
-			decks.forEach((userDeck) => {
-				if(userDeck.deckId == deck.deckId){
-					found = true;
-				}
-			});
+		userDecks.forEach(userDeck => {
+			if(userDeck.deckId == deck.deckId){
+				found = true;
+			}
 		});
 		return found;
-	}
-	$: {
-		//set correct in userDeck array to selectedDeck
-		if(selectedDeck != null){
-			userDecks.forEach((deck, index) => {
-				if(deck.deckId == selectedDeck.deckId){
-					userDecks[index] = selectedDeck;
-				}
-			});
-		}
 	}
 </script>
 

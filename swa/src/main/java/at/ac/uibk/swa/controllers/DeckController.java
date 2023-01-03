@@ -64,6 +64,7 @@ public class DeckController {
             @RequestBody final Deck deck
     ) {
         //TODO also update the cards
+        //TODO fix unknown media type error can't update deck
         if (userDeckService.update(deck.getDeckId(), deck.getName(), deck.getDescription())) {
             return new MessageResponse(true, "Deck updated");
         }
@@ -187,6 +188,7 @@ public class DeckController {
      */
     @GetMapping("/api/get-user-decks")
     public RestResponse getUserDecks()  {
+        //TODO fixe JSON infinite recursion
         Optional<List<Deck>> maybeDecks = userDeckService.getSavedNotOwnedDecks();
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());

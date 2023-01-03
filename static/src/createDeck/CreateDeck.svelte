@@ -56,7 +56,7 @@
 
     let res = await fetch(action, requestOptions);
     res = await res.json();
-    
+    console.log(res);
     //if success reset form
     if(res.success){
       event.target.reset();
