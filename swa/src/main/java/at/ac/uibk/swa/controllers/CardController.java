@@ -56,10 +56,10 @@ public class CardController {
     }
 
     @GetMapping("/api/get-cards-from-deck")
+    //TODO: by oder from?
     public RestResponse getCardsByDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
-
         Optional<List<Card>> maybeCards = cardService.getAllCards(deckId);
         if (maybeCards.isPresent()) {
             return new ListResponse<>(maybeCards.get());

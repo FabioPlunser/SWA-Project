@@ -213,6 +213,7 @@ public class UserDeckService {
      * @param deckId if of the deck to publish
      * @return true if deck has been published, false otherwise
      */
+    //TODO: if deck already published, why should it return false and not just do nothing?
     public boolean publish(UUID deckId) {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {

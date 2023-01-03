@@ -63,6 +63,7 @@ public class AdminDeckService {
      * @param deckId if of the deck to be blocked
      * @return true if deck has been blocked, false otherwise
      */
+    //TODO: why return false if deck is already blocked and not just pass?
     public boolean block(UUID deckId) {
         Optional<Deck> maybeDeck = findById(deckId);
         if (maybeDeck.isPresent()) {

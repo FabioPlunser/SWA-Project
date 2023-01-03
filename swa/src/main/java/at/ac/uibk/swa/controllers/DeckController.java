@@ -44,6 +44,7 @@ public class DeckController {
     public RestResponse createDeck(
             @RequestBody final Deck deck
     ) {
+        //TODO: wozu sind die folgenden zwei Zeilen?
         List<Card> cards = deck.getCards();
         System.out.println(deck);
 
@@ -51,7 +52,7 @@ public class DeckController {
             return new MessageResponse(false, "Deck not created");
         }
 
-        return new MessageResponse(false, "Deck created");
+        return new MessageResponse(true, "Deck created");
     }
 
     /**
@@ -77,6 +78,7 @@ public class DeckController {
      * @param deckId
      * @return
      */
+    //TODO: why not separated by publish/unpublish?
     @PutMapping("/api/set-publicity")
     public RestResponse setPublicity(
             @RequestParam(name = "deckId") final UUID deckId
