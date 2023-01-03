@@ -55,7 +55,12 @@ public class CardController {
         return new MessageResponse(false, "Card not deleted");
     }
 
-    @GetMapping("/api/get-cards-from-deck")
+    /**
+     * Returns all Cards of the given Deck.
+     * @param deckId
+     * @return
+     */
+    @GetMapping("/api/get-cards-of-deck")
     public RestResponse getCardsByDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
