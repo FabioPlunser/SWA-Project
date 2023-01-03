@@ -6,8 +6,6 @@
     import { addToast, addToastByRes } from '../utils/addToToastStore';
 
     export let deck; 
-
-    console.log("deck", deck);
     let { deckId, name, description, published, blocked} = deck;
     
     

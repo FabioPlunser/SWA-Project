@@ -74,8 +74,6 @@
         getCardsFromDecK();
         newCards = [];
     }
-
-    $: console.log(cards);
     
 </script>
 

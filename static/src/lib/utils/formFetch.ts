@@ -25,12 +25,6 @@ export async function formFetch(e, token = "") {
       header: myHeaders,
       body: formdata,
     };
-    // for(let pair of formdata.entries()) {
-    //   console.log(pair[0]+ ', '+ pair[1]);
-    // }
-    // for(let pair of myHeaders.entries()) {
-    //   console.log(pair[0]+ ', '+ pair[1]);
-    // }
     let res = await fetch(action, requestOptions);
     return res = await res.json();
   }

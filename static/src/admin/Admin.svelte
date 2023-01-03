@@ -13,7 +13,6 @@
   import { addToastByRes } from '../lib/utils/addToToastStore';
   
   $: tokenValue = get(tokenStore);
-  $: console.log($adminSelectedUserStore);
   $: $adminSelectedUserStore = selectedUser;
 
   let users = [];

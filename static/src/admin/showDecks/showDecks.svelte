@@ -68,8 +68,6 @@
       addToastByRes(res);
     } 
   }
-
-  $: console.log($adminSelectedDeckStore);
 </script>
 
 <svelte:head>

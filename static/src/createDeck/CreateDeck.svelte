@@ -46,7 +46,6 @@
     formData.forEach((value, key) => object[key] = value);
     object.cards = cards; 
     var data = JSON.stringify(object);
-    console.log(object);
 
     
     const requestOptions = {

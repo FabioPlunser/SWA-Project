@@ -35,6 +35,7 @@
 	let adminShowBlockedDecks = true;
 	let adminShowDeletedDecks = true;
 	let adminSearch = "";
+	let page = 'my-decks';
 
 	let navButtons = [
 		{ text: `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`, action: () => { showPublicDecks = true; getPublicDecks()}},
@@ -112,6 +113,7 @@
 		res = await res.json();
 		if(res.success){
 			publicDecks = res.items;
+			
 			return res.items;
 		} 
 		else{
@@ -175,10 +177,6 @@
 			});
 		}
 	}
-
-	let page = 'my-decks';
-	$: console.log(userDecks)
-	$: console.log(adminShowBlockedDecks)
 </script>
 
 <svelte:head>

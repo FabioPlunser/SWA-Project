@@ -12,7 +12,7 @@
 
 
     function handleDispatch() {
-        // console.log("Send data of " + uniqueModalQualifier + " to server");
+
     }
     const previously_focused = typeof document !== 'undefined' && document.activeElement;
 	if (previously_focused) {
@@ -22,7 +22,6 @@
 		});
 	}
     function handleKeyDown(event) {
-        console.log(event.key);
         if (event.key === 'Escape') {
             close();
         }
