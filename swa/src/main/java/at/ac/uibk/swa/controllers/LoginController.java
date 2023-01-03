@@ -2,9 +2,11 @@ package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.config.person_authentication.AuthContext;
 import at.ac.uibk.swa.models.Person;
-import at.ac.uibk.swa.models.rest_responses.*;
+import at.ac.uibk.swa.models.rest_responses.AuthFailedResponse;
+import at.ac.uibk.swa.models.rest_responses.LoginResponse;
+import at.ac.uibk.swa.models.rest_responses.MessageResponse;
+import at.ac.uibk.swa.models.rest_responses.RestResponseEntity;
 import at.ac.uibk.swa.service.PersonService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,7 +43,6 @@ public class LoginController {
     @SneakyThrows
     @PostMapping(LOGIN_ENDPOINT)
     public RestResponseEntity getToken(
-            HttpServletResponse response,
             @RequestParam("username") final String username,
             @RequestParam("password") final String password
     ) {
@@ -67,9 +68,7 @@ public class LoginController {
      * @return A Message saying whether the Logout was successful or not.
      */
     @PostMapping(LOGOUT_ENDPOINT)
-    public RestResponseEntity deleteToken(
-            HttpServletResponse response
-    ) {
+    public RestResponseEntity deleteToken() {
         Optional<UUID> token = AuthContext.getLoginToken();
 
         if (token.isEmpty() || !personService.logout(token.get())) {

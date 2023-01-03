@@ -76,7 +76,7 @@ public class AuthContext {
      * @return The Token sent with the request (if a valid one was sent).
      */
     public static Optional<UUID> getLoginToken() {
-        return (Optional) getAuthentication().map(Authentication::getCredentials);
+        return getCurrentUser().map(Authenticable::getToken);
     }
 
     /**
