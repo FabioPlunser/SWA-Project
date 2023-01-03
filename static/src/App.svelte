@@ -54,7 +54,7 @@
 		});
 		res = await res.json();
 		if(res.success) return res.items;
-		else addToastByRes(res);
+		else  addToast("Error fetching all decks", "alert-error");
 
 	}
 
@@ -65,7 +65,7 @@
 		});
 		res = await res.json();
 		if(res.success) return res.items;
-		else addToastByRes(res);
+		else addToast("Error fetching created decks", "alert-error");
 
 	}
 
@@ -87,8 +87,8 @@
 			headers: myHeaders,
 		});
 		res = await res.json();
-		if(res.success) return res;
-		else addToastByRes(res);
+		if(res.success) return res.items;
+		else addToast("Error fetching publicDecks", "alert-error");
 	}
 	
 
