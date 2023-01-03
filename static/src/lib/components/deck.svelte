@@ -29,13 +29,24 @@
     
     async function handlePublishDeck(){
         published = !published;
-        let res = await fetch(`/api/set-publicity?deckId=${deckId}&isPublished=${published}`, {
-            method: "PUT",
-            headers: myHeaders,            
-        });
-        res = await res.json();
-        addToastByRes(res);
-        dispatch('publishDeck', "publishDeck");    
+        if(published){
+            let res = await fetch(`/api/publish?deckId=${deckId}`, {
+                method: "PUT",
+                headers: myHeaders,            
+            });
+            res = await res.json();
+            addToastByRes(res);
+            dispatch('publishDeck', "publishDeck");
+        }
+        if(!published){
+            let res = await fetch(`/api/unpublish?deckId=${deckId}`, {
+                method: "PUT",
+                headers: myHeaders,            
+            });
+            res = await res.json();
+            addToastByRes(res);
+            dispatch('publishDeck', "publishDeck");
+        }
     }
 
     async function handleDeleteDeck() {
