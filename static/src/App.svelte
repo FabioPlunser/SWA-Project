@@ -16,6 +16,7 @@
   	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
 
 
+
 	$: if($tokenStore.length < 30) redirect("login");
 	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
 	$: getUserDecks();

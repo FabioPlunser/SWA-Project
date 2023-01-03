@@ -4,12 +4,15 @@
 	import SvelteToast from '../lib/components/SvelteToast.svelte';
   import DualSideCard from './../lib/components/dualSideCard.svelte';
 
-  
+
   import { redirect } from "../lib/utils/redirect";
   import { handleLogout } from '../lib/utils/handleLogout';
   import { addToast, addToastByRes } from '../lib/utils/addToToastStore';
   import { tokenStore } from "../lib/stores/tokenStore";
 	import { personIdStore } from "../lib/stores/personIdStore";
+  import { Validators, validateForm, isFormValid} from "../lib/utils/Validators";
+  import { formFetch } from '../lib/utils/formFetch';
+
 
 
   let buttons = [
@@ -32,6 +35,19 @@
 
   }
 
+  let errors = {};
+  let form = {
+    name: {
+      validators: [Validators.required],
+    },
+    description: {
+      validators: [Validators.required],
+    },
+    isPublished: {
+      validators: [Validators.required],
+    },
+  };
+
   async function handleSubmit(event) {
     const action = event.target.action;
     const method = event.target.method;
@@ -40,9 +56,12 @@
     myHeader.append("Authorization", "Bearer " + $tokenStore);
     
     const formData = new FormData(event.target);
-    
-    var object = {};
+    errors = validateForm(event, form);
+    if(!isFormValid(errors)){
+        return;
+    }
 
+    var object = {};
     formData.forEach((value, key) => object[key] = value);
     object.cards = cards; 
     var data = JSON.stringify(object);
@@ -54,6 +73,7 @@
       body: data,
     }
 
+    
     let res = await fetch(action, requestOptions);
     res = await res.json();
     console.log(res);
@@ -84,25 +104,34 @@
       <div class="form-control">
         <label class="input-group">
         <span class="w-36">Name</span>
-        <input name="name" required type="text" placeholder="Softwarearchitecture" class="input input-bordered w-full bg-slate-900" />
+        <input name="name" type="text" placeholder="Softwarearchitecture" class="input input-bordered w-full bg-slate-900" />
         </label>
+        {#if errors?.name?.required?.error}
+          <span class="text-red-500">{errors.name.required.message}</span>
+        {/if}
       </div>
       <br class="pt-4"/>
       <div class="form-control">
         <label class="input-group">
         <span class="w-36">Description</span>
-        <textarea name="description" required placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full bg-slate-900" />
+        <textarea name="description" placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full bg-slate-900" />
         </label>
+        {#if errors?.description?.required?.error}
+          <span class="text-red-500">{errors.description.required.message}</span>
+        {/if}
       </div>
       <br class="pt-4"/>
       <div class="form-control">
         <label class="input-group">
         <span class="w-36">Publish</span>
-        <select name="isPublished" class="flex input w-full bg-slate-900" required>
-            <option selected value={false}>false</option>
+        <select name="isPublished" class="flex input w-full bg-slate-900">
+            <option value={false}>false</option>
             <option value={true}>true</option>
         </select>
         </label>
+        {#if errors?.isPublished?.required?.error}
+          <span class="text-red-500">{errors.isPublished.required.message}</span>
+        {/if}
       </div>
 
       <br class="pt-4"/>
