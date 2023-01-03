@@ -23,6 +23,13 @@ public class CardController {
     @Autowired
     private CardService cardService;
 
+
+    /**
+     * Creates a new Card and adds it to the given Deck.
+     * @param card
+     * @param deckId
+     * @return A MessageResponse indicating success or failure.
+     */
     @PostMapping("/api/create-card")
     public RestResponse createCard(
             @RequestBody final Card card,
@@ -34,6 +41,12 @@ public class CardController {
         return new MessageResponse(false, "Card not created");
     }
 
+
+    /**
+     * Updates the given Card.
+     * @param card
+     * @return A MessageResponse indicating success or failure.
+     */
     @PutMapping("/api/update-card")
     public RestResponse updateCard(
             @RequestBody final Card card
@@ -44,6 +57,11 @@ public class CardController {
         return new MessageResponse(false, "Card not updated");
     }
 
+    /**
+     * Deletes the given Card.
+     * @param cardId
+     * @return A MessageResponse indicating success or failure.
+     */
     @DeleteMapping("/api/delete-card")
     public RestResponse deleteCard(
             @RequestParam(name = "cardId") final UUID cardId
