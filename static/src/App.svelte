@@ -79,8 +79,13 @@
 			headers: myHeaders,
 		});
 		res = await res.json();
-		if(res.success) userDecks = res.items;
-		else addToast("Error fetching created decks", "alert-error");
+		if(res.success){
+			userDecks = res.items;
+			return res.items;
+		} 
+		else{
+			addToast("Error fetching created decks", "alert-error");
+		} 
 
 	}
 
@@ -90,9 +95,12 @@
 			headers: myHeaders,
 		});
 		res = await res.json();
-		if(res.success) subscribedDecks = res.items;
-		else {
-			addToast("Error fetching subscribedDecks", "alert-error");
+		if(res.success){
+			subscribedDecks = res.items;
+			return res.items;
+		} 
+		else{
+			addToast("Error fetching subscribed decks", "alert-error");
 		}
 	}
 
@@ -102,8 +110,13 @@
 			headers: myHeaders,
 		});
 		res = await res.json();
-		if(res.success) publicDecks = res.items;
-		else addToast("Error fetching publicDecks", "alert-error");
+		if(res.success){
+			publicDecks = res.items;
+			return res.items;
+		} 
+		else{
+			addToast("Error fetching public decks", "alert-error");
+		}
 	}
 	
 
@@ -218,8 +231,11 @@
 				<br class="mt-4"/>
 				<input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
 				<br class="mt-4"/>
+				{#await getPublicDecks()}
+					<Spinner/>
+				{:then publicDecks}
 					{#if publicDecks.length == 0}
-						<Spinner/>
+						<h1 class="text-2xl flex justify-center">No Decks Found</h1>
 					{:else}
 						{#key publicDecks}
 							<div class="grid grid-cols-4 gap-2">
@@ -242,6 +258,7 @@
 							</div>
 						{/key}
 					{/if}
+				{/await}
 			</div>
 
 			<div class="modal-action">
@@ -261,44 +278,52 @@
 	{#if page == "my-decks"}
 		<div>
 			<h1 class="text-4xl underline flex justify-center m-2">MyDecks</h1>
-				{#if userDecks.length == 0}
-					<Spinner />
-				{:else}
-					{#key userDecks}
-						<div class="grid grid-cols-4 gap-4">
-							{#each userDecks as deck}
-							<Deck 
-								{deck}
-								on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
-								on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-								on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
-								on:deleteDeck={()=> getUserDecks()}
-							/>
-							{/each}
-						</div>
-					{/key}
-				{/if}
+				{#await getUserDecks()}
+						<Spinner />
+				{:then userDecks}
+					{#if userDecks.length == 0}
+						<h1 class="text-2xl flex justify-center">No Decks Found</h1>
+					{:else}
+						{#key userDecks}
+							<div class="grid grid-cols-4 gap-4">
+								{#each userDecks as deck}
+								<Deck 
+									{deck}
+									on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+									on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+									on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
+									on:deleteDeck={()=> getUserDecks()}
+								/>
+								{/each}
+							</div>
+						{/key}
+					{/if}
+				{/await}
 		</div>
 
 		<div>
 			<h1 class="text-4xl underline flex justify-center m-2">Subscribed Decks</h1>
-				{#if subscribedDecks.length == 0}
-					<h1 class="flex justify-center">No subscribed Decks</h1>
-				{:else}
-					{#key subscribedDecks}
-						<div class="grid grid-cols-4 gap-4">
-							{#each subscribedDecks as deck}
-							<Deck 
-								{deck}
-								on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
-								on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-								on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
-								on:deleteDeck={()=> getSubscribedDecks()}
-							/>
-							{/each}
-						</div>	
-					{/key}
-				{/if}
+				{#await getSubscribedDecks()}
+						<Spinner />
+				{:then subscribedDecks}
+					{#if subscribedDecks.length == 0}
+						<h1 class="flex justify-center">No subscribed Decks</h1>
+					{:else}
+						{#key subscribedDecks}
+							<div class="grid grid-cols-4 gap-4">
+								{#each subscribedDecks as deck}
+								<Deck 
+									{deck}
+									on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+									on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+									on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
+									on:deleteDeck={()=> getSubscribedDecks()}
+								/>
+								{/each}
+							</div>	
+						{/key}
+					{/if}
+				{/await}
 		</div>
 	{/if}
 
