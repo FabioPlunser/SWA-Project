@@ -3,7 +3,7 @@
     const dispatch = createEventDispatcher();
 
     import { tokenStore } from "../stores/tokenStore";
-    import { addToast, addToastByRes } from '../utils/addToStore';
+    import { addToast, addToastByRes } from '../utils/addToToastStore';
 
     export let deck; 
 

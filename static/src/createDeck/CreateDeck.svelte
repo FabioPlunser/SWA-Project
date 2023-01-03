@@ -7,7 +7,7 @@
   
   import { redirect } from "../lib/utils/redirect";
   import { handleLogout } from '../lib/utils/handleLogout';
-  import { addToast, addToastByRes } from '../lib/utils/addToStore';
+  import { addToast, addToastByRes } from '../lib/utils/addToToastStore';
   import { tokenStore } from "../lib/stores/tokenStore";
 	import { personIdStore } from "../lib/stores/personIdStore";
 

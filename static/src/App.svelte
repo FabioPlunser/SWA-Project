@@ -4,7 +4,7 @@
 	import Modal from './lib/components/modal.svelte';
 	import MediaQuery from './lib/utils/mediaQuery.svelte';
 	import SvelteToast from './lib/components/SvelteToast.svelte';
-	import { addToast, addToastByRes } from './lib/utils/addToStore';
+	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
 	
 	import { redirect } from "./lib/utils/redirect";
 	import { tokenStore } from "./lib/stores/tokenStore";

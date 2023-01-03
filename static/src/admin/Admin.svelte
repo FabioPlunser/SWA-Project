@@ -10,7 +10,7 @@
   import { tokenStore } from '../lib/stores/tokenStore';
 	import { adminSelectedUserStore} from '../lib/stores/adminSelectedUserStore';
   import Spinner from '../lib/components/Spinner.svelte';
-  import { addToastByRes } from '../lib/utils/addToStore';
+  import { addToastByRes } from '../lib/utils/addToToastStore';
   
   $: tokenValue = get(tokenStore);
   $: console.log($adminSelectedUserStore);
