@@ -1,14 +1,14 @@
 
 <script lang="ts">
+	import { scale } from 'svelte/transition';
     import { createEventDispatcher, onDestroy } from 'svelte';
     const dispatch = createEventDispatcher();
 	const close = () => dispatch('close');
     /**
      * Id for modal must be unique
      */
-    export let uniqueModalQualifier = "title";
-    export let disableModalClick = false;
-    export let width = "w-96";
+    export let open = false;
+    export let closeOnBodyClick = true;
 
 
     function handleDispatch() {
@@ -29,20 +29,18 @@
     }
 </script>
 
+<svelte:window on:keydown={handleKeyDown}/>
 
-<input type="checkbox" id="{uniqueModalQualifier}" class="modal-toggle" on:keydown={handleKeyDown}/>
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-    {#if disableModalClick}
-        <label for="{uniqueModalQualifier}" id="modal-background" class="modal cursor-pointe">
-            <label class="modal-box relative overflow-auto bg-slate-900 w-fit h-fit" id="modal">
-                <slot/>
-            </label>
-        </label>
-    {:else}
-        <label for="{uniqueModalQualifier}" id="modal-background" class="modal cursor-pointe" on:click={close}>
-            <label class="modal-box relative overflow-auto bg-slate-900" id="modal">
-                <slot/>
-            </label>
-        </label>
-    {/if}
-
+{#if closeOnBodyClick}
+<div class="modal min-w-fit cursor-pointer max-w-none" class:modal-open={open} on:keydown={handleKeyDown} on:click={close} >
+    <div transition:scale={{duration:150}} class="modal-box w-auto relative overflow-auto bg-slate-900 max-w-none">
+            <slot/>
+    </div>
+</div>
+{:else}
+<div class="modal min-w-fit cursor-pointer max-w-none" class:modal-open={open} on:keydown={handleKeyDown} on:click|self={close} >
+    <div transition:scale={{duration:150}} class="modal-box w-auto relative overflow-auto bg-slate-900 max-w-none">
+            <slot/>
+    </div>
+</div>
+{/if}

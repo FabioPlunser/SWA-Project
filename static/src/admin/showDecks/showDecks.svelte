@@ -9,9 +9,9 @@
   import { onMount } from "svelte";
 
   let buttons = [
-    { tag: "button", id: "", text: "Admin", action: () => redirect("admin") },
-    { tag: "button", id: "", text: "Home", action: () => redirect("") },
-    { tag: "button", id: "", text: "Logout",action: () => handleLogout()}
+    { text: "Admin", action: () => redirect("admin") },
+    { text: "Home", action: () => redirect("") },
+    { text: "Logout",action: () => handleLogout()}
   ];
 
  
@@ -93,7 +93,7 @@
               <p class="card-text">{deck.description}</p>
               <div class="card-actions">
                 <button class="btn btn-primary" on:click={()=>deck.blocked = !deck.blocked}>Unblock</button>
-                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/showcards")}}>ShowCards</button>
+                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
               </div>
             </div>
         </div>
@@ -104,7 +104,7 @@
               <p class="card-text">{deck.description}</p>
               <div class="card-actions">
                 <button class="btn btn-primary" on:click={()=>deck.blocked = !deck.blocked}>Block</button>
-                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/showcards")}}>ShowCards</button>
+                <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
               </div>
             </div>
         </div>

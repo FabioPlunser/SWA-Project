@@ -8,10 +8,10 @@
 	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
   import { tokenStore} from '../../lib/stores/tokenStore';
   let buttons = [
-    { tag: "button", id: "", text: "Back", action: () => redirect("admin/showdecks") },
-    { tag: "button", id: "", text: "Admin", action: () => redirect("admin") },
-    { tag: "button", id: "", text: "Home", action: () => redirect("") },
-    { tag: "button", id: "", text: "Logout",action: () => handleLogout()}
+    { text: "Back", action: () => redirect("admin/showdecks") },
+    { text: "Admin", action: () => redirect("admin") },
+    { text: "Home", action: () => redirect("") },
+    { text: "Logout",action: () => handleLogout()}
   ];
 
   $: console.log("showCards: ", $adminSelectedDeckStore);

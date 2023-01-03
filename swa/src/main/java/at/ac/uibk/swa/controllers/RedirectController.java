@@ -5,6 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * Controller redirecting from Folders to their appropriate Index-Sites.
+ *
+ * @author Fabio Plunser
+ */
 @RestController
 @SuppressWarnings("unused")
 public class RedirectController {
@@ -36,7 +41,7 @@ public class RedirectController {
         modelAndView.setViewName("learn/index.html");
         return modelAndView;
     }
-    @GetMapping("/listcards")
+    @GetMapping("/list-cards")
     public ModelAndView listCards() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("listCards/index.html");
@@ -48,16 +53,22 @@ public class RedirectController {
         modelAndView.setViewName("admin/index.html");
         return modelAndView;
     }
-    @GetMapping("/admin/showdecks")
+    @GetMapping("/admin/show-decks")
     public ModelAndView showDecks() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("/admin/showDecks/index.html");
         return modelAndView;
     }
-    @GetMapping("/admin/showcards")
+    @GetMapping("/admin/show-cards")
     public ModelAndView showCards() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("/admin/showCards/index.html");
+        return modelAndView;
+    }
+    @GetMapping("/create-deck")
+    public ModelAndView createDeck() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/createDeck/index.html");
         return modelAndView;
     }
 }

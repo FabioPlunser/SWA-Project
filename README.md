@@ -1,40 +1,113 @@
-# Memory learning platform  
-Dev [![pipeline status](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/badges/dev/pipeline.svg)](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/commits/dev) 
-Main [![pipeline status](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/badges/main/pipeline.svg)](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/-/commits/main) 
-# Description
-This is a platform for learning with specific memory techniques. It is a web application that allows users to create and share decks of cards. Each card has a question and an answer. The user can then use the platform to study the cards. The platform has a built-in scheduler that will show the user cards at the right time. The platform is built with Spring Boot and Svelte.
+# Memory learning platform
+
+| Main | Dev |
+| ---- | --- |
+|[![pipeline status](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/badges/main/pipeline.svg)](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/-/commits/main) | [![pipeline status](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/badges/dev/pipeline.svg)](https://git.uibk.ac.at/informatik/qe/swapsws22/group6/g6t1/commits/dev) |
+
+# Description 
+
+This is a learning platform using the [SM-2 Spaced Learning Algorithm](https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm).
+
+It is a web application that allows users to create and share decks of cards. 
+Each card has a question and an answer. 
+
+The user can then use the platform to study the cards. 
+The platform keeps track of when the cards where learnt and automatically calculates when the card should be learned the next time. 
+
+The platform is built with Spring Boot as the Backend (in the ***swa***-Folder) and Svelte as the Frontend (in the ***static***-Folder).
+
+Spring Boot creates a Web-, and REST-Server that serves the static Files generated from Svelte and handles API-Requests.
+
+# Installation
+
+Because this project is divided into a Backend and Frontend, both have to be installed seperately.
+
+## Back-End
+
+The Backend can be used using Gradle or Maven.
+
+### Gradle
+
+```
+cd swa
+gradle init
+```
+
+### Maven
+
+```
+cd swa
+mvn install
+```
+
+### Development
+
+For backend development purposes, some Git Hooks were setup.
+
+These Hooks can be registered using the Shell Script in the Project Root:
+```
+./install_hooks.sh
+```
+
+## Front-End
+
+The Frontend is a Svelte Project and thus depends on Node.js and npm (see [NPM Installation Page](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm/)).
+
+Once Node.js and npm are set up, install the needed packages using npm:
+
+```
+cd static
+npm install
+```
 
 # Usage
-To run the project, use the following command:
-```bash
-mvn spring-boot:run
-``` 
-# Development
-## Frontend
-The frontend is built with Svelte. Please note that this requiers a working node.js installation.
 
-To start the frontend, use the following command:
-```bash
-cd static 
-npm i 
-npm run dev 
+## Front-End
+
+### Production
+
+The Frontend is served using the Backend.
+
+Because of this the Backend is compiled into ***/swa/main/resources/*** which is automatically served by the Backend when it is running.
+
+The Frontend can be compiled using:
+
 ```
-With npm run dev, the frontend will be served on https://localhost:5173. 
+cd static
+npm run build
+```
 
-Their you can see the live changes you make to the frontend.
+This will compile the source files in the ***static***-Folder and automatically place them in ***/swa/main/resources/***.
 
-Please note that the different pages of the frontend are only reachable 
-with example localhost:5173/login<span style="color: red">/</span>.<br/>
-The second slash is important, otherwise the page will not be found.
-Once the whole application runs and the backend serves the front end, this is not necessary anymore.
+### Development
 
-## Backend
-The backend is built with Spring Boot.
-It's main purpose is to serve the frontend and to provide an API for the frontend to communicate with the database.
+The Frontend can be started without the Backend using the Vite Development Server:
 
-It's easiest to use IntelliJ for development. <br/>
-It will download all the dependencies automatically.
+```
+cd static
+npm run dev
+```
 
+This will run the Development Server (on [localhost:5173](localhost:5173)) which will automatically recompile any changes to the source Files and display them in the browser.
+
+**Keep in mind:** The Backend will not run and thus any API-Calls will not be able to be completed.
+
+## Back-End
+
+### Gradle
+
+```
+cd swa
+gradle bootRun
+```
+
+### Maven
+
+```
+cd swa
+mvn spring-boot:run
+```
 
 # Contributing
+
 Only members of the group can contribute to this project.

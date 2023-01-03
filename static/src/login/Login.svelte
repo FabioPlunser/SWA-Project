@@ -3,13 +3,12 @@
     import { redirect } from "../lib/utils/redirect";
     import { formFetch } from "../lib/utils/formFetch";
     import { tokenStore } from "../lib/stores/tokenStore";
-    import { personIdStore } from "../lib/stores/peronsIdStore";
+    import { personIdStore } from "../lib/stores/personIdStore";
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
 
     // TODO add validation
     async function handleSubmit (e){
         let res = await formFetch(e);
-        console.log(res);
         if(!res.success){
             alert(res.message);
             return;
