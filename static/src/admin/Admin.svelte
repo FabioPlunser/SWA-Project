@@ -109,6 +109,7 @@
 
   }
 
+  $: console.log(users);
 </script>
 
 <svelte:head>
