@@ -1,30 +1,40 @@
 <script lang="ts">
 	import Nav from './lib/components/nav.svelte';
-	import Deck from './lib/components/deck.svelte';
-	import Modal from './lib/components/modal.svelte';
 	import MediaQuery from './lib/utils/mediaQuery.svelte';
 	import SvelteToast from './lib/components/SvelteToast.svelte';
-	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
 	
+	import Deck from './lib/components/deck.svelte';
+	import AdminDeck from './lib/components/adminDeck.svelte';
+	import Modal from './lib/components/modal.svelte';
+	import Spinner from './lib/components/Spinner.svelte';
+	
+	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
 	import { redirect } from "./lib/utils/redirect";
 	import { tokenStore } from "./lib/stores/tokenStore";
 	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
   	import { handleLogout } from './lib/utils/handleLogout';
   	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
-  	import { personIdStore } from './lib/stores/personIdStore';
-  import Spinner from './lib/components/Spinner.svelte';
 
 
 	$: if($tokenStore.length < 30) redirect("login");
+	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
 	$: getUserDecks();
+	$: getSubscribedDecks();
 	$: getPublicDecks();
 
+	let allDecks = [];
+	let userDecks = [];
+	let subscribedDecks = [];
+	let publicDecks = [];
 
 	let showEditDeckModal = false;
 	let selectedDeck = null;
 	let showPublicDecks = false;
 	let searchPublicDeckName = "";
-	let selectedPublicDeck = false;
+
+	let adminShowBlockedDecks = true;
+	let adminShowDeletedDecks = true;
+	let adminSearch = "";
 
 	let navButtons = [
 		{ text: `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`, action: () => { showPublicDecks = true; getPublicDecks()}},
@@ -53,8 +63,13 @@
 			headers: myHeaders,
 		});
 		res = await res.json();
-		if(res.success) return res.items;
-		else  addToast("Error fetching all decks", "alert-error");
+		if(res.success){
+			allDecks = res.items;
+			return res.items;
+		} 
+		else{
+			addToast("Error fetching all decks", "alert-error");
+		}
 
 	}
 
@@ -64,7 +79,7 @@
 			headers: myHeaders,
 		});
 		res = await res.json();
-		if(res.success) return res.items;
+		if(res.success) userDecks = res.items;
 		else addToast("Error fetching created decks", "alert-error");
 
 	}
@@ -75,7 +90,7 @@
 			headers: myHeaders,
 		});
 		res = await res.json();
-		if(res.success) return res.items;
+		if(res.success) subscribedDecks = res.items;
 		else {
 			addToast("Error fetching subscribedDecks", "alert-error");
 		}
@@ -87,16 +102,12 @@
 			headers: myHeaders,
 		});
 		res = await res.json();
-		if(res.success) return res.items;
+		if(res.success) publicDecks = res.items;
 		else addToast("Error fetching publicDecks", "alert-error");
 	}
 	
 
-	let allDecks = getAllDecks();
-	let userDecks = getUserDecks();
-	let subscribedDecks = getSubscribedDecks();
-	let publicDecks = getPublicDecks();
-
+	
 	
 	async function handleSubmit(event) {
 		const action = event.target.action;
@@ -154,6 +165,7 @@
 
 	let page = 'my-decks';
 	$: console.log(userDecks)
+	$: console.log(adminShowBlockedDecks)
 </script>
 
 <svelte:head>
@@ -206,30 +218,30 @@
 				<br class="mt-4"/>
 				<input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
 				<br class="mt-4"/>
-				<div class="grid grid-cols-4 gap-2">
-					{#await publicDecks}
+					{#if publicDecks.length == 0}
 						<Spinner/>
-					{:then publicDecks}
+					{:else}
 						{#key publicDecks}
-							{#each publicDecks as deck}
-								<!-- Only show Decks that are not created by logged in User -->
-								{#if checkDeckInUserDeck(deck)}
-									{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
-										<div class="card bg-gray-700 p-5 w-fit min-w-fit">
-											<h1 class="card-title">{deck.name}</h1>
-											<p class="card-subtitle">{deck.description}</p>
-											{#if deck.subscribed}
-												<button class="btn btn-secondary" on:click={()=> handleUnsubscribe(deck)}>Unsubscribe</button>
-											{:else}
-											<button class="btn btn-primary" on:click={()=> handleSubscribe(deck)}>Subscribe</button>
-											{/if}
-										</div>
-									{/if}	
-								{/if}
-							{/each}
+							<div class="grid grid-cols-4 gap-2">
+								{#each publicDecks as deck}
+									<!-- Only show Decks that are not created by logged in User -->
+									{#if checkDeckInUserDeck(deck)}
+										{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
+											<div class="card bg-gray-700 p-5 w-fit min-w-fit">
+												<h1 class="card-title">{deck.name}</h1>
+												<p class="card-subtitle">{deck.description}</p>
+												{#if deck.subscribed}
+													<button class="btn btn-secondary" on:click={()=> handleUnsubscribe(deck)}>Unsubscribe</button>
+												{:else}
+												<button class="btn btn-primary" on:click={()=> handleSubscribe(deck)}>Subscribe</button>
+												{/if}
+											</div>
+										{/if}	
+									{/if}
+								{/each}
+							</div>
 						{/key}
-					{/await}
-				</div>
+					{/if}
 			</div>
 
 			<div class="modal-action">
@@ -249,60 +261,100 @@
 	{#if page == "my-decks"}
 		<div>
 			<h1 class="text-4xl underline flex justify-center m-2">MyDecks</h1>
-			<div class="grid grid-cols-4 gap-4">
-				{#await userDecks}
+				{#if userDecks.length == 0}
 					<Spinner />
-				{:then userDecks}
+				{:else}
 					{#key userDecks}
-						{#each userDecks as deck}
-						<Deck 
-							{deck}
-							on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
-							on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-							on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
-							on:deleteDeck={()=> getUserDecks()}
-						/>
-						{/each}
+						<div class="grid grid-cols-4 gap-4">
+							{#each userDecks as deck}
+							<Deck 
+								{deck}
+								on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+								on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+								on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
+								on:deleteDeck={()=> getUserDecks()}
+							/>
+							{/each}
+						</div>
 					{/key}
-				{/await}
-			</div>
+				{/if}
 		</div>
 
 		<div>
 			<h1 class="text-4xl underline flex justify-center m-2">Subscribed Decks</h1>
-			<div class="grid grid-cols-4 gap-4">
-				{#await subscribedDecks}
-					<Spinner />
-				{:then subscribedDecks}
+				{#if subscribedDecks.length == 0}
+					<h1 class="flex justify-center">No subscribed Decks</h1>
+				{:else}
 					{#key subscribedDecks}
-						{#each subscribedDecks as deck}
-						<Deck 
-							{deck}
-							on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
-							on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-							on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
-							on:deleteDeck={()=> getSubscribedDecks()}
-						/>
-						{/each}
+						<div class="grid grid-cols-4 gap-4">
+							{#each subscribedDecks as deck}
+							<Deck 
+								{deck}
+								on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+								on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+								on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
+								on:deleteDeck={()=> getSubscribedDecks()}
+							/>
+							{/each}
+						</div>	
 					{/key}
-				{/await}
-			</div>	
+				{/if}
 		</div>
 	{/if}
 
-	{#if page == "all-decks"}
-		<div>
-			<div class="grid grid-cols-4 gap-4">
-			{#await allDecks}
-				<Spinner />
-			{:then allDecks}
-				{#key allDecks}
-					{#each allDecks as deck}
-					<Deck {deck}/>
-					{/each}
-				{/key}
-			{/await}
+	{#if page == "all-decks" && $userPermissionsStore.includes('ADMIN')}
+			<div class="flex flex-row justify-center">
+				<div class="form-control w-auto">
+					<label class="cursor-pointer label">
+					<h1 class="text-xl mx-2">Show blocked Decks:</h1> 
+					<input type="checkbox" class="toggle toggle-info toggle-lg" bind:checked={adminShowBlockedDecks} />
+					</label>
+				</div>
+				<div class="form-control w-auto">
+					<label class="cursor-pointer label">
+					<h1 class="text-xl mx-2">Show deleted Decks:</h1> 
+					<input type="checkbox" class="toggle toggle-info toggle-lg" bind:checked={adminShowDeletedDecks}  />
+					</label>
+				</div>
+				
 			</div>
+			
+			<div class="flex justify-center mx-auto w-full">
+				<label class="input-group flex justify-center w-full">
+				<span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+					<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+				  </svg></span>
+				<input type="text" placeholder="Search for word in Name or Description" class="input input-bordered" bind:value={adminSearch}/>
+				</label>
+			</div>
+
+		<br class="mt-4"/>
+
+
+		<div>
+			{#await getAllDecks()}
+				<Spinner/>
+			{:then allDecks}
+				{#if allDecks.length == 0}
+					<h1 class="flex justify-center">No Decks</h1>
+				{:else}
+					{#key allDecks}
+						<div class="grid grid-cols-4 gap-4">
+							{#each allDecks as deck}
+								{#if deck.name.includes(adminSearch) || deck.description.includes(adminSearch)}
+									{#if adminShowBlockedDecks && deck.blocked}
+										<AdminDeck {deck}/>
+									{:else if adminShowDeletedDecks && deck.deleted}
+										<AdminDeck {deck}/>
+									{:else if !deck.blocked && !deck.deleted}
+										<AdminDeck {deck}/>
+									{/if}
+								{/if}
+							{/each}
+						</div>
+					{/key}
+				{/if}
+			{/await}
 		</div>
 	{/if}
 </main>
