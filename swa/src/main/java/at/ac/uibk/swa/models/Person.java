@@ -44,7 +44,7 @@ public class Person extends Authenticable implements Serializable {
     private String email;
 
     @Builder.Default
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OnlyDeserialize
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(
             mappedBy = "creator",
