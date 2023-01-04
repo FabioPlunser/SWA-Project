@@ -14,6 +14,7 @@
 	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
   	import { handleLogout } from './lib/utils/handleLogout';
   	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
+  	import { formFetch } from './lib/utils/formFetch';
 
 
 
@@ -123,22 +124,22 @@
 		}
 	}
 	
-
-	
-	
 	async function handleSubmit(event) {
-		const action = event.target.action;
-		const method = event.target.method.toUpperCase();
-		const formData = new FormData(event.target);
+		// const action = event.target.action;
+		// const method = event.target.method.toUpperCase();
+		// const formData = new FormData(event.target);
 		
-		let res = await fetch(action, {
-			method: method,
-			headers: myHeaders,
-			body: formData,
-		});
-		res = await res.json();
+		let res = await formFetch(event, true);
 		console.log(res);
-		addToastByRes(res);
+		
+		// let res = await fetch(action, {
+		// 	method: method,
+		// 	headers: myHeaders,
+		// 	body: formData,
+		// });
+		// res = await res.json();
+		// console.log(res);
+		// addToastByRes(res);
 	}
 
 	async function handleSubscribe(deck){

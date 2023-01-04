@@ -3,14 +3,22 @@ import { tokenStore } from "../stores/tokenStore";
 import { get } from "svelte/store";
 
 
-export async function formFetch(e) {
+export async function formFetch(e, json?: boolean) {
   const action = e.target.action;
   const method = e.target.method.toUpperCase();
-  const formData = new FormData(e.target);
+  let formData = new FormData(e.target);
 
 
   var myHeaders = new Headers();
   myHeaders.append("Authorization", "Bearer " + get(tokenStore));
+
+  if(json) {
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+      data[key] = value;
+    }
+    formData = JSON.stringify(data);
+  }
 
   if(method === 'GET') {
     var requestOptions = {
@@ -24,6 +32,7 @@ export async function formFetch(e) {
     }
     return res;
   }
+  
   if(method === 'POST') {
     var requestOptions = {
       method: 'POST',

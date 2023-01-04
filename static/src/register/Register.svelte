@@ -29,7 +29,7 @@
             return;
         }
 
-        let res = await formFetch(e);
+        let res = await formFetch(e, false);
         if(!res.success){
             return;
         }
