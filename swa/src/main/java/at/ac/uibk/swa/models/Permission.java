@@ -16,6 +16,14 @@ public enum Permission implements GrantedAuthority {
         return Set.of(USER);
     }
 
+    public static Set<Permission> allPermissions() {
+        return Set.of(USER, ADMIN);
+    }
+
+    public static Set<GrantedAuthority> allAuthorities() {
+        return Set.of(USER, ADMIN);
+    }
+
     @Override
     public String getAuthority() {
         return this.toString();
