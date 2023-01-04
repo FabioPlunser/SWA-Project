@@ -13,7 +13,6 @@
             alert(res.message);
             return;
         }
-        console.log(res);
         $tokenStore = res.token;
         $personIdStore = res.id;
         $userPermissionsStore= res.permissions;

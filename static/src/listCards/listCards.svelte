@@ -8,7 +8,7 @@
     import { tokenStore } from "../lib/stores/tokenStore";
     import { userSelectedDeckStore } from "../lib/stores/userSelectedDeckStore";
     import { handleLogout } from '../lib/utils/handleLogout';
-  import { addToastByRes } from "../lib/utils/addToStore";
+  import { addToastByRes } from "../lib/utils/addToToastStore";
     
     $: if($tokenStore.length < 30) redirect("login");
     $: getCardsFromDecK();
@@ -74,8 +74,6 @@
         getCardsFromDecK();
         newCards = [];
     }
-
-    $: console.log(cards);
     
 </script>
 

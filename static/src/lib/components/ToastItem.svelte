@@ -73,9 +73,6 @@
   function handleKeydown(e){
     if (e instanceof KeyboardEvent && ['Enter', ' '].includes(e.key)) close()
   }
-
-  // $: console.log("theme " + item.theme)
-  // $: console.log("theme " + item.theme.toString().length)
 </script>
   
 <div class="alert {item.theme.toString().length>0 ? `${item.theme.toString()}` : "alert-info"}">

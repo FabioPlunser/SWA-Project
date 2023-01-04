@@ -6,7 +6,6 @@
     import { addToast, addToastByRes } from '../utils/addToToastStore';
 
     export let deck; 
-
     let { deckId, name, description, published, blocked} = deck;
     
     
@@ -22,31 +21,29 @@
     const myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + $tokenStore);
     
-    function handleEditDeck() {
-        dispatch('editDeck', "editDeck");
+    async function handleBlockDeck(){
+        blocked = !blocked;
+        if(blocked){
+            let res = await fetch(`/api/block-deck?deckId=${deckId}`, {
+                method: "PUT",
+                headers: myHeaders,            
+            });
+            res = await res.json();
+            addToastByRes(res);
+            dispatch('blockDeck', "blockDeck");
+        }
+        if(!blocked){
+            let res = await fetch(`/api/unblock-deck?deckId=${deckId}`, {
+                method: "PUT",
+                headers: myHeaders,            
+            });
+            res = await res.json();
+            addToastByRes(res);
+            dispatch('blockDeck', "blockDeck");
+        }
     }
     
-    async function handlePublishDeck(){
-        published = !published;
-        if(published){
-            let res = await fetch(`/api/publish?deckId=${deckId}`, {
-                method: "PUT",
-                headers: myHeaders,            
-            });
-            res = await res.json();
-            addToastByRes(res);
-            dispatch('publishDeck', "publishDeck");
-        }
-        if(!published){
-            let res = await fetch(`/api/unpublish?deckId=${deckId}`, {
-                method: "PUT",
-                headers: myHeaders,            
-            });
-            res = await res.json();
-            addToastByRes(res);
-            dispatch('publishDeck', "publishDeck");
-        }
-    }
+    
 
     async function handleDeleteDeck() {
         let res = await fetch(`/api/delete-deck?deckId=${deckId}`, {
@@ -57,15 +54,7 @@
         addToastByRes(res);
         dispatch('deleteDeck', "deleteDeck");
     }
-    
-    function handleListCards() {
-        dispatch('listCards', "listCards");
-    
-    }
-    
-    function handleLearnDeck(){
-        dispatch('learnDeck', "learnDeck");
-    }
+
     
 </script>
 
@@ -92,21 +81,23 @@
         </div>
 
         <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
-                <button class="btn btn-primary" on:click={handleLearnDeck}>Learn Deck</button>
-                <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
-                <button class="btn btn-primary" on:click={handleEditDeck}>Edit Deck</button>
-                <button class="btn {published ? "btn-secondary" : "btn-primary"}" on:click={handlePublishDeck}>Publish Deck</button>
+                <button class="btn btn-primary" on:click={handleBlockDeck}>Block Deck</button>
                 <button class="btn btn-primary" on:click={handleDeleteDeck}>Delete Deck</button>
         </div>
 </div>
 {/if}
 
 {#if blocked}
-<div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative opacity-50">
-    <div >
+<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+<div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative opacity-50" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
+    <div class="{hover ? "hidden" : "block"}" >
         <h1 class="underline flex justify-center text-xl">{name}</h1>
         <br class="my-4"/>
         <p>{description}</p>
+    </div>
+
+    <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
+        <button class="btn btn-primary" on:click={handleBlockDeck}>Unblock Deck</button>
     </div>
 </div>
 {/if}

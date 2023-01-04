@@ -125,7 +125,7 @@ public class UserDeckService {
      * Saves a deck to the repository
      *
      * @param deck deck to save
-     * @return deck that has been saved if successfull, null otherwise
+     * @return deck that has been saved if successful, null otherwise
      */
     private Deck save(Deck deck) {
         try {
@@ -142,6 +142,7 @@ public class UserDeckService {
      * @return true if deck has been created, false otherwise
      */
     public boolean create(Deck deck) {
+        //TODO change to also create and save the cards
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (deck != null && deck.getDeckId() == null && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
             deck.setCreator(person);
@@ -173,6 +174,7 @@ public class UserDeckService {
      * @return true if the deck was updated, false otherwise
      */
     public boolean update(UUID deckId, String name, String description) {
+        //TODO also update the cards of given deck
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
             Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);

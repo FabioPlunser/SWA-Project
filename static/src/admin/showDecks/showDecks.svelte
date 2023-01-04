@@ -7,7 +7,7 @@
   import { adminSelectedUserStore } from '../../lib/stores/adminSelectedUserStore';
 	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
   import { onMount } from "svelte";
-  import { addToastByRes } from "../../lib/utils/addToStore";
+  import { addToastByRes } from "../../lib/utils/addToToastStore";
   import Spinner from "../../lib/components/Spinner.svelte";
 
   $: selectedUser = $adminSelectedUserStore;
@@ -68,8 +68,6 @@
       addToastByRes(res);
     } 
   }
-
-  $: console.log($adminSelectedDeckStore);
 </script>
 
 <svelte:head>

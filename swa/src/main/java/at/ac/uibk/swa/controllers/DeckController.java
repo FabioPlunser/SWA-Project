@@ -44,10 +44,7 @@ public class DeckController {
     public RestResponse createDeck(
             @RequestBody final Deck deck
     ) {
-        //TODO: wozu sind die folgenden zwei Zeilen?
-        List<Card> cards = deck.getCards();
-        System.out.println(deck);
-
+        //TODO doesn't include creating the cards yet needs to be done in userDeckService.create
         if (!userDeckService.create(deck)) {
             return new MessageResponse(false, "Deck not created");
         }
@@ -66,6 +63,8 @@ public class DeckController {
     public RestResponse updateDeck(
             @RequestBody final Deck deck
     ) {
+        //TODO also update the cards
+        //TODO fix unknown media type error can't update deck
         if (userDeckService.update(deck.getDeckId(), deck.getName(), deck.getDescription())) {
             return new MessageResponse(true, "Deck updated");
         }
@@ -74,13 +73,12 @@ public class DeckController {
 
 
     /**
-     * Sets the publicity of the given Deck.
+     * Sets given deck to public.
      * @param deckId
      * @return
      */
-    //TODO: why not separated by publish/unpublish?
-    @PutMapping("/api/set-publicity")
-    public RestResponse setPublicity(
+    @PutMapping("/api/publish")
+    public RestResponse publish(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.publish(deckId)) {
@@ -88,6 +86,22 @@ public class DeckController {
         }
         return new MessageResponse(false, "Deck publicity not changed");
     }
+
+    /**
+     * Sets given deck to private.
+     * @param deckId
+     * @return
+     */
+    @PutMapping("/api/unpublish")
+    public RestResponse unpublish(
+            @RequestParam(name = "deckId") final UUID deckId
+    ) {
+        if (userDeckService.unpublish(deckId)) {
+            return new MessageResponse(true, "Deck publicity changed");
+        }
+        return new MessageResponse(false, "Deck publicity not changed");
+    }
+
 
     /**
      * Subscribes the current User to the given Deck.
@@ -174,6 +188,7 @@ public class DeckController {
      */
     @GetMapping("/api/get-user-decks")
     public RestResponse getUserDecks()  {
+        //TODO fixe JSON infinite recursion
         Optional<List<Deck>> maybeDecks = userDeckService.getSavedNotOwnedDecks();
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());
@@ -190,7 +205,6 @@ public class DeckController {
     public RestResponse getGivenUserDecks(
             @RequestParam(name = "personId") final UUID personId
     ){
-        //TODO add service method to get all decks of a given user
         Optional<List<Deck>> maybeDecks = userDeckService.getDecksOfGivenPerson(personId);
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());
@@ -200,7 +214,6 @@ public class DeckController {
 
     /**
      * Gets all Decks that the current User is subscribed to.
-     *
      * @return A List of Decks.
      */
     @GetMapping("/api/get-subscribed-decks")

@@ -7,7 +7,7 @@
   
   import { redirect } from "../lib/utils/redirect";
   import { handleLogout } from '../lib/utils/handleLogout';
-  import { addToast, addToastByRes } from '../lib/utils/addToStore';
+  import { addToast, addToastByRes } from '../lib/utils/addToToastStore';
   import { tokenStore } from "../lib/stores/tokenStore";
 	import { personIdStore } from "../lib/stores/personIdStore";
 
@@ -46,7 +46,6 @@
     formData.forEach((value, key) => object[key] = value);
     object.cards = cards; 
     var data = JSON.stringify(object);
-    console.log(object);
 
     
     const requestOptions = {
@@ -57,7 +56,7 @@
 
     let res = await fetch(action, requestOptions);
     res = await res.json();
-    
+    console.log(res);
     //if success reset form
     if(res.success){
       event.target.reset();

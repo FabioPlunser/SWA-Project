@@ -5,7 +5,6 @@ export function addToast(message='', theme='alert-info') {
 }
 
 export function addToastByRes(res:Response=null) {
-    console.log(res)
     if(res.success) {
         addToast(res.message, 'alert-success')
     }
