@@ -54,7 +54,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	// Test (in-memory) Database
-	testImplementation 'com.h2database:h2'
+	/* testImplementation */ implementation 'com.h2database:h2'
 
 	// Spring Dev Tools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
