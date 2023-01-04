@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 public class RestResponseEntity extends ResponseEntity<RestResponse> {
     public RestResponseEntity(@NonNull RestResponse body) {
         super(body, body.getStatusCode());
-        super.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        // TODO needs further investigation why this is not working
+        // super.getHeaders().setContentType(MediaType.APPLICATION_JSON);
     }
 }
