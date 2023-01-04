@@ -46,7 +46,7 @@
 
   async function blockDeck(deck){
     let res = await fetch(`/api/block-deck?deckId=${deck.deckId} `, {
-      method: "PUT",
+      method: "POST",
       headers: myHeaders,
     });
     res = await res.json(); 
@@ -59,7 +59,7 @@
 
   async function unblockDeck(deck){
     let res = await fetch(`/api/unblock-deck?deckId=${deck.deckId} `, {
-      method: "PUT",
+      method: "POST",
       headers: myHeaders,
     });
     res = await res.json(); 

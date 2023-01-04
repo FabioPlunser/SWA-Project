@@ -84,6 +84,13 @@ public abstract class RestResponse implements Serializable {
          * Indicate that the Operation failed.
          * Synonymous with {@link RestResponseBuilder#success}(false)
          */
+        public B notOk() {
+            return this.success(false);
+        }
+        /**
+         * Indicate that the Operation failed.
+         * Synonymous with {@link RestResponseBuilder#success}(false)
+         */
         public B error() {
             return this.success(false);
         }

@@ -36,9 +36,15 @@ public class CardController {
             @RequestParam(name = "deckId") final UUID deckId
             ) {
         if (cardService.create(card, deckId)) {
-            return new MessageResponse(true, "Card created");
+            return MessageResponse.builder()
+                .ok()
+                .message("Card created")
+                .build();
         }
-        return new MessageResponse(false, "Card not created");
+        return MessageResponse.builder()
+            .notOk()
+            .message("Card not created")
+            .build();
     }
 
 
@@ -47,14 +53,20 @@ public class CardController {
      * @param card
      * @return A MessageResponse indicating success or failure.
      */
-    @PutMapping("/api/update-card")
+    @PostMapping("/api/update-card")
     public RestResponse updateCard(
             @RequestBody final Card card
     ) {
         if (cardService.update(card.getCardId(), card.getFrontText(), card.getBackText(), card.isFlipped())) {
-            return new MessageResponse(true, "Card updated");
+            return MessageResponse.builder()
+                .ok()
+                .message("Card updated")
+                .build();
         }
-        return new MessageResponse(false, "Card not updated");
+        return MessageResponse.builder()
+            .notOk()
+            .message("Card not updated")
+            .build();
     }
 
     /**
@@ -68,9 +80,15 @@ public class CardController {
     ) {
         // TODO: Also delete associated LearningProgresses (maybe cascade delete using orm?)
         if (cardService.delete(cardId)){
-            return new MessageResponse(true, "Card deleted");
+            return MessageResponse.builder()
+                .ok()
+                .message("Card deleted")
+                .build();
         }
-        return new MessageResponse(false, "Card not deleted");
+        return MessageResponse.builder()
+            .notOk()
+            .message("Card not deleted")
+            .build();
     }
 
     /**
@@ -87,6 +105,9 @@ public class CardController {
         if (maybeCards.isPresent()) {
             return new ListResponse<>(maybeCards.get());
         }
-        return new MessageResponse(false, "No cards found");
+        return MessageResponse.builder()
+            .notOk()
+            .message("No Cards found")
+            .build();
     }
 }

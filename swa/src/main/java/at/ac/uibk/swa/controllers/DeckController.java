@@ -11,6 +11,7 @@ import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.UserDeckService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -46,10 +47,10 @@ public class DeckController {
     ) {
         //TODO doesn't include creating the cards yet needs to be done in userDeckService.create
         if (!userDeckService.create(deck)) {
-            return new MessageResponse(false, "Deck not created");
+            return MessageResponse.builder().notOk().message("Deck could not be created.").build();
         }
 
-        return new MessageResponse(true, "Deck created");
+        return MessageResponse.builder().ok().message("Deck created successfully.").build();
     }
 
     /**
@@ -66,9 +67,15 @@ public class DeckController {
         //TODO also update the cards
         //TODO fix unknown media type error can't update deck
         if (userDeckService.update(deck.getDeckId(), deck.getName(), deck.getDescription())) {
-            return new MessageResponse(true, "Deck updated");
+            return MessageResponse.builder()
+                    .ok()
+                    .message("Deck updated")
+                    .build();
         }
-        return new MessageResponse(false, "Deck not updated");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Deck not updated")
+                .build();
     }
 
 
@@ -77,14 +84,20 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @PutMapping("/api/publish")
+    @PostMapping("/api/publish")
     public RestResponse publish(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.publish(deckId)) {
-            return new MessageResponse(true, "Deck publicity changed");
+            return MessageResponse.builder()
+                    .ok()
+                    .message("Deck published")
+                    .build();
         }
-        return new MessageResponse(false, "Deck publicity not changed");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Deck publicity not changed")
+                .build();
     }
 
     /**
@@ -92,14 +105,20 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @PutMapping("/api/unpublish")
+    @PostMapping("/api/unpublish")
     public RestResponse unpublish(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.unpublish(deckId)) {
-            return new MessageResponse(true, "Deck publicity changed");
+            return MessageResponse.builder()
+                    .ok()
+                    .message("Deck unpublished")
+                    .build();
         }
-        return new MessageResponse(false, "Deck publicity not changed");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Deck publicity not changed")
+                .build();
     }
 
 
@@ -108,14 +127,20 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @PutMapping("/api/subscribe-deck")
+    @PostMapping("/api/subscribe-deck")
     public RestResponse subscribeDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.subscribe(deckId)) {
-            return new MessageResponse(true, "Deck subscribed");
+            return MessageResponse.builder()
+                    .ok()
+                    .message("Deck subscribed")
+                    .build();
         }
-        return new MessageResponse(false, "Deck not subscribed");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Deck not subscribed")
+                .build();
     }
 
     /**
@@ -123,14 +148,20 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @PutMapping("/api/unsubscribe-deck")
+    @PostMapping("/api/unsubscribe-deck")
     public RestResponse unsubscribeDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.unsubscribe(deckId)) {
-            return new MessageResponse(true, "Deck unsubscribed");
+            return MessageResponse.builder()
+                    .ok()
+                    .message("Deck unsubscribed")
+                    .build();
         }
-        return new MessageResponse(false, "Deck not unsubscribed");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Deck not unsubscribed")
+                .build();
     }
 
     /**
@@ -140,14 +171,20 @@ public class DeckController {
      * @return
      */
     @AnyPermission(Permission.ADMIN)
-    @PutMapping("/api/block-deck")
+    @PostMapping("/api/block-deck")
     public RestResponse blockDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (adminDeckService.block(deckId)) {
-            return new MessageResponse(true, "Deck blocked");
+            return MessageResponse.builder()
+                    .ok()
+                    .message("Deck blocked")
+                    .build();
         }
-        return new MessageResponse(false, "Deck not blocked");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Deck not blocked")
+                .build();
     }
 
     /**
@@ -157,14 +194,20 @@ public class DeckController {
      * @return
      */
     @AnyPermission(Permission.ADMIN)
-    @PutMapping("/api/unblock-deck")
+    @PostMapping("/api/unblock-deck")
     public RestResponse unblockDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (adminDeckService.unblock(deckId)) {
-            return new MessageResponse(true, "Deck unblocked");
+            return MessageResponse.builder()
+                    .ok()
+                    .message("Deck unblocked")
+                    .build();
         }
-        return new MessageResponse(false, "Deck not unblocked");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Deck not unblocked")
+                .build();
     }
 
     /**
@@ -177,9 +220,15 @@ public class DeckController {
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.delete(deckId)) {
-            return new MessageResponse(true, "Deck deleted");
+            return MessageResponse.builder()
+                    .ok()
+                    .message("Deck deleted")
+                    .build();
         }
-        return new MessageResponse(false, "Deck not deleted");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Deck not deleted")
+                .build();
     }
 
     /**
@@ -192,7 +241,10 @@ public class DeckController {
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());
         }
-        return new MessageResponse(false, "Could not get decks");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Could not get decks")
+                .build();
     }
 
     /**
@@ -208,7 +260,10 @@ public class DeckController {
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());
         }
-        return new MessageResponse(false, "Could not get decks");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Could not get decks")
+                .build();
     }
 
     /**
@@ -221,7 +276,10 @@ public class DeckController {
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());
         }
-        return new MessageResponse(false, "Could not get decks");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Could not get decks")
+                .build();
     }
 
     /**
@@ -234,7 +292,10 @@ public class DeckController {
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());
         }
-        return new MessageResponse(false, "Could not get decks");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Could not get decks")
+                .build();
     }
 
 
@@ -272,7 +333,10 @@ public class DeckController {
             List<Card> cards = maybeCards.get();
             return new ListResponse<>(cards);
         }
-        return new MessageResponse(false, "getAllCardsToLearn failed");
+        return MessageResponse.builder()
+                .notOk()
+                .message("Could not get cards")
+                .build();
 
     }
 }

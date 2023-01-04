@@ -30,7 +30,7 @@
         published = !published;
         if(published){
             let res = await fetch(`/api/publish?deckId=${deckId}`, {
-                method: "PUT",
+                method: "POST",
                 headers: myHeaders,            
             });
             res = await res.json();
@@ -39,7 +39,7 @@
         }
         if(!published){
             let res = await fetch(`/api/unpublish?deckId=${deckId}`, {
-                method: "PUT",
+                method: "POST",
                 headers: myHeaders,            
             });
             res = await res.json();

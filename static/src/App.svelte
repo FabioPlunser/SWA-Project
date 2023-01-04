@@ -143,7 +143,7 @@
 
 	async function handleSubscribe(deck){
 		let res = await fetch(`/api/subscribe-deck?deckId=${deck.deckId}`, {
-			method: "PUT",
+			method: "POST",
 			headers: myHeaders,
 		});
 		res = await res.json();
@@ -152,7 +152,7 @@
 
 	async function handleUnsubscribe(deck){
 		let res = await fetch(`/api/unsubscribe-deck?deckId=${deck.deckId}`, {
-			method: "PUT",
+			method: "POST",
 			headers: myHeaders,
 		});
 		res = await res.json();

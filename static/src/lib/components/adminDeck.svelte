@@ -25,7 +25,7 @@
         blocked = !blocked;
         if(blocked){
             let res = await fetch(`/api/block-deck?deckId=${deckId}`, {
-                method: "PUT",
+                method: "POST",
                 headers: myHeaders,            
             });
             res = await res.json();
@@ -34,7 +34,7 @@
         }
         if(!blocked){
             let res = await fetch(`/api/unblock-deck?deckId=${deckId}`, {
-                method: "PUT",
+                method: "POST",
                 headers: myHeaders,            
             });
             res = await res.json();
