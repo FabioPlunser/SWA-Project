@@ -20,7 +20,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @SuperBuilder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "person")
 // NOTE: This changes the name of the "id"-Column inherited from Authenticable to "person_id"
@@ -44,7 +44,7 @@ public class Person extends Authenticable implements Serializable {
     private String email;
 
     @Builder.Default
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OnlyDeserialize
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(
             mappedBy = "creator",

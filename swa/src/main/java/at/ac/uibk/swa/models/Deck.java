@@ -1,6 +1,8 @@
 package at.ac.uibk.swa.models;
 
 import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -52,7 +54,7 @@ public class Deck implements Serializable {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    @OnlyDeserialize
+    @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name = "creator_id", nullable = false)
     private Person creator;
@@ -67,18 +69,19 @@ public class Deck implements Serializable {
     private List<Card> cards = new ArrayList<>();
 
     //TODO: shouldn't this be subscrib*ing* persons?
-    @OnlyDeserialize
+    @JsonIgnore
     @Builder.Default
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Person> subscribedPersons = new ArrayList<>();
 
+    @JsonIgnore
     public boolean isCreator(Person person) {
         return this.creator.equals(person);
     }
 
     @Override
     public String toString() {
-        return String.format("Name: %s - Description: %s - isDeleted: %s - isBlocked: %s - is Published: %s - Creator: %s - Cards: %s \n", name, description, isDeleted, isBlocked, isPublished, creator, cards);
+        return String.format("Name: %s - Description: %s - isDeleted: %s - isBlocked: %s - isPublished: %s\n", name, description, isDeleted, isBlocked, isPublished);
     }
 
     @Override
