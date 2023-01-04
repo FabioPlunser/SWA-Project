@@ -13,7 +13,7 @@
     let errors = {};
     let form = {
         username: {
-            validators: [Validators.required, Validators.badWords],
+            validators: [Validators.required],
         },
         password: {
             validators: [Validators.required, Validators.minLength(8)],
