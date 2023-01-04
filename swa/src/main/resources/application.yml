@@ -17,14 +17,15 @@ springdoc:
     enabled: true
 
 spring:
-  profiles.include: 'secrets'
+  # profiles.include: 'secrets'
   datasource:
-    driver-class: org.mariadb.jdbc.Driver
+    driver-class-name: org.h2.Driver
+    url: 'jdbc:h2:mem:testdb'
+    # driver-class: org.mariadb.jdbc.Driver
     # url: "jdbc:mariadb://mariadb.fabioplunser.com/swa"
-    url: "jdbc:mariadb://localhost/swa"
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
 
   mvc:
     static-path-pattern: '/**'
