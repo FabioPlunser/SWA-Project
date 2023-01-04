@@ -188,8 +188,7 @@ public class DeckController {
      */
     @GetMapping("/api/get-user-decks")
     public RestResponse getUserDecks()  {
-        //TODO fixe JSON infinite recursion
-        Optional<List<Deck>> maybeDecks = userDeckService.getSavedNotOwnedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());
         }
@@ -218,7 +217,7 @@ public class DeckController {
      */
     @GetMapping("/api/get-subscribed-decks")
     public RestResponse getSubscribedDecks()  {
-        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getSavedNotOwnedDecks();
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());
         }
