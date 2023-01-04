@@ -20,7 +20,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @SuperBuilder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "person")
 // NOTE: This changes the name of the "id"-Column inherited from Authenticable to "person_id"

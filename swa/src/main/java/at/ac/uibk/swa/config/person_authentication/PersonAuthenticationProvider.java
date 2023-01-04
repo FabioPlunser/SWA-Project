@@ -32,7 +32,7 @@ import java.util.UUID;
 public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
-    PersonService loginService;
+    private PersonService loginService;
 
     @Override
     protected void additionalAuthenticationChecks(
