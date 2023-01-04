@@ -4,7 +4,7 @@ use std::fmt::{Debug, Display, Formatter, Result};
 use std::fs::File;
 use std::io::Write;
 
-const SIMULATION_DEPTH: u64 = 5;
+const SIMULATION_DEPTH: u64 = 6;
 
 #[derive(Clone, Copy, Debug)]
 struct Card {
@@ -78,8 +78,16 @@ impl Display for Card {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(
             f,
-            "Repetitions: {}, Interval: {}, EFactor: {}, LastLearn: {} => Difficulty: {} => Interval: {}, EFactor: {} NextLearn: {}, Repeat: {}",
-            self.repetitions, self.oldInterval, self.oldEFactor, self.lastLearn, self.difficulty, self.interval, self.eFactor, self.nextLearn, self.repeat
+            "{}, {}, {}, {}, {}, {}, {}, {}, {}",
+            self.repetitions,
+            self.oldInterval,
+            self.oldEFactor,
+            self.lastLearn,
+            self.difficulty,
+            self.interval,
+            self.eFactor,
+            self.nextLearn,
+            self.repeat
         )
     }
 }
@@ -113,8 +121,9 @@ fn work(depth: u64, card: Card) -> Vec<Card> {
 fn main() {
     let mut file = File::create("dump.log").unwrap();
 
+    writeln!(&mut file, "n, I, E, L, q, I', E', L', R");
     let starting_card = Card::default();
-    writeln!(&mut file, "{:?}", starting_card);
+    writeln!(&mut file, "{}", starting_card);
 
     work(0, starting_card)
         .into_iter()
