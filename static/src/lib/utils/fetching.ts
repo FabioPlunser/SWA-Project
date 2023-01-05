@@ -2,49 +2,6 @@ import { addToastByRes } from "./addToToastStore";
 import { tokenStore } from "../stores/tokenStore";
 import { get } from "svelte/store";
 
-let token = get(tokenStore);
-let myHeaders = new Headers();
-myHeaders.append("Authorization", "Bearer " + token);
-
-export async function formFetch(e, json?: boolean) {
-    // const action = e.target.action;
-    // const method = e.target.method.toUpperCase();
-    // let formData = new FormData(e.target);
-
-    // if(json) {
-    //   myHeaders.append("Content-Type", "application/json");
-    //   const data = {};
-    //   for (let [key, value] of formData.entries()) {
-    //     data[key] = value;
-    //   }
-    //   formData = JSON.stringify(data);
-    // }
-
-    // if(method === 'GET') {
-    //   let requestOptions = {
-    //     method: method,
-    //     headers: myHeaders,
-    //   };
-    //   let res = await fetch(action, requestOptions)
-    //   res = await res.json();
-    //   if(!res.success){
-    //     addToastByRes(res);
-    //   }
-    //   return res;
-    // }
-    
-    // if(method === 'POST' || method === 'PUT' || method === 'DELETE') {
-    //   let requestOptions = {
-    //     method: method,
-    //     headers: myHeaders,
-    //     body: formData,
-    //   };
-    //   let res = await fetch(action, requestOptions);
-    //   res = await res.json();
-    //   addToastByRes(res);
-    //   return res;
-    // }
-}
 
 /**
  * a general fetching function for all fetch requests
@@ -58,6 +15,8 @@ export async function formFetch(e, json?: boolean) {
  */
 export async function fetching(url: string, method: string, params?: json[], data?, json?:boolean){
   let requestOptions;
+  let myHeaders = new Headers();
+  myHeaders.append("Authorization", "Bearer " + get(tokenStore));
 
   console.log("fetching", url, method, params, data, json)
   if(params){
@@ -66,7 +25,7 @@ export async function fetching(url: string, method: string, params?: json[], dat
     }
   }
   
-  if(method === 'GET', params){
+  if(method === 'GET'){
     requestOptions = {
       method: method,
       headers: myHeaders,
@@ -80,7 +39,7 @@ export async function fetching(url: string, method: string, params?: json[], dat
       body: JSON.stringify(data),
     };
   }
-  else{
+  else if(!json && (method === 'POST' || method === 'PUT' || method === 'DELETE')){
     requestOptions = {
       method: method,
       headers: myHeaders,
@@ -92,9 +51,6 @@ export async function fetching(url: string, method: string, params?: json[], dat
   let res = await fetch(url, requestOptions);
   res = await res.json();
   console.log(res);
-  // if(!res.success){
-  //   addToastByRes(res);
-  // }
   return res;
 }
 
