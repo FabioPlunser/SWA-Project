@@ -122,7 +122,8 @@ class TestDeckControllerGeneral {
     void updateDeck() throws Exception {
         // given: user created in database, logged in and a given deck
         String token = createUserAndGetToken();
-        Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
+        String deckName = StringGenerator.deckName();
+        Deck deck = new Deck(deckName, StringGenerator.deckDescription());
         List<Card> cards = new ArrayList<>();
         int numberOfCards = 10;
         for (int i = 0; i < numberOfCards; i++) {
@@ -142,7 +143,7 @@ class TestDeckControllerGeneral {
         long numberOfDecksBefore = deckRepository.count();
         long numberOfCardsBefore = cardRepository.count();
         // TODO: get deck id from create-deck response
-        UUID deckId = deckRepository.findAll().get(0).getDeckId();
+        UUID deckId = deckRepository.findAll().stream().filter(d -> d.getName().equals(deckName)).findFirst().orElseThrow().getDeckId();
 
         // when: updating the given deck
         String updatedText = "updated";
