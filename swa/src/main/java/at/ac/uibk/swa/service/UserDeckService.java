@@ -179,25 +179,6 @@ public class UserDeckService {
         }
     }
 
-/*
-    public boolean update(UUID deckId, String name, String description) {
-        //TODO also update the cards of given deck
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
-            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
-            if (deck != null && deck.getDeckId() != null) {
-                if (deck.isBlocked() || deck.isDeleted()) return false;
-                if (name != null) deck.setName(name);
-                if (description != null) deck.setDescription(description);
-                return save(deck) != null;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-*/
     /**
      * Updates one of the owned decks of the logged in user in the repository with the given parameters
      * Deleted and blocked decks cannot be updated
