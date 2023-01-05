@@ -88,9 +88,9 @@ class TestLoginControllerGeneral {
                         .param("password", "wrong-password")
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-        // then: status code 403 must be returned, token must not be contained in body
+        // then: status code 401 must be returned, token must not be contained in body
         .andExpectAll(
-                status().isForbidden(),
+                status().isUnauthorized(),
                 jsonPath("$.token").doesNotExist()
         );
     }
@@ -106,9 +106,9 @@ class TestLoginControllerGeneral {
                         .param("password", StringGenerator.password())
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-        // then: status code 403 must be returned, token must not be contained in body
+        // then: status code 401 must be returned, token must not be contained in body
         .andExpectAll(
-                status().isForbidden(),
+                status().isUnauthorized(),
                 jsonPath("$.token").doesNotExist()
         );
     }
@@ -147,9 +147,9 @@ class TestLoginControllerGeneral {
                         .header(HttpHeaders.AUTHORIZATION, UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-        // then: status code 403 must be returned
+        // then: status code 401 must be returned
         .andExpectAll(
-                status().isForbidden()
+                status().isUnauthorized()
         );
     }
 
