@@ -1,7 +1,9 @@
 package at.ac.uibk.swa.service.person_service;
 
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.repositories.PersonRepository;
 import at.ac.uibk.swa.service.PersonService;
+import at.ac.uibk.swa.util.MockAuthContext;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestPersonServiceSecurity {
     @Autowired
     private PersonService personService;
+    @Autowired
+    private PersonRepository personRepository;
 
     @Test
     public void loginWithValidCredentials() {
@@ -79,8 +84,10 @@ public class TestPersonServiceSecurity {
 
         // when: logging in as user and retrieving token
         Optional<Person> maybePerson = personService.login(username, password);
+        System.out.println(personRepository.findAll().stream().map(p -> String.format("%s %s", p.getUsername(), p.getToken())).collect(Collectors.joining(",")));
         assertTrue(maybePerson.isPresent(), "Could not login");
         UUID token = maybePerson.get().getToken();
+
 
         // then: user returned by handing over token must be original user
         Optional<Person> maybePersonByToken = personService.findByToken(token);
@@ -99,9 +106,10 @@ public class TestPersonServiceSecurity {
         assertTrue(maybePerson.isPresent(), "Could not login");
         Person loggedInPerson = maybePerson.get();
         UUID token = loggedInPerson.getToken();
+        MockAuthContext.setLoggedInUser(loggedInPerson);
 
         // when: logging out
-        assertTrue(personService.logout(loggedInPerson), "Could not log out");
+        assertTrue(personService.logout(), "Could not log out");
 
         // then: retrieving user by token should not be possible anymore
         Optional<Person> maybeLoggedOutPerson = personService.findByToken(token);
@@ -118,9 +126,10 @@ public class TestPersonServiceSecurity {
         Optional<Person> maybePerson = personService.login(username, password);
         assertTrue(maybePerson.isPresent(), "Could not login");
         UUID token = maybePerson.get().getToken();
+        MockAuthContext.setLoggedInUser(maybePerson.get());
 
         // when: logging out with token directly
-        assertTrue(personService.logout(token), "Could not log out");
+        assertTrue(personService.logout(), "Could not log out");
 
         // then: retrieving user by token should not be possible anymore
         Optional<Person> maybeLoggedOutPerson = personService.findByToken(token);

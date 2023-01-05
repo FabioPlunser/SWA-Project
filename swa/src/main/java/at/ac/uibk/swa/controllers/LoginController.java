@@ -69,9 +69,7 @@ public class LoginController {
      */
     @PostMapping(LOGOUT_ENDPOINT)
     public RestResponseEntity deleteToken() {
-        Optional<UUID> token = AuthContext.getLoginToken();
-
-        if (token.isEmpty() || !personService.logout(token.get())) {
+        if (!personService.logout()) {
             return MessageResponse.builder()
                     .statusCode(HttpStatus.UNAUTHORIZED)
                     .message("No matching Token!")
