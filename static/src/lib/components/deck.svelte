@@ -25,37 +25,29 @@
     async function handlePublishDeck(){
         published = !published;
 
-        let test = [{deckId: deckId}]
-        test.entries()
-
-        
+    
         if(published){
-            let res = await fetching("/api/publish", "POST", null , [{deckId: deckId}]);
-            res = await res.json();
+            let res = await fetching("/api/publish-deck", "POST", [{deckId: deckId}]);
             addToastByRes(res);
-            dispatch('publishDeck', "publishDeck");
         }
         if(!published){
-            let res = await fetching("/api/unpublish", "POST", null, [{deckId: deckId}]);
-            res = await res.json();
+            let res = await fetching("/api/unpublish-deck", "POST", [{deckId: deckId}]);
             addToastByRes(res);
-            dispatch('publishDeck', "publishDeck");
         }
     }
 
     async function handleDeleteDeck() {
-        let res = await fetching("/api/publish", "DELETE", [{deckId: deckId}]);
-        res = await res.json();
+        let res = await fetching("/api/delete-deck", "DELETE", [{deckId: deckId}]);
         addToastByRes(res);
-        dispatch('deleteDeck', "deleteDeck");
+        dispatch('deleteDeck');
     }
     
     function handleListCards() {
-        dispatch('listCards', "listCards");
+        dispatch('listCards');
     }
     
     function handleLearnDeck(){
-        dispatch('learnDeck', "learnDeck");
+        dispatch('learnDeck');
     }
     
 </script>

@@ -7,13 +7,14 @@
 	import AdminDeck from './lib/components/adminDeck.svelte';
 	import Modal from './lib/components/modal.svelte';
 	import Spinner from './lib/components/Spinner.svelte';
-	
+	import Form from './lib/components/Form.svelte';
+
 	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
 	import { redirect } from "./lib/utils/redirect";
 	import { tokenStore } from "./lib/stores/tokenStore";
 	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
 	import { handleLogout } from './lib/utils/handleLogout';
-	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore.ts';
+	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
   	import { formFetch, fetching } from './lib/utils/fetching';
 
 
@@ -107,33 +108,26 @@
 	}
 	let publicDecks = getPublicDecks();
 	
-	async function handleSubmit(event) {		
-		let res = await formFetch(event, true);
-		console.log(res);
-		addToastByRes(res);
-		
+	
+	async function getDecks(){
+		console.log("getDecks");
+		if($userPermissionsStore.includes("ADMIN")){
+			allDecks = await getAllDecks();
+		}
 		userDecks = getUserDecks();
 		subscribedDecks =  getSubscribedDecks();
 		publicDecks = getPublicDecks();
 	}
 
+
 	async function handleSubscribe(deck){
-		await fetching(`/api/subscribe-deck`, "POST", {deckId: deck.deckId});
+		await fetching(`/api/subscribe-deck`, "POST", [{deckId: deck.deckId}]);
 	}
 
 	async function handleUnsubscribe(deck){
-		await fetching(`/api/unsubscribe-deck`, "POST", {deckId: deck.deckId}); 
+		await fetching(`/api/unsubscribe-deck`, "POST", [{deckId: deck.deckId}]); 
 	}
 
-	function checkDeckInUserDeck(deck){
-		let found = false;
-		userDecks.forEach(userDeck => {
-			if(userDeck.deckId == deck.deckId){
-				found = true;
-			}
-		});
-		return found;
-	}
 </script>
 
 <svelte:head>
@@ -141,8 +135,7 @@
 	<title>Decks overview</title>
 </svelte:head>
 
-<MediaQuery query="(min-width: 480px)" let:matches>
-{#if matches}
+
 <SvelteToast />
 <Nav title="Decks overview" buttons={navButtons} />
 <main class="m-20">
@@ -150,7 +143,8 @@
 		<Modal open={showEditDeckModal} on:close={()=> showEditDeckModal = false} closeOnBodyClick={false}>
 			<h1 class="flex justify-center text-2xl underline">Edit Deck</h1>
 			<br class="pt-4"/>
-			<form class="flex justify-center" method="POST" action="api/update-deck" on:submit|preventDefault={handleSubmit}>
+			<Form url="/api/update-deck" method="POST" dataFormat="JSON" on:postFetch={getDecks}>
+			<!-- <form class="flex justify-center" method="POST" action="api/update-deck" on:submit|preventDefault={handleSubmit}> -->
 				<input name="deckId" bind:value={selectedDeck.deckId} type="hidden" required>
 				<div class="flex flex-col">
 					<div class="form-control">
@@ -176,7 +170,8 @@
 						<button type="button" class="btn btn-primary" on:click={()=> showEditDeckModal = false}>Close</button>
 					</div>
 				</div>
-			</form>
+			<!-- </form> -->
+			</Form>
 		</Modal>
 	{/if}
 	{#if showPublicDecks}
@@ -195,19 +190,16 @@
 						{#key publicDecks}
 							<div class="grid grid-cols-4 gap-2">
 								{#each publicDecks as deck}
-									<!-- Only show Decks that are not created by logged in User -->
-									{#if checkDeckInUserDeck(deck)}
-										{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
-											<div class="card bg-gray-700 p-5 w-fit min-w-fit">
-												<h1 class="card-title">{deck.name}</h1>
-												<p class="card-subtitle">{deck.description}</p>
-												{#if deck.subscribed}
-													<button class="btn btn-secondary" on:click={()=> handleUnsubscribe(deck)}>Unsubscribe</button>
-												{:else}
-												<button class="btn btn-primary" on:click={()=> handleSubscribe(deck)}>Subscribe</button>
-												{/if}
-											</div>
-										{/if}	
+									{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
+										<div class="card bg-gray-700 p-5 w-fit min-w-fit">
+											<h1 class="card-title">{deck.name}</h1>
+											<p class="card-subtitle">{deck.description}</p>
+											{#if deck.subscribed}
+												<button class="btn btn-secondary" on:click={()=> handleUnsubscribe(deck)}>Unsubscribe</button>
+											{:else}
+											<button class="btn btn-primary" on:click={()=> handleSubscribe(deck)}>Subscribe</button>
+											{/if}
+										</div>
 									{/if}
 								{/each}
 							</div>
@@ -247,7 +239,7 @@
 									on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
 									on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
 									on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
-									on:deleteDeck={()=> getUserDecks()}
+									on:deleteDeck={()=> getDecks()}
 								/>
 								{/each}
 							{/key}
@@ -272,7 +264,7 @@
 									on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
 									on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
 									on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
-									on:deleteDeck={()=> getSubscribedDecks()}
+									on:deleteDeck={()=> getDecks()}
 								/>
 								{/each}
 							</div>	
@@ -338,5 +330,3 @@
 		</div>
 	{/if}
 </main>
-{/if}
-</MediaQuery>

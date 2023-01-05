@@ -23,8 +23,10 @@
   async function fetchDecks(){
     selectedUser = $adminSelectedUserStore;
     let res = await fetching("/api/get-given-user-decks", "GET", [{personId: selectedUser.personId}]);
-    if(res.success) decks = res.items;
-    else addToastByRes(res);
+    if(!res.success){
+      return;
+    }
+    decks = res.items;
   }
 
   let decks = fetchDecks();

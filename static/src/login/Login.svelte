@@ -1,15 +1,20 @@
 <script lang="ts">
     import favicon from "/favicon.png";
     import SvelteToast from "../lib/components/SvelteToast.svelte";
+    import Form from "../lib/components/form.svelte";
+
     import { redirect } from "../lib/utils/redirect";
-    import { formFetch } from "../lib/utils/fetching";
     import { tokenStore } from "../lib/stores/tokenStore";
     import { personIdStore } from "../lib/stores/personIdStore";
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
-    import { Validators, validateForm, isFormValid} from "../lib/utils/Validators";
+    import { Validators} from "../lib/utils/Validators";
+
+    $: if($tokenStore.length > 30) redirect("");
+    $: document.cookie = `Token=${$tokenStore}`;
+
 
     let errors = {};
-    let form = {
+    let formValidators = {
         username: {
             validators: [Validators.required],
         },
@@ -17,26 +22,13 @@
             validators: [Validators.required],
         },
     };
-    
 
-    async function handleSubmit (e){  
-        errors = validateForm(e, form);
-        if(!isFormValid(errors)){
-            return;
-        }
-        
-        let res = await formFetch(e, false);
-        if(!res.success){
-            return;
-        }
+    function handlePostFetch(data){
+        let res = data.detail.res; 
         $tokenStore = res.token;
         $personIdStore = res.personId;
         $userPermissionsStore= res.permissions;
-        
-	}
-
-    $: if($tokenStore.length > 30) redirect("");
-    $: document.cookie = `Token=${$tokenStore}`;
+    }
 </script>
 
 <svelte:head>
@@ -48,7 +40,7 @@
 <main class="flex justify-center items-center mx-auto h-screen text-white">
     <div class="rounded-xl shadow-2xl bg-slate-900 max-w-fit p-10">
         <h1 class="underline text-2xl mx-auto flex justify-center p-2">Login</h1>
-        <form method="POST" action="/api/login" on:submit|preventDefault={handleSubmit}>
+        <Form url="/api/login" method="POST" dataFormat="FormData" {formValidators} bind:errors on:postFetch={handlePostFetch}>
             <div class="form-control">
                 <label class="input-group">
                   <span>Username</span>
@@ -78,7 +70,7 @@
                 <button type="submit" class="btn btn-primary">Login</button>
                 <button type="button" class="btn btn-primary" on:click={()=>redirect("register")}>Create Account</button>
             </div>
-        </form>
+        </Form>
     </div>
 </main>
 
