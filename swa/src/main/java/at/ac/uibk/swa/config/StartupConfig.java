@@ -36,6 +36,7 @@ public class StartupConfig {
 
     @EventListener(ApplicationReadyEvent.class)
     public void createBaseAdminUser() {
+        this.activeProfile = Profile.fromString(activeProfileString);
         switch (activeProfile) {
             case DEV -> {
                 if (dbDriver.equals(testDbDriver.getName())) {
