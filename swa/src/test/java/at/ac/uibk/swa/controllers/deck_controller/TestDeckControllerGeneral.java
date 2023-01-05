@@ -81,14 +81,18 @@ class TestDeckControllerGeneral {
     void createDeck() throws Exception {
         // given: user created in database, logged in
         String token = createUserAndGetToken();
+        long numberOfDecksBefore = deckRepository.count();
+        long numberOfCardsBefore = cardRepository.count();
 
+        // when: creating a new deck with 2 cards
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode content = mapper.createObjectNode();
         content.put("name", StringGenerator.deckName());
         content.put("description", StringGenerator.deckDescription());
         content.put("isPublic", true);
         ArrayNode cards = mapper.createArrayNode();
-        for (int i = 0; i < 3; i++) {
+        int numberOfCardsToCreate = 10;
+        for (int i = 0; i < numberOfCardsToCreate; i++) {
             ObjectNode card = mapper.createObjectNode();
             card.put("frontText", StringGenerator.cardText());
             card.put("backText", StringGenerator.cardText());
@@ -96,18 +100,15 @@ class TestDeckControllerGeneral {
         }
         content.putPOJO("cards", cards);
 
-        // when: creating a new deck with 2 cards
-        String card = "{\"frontText\": \"" + StringGenerator.cardText() + "\", \"backText\": \"" + StringGenerator.cardText() + "\"}";
         mockMvc.perform(MockMvcRequestBuilders.post("/api/create-deck")
                         .header(HttpHeaders.AUTHORIZATION, token)
                         .content(content.toString())
                         .contentType(MediaType.APPLICATION_JSON)
-        // then:
+        // then: response must be ok, number of created decks and cards must be as desired
         ).andExpectAll(
                 status().isOk()
-        ).andDo(print());
-
-        System.out.println(deckRepository.count());
-        System.out.println(cardRepository.count());
+        );
+        assertEquals(1, deckRepository.count() - numberOfDecksBefore, "Did not create as many decks as expected");
+        assertEquals(numberOfCardsToCreate, cardRepository.count() - numberOfCardsBefore, "Did not create as many cards as expected");
     }
 }

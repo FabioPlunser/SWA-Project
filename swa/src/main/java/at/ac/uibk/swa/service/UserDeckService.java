@@ -2,8 +2,10 @@ package at.ac.uibk.swa.service;
 
 import at.ac.uibk.swa.config.person_authentication.AuthContext;
 import at.ac.uibk.swa.models.Authenticable;
+import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.repositories.CardRepository;
 import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ public class UserDeckService {
     DeckRepository deckRepository;
     @Autowired
     PersonRepository personRepository;
+    @Autowired
+    CardRepository cardRepository;
 
     /**
      * Finds a deck within the repository by its id
@@ -150,6 +154,14 @@ public class UserDeckService {
             deck.setCreator(person);
             Deck savedDeck = save(deck);
             if (savedDeck != null) {
+                for (Card card : savedDeck.getCards()) {
+                    card.setDeck(savedDeck);
+                    try {
+                        cardRepository.save(card);
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
                 person.getCreatedDecks().add(savedDeck);
                 person.getSavedDecks().add(savedDeck);
                 try {
