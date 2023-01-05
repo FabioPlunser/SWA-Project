@@ -148,7 +148,6 @@ public class UserDeckService {
      */
     @Transactional
     public boolean create(Deck deck) {
-        //TODO change to also create and save the cards
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (deck != null && deck.getDeckId() == null && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
             deck.setCreator(person);

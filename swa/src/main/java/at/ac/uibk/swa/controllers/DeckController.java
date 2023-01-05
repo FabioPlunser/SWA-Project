@@ -45,7 +45,6 @@ public class DeckController {
     public RestResponse createDeck(
             @RequestBody final Deck deck
     ) {
-        //TODO doesn't include creating the cards yet needs to be done in userDeckService.create
         if (!userDeckService.create(deck)) {
             return MessageResponse.builder().notOk().message("Deck could not be created.").build();
         }
