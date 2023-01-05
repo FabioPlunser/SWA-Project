@@ -62,7 +62,6 @@ function validateField(field, value, form, errors){
 }
 
 export function isFormValid(errors) {
-    console.log(errors);
     return Object.keys(errors).every((field) => { 
         return Object.keys(errors[field]).every((validator) => {
             return !errors[field][validator].error;

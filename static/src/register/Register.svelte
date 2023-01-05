@@ -3,7 +3,7 @@
     import SvelteToast from "../lib/components/SvelteToast.svelte";
 
 	import { redirect } from '../lib/utils/redirect';
-    import { formFetch } from "../lib/utils/formFetch";
+    import { formFetch } from "../lib/utils/fetching";
     import { tokenStore } from "../lib/stores/tokenStore";
     import { personIdStore } from "../lib/stores/personIdStore";
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";

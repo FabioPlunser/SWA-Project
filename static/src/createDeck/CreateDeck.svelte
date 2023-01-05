@@ -11,7 +11,7 @@
   import { tokenStore } from "../lib/stores/tokenStore";
 	import { personIdStore } from "../lib/stores/personIdStore";
   import { Validators, validateForm, isFormValid} from "../lib/utils/Validators";
-  import { formFetch } from '../lib/utils/formFetch';
+  import { formFetch } from '../lib/utils/fetching';
 
 
 

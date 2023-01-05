@@ -12,10 +12,9 @@
 	import { redirect } from "./lib/utils/redirect";
 	import { tokenStore } from "./lib/stores/tokenStore";
 	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
-  	import { handleLogout } from './lib/utils/handleLogout';
-  	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
-  	import { formFetch } from './lib/utils/formFetch';
-
+	import { handleLogout } from './lib/utils/handleLogout';
+	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore.ts';
+  	import { formFetch, fetching } from './lib/utils/fetching';
 
 
 	$: if($tokenStore.length < 30) redirect("login");
@@ -25,9 +24,6 @@
 	$: getPublicDecks();
 
 	let allDecks = [];
-	let userDecks = [];
-	let subscribedDecks = [];
-	let publicDecks = [];
 
 	let showEditDeckModal = false;
 	let selectedDeck = null;
@@ -61,11 +57,7 @@
 
 
 	async function getAllDecks(){
-		let res = await fetch("/api/get-all-decks", {
-			method: "GET",
-			headers: myHeaders,
-		});
-		res = await res.json();
+		let res = await fetching("/api/get-all-decks", "GET");
 		if(res.success){
 			allDecks = res.items;
 			return res.items;
@@ -73,16 +65,12 @@
 		else{
 			addToast("Error fetching all decks", "alert-error");
 		}
-
 	}
+	
+ 
 
 	async function getUserDecks(){
-		let res = await fetch("/api/get-created-decks", {
-			method: "GET",
-			headers: myHeaders,
-		});
-		res = await res.json();
-		console.log(res);
+		let res = await fetching("/api/get-created-decks", "GET");
 		if(res.success){
 			userDecks = res.items;
 			return res.items;
@@ -92,13 +80,11 @@
 		} 
 
 	}
+	let userDecks = getUserDecks();
+
 
 	async function getSubscribedDecks(){
-		let res = await fetch("/api/get-subscribed-decks", {
-			method: "GET",
-			headers: myHeaders,
-		});
-		res = await res.json();
+		let res = await fetching("/api/get-subscribed-decks", "GET");
 		if(res.success){
 			subscribedDecks = res.items;
 			return res.items;
@@ -107,57 +93,36 @@
 			addToast("Error fetching subscribed decks", "alert-error");
 		}
 	}
+	let subscribedDecks = getSubscribedDecks();
 
 	async function getPublicDecks(){
-		let res = await fetch("/api/get-published-decks", {
-			method: "GET",
-			headers: myHeaders,
-		});
-		res = await res.json();
+		let res = await fetching("/api/get-published-decks", "GET");
 		if(res.success){
 			publicDecks = res.items;
-			
 			return res.items;
 		} 
 		else{
 			addToast("Error fetching public decks", "alert-error");
 		}
 	}
+	let publicDecks = getPublicDecks();
 	
-	async function handleSubmit(event) {
-		// const action = event.target.action;
-		// const method = event.target.method.toUpperCase();
-		// const formData = new FormData(event.target);
-		
+	async function handleSubmit(event) {		
 		let res = await formFetch(event, true);
 		console.log(res);
+		addToastByRes(res);
 		
-		// let res = await fetch(action, {
-		// 	method: method,
-		// 	headers: myHeaders,
-		// 	body: formData,
-		// });
-		// res = await res.json();
-		// console.log(res);
-		// addToastByRes(res);
+		userDecks = getUserDecks();
+		subscribedDecks =  getSubscribedDecks();
+		publicDecks = getPublicDecks();
 	}
 
 	async function handleSubscribe(deck){
-		let res = await fetch(`/api/subscribe-deck?deckId=${deck.deckId}`, {
-			method: "POST",
-			headers: myHeaders,
-		});
-		res = await res.json();
-		addToastByRes(res);
+		await fetching(`/api/subscribe-deck`, "POST", {deckId: deck.deckId});
 	}
 
 	async function handleUnsubscribe(deck){
-		let res = await fetch(`/api/unsubscribe-deck?deckId=${deck.deckId}`, {
-			method: "POST",
-			headers: myHeaders,
-		});
-		res = await res.json();
-		addToastByRes(res);
+		await fetching(`/api/unsubscribe-deck`, "POST", {deckId: deck.deckId}); 
 	}
 
 	function checkDeckInUserDeck(deck){
@@ -221,7 +186,7 @@
 				<br class="mt-4"/>
 				<input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
 				<br class="mt-4"/>
-				{#await getPublicDecks()}
+				{#await publicDecks}
 					<Spinner/>
 				{:then publicDecks}
 					{#if publicDecks.length == 0}
@@ -268,14 +233,14 @@
 	{#if page == "my-decks"}
 		<div>
 			<h1 class="text-4xl underline flex justify-center m-2">MyDecks</h1>
-				{#await getUserDecks()}
+				{#await userDecks}
 						<Spinner />
 				{:then userDecks}
 					{#if userDecks.length == 0}
 						<h1 class="text-2xl flex justify-center">No Decks Found</h1>
 					{:else}
-						{#key userDecks}
-							<div class="grid grid-cols-4 gap-4">
+						<div class="grid grid-cols-4 gap-4">
+							{#key userDecks}
 								{#each userDecks as deck}
 								<Deck 
 									{deck}
@@ -285,15 +250,15 @@
 									on:deleteDeck={()=> getUserDecks()}
 								/>
 								{/each}
-							</div>
-						{/key}
+							{/key}
+						</div>
 					{/if}
 				{/await}
 		</div>
 
 		<div>
 			<h1 class="text-4xl underline flex justify-center m-2">Subscribed Decks</h1>
-				{#await getSubscribedDecks()}
+				{#await subscribedDecks}
 						<Spinner />
 				{:then subscribedDecks}
 					{#if subscribedDecks.length == 0}

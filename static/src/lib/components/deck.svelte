@@ -2,8 +2,8 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    import { tokenStore } from "../stores/tokenStore";
-    import { addToast, addToastByRes } from '../utils/addToToastStore';
+    import { addToastByRes } from '../utils/addToToastStore';
+    import { fetching } from '../utils/fetching';
 
     export let deck; 
 
@@ -18,30 +18,25 @@
         hover = true
     }
     
-
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + $tokenStore);
-    
     function handleEditDeck() {
         dispatch('editDeck', "editDeck");
     }
     
     async function handlePublishDeck(){
         published = !published;
+
+        let test = [{deckId: deckId}]
+        test.entries()
+
+        
         if(published){
-            let res = await fetch(`/api/publish?deckId=${deckId}`, {
-                method: "POST",
-                headers: myHeaders,            
-            });
+            let res = await fetching("/api/publish", "POST", null , [{deckId: deckId}]);
             res = await res.json();
             addToastByRes(res);
             dispatch('publishDeck', "publishDeck");
         }
         if(!published){
-            let res = await fetch(`/api/unpublish?deckId=${deckId}`, {
-                method: "POST",
-                headers: myHeaders,            
-            });
+            let res = await fetching("/api/unpublish", "POST", null, [{deckId: deckId}]);
             res = await res.json();
             addToastByRes(res);
             dispatch('publishDeck', "publishDeck");
@@ -49,10 +44,7 @@
     }
 
     async function handleDeleteDeck() {
-        let res = await fetch(`/api/delete-deck?deckId=${deckId}`, {
-            method: "DELETE",
-            headers: myHeaders,
-        });
+        let res = await fetching("/api/publish", "DELETE", [{deckId: deckId}]);
         res = await res.json();
         addToastByRes(res);
         dispatch('deleteDeck', "deleteDeck");
@@ -60,7 +52,6 @@
     
     function handleListCards() {
         dispatch('listCards', "listCards");
-    
     }
     
     function handleLearnDeck(){

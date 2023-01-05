@@ -3,16 +3,15 @@
   import favicon  from '/favicon.png';
   import Nav from "../lib/components/nav.svelte";
   import Modal from "../lib/components/modal.svelte";
+  import Spinner from '../lib/components/Spinner.svelte';
+
   import { redirect } from '../lib/utils/redirect';
   import { handleLogout } from '../lib/utils/handleLogout';
-  
-  import { get } from 'svelte/store';
-  import { tokenStore } from '../lib/stores/tokenStore';
 	import { adminSelectedUserStore} from '../lib/stores/adminSelectedUserStore';
-  import Spinner from '../lib/components/Spinner.svelte';
   import { addToastByRes } from '../lib/utils/addToToastStore';
+  import { Validators, validateForm, isFormValid} from "../lib/utils/Validators";
+  import { fetching, formFetch } from '../lib/utils/fetching';
   
-  $: tokenValue = get(tokenStore);
   $: $adminSelectedUserStore = selectedUser;
 
   let users = [];
@@ -38,44 +37,56 @@
   $: getAllPermission();
 
   async function getAllUser(){
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + tokenValue);
-
-    var requestOptions = {
-      method: 'GET',
-      headers: myHeaders,
-    };
-
-    let res = await fetch("api/get-all-users", requestOptions)
-    res = await res.json();
+    let res = await fetching("api/get-all-users", "GET");
     if(res.success) users = res.items;
     else addToastByRes(res);
   }
 
   async function getAllPermission(){
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + tokenValue);
-
-    var requestOptions = {
-      method: 'GET',
-      headers: myHeaders,
-    };
-
-    let res = await fetch("api/get-all-permissions", requestOptions)
-    res = await res.json();
+    let res = await fetching ("api/get-all-permissions", "GET");
     if(res.success) permissions = res.items;
     else addToastByRes(res);
     
   }
 
+  let errors = {};
+  let createForm = {
+    username: {
+      validators: [Validators.required],
+    },
+    email: {
+      validators: [Validators.required],
+    },
+    password: {
+      validators: [Validators.required],
+    },
+    permissions: {
+      validators: [Validators.required],
+    },
+  };
+  
+  let updateForm = {
+    username: {
+      validators: [Validators.required],
+    },
+    email: {
+      validators: [Validators.required],
+    },
+    permissions: {
+      validators: [Validators.required],
+    },
+  };
+
   async function handleSubmit(e){
     const action = e.target.action;
     const method = e.target.method.toUpperCase();
-    const myHeader = new Headers()
-    myHeader.append("Authorization", "Bearer " + tokenValue);
-    //TODO form validation
-    const formData = new FormData(e.target);
       
+    errors = validateForm(e, updateForm);
+    errors = validateForm(e, createForm);
+    if(!isFormValid(errors)){
+        return;
+    }
+
     if(action.includes("delete") && formData.get("permissions").toString().includes("ADMIN")){
       if(!confirm(`Are you sure you want to delete ${formData.get("username").toString()}?`)) return;
     }
@@ -83,33 +94,13 @@
       showCreateModal = !showCreateModal;
     } 
     if(action.includes("update")){
-      for(let [key, value] of formData.entries()){
-        if(value === ''){
-          formData.delete(key);
-        }
-      }
       showEditModal = !showEditModal;
     } 
     
-
-    var requestOptions = {
-      method: method,
-      headers: myHeader,
-      body: formData
-    };
-
-    try {
-      let res = await fetch(action, requestOptions);
-      res = await res.json();
-      if(res.success === false) alert(res.message);
-    } catch (error) {
-      alert(action + " failed");
-    }
-    
-    
+    let res = await formFetch(e);
     await getAllUser();
-
   }
+
 
 </script>
 
@@ -129,22 +120,37 @@
               <div class="form-control">
                   <label class="input-group">
                     <span class="w-36">Username</span>
-                    <input name="username" required type="text" placeholder="Max" class="input input-bordered w-full" />
+                    <input name="username" type="text" placeholder="Max" class="input input-bordered w-full" />
                   </label>
+                  {#if errors?.username?.required?.error}
+                    <span class="text-red-500">Username is required</span>
+                  {/if}
               </div>
               <br class="pt-4"/>
               <div class="form-control">
                   <label class="input-group">
                     <span class="w-36">Email</span>
-                    <input name="email" required type="email" placeholder="test@example" class="flex input input-bordered w-full" />
+                    <input name="email" type="email" placeholder="test@example" class="flex input input-bordered w-full" />
                   </label>
+                  {#if errors?.email?.required?.error}
+                        <p class="text-red-500">Email is required</p>
+                  {/if}
+                  {#if errors?.email?.email?.error}
+                      <p class="text-red-500">{errors.email.email.message}</p>
+                  {/if}
               </div>
               <br class="pt-4"/>
               <div class="form-control">
                   <label class="input-group">
                     <span class="w-36">Password</span>
-                    <input name="password" required type="password" placeholder="1234" class="input input-bordered w-full" />
+                    <input name="password" type="password" placeholder="1234" class="input input-bordered w-full" />
                   </label>
+                  {#if errors?.password?.required?.error}
+                    <p class="text-red-500">Password is required</p>
+                  {/if}
+                  {#if errors?.password?.minLength?.error}
+                    <p class="text-red-500">{errors.password.minLength.message}</p>
+                  {/if}
               </div>
               <br class="pt-4"/>
               <div class="form-control">
@@ -182,15 +188,24 @@
           <div class="form-control">
               <label class="input-group">
               <span class="w-36">Username</span>
-              <input bind:value={selectedUser.username} name="username" required type="text" placeholder="Max" class="input input-bordered w-full" />
+              <input bind:value={selectedUser.username} name="username" type="text" placeholder="Max" class="input input-bordered w-full" />
               </label>
+              {#if errors?.username?.required?.error}
+                <p class="text-red-500">Username is required</p>
+              {/if}
           </div>
           <br class="pt-4"/>
           <div class="form-control">
               <label class="input-group">
               <span class="w-36">Email</span>
-              <input bind:value={selectedUser.email} name="email" required type="text" placeholder="test@example.com" class="input input-bordered w-full" />
+              <input bind:value={selectedUser.email} name="email" type="text" placeholder="test@example.com" class="input input-bordered w-full" />
               </label>
+              {#if errors?.email?.required?.error}
+                <p class="text-red-500">Email is required</p>
+              {/if}
+              {#if errors?.email?.email?.error}
+                <p class="text-red-500">{errors.email.email.message}</p>
+              {/if}
           </div>
           <br class="pt-4"/>
           <div class="form-control">
@@ -198,12 +213,18 @@
               <span class="w-36">Password</span>
               <input name="password" class="input input-bordered w-full" type="password">
             </label>
+            {#if errors?.password?.required?.error}
+              <p class="text-red-500">Password is required</p>
+            {/if}
+            {#if errors?.password?.minLength?.error}
+              <p class="text-red-500">{errors.password.minLength.message}</p>
+            {/if}
           </div>
           <br class="pt-4"/>
           <div class="form-control">
             <label class="input-group">
               <span class="w-36">Admin</span>
-              <select multiple name="permissions" class="flex input w-full" required>
+              <select multiple name="permissions" class="flex input w-full">
                 {#each permissions as permission}
                   {#if selectedUser.permissions.includes(permission)}
                     <option selected>{permission}</option>
