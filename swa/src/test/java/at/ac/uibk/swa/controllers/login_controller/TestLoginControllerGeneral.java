@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.test.web.servlet.MockMvc;
@@ -48,7 +49,7 @@ class TestLoginControllerGeneral {
         // given: user created in database
         String username = StringGenerator.username();
         String password = StringGenerator.password();
-        Set<Permission> permissions = Set.of(Permission.USER, Permission.ADMIN);
+        Set<GrantedAuthority> permissions = Set.of(Permission.USER, Permission.ADMIN);
         personService.create(new Person(username, StringGenerator.email(), password, permissions));
 
         // when: logging in as that user
@@ -77,7 +78,7 @@ class TestLoginControllerGeneral {
         // given: user created in database
         String username = StringGenerator.username();
         String password = StringGenerator.password();
-        Set<Permission> permissions = Set.of(Permission.USER);
+        Set<GrantedAuthority> permissions = Set.of(Permission.USER);
         personService.create(new Person(username, StringGenerator.email(), password, permissions));
 
         // when: trying to log in as that user with wrong password
@@ -117,7 +118,7 @@ class TestLoginControllerGeneral {
         // given: a logged in user with a token
         String username = StringGenerator.username();
         String password = StringGenerator.password();
-        Set<Permission> permissions = Set.of(Permission.USER);
+        Set<GrantedAuthority> permissions = Set.of(Permission.USER);
         Person person = new Person(username, StringGenerator.email(), password, permissions);
         assertTrue(personService.create(person), "Unable to create user");
         Optional<Person> maybePerson = personService.login(username, password);

@@ -22,6 +22,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -68,7 +69,7 @@ class TestDeckControllerGeneral {
     private String createUserAndGetToken() throws Exception {
         String username = StringGenerator.username();
         String password = StringGenerator.password();
-        Set<Permission> permissions = Set.of(Permission.USER);
+        Set<GrantedAuthority> permissions = Set.of(Permission.USER);
         Person person = new Person(username, StringGenerator.email(), password, permissions);
         assertTrue(personService.create(person), "Unable to create user");
         Optional<Person> maybePerson = personService.login(username, password);
@@ -97,7 +98,7 @@ class TestDeckControllerGeneral {
 
         // when: creating a new deck with 2 cards
         String card = "{\"frontText\": \"" + StringGenerator.cardText() + "\", \"backText\": \"" + StringGenerator.cardText() + "\"}";
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/createDeck")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/create-deck")
                         .header(HttpHeaders.AUTHORIZATION, token)
                         .content(content.toString())
                         .contentType(MediaType.APPLICATION_JSON)
