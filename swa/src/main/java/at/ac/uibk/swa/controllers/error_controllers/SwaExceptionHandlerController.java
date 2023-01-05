@@ -1,21 +1,15 @@
 package at.ac.uibk.swa.controllers.error_controllers;
 
-import at.ac.uibk.swa.util.EndpointMatcherUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.naming.AuthenticationException;
 import java.io.IOException;
-
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.AUTHENTICATION_ERROR_ENDPOINT;
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.AUTHORIZATION_ERROR_ENDPOINT;
 
 /**
  * Controller Advice for catching Exceptions and sending the appropriate Responses.
@@ -26,33 +20,34 @@ import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.AUTHORIZATI
 @SuppressWarnings("unused")
 public class SwaExceptionHandlerController extends ResponseEntityExceptionHandler {
 
+    @Autowired
+    private SwaErrorController errorController;
+
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationException.class)
     public void handleAuthenticationException(
             HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletResponse response,
+            AuthenticationException authException
     ) throws IOException {
-        if (EndpointMatcherUtil.isApiRoute(request)) {
-            response.sendRedirect(AUTHENTICATION_ERROR_ENDPOINT);
-        } else {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Forbidden!");
-        }
+        errorController.handleErrorManual(request, response, authException);
     }
 
-    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
     public void handleAccessDeniedException(
             HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletResponse response,
+            AccessDeniedException accessDeniedException
     ) throws IOException {
-        response.sendRedirect(AUTHORIZATION_ERROR_ENDPOINT);
+        errorController.handleAuthorizationError(request, response, accessDeniedException);
     }
 
-    @ResponseBody
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public String handleException(Exception e) {
-        return "Internal Server Error!";
+    public void handleException(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Exception exception
+    ) throws IOException {
+        errorController.handleErrorManual(request, response, exception);
     }
 }

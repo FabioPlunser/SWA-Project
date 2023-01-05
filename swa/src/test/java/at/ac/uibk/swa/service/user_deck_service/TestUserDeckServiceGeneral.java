@@ -212,7 +212,7 @@ public class TestUserDeckServiceGeneral {
         assertTrue(userDeckService.create(unpublishedDeck), "Unable to create deck");
         Deck blockedDeck = new Deck(StringGenerator.deckName(), "blocked");
         assertTrue(userDeckService.create(blockedDeck), "Unable to create deck");
-        assertTrue(adminDeckService.block(blockedDeck), "Unable to block deck");
+        assertTrue(adminDeckService.block(blockedDeck.getDeckId()), "Unable to block deck");
         Deck deletedDeck = new Deck(StringGenerator.deckName(), "deleted");
         assertTrue(userDeckService.create(deletedDeck), "Unable to create deck");
         assertTrue(userDeckService.delete(deletedDeck.getDeckId()), "Unable to delete deck");

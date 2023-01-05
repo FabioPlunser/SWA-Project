@@ -99,7 +99,7 @@ public class TestUserDeckServiceGetOwned {
             assertTrue(userDeckService.create(deck), "Unable to create deck");
             createdDecks.add(deck);
         }
-        assertTrue(adminDeckService.block(createdDecks.get(0)), "Unable to block deck");
+        assertTrue(adminDeckService.block(createdDecks.get(0).getDeckId()), "Unable to block deck");
 
         // when: loading all owned decks from the repository
         Optional<List<Deck>> maybeOwnedDecks = userDeckService.getAllOwnedDecks();

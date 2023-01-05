@@ -11,6 +11,7 @@ import at.ac.uibk.swa.util.MockAuthContext;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -91,7 +92,9 @@ public class TestUserDeckServiceGetAll {
         String deckDescription = StringGenerator.deckDescription();
         Deck deck = new Deck(StringGenerator.deckName(), deckDescription);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
-        assertTrue(adminDeckService.block(deck), "Unable to block deck");
+        assertTrue(adminDeckService.block(deck.getDeckId()), "Unable to block deck");
+        // reload active user from repository to refresh saved decks
+        MockAuthContext.setLoggedInUser(personService.findById(person.getPersonId()).orElse(null));
 
         // when: loading all decks for that user
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
@@ -137,9 +140,8 @@ public class TestUserDeckServiceGetAll {
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
         assertTrue(userDeckService.unpublish(deck.getDeckId()), "Unable to unpublish deck");
-        // workaround, as mocking does currently not allow for reloading the deck from the repository
-        person.getSavedDecks().get(0).setPublished(false);
-        MockAuthContext.setLoggedInUser(person);
+        // reload active user from repository to refresh saved decks
+        MockAuthContext.setLoggedInUser(personService.findById(person.getPersonId()).orElse(null));
 
         // when: loading all decks for the user
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
@@ -187,9 +189,9 @@ public class TestUserDeckServiceGetAll {
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
         Person person = createUserAndLogin();
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
-        assertTrue(adminDeckService.block(deck), "Unable to block deck");
-        // workaround, as mocking does currently not allow for reloading the deck from the repository
-        person.getSavedDecks().get(0).setBlocked(true);
+        assertTrue(adminDeckService.block(deck.getDeckId()), "Unable to block deck");
+        // reload active user from repository to refresh saved decks
+        MockAuthContext.setLoggedInUser(personService.findById(person.getPersonId()).orElse(null));
 
         // when: loading all decks for the user
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
@@ -217,9 +219,8 @@ public class TestUserDeckServiceGetAll {
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
         MockAuthContext.setLoggedInUser(creator);
         assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
-        // workaround, as mocking does currently not allow for reloading the deck from the repository
-        person.getSavedDecks().get(0).setDeleted(true);
-        MockAuthContext.setLoggedInUser(person);
+        // reload active user from repository to refresh saved decks
+        MockAuthContext.setLoggedInUser(personService.findById(person.getPersonId()).orElse(null));
 
         // when: loading all decks for the user
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();

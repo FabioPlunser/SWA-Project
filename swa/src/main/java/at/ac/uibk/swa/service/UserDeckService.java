@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,9 +35,9 @@ public class UserDeckService {
 
     /**
      * Finds all decks in the repository that are public and available for subscription (not deleted/blocked)
-     * Might return decks that are already subscribed TODO: Change that? Person as parameter would be required
-     *
-     *
+     * Might return decks that are already subscribed
+     * TODO: Change that? Person as parameter would be required
+     * TODO: Currently only decks of the current user are returned -> return every public deck except the ones of the current user
      * @return list of all available decks
      */
     public List<Deck> findAllAvailableDecks() {
@@ -88,10 +89,44 @@ public class UserDeckService {
     }
 
     /**
+     * Gets all decks to which the currently logged-in user has subscribed to but did not create, but might alter description, depending on
+     * deck status
+     *  - isDeleted: info, that deck has been deleted
+     *  - isBlocked: info, that deck has been blocked
+     *  - !isPublished: info, that deck has been unpublished, if not creator
+     *
+     * @return a list of all decks to which that person has subscribed to (but did not create) or nothing if nobody is logged in
+     */
+    // TODO: Rename this Method to something more fitting
+    public Optional<List<Deck>> getSavedNotOwnedDecks() {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            return getAllSavedDecks().map(decks -> decks.stream().filter(Predicate.not(d -> d.isCreator(person))).toList());
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Gets all decks a given user has created
+     * @param personId
+     * @return
+     */
+    public Optional<List<Deck>> getDecksOfGivenPerson(UUID personId){
+        Optional<Person> maybeUser = personRepository.findById(personId);
+        if (maybeUser.isPresent()) {
+            Person person = maybeUser.get();
+            return Optional.of(person.getCreatedDecks().stream()
+                    .filter(Predicate.not(Deck::isDeleted))
+                    .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
+                    .toList());
+        }
+        return Optional.empty();
+    }
+    /**
      * Saves a deck to the repository
      *
      * @param deck deck to save
-     * @return deck that has been saved if successfull, null otherwise
+     * @return deck that has been saved if successful, null otherwise
      */
     private Deck save(Deck deck) {
         try {
@@ -109,6 +144,7 @@ public class UserDeckService {
      */
     @Transactional
     public boolean create(Deck deck) {
+        //TODO change to also create and save the cards
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (deck != null && deck.getDeckId() == null && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
             deck.setCreator(person);
@@ -140,6 +176,7 @@ public class UserDeckService {
      * @return true if the deck was updated, false otherwise
      */
     public boolean update(UUID deckId, String name, String description) {
+        //TODO also update the cards of given deck
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
             Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
@@ -197,6 +234,7 @@ public class UserDeckService {
      * @param deckId if of the deck to publish
      * @return true if deck has been published, false otherwise
      */
+    //TODO: if deck already published, why should it return false and not just do nothing?
     public boolean publish(UUID deckId) {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {

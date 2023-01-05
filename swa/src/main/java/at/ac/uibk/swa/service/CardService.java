@@ -44,10 +44,10 @@ public class CardService {
             Deck deck = maybeDeck.get();
             if (deck.isDeleted() ||
                     (deck.isBlocked() &&
-                            !AuthContext.hasPermission(Permission.ADMIN)
+                            AuthContext.missingPermission(Permission.ADMIN)
                     ) ||
                     (!deck.isPublished() &&
-                            !AuthContext.hasPermission(Permission.ADMIN) &&
+                            AuthContext.missingPermission(Permission.ADMIN) &&
                             !deck.getCreator().equals(AuthContext.getCurrentUser().orElse(null))
                     )
             ) {

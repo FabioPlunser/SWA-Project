@@ -2,11 +2,10 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    import { addToastByRes } from '../utils/addToToastStore';
-    import { fetching } from '../utils/fetching';
+    import { tokenStore } from "../stores/tokenStore";
+    import { addToast, addToastByRes } from '../utils/addToToastStore';
 
     export let deck; 
-
     let { deckId, name, description, published, blocked} = deck;
     
     
@@ -18,45 +17,44 @@
         hover = true
     }
     
-    function handleEditDeck() {
-        dispatch('editDeck', "editDeck");
+
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", "Bearer " + $tokenStore);
+    
+    async function handleBlockDeck(){
+        blocked = !blocked;
+        if(blocked){
+            let res = await fetch(`/api/block-deck?deckId=${deckId}`, {
+                method: "POST",
+                headers: myHeaders,            
+            });
+            res = await res.json();
+            addToastByRes(res);
+            dispatch('blockDeck', "blockDeck");
+        }
+        if(!blocked){
+            let res = await fetch(`/api/unblock-deck?deckId=${deckId}`, {
+                method: "POST",
+                headers: myHeaders,            
+            });
+            res = await res.json();
+            addToastByRes(res);
+            dispatch('blockDeck', "blockDeck");
+        }
     }
     
-    async function handlePublishDeck(){
-        published = !published;
-
-        let test = [{deckId: deckId}]
-        test.entries()
-
-        
-        if(published){
-            let res = await fetching("/api/publish", "POST", null , [{deckId: deckId}]);
-            res = await res.json();
-            addToastByRes(res);
-            dispatch('publishDeck', "publishDeck");
-        }
-        if(!published){
-            let res = await fetching("/api/unpublish", "POST", null, [{deckId: deckId}]);
-            res = await res.json();
-            addToastByRes(res);
-            dispatch('publishDeck', "publishDeck");
-        }
-    }
+    
 
     async function handleDeleteDeck() {
-        let res = await fetching("/api/publish", "DELETE", [{deckId: deckId}]);
+        let res = await fetch(`/api/delete-deck?deckId=${deckId}`, {
+            method: "DELETE",
+            headers: myHeaders,
+        });
         res = await res.json();
         addToastByRes(res);
         dispatch('deleteDeck', "deleteDeck");
     }
-    
-    function handleListCards() {
-        dispatch('listCards', "listCards");
-    }
-    
-    function handleLearnDeck(){
-        dispatch('learnDeck', "learnDeck");
-    }
+
     
 </script>
 
@@ -83,21 +81,23 @@
         </div>
 
         <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
-                <button class="btn btn-primary" on:click={handleLearnDeck}>Learn Deck</button>
-                <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
-                <button class="btn btn-primary" on:click={handleEditDeck}>Edit Deck</button>
-                <button class="btn {published ? "btn-secondary" : "btn-primary"}" on:click={handlePublishDeck}>Publish Deck</button>
+                <button class="btn btn-primary" on:click={handleBlockDeck}>Block Deck</button>
                 <button class="btn btn-primary" on:click={handleDeleteDeck}>Delete Deck</button>
         </div>
 </div>
 {/if}
 
 {#if blocked}
-<div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative opacity-50">
-    <div >
+<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+<div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative opacity-50" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
+    <div class="{hover ? "hidden" : "block"}" >
         <h1 class="underline flex justify-center text-xl">{name}</h1>
         <br class="my-4"/>
         <p>{description}</p>
+    </div>
+
+    <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
+        <button class="btn btn-primary" on:click={handleBlockDeck}>Unblock Deck</button>
     </div>
 </div>
 {/if}

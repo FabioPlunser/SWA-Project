@@ -1,26 +1,41 @@
 package at.ac.uibk.swa.models;
 
+import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
+import at.ac.uibk.swa.models.annotations.OnlySerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.SpringSecurityCoreVersion;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.io.Serial;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Authenticable {
+// TODO: Rework Password Storing
+public abstract class Authenticable implements UserDetails /*, CredentialsContainer */ {
 
-    protected Authenticable(String username, String password, UUID token, Set<Permission> permissions) {
+    @Serial
+    private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
+    
+    protected Authenticable(String username, String password, UUID token, Set<GrantedAuthority> permissions) {
         this(null, username, password, token, permissions);
     }
 
-    protected Authenticable(String username, String password, Set<Permission> permissions) {
-        this(null, username, password, null, permissions);
+    protected Authenticable(String username, String password, Set<GrantedAuthority> permissions) {
+        this(username, password, null, permissions);
     }
 
     protected Authenticable(String username, String passwdHash) {
@@ -28,47 +43,102 @@ public abstract class Authenticable {
     }
 
     @Id
+    // NOTE: This JsonIgnore is fine because this is an abstract Class
+    //       Classes that extend this should create a Getter with @JsonInclude to rename the ID.
     @JsonIgnore
+    @Setter(AccessLevel.PRIVATE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "auth_id", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID id;
 
-    @Setter
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Setter
-    @JsonIgnore
+    @OnlyDeserialize
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "password_hash", nullable = false)
     private String passwdHash;
 
-    @Setter
-    @JsonIgnore
+    @OnlySerialize
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "token", nullable = true, unique = true)
     private UUID token;
 
-    @Setter
+    @Builder.Default
     @Column(name = "name", nullable = false)
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "auth_id"))
-    private Set<Permission> permissions = new HashSet<>();
+    private Set<GrantedAuthority> permissions = Permission.defaultAuthorities();
+
+    public void setPermissions(Set<Permission> permissions) {
+        // SAFETY: Permission implements GrantedAuthority
+        this.permissions = (Set<GrantedAuthority>) (Set) permissions;
+    }
 
     @Override
     public boolean equals(Object o) {
-        return (this == o) || ((o instanceof Authenticable a) && (this.id.equals(a.id)));
+        return (this == o) || ((o instanceof Authenticable a) && (this.id != null) && (this.id.equals(a.id)));
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        // NOTE: This will intentionally throw an Exception if cardId is null.
+        return this.id.hashCode();
     }
 
     public String toString() {
         return this.username;
     }
+
+    //region UserDetails Implementation
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.passwdHash;
+    }
+
+    @Override
+    public Collection<GrantedAuthority> getAuthorities() {
+        return this.permissions;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    /*
+    // TODO: Rework Password Storing
+    @Override
+    public void eraseCredentials() {
+        this.passwdHash = null;
+    }
+    */
+    //endregion
 }

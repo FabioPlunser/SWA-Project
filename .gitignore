@@ -1,4 +1,5 @@
 application-secrets.yml
+application.yml
 node_modules
 target
 

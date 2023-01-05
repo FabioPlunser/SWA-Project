@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Setter
 @Getter
 @Builder
 @NoArgsConstructor
@@ -42,24 +43,22 @@ public class LearningProgress implements Serializable, Cloneable {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID learningProgressId;
 
-    @Setter
     @Builder.Default
     @Column(name = "learning_interval", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int interval = 0;
 
-    @Setter
     @Builder.Default
     @Column(name = "e_factor", nullable = false)
     @JdbcTypeCode(SqlTypes.DOUBLE)
     private double eFactor = 2.5;
 
+    @Setter(AccessLevel.PRIVATE)
     @Builder.Default
     @Column(name = "num_repetitions", nullable = false)
     @JdbcTypeCode(SqlTypes.BIGINT)
     private int repetitions = 0;
 
-    @Setter
     @Builder.Default
     @Column(name = "next_learn", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime nextLearn = LocalDateTime.now();
@@ -78,12 +77,25 @@ public class LearningProgress implements Serializable, Cloneable {
     @Override
     public boolean equals(Object o) {
         return (this == o) || ((o instanceof LearningProgress a) &&
+                (this.learningProgressId != null) &&
                 (this.learningProgressId.equals(a.learningProgressId)));
     }
 
     @Override
     public int hashCode() {
-        return learningProgressId != null ? learningProgressId.hashCode() : 0;
+        // NOTE: This will intentionally throw an Exception if learningProgressId is null.
+        return this.learningProgressId.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        // Auto-Generated
+        return "LearningProgress{" +
+                "learningProgressId=" + learningProgressId +
+                ", interval=" + interval +
+                ", eFactor=" + eFactor +
+                ", repetitions=" + repetitions +
+                '}';
     }
 
     @Override

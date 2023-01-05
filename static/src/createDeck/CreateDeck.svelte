@@ -1,11 +1,18 @@
 <script lang="ts">
-	import favicon from '/favicon.png';
+  import favicon from '/favicon.png';
   import Nav from '../lib/components/nav.svelte';
+	import SvelteToast from '../lib/components/SvelteToast.svelte';
+  import DualSideCard from './../lib/components/dualSideCard.svelte';
+
 
   import { redirect } from "../lib/utils/redirect";
-  import {handleLogout} from '../lib/utils/handleLogout';
-
+  import { handleLogout } from '../lib/utils/handleLogout';
+  import { addToast, addToastByRes } from '../lib/utils/addToToastStore';
   import { tokenStore } from "../lib/stores/tokenStore";
+	import { personIdStore } from "../lib/stores/personIdStore";
+  import { Validators, validateForm, isFormValid} from "../lib/utils/Validators";
+  import { formFetch } from '../lib/utils/fetching';
+
 
 
   let buttons = [
@@ -13,24 +20,72 @@
     { text: "Logout", action: () => handleLogout()}
   ]
 
-  let newCards = [];
+  let cards = [];
   let id = 0;
+
   function addCard() {
-    newCards.push({id: id, front: "", back: ""});
-    newCards = [...newCards];
+    cards.push({id: id, frontText: "SOLID", backText: "Single Responsibility"});
+    cards = [...cards];
     id++;
   }
 
   function handleDeleteCard(card) {
-    console.log(card);
-    newCards = newCards.filter(c => c.id !== card.id);
-    newCards = [...newCards];
+    cards = cards.filter(c => c.id !== card.id);
+    cards = [...cards];
 
   }
+
+  let errors = {};
+  let form = {
+    name: {
+      validators: [Validators.required],
+    },
+    description: {
+      validators: [Validators.required],
+    },
+    isPublished: {
+      validators: [Validators.required],
+    },
+  };
 
   async function handleSubmit(event) {
-    console.log(event);
+    const action = event.target.action;
+    const method = event.target.method;
+    const myHeader = new Headers()
+    myHeader.append("Content-Type", "application/json");
+    myHeader.append("Authorization", "Bearer " + $tokenStore);
+    
+    const formData = new FormData(event.target);
+    errors = validateForm(event, form);
+    if(!isFormValid(errors)){
+        return;
+    }
+
+    var object = {};
+    formData.forEach((value, key) => object[key] = value);
+    object.cards = cards; 
+    var data = JSON.stringify(object);
+
+    
+    const requestOptions = {
+      method: method, 
+      headers: myHeader,
+      body: data,
+    }
+
+    
+    let res = await fetch(action, requestOptions);
+    res = await res.json();
+    console.log(res);
+    //if success reset form
+    if(res.success){
+      event.target.reset();
+      cards = [];
+    }
+    
+    addToastByRes(res);
   }
+
 
 </script>
 
@@ -39,61 +94,65 @@
   <link rel="icon" type="image/png" href={favicon}>
 </svelte:head>
 
-
+<SvelteToast />
 <Nav title="Decks" {buttons}/>
 <main class="mt-20 m-2">
   <h1 class="flex justify-center text-2xl underline">Create Deck</h1>
   <br class="pt-4"/>
-  <form class="flex justify-center" method="POST" action="api/createDeck" on:submit|preventDefault={handleSubmit}>
-    <input name="personId" type="hidden" required>
+  <form class="flex justify-center" method="POST" action="api/create-deck" on:submit|preventDefault={handleSubmit}>
     <div class="flex flex-col">
       <div class="form-control">
         <label class="input-group">
-        <span class="w-36">Title</span>
-        <input name="Title" required type="text" placeholder="Softwarearchitecture" class="input input-bordered w-full bg-slate-900" />
+        <span class="w-36">Name</span>
+        <input name="name" type="text" placeholder="Softwarearchitecture" class="input input-bordered w-full bg-slate-900" />
         </label>
+        {#if errors?.name?.required?.error}
+          <span class="text-red-500">{errors.name.required.message}</span>
+        {/if}
       </div>
       <br class="pt-4"/>
       <div class="form-control">
         <label class="input-group">
         <span class="w-36">Description</span>
-        <textarea name="description" required type="text" placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full bg-slate-900" />
+        <textarea name="description" placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full bg-slate-900" />
         </label>
+        {#if errors?.description?.required?.error}
+          <span class="text-red-500">{errors.description.required.message}</span>
+        {/if}
       </div>
       <br class="pt-4"/>
       <div class="form-control">
         <label class="input-group">
         <span class="w-36">Publish</span>
-        <select name="publish" class="flex input w-full bg-slate-900" required>
-            <option selected>False</option>
-            <option>True</option>
+        <select name="isPublished" class="flex input w-full bg-slate-900">
+            <option value={false}>false</option>
+            <option value={true}>true</option>
         </select>
         </label>
+        {#if errors?.isPublished?.required?.error}
+          <span class="text-red-500">{errors.isPublished.required.message}</span>
+        {/if}
       </div>
+
+      <br class="pt-4"/>
+
+      <div class="flex justify-center">
+        <button class="btn btn-primary" type="submit">Submit</button>
+      </div>
+
       <br class="pt-4"/>
       <h1 class="flex justify-center text-2xl underline">Cards</h1>
       <br class="pt-4"/>
       <div class="tooltip" data-tip="Add Card">
         <button class="btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>
       </div>
-      <input bind:value={newCards} name="cards" type="hidden" required>
     </div>
   </form>
   
   <br class="mt-4"/>
   <div class="grid grid-cols-4 gap-2">
-    {#each newCards as card}
-      <div class="card bg-slate-800 p-5">
-        <h1 class="flex justify-center text-xl">Card {card.id}</h1>
-        <div class="flex flex-row w-auto p-2">
-          <textarea name="question" required type="text" placeholder="question" class="input input-bordered w-full bg-slate-900" />
-          <div class="divider divider-horizontal"></div> 
-          <textarea name="answer" required type="text" placeholder="answer" class="input input-bordered w-full bg-slate-900" />
-        </div>
-        <div class="flex justify-center">
-          <button class="btn btn-accent" type="button" on:click={()=>handleDeleteCard(card)}>Delete Card</button>
-        </div>
-      </div>
+    {#each cards as card}
+      <DualSideCard {card} on:deleteCard={()=>handleDeleteCard(card)}/>
     {/each}
   </div>
 </main>

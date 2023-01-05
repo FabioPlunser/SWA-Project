@@ -3,14 +3,14 @@ package at.ac.uibk.swa.config.person_authentication;
 import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.models.annotations.AllPermission;
+import at.ac.uibk.swa.models.annotations.AnyPermission;
 import at.ac.uibk.swa.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +32,7 @@ import java.util.UUID;
 public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
-    PersonService loginService;
+    private PersonService loginService;
 
     @Override
     protected void additionalAuthenticationChecks(
@@ -44,25 +44,14 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
     @Override
     protected UserDetails retrieveUser(
-            String userName, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+            String userName,
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
     ) {
         UUID token = (UUID) usernamePasswordAuthenticationToken.getCredentials();
 
         // Try to find the User with the given Session Token
         Optional<Person> maybePerson = loginService.findByToken(token);
-        if (maybePerson.isPresent()) {
-            // If the Customer was found, successfully authenticate them by returning to the AuthenticationFilter.
-            Person person = maybePerson.get();
-            // Store the Person in the details-Field of the Authentication Token so the AuthContext can easily access it.
-            usernamePasswordAuthenticationToken.setDetails(person);
-            return new User(
-                    person.getUsername(), person.getPasswdHash(),
-                    true, true, true, true,
-                    getAuthorities(person)
-            );
-        }
-
-        throw new BadCredentialsException(String.format("Cannot find user with authentication token: <%s>", token.toString()));
+        return maybePerson.orElseThrow(() -> new BadCredentialsException(formatTokenError(token)));
     }
 
     /**
@@ -70,17 +59,17 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
      * using the PreAuthorize-Annotation.
      *
      * @param authenticable The User whose Permissions should be converted.
-     * @return A List of the User's Permissions as Strings.
+     * @return A List of the User's Authorities.
      * @see org.springframework.security.access.prepost.PreAuthorize
      * @see Permission
-     * @see at.ac.uibk.swa.models.annotations.Admin
-     * @see at.ac.uibk.swa.models.annotations.User
+     * @see AnyPermission
+     * @see AllPermission
      */
     private static Collection<GrantedAuthority> getAuthorities(Authenticable authenticable) {
-        return AuthorityUtils.createAuthorityList(authenticable
-                .getPermissions()
-                .stream()
-                .map(Permission::toString)
-                .toArray(String[]::new));
+        return authenticable.getPermissions();
+    }
+
+    private static String formatTokenError(UUID token) {
+        return String.format("Cannot find user with authentication token: <%s>", token.toString());
     }
 }
