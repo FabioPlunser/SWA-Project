@@ -34,9 +34,9 @@ public class UserDeckService {
 
     /**
      * Finds all decks in the repository that are public and available for subscription (not deleted/blocked)
-     * Might return decks that are already subscribed TODO: Change that? Person as parameter would be required
-     *
-     *
+     * Might return decks that are already subscribed
+     * TODO: Change that? Person as parameter would be required
+     * TODO: Currently only decks of the current user are returned -> return every public deck except the ones of the current user
      * @return list of all available decks
      */
     public List<Deck> findAllAvailableDecks() {
