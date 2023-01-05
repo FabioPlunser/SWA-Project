@@ -48,7 +48,7 @@ public class CardService {
                     ) ||
                     (!deck.isPublished() &&
                             AuthContext.missingPermission(Permission.ADMIN) &&
-                            !deck.getCreator().equals(AuthContext.getCurrentUser().orElse(null))
+                            !deck.getCreator().equals(AuthContext.getCurrentPerson().orElse(null))
                     )
             ) {
                 return Optional.of(new ArrayList<>());
@@ -69,8 +69,9 @@ public class CardService {
      * not subscribed to deck
      */
     public Optional<List<Card>> getAllCardsToLearn(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             if (person.getSavedDecks().stream().anyMatch(d -> d.getDeckId().equals(deckId))) {
                 return getAllCards(deckId).map(cards -> cards.stream()
                             .filter(card -> card.getLearningProgress(person)
@@ -110,8 +111,9 @@ public class CardService {
      */
     public Optional<LearningProgress> getLearningProgress(UUID cardId) {
         Optional<Card> maybeCard = cardRepository.findById(cardId);
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeCard.isPresent() && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybeCard.isPresent() && maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             return maybeCard.get().getLearningProgress(person);
         } else {
             return Optional.empty();
@@ -127,8 +129,9 @@ public class CardService {
      * @return true if the card was learnt, false otherwise.
      */
     public boolean learn(UUID cardId, int difficulty) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Optional<Card> maybeCard = findById(cardId);
             if (maybeCard.isPresent()) {
                 Card card = maybeCard.get();
@@ -268,8 +271,9 @@ public class CardService {
      * @return the deck if write access, otherwise nothing
      */
     private Optional<Deck> getDeckIfWriteAccess(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             return person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
                     .filter(Predicate.not(Deck::isBlocked))

@@ -46,9 +46,9 @@ public class UserDeckService {
      * @return list of all available decks
      */
     public List<Deck> findAllAvailableDecks() {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         return deckRepository.findAll().stream()
-                .filter(d -> d.isPublished() || (maybeUser.isPresent() && d.getCreator().equals(maybeUser.get())))
+                .filter(d -> d.isPublished() || (maybePerson.isPresent() && d.getCreator().equals(maybePerson.get())))
                 .filter(Predicate.not(Deck::isBlocked))
                 .filter(Predicate.not(Deck::isDeleted))
                 .toList();
@@ -64,8 +64,9 @@ public class UserDeckService {
      * @return a list of all decks to which that person has subscribed or nothing if nobody is logged in
      */
     public Optional<List<Deck>> getAllSavedDecks() {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             return Optional.of(person.getSavedDecks().stream()
                     .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) { d.setDescription("Deck has been unpublished"); } return d;})
                     .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
@@ -82,8 +83,9 @@ public class UserDeckService {
      * @return list of owned decks or nothing if nobody is logged in
      */
     public Optional<List<Deck>> getAllOwnedDecks() {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
                     .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
@@ -104,8 +106,9 @@ public class UserDeckService {
      */
     // TODO: Rename this Method to something more fitting
     public Optional<List<Deck>> getSavedNotOwnedDecks() {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             return getAllSavedDecks().map(decks -> decks.stream().filter(Predicate.not(d -> d.isCreator(person))).toList());
         }
         return Optional.empty();
@@ -158,8 +161,9 @@ public class UserDeckService {
      */
     @Transactional
     public boolean create(Deck deck) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (deck != null && deck.getDeckId() == null && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (deck != null && deck.getDeckId() == null && maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             deck.setCreator(person);
             Deck savedDeck = save(deck);
             if (savedDeck != null) {
@@ -193,8 +197,9 @@ public class UserDeckService {
      */
     @Transactional
     public boolean update(Deck deck) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck savedDeck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deck.getDeckId())).findFirst().orElse(null);
             if (savedDeck != null) {
                 if (savedDeck.isBlocked() || savedDeck.isDeleted()) return false;
@@ -236,8 +241,9 @@ public class UserDeckService {
      * @return true if deck has been deleted, false otherwise
      */
     public boolean delete(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null) {
                 if (deck.isDeleted()) return false;
@@ -271,8 +277,9 @@ public class UserDeckService {
      */
     //TODO: if deck already published, why should it return false and not just do nothing?
     public boolean publish(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null) {
                 if (deck.isPublished()) return false;
@@ -294,8 +301,9 @@ public class UserDeckService {
      * @return true if deck has been unpublished, false otherwise
      */
     public boolean unpublish(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null) {
                 if (!deck.isPublished()) return false;
@@ -317,8 +325,9 @@ public class UserDeckService {
      * @return true if the person has been subscribed, false otherwise
      */
     public boolean subscribe(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck deck = findAllAvailableDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null && person.getPersonId() != null) {
                 if (!person.getSavedDecks().contains(deck)) {
@@ -349,8 +358,9 @@ public class UserDeckService {
      * @return true if the person has been unsubscribed, false otherwise
      */
     public boolean unsubscribe(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck deck = person.getSavedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null && person.getPersonId() != null) {
                 if (person.getSavedDecks().contains(deck)) {
