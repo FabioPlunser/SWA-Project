@@ -124,7 +124,7 @@ public class TestPersonServiceGeneral {
 
         // when: changing the person by interfering with the model directly
         person.setUsername("new");
-        person.setPasswdHash("new");
+        person.setPassword("new");
         person.setPermissions(Set.of(Permission.USER, Permission.ADMIN));
         person.getCreatedDecks().add(new Deck("deck-1", StringGenerator.deckDescription()));
         person.getSavedDecks().add(new Deck("deck-2", StringGenerator.deckDescription()));

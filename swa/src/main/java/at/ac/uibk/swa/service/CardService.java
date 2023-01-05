@@ -8,6 +8,7 @@ import at.ac.uibk.swa.repositories.LearningProgressRepository;
 import at.ac.uibk.swa.service.card_service.learning_algorithm.LearningAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class CardService {
                     ) ||
                     (!deck.isPublished() &&
                             AuthContext.missingPermission(Permission.ADMIN) &&
-                            !deck.getCreator().equals(AuthContext.getCurrentUser().orElse(null))
+                            !deck.getCreator().equals(AuthContext.getCurrentPerson().orElse(null))
                     )
             ) {
                 return Optional.of(new ArrayList<>());
@@ -68,8 +69,9 @@ public class CardService {
      * not subscribed to deck
      */
     public Optional<List<Card>> getAllCardsToLearn(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             if (person.getSavedDecks().stream().anyMatch(d -> d.getDeckId().equals(deckId))) {
                 return getAllCards(deckId).map(cards -> cards.stream()
                             .filter(card -> card.getLearningProgress(person)
@@ -90,17 +92,6 @@ public class CardService {
             return Optional.empty();
         }
     }
-    //TODO: vielleicht mit normaler Liste arbeiten die im Zweifelsfall leer ist? -->selbiges für andere Optional Listen
-    //deck Objekt statt deckId
-    /*
-        List<Card> cards = deck.getCards()
-            .stream()
-            .filter(i -> {
-                var p = i.getLearningProgress(person);
-                return p.isPresent() && p.get().getNextLearn().isBefore(LocalDateTime.now());
-            })
-            .collect(Collectors.toList());
-     */
 
     /**
      * Finds a card within the repository by its id
@@ -120,8 +111,9 @@ public class CardService {
      */
     public Optional<LearningProgress> getLearningProgress(UUID cardId) {
         Optional<Card> maybeCard = cardRepository.findById(cardId);
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeCard.isPresent() && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybeCard.isPresent() && maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             return maybeCard.get().getLearningProgress(person);
         } else {
             return Optional.empty();
@@ -137,8 +129,9 @@ public class CardService {
      * @return true if the card was learnt, false otherwise.
      */
     public boolean learn(UUID cardId, int difficulty) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Optional<Card> maybeCard = findById(cardId);
             if (maybeCard.isPresent()) {
                 Card card = maybeCard.get();
@@ -177,6 +170,8 @@ public class CardService {
      * @param card card to be created
      * @return true if card has been created, false otherwise
      */
+    @Transactional
+    // TODO: Check if required - card creation via UserDeckService (create/update)
     public boolean create(Card card, UUID deckId) {
         if (card != null && card.getCardId() == null) {
             Deck deck = getDeckIfWriteAccess(deckId).orElse(null);
@@ -217,6 +212,7 @@ public class CardService {
      * @param isFlipped card flipped or not flipped
      * @return true if card has been updated, false otherwise
      */
+    // TODO: Check if required - card updating via UserDeckService (update)
     public boolean update(UUID cardId, String frontText, String backText, boolean isFlipped) {
         Optional<Card> maybeCard = findById(cardId);
         if (maybeCard.isPresent()) {
@@ -243,6 +239,7 @@ public class CardService {
      * @param cardId id of the card to be deleted
      * @return true if card has been updated, false otherwise
      */
+    // TODO: Check if required - card deletion via UserDeckService (update)
     public boolean delete(UUID cardId) {
         Optional<Card> maybeCard = findById(cardId);
         if (maybeCard.isPresent()) {
@@ -274,8 +271,9 @@ public class CardService {
      * @return the deck if write access, otherwise nothing
      */
     private Optional<Deck> getDeckIfWriteAccess(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             return person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
                     .filter(Predicate.not(Deck::isBlocked))

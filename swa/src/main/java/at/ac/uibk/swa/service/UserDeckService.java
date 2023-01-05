@@ -2,25 +2,31 @@ package at.ac.uibk.swa.service;
 
 import at.ac.uibk.swa.config.person_authentication.AuthContext;
 import at.ac.uibk.swa.models.Authenticable;
+import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.repositories.CardRepository;
 import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @Service("userDeckService")
 public class UserDeckService {
     @Autowired
     DeckRepository deckRepository;
     @Autowired
-    PersonRepository personRepository;
+    PersonService personService;
+    @Autowired
+    CardRepository cardRepository;
 
     /**
      * Finds a deck within the repository by its id
@@ -40,9 +46,9 @@ public class UserDeckService {
      * @return list of all available decks
      */
     public List<Deck> findAllAvailableDecks() {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         return deckRepository.findAll().stream()
-                .filter(d -> d.isPublished() || (maybeUser.isPresent() && d.getCreator().equals(maybeUser.get())))
+                .filter(d -> d.isPublished() || (maybePerson.isPresent() && d.getCreator().equals(maybePerson.get())))
                 .filter(Predicate.not(Deck::isBlocked))
                 .filter(Predicate.not(Deck::isDeleted))
                 .toList();
@@ -58,8 +64,9 @@ public class UserDeckService {
      * @return a list of all decks to which that person has subscribed or nothing if nobody is logged in
      */
     public Optional<List<Deck>> getAllSavedDecks() {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             return Optional.of(person.getSavedDecks().stream()
                     .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) { d.setDescription("Deck has been unpublished"); } return d;})
                     .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
@@ -76,8 +83,9 @@ public class UserDeckService {
      * @return list of owned decks or nothing if nobody is logged in
      */
     public Optional<List<Deck>> getAllOwnedDecks() {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
                     .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
@@ -98,8 +106,9 @@ public class UserDeckService {
      */
     // TODO: Rename this Method to something more fitting
     public Optional<List<Deck>> getSavedNotOwnedDecks() {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             return getAllSavedDecks().map(decks -> decks.stream().filter(Predicate.not(d -> d.isCreator(person))).toList());
         }
         return Optional.empty();
@@ -111,7 +120,7 @@ public class UserDeckService {
      * @return
      */
     public Optional<List<Deck>> getDecksOfGivenPerson(UUID personId){
-        Optional<Person> maybeUser = personRepository.findById(personId);
+        Optional<Person> maybeUser = personService.findById(personId);
         if (maybeUser.isPresent()) {
             Person person = maybeUser.get();
             return Optional.of(person.getCreatedDecks().stream()
@@ -129,7 +138,16 @@ public class UserDeckService {
      */
     private Deck save(Deck deck) {
         try {
-            return deckRepository.save(deck);
+            Deck savedDeck = deckRepository.save(deck);
+            for (Card card : deck.getCards()) {
+                card.setDeck(savedDeck);
+                try {
+                    cardRepository.save(card);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+            return savedDeck;
         } catch (Exception e) {
             return null;
         }
@@ -141,17 +159,18 @@ public class UserDeckService {
      * @param deck deck to be created
      * @return true if deck has been created, false otherwise
      */
+    @Transactional
     public boolean create(Deck deck) {
-        //TODO change to also create and save the cards
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (deck != null && deck.getDeckId() == null && maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (deck != null && deck.getDeckId() == null && maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             deck.setCreator(person);
             Deck savedDeck = save(deck);
             if (savedDeck != null) {
                 person.getCreatedDecks().add(savedDeck);
                 person.getSavedDecks().add(savedDeck);
                 try {
-                    personRepository.save(person);
+                    personService.save(person);
                 } catch (Exception e) {
                     return false;
                 }
@@ -167,22 +186,45 @@ public class UserDeckService {
     /**
      * Updates one of the owned decks of the logged in user in the repository with the given parameters
      * Deleted and blocked decks cannot be updated
+     * Will change name, description and publicity of deck if given
+     * Will also update/create/delete cards in the given deck
+     *  - cards with given id:  update, if part of the deck, ignore otherwise
+     *  - cards without id:     create
+     *  - deletes all cards from the deck, that are not given
      *
-     * @param deckId id of the deck that is to be updated
-     * @param name new name of the deck, set to null if no change is desired
-     * @param description new description of the deck, set to null if no change is desired
+     * @param deck deck to be updated -  at least deckId must be given
      * @return true if the deck was updated, false otherwise
      */
-    public boolean update(UUID deckId, String name, String description) {
-        //TODO also update the cards of given deck
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
-            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
-            if (deck != null && deck.getDeckId() != null) {
-                if (deck.isBlocked() || deck.isDeleted()) return false;
-                if (name != null) deck.setName(name);
-                if (description != null) deck.setDescription(description);
-                return save(deck) != null;
+    @Transactional
+    public boolean update(Deck deck) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
+            Deck savedDeck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deck.getDeckId())).findFirst().orElse(null);
+            if (savedDeck != null) {
+                if (savedDeck.isBlocked() || savedDeck.isDeleted()) return false;
+                if (deck.getName() != null) savedDeck.setName(deck.getName());
+                if (deck.getDescription() != null) savedDeck.setDescription(deck.getDescription());
+                savedDeck.setPublished(deck.isPublished());
+                List<Card> cardsToUpdate = deck.getCards().stream()
+                        .filter(c -> c.getCardId() != null)
+                        .filter(c -> savedDeck.getCards().contains(c))
+                        .toList();
+                List<Card> cardsToDelete = savedDeck.getCards().stream()
+                        .filter(c -> !deck.getCards().contains(c))
+                        .toList();
+                List<Card> cardsToCreate = deck.getCards().stream()
+                        .filter(c -> c.getCardId() == null)
+                        .toList();
+                savedDeck.setCards(Stream.concat(cardsToUpdate.stream(), cardsToCreate.stream()).toList());
+                for (Card card : cardsToDelete) {
+                    try {
+                        cardRepository.delete(card);
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
+                return save(savedDeck) != null;
             } else {
                 return false;
             }
@@ -199,8 +241,9 @@ public class UserDeckService {
      * @return true if deck has been deleted, false otherwise
      */
     public boolean delete(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null) {
                 if (deck.isDeleted()) return false;
@@ -209,7 +252,7 @@ public class UserDeckService {
                 if (savedDeck != null) {
                     person.getSavedDecks().remove(savedDeck);
                     try {
-                        personRepository.save(person);
+                        personService.save(person);
                     } catch (Exception e) {
                         return false;
                     }
@@ -234,8 +277,9 @@ public class UserDeckService {
      */
     //TODO: if deck already published, why should it return false and not just do nothing?
     public boolean publish(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null) {
                 if (deck.isPublished()) return false;
@@ -257,8 +301,9 @@ public class UserDeckService {
      * @return true if deck has been unpublished, false otherwise
      */
     public boolean unpublish(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null) {
                 if (!deck.isPublished()) return false;
@@ -280,14 +325,15 @@ public class UserDeckService {
      * @return true if the person has been subscribed, false otherwise
      */
     public boolean subscribe(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck deck = findAllAvailableDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null && person.getPersonId() != null) {
                 if (!person.getSavedDecks().contains(deck)) {
                     person.getSavedDecks().add(deck);
                     try {
-                        Person savedPerson = personRepository.save(person);
+                        Person savedPerson = personService.save(person);
                         savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().add(savedPerson);
                         return true;
                     } catch (Exception e) {
@@ -312,14 +358,15 @@ public class UserDeckService {
      * @return true if the person has been unsubscribed, false otherwise
      */
     public boolean unsubscribe(UUID deckId) {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
             Deck deck = person.getSavedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null && person.getPersonId() != null) {
                 if (person.getSavedDecks().contains(deck)) {
                     person.getSavedDecks().remove(deck);
                     try {
-                        Person savedPerson = personRepository.save(person);
+                        Person savedPerson = personService.save(person);
                         savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().remove(savedPerson);
                         return true;
                     } catch (Exception e) {
