@@ -5,6 +5,7 @@ import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.PersonRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class PersonService {
         return personRepository.findAll();
     }
 
+    //region Login/Logout
     /**
      * Login via username and password
      *
@@ -46,22 +48,39 @@ public class PersonService {
             return Optional.empty();
 
         Person person = maybePerson.get();
-        if(!passwordEncoder.matches(password, person.getPasswdHash()))
+        if(!passwordEncoder.matches(password, person.getPassword()))
             return Optional.empty();
 
-        UUID token = UUID.randomUUID();
-        person.setToken(token);
-        // NOTE: Person.Token has a unique-Constraint
-        // => if the same Token is generated for multiple users, the save fails
+        person.setToken(UUID.randomUUID());
         try {
-            personRepository.save(person);
+            if (updateToken(person)) {
+                return Optional.of(person);
+            }
         } catch (Exception e) {
-            return Optional.empty();
+            System.out.println(e);
         }
 
-        return Optional.of(person);
+        return Optional.empty();
     }
 
+    /**
+     * Logout the currently logged-in user
+     *
+     * @return true if user has been logged out, false otherwise
+     */
+    public boolean logout() {
+        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
+            person.setToken(null);
+            return updateToken(person);
+        } else {
+            return false;
+        }
+    }
+    //endregion
+
+    //region Find
     /**
      * Find a person via its current token
      *
@@ -89,49 +108,9 @@ public class PersonService {
     public Optional<Person> findById(UUID id) {
         return personRepository.findById(id);
     }
+    //endregion
 
-    /**
-     * Logout a user
-     * TODO: Required? Maybe from admin side?
-     *
-     * @param person user to be logged out
-     * @return true if user has been logged out, false otherwise
-     */
-    public boolean logout(Person person) {
-        if (person != null && person.getPersonId() != null && person.getToken() != null) {
-            person.setToken(null);
-            return save(person) != null;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Logout a user
-     * TODO: Required?
-     *
-     * @param token token of the user to be logged out
-     * @return true if user has been logged out, false otherwise
-     */
-    public boolean logout(UUID token) {
-        Optional<Person> maybePerson = personRepository.findByToken(token);
-        return maybePerson.filter(this::logout).isPresent();
-    }
-
-    /**
-     * Logout the currently logged in user
-     *
-     * @return true if user has been logged out, false otherwise
-     */
-    public boolean logout() {
-        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
-        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
-            return logout(person);
-        } else {
-            return false;
-        }
-    }
-
+    //region Create/Save
     /**
      * Creates a new person in the repository
      *
@@ -140,7 +119,7 @@ public class PersonService {
      */
     public boolean create(Person person) {
         if (person != null && person.getPersonId() == null) {
-            return saveWithHashedPassword(person) != null;
+            return save(person) != null;
         } else {
             return false;
         }
@@ -154,38 +133,16 @@ public class PersonService {
      */
     private Person save(Person person) {
         try {
+            if (!person.isPassword_hashed())
+                person.hashPassword(passwordEncoder);
             return personRepository.save(person);
         } catch (Exception e) {
             return null;
         }
     }
+    //endregion
 
-    /**
-     * Saves a person to the repository.
-     * Automatically hashes the Person's Password.
-     *
-     * @param person person to save
-     * @return the person that has been saved if successful, null otherwise
-     */
-    private Person saveWithHashedPassword(Person person) {
-        // Get the unhashed Password
-        String password = person.getPasswdHash();
-
-        // Hash the Password using the Autowired Password Encoder.
-        person.setPasswdHash(passwordEncoder.encode(password));
-
-        // Try to save the Person
-        if (save(person) != null) {
-            // If the Person was saved successfully, reset the Password in the Person to the unhashed one
-            // and return the person.
-            person.setPasswdHash(password);
-            return person;
-        }
-
-        // If the save failed return null.
-        return null;
-    }
-
+    //region Update
     /**
      * Updates a Person with the values given as Parameters.
      * The User is given directly
@@ -203,15 +160,9 @@ public class PersonService {
         if(person != null && person.getPersonId() != null) {
             if (username    != null) person.setUsername(username);
             if (permissions != null) person.setPermissions(permissions);
+            if (password    != null) person.setPassword(password);
 
-            if (password    != null) {
-                // If a new Password was chosen, ensure that the Password is hashed.
-                person.setPasswdHash(password);
-                return saveWithHashedPassword(person) != null;
-            } else {
-                // If the old Password was kept, don't hash the Password again.
-                return save(person) != null;
-            }
+            return save(person) != null;
         }
 
         return false;
@@ -233,6 +184,19 @@ public class PersonService {
         return maybePerson.filter(person -> update(person, username, permissions, password)).isPresent();
     }
 
+    //region Update Token
+    private boolean updateToken(Person person) {
+        return updateToken(person.getId(), person.getToken());
+    }
+
+    @Transactional
+    private boolean updateToken(UUID id, UUID token) {
+        return personRepository.updateToken(id, token) == 1;
+    }
+    //endregion
+    //endregion
+
+    //region Delete
     /**
      * Deletes a Person from the Database (hard delete).
      *
@@ -248,4 +212,5 @@ public class PersonService {
             return false;
         }
     }
+    //endregion
 }
