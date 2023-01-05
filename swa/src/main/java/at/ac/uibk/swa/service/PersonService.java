@@ -184,16 +184,9 @@ public class PersonService {
         return maybePerson.filter(person -> update(person, username, permissions, password)).isPresent();
     }
 
-    //region Update Token
     private boolean updateToken(Person person) {
-        return updateToken(person.getId(), person.getToken());
+        return personRepository.updateToken(person) != null;
     }
-
-    @Transactional
-    private boolean updateToken(UUID id, UUID token) {
-        return personRepository.updateToken(id, token) == 1;
-    }
-    //endregion
     //endregion
 
     //region Delete
