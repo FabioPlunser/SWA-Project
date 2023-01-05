@@ -24,7 +24,7 @@ public class UserDeckService {
     @Autowired
     DeckRepository deckRepository;
     @Autowired
-    PersonRepository personRepository;
+    PersonService personRepository;
     @Autowired
     CardRepository cardRepository;
 

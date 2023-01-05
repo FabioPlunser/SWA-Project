@@ -131,7 +131,7 @@ public class PersonService {
      * @param person person to save
      * @return the person that has been saved if successful, null otherwise
      */
-    private Person save(Person person) {
+    public Person save(Person person) {
         try {
             if (!person.isPassword_hashed())
                 person.hashPassword(passwordEncoder);

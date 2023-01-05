@@ -58,8 +58,6 @@ public class AuthContext {
      * @return The Authenticable whose credentials were sent with the request (if valid credentials were sent).
      * @see Authenticable
      */
-    // NOTE: Do not remove, just set to private
-    @Deprecated(forRemoval = true)
     public static Optional<Authenticable> getCurrentUser() {
         return getAuthentication().map(x -> (Authenticable) x.getPrincipal());
     }
