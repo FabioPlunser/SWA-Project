@@ -24,7 +24,7 @@ public class UserDeckService {
     @Autowired
     DeckRepository deckRepository;
     @Autowired
-    PersonService personRepository;
+    PersonService personService;
     @Autowired
     CardRepository cardRepository;
 
@@ -120,7 +120,7 @@ public class UserDeckService {
      * @return
      */
     public Optional<List<Deck>> getDecksOfGivenPerson(UUID personId){
-        Optional<Person> maybeUser = personRepository.findById(personId);
+        Optional<Person> maybeUser = personService.findById(personId);
         if (maybeUser.isPresent()) {
             Person person = maybeUser.get();
             return Optional.of(person.getCreatedDecks().stream()
@@ -170,7 +170,7 @@ public class UserDeckService {
                 person.getCreatedDecks().add(savedDeck);
                 person.getSavedDecks().add(savedDeck);
                 try {
-                    personRepository.save(person);
+                    personService.save(person);
                 } catch (Exception e) {
                     return false;
                 }
@@ -252,7 +252,7 @@ public class UserDeckService {
                 if (savedDeck != null) {
                     person.getSavedDecks().remove(savedDeck);
                     try {
-                        personRepository.save(person);
+                        personService.save(person);
                     } catch (Exception e) {
                         return false;
                     }
@@ -333,7 +333,7 @@ public class UserDeckService {
                 if (!person.getSavedDecks().contains(deck)) {
                     person.getSavedDecks().add(deck);
                     try {
-                        Person savedPerson = personRepository.save(person);
+                        Person savedPerson = personService.save(person);
                         savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().add(savedPerson);
                         return true;
                     } catch (Exception e) {
@@ -366,7 +366,7 @@ public class UserDeckService {
                 if (person.getSavedDecks().contains(deck)) {
                     person.getSavedDecks().remove(deck);
                     try {
-                        Person savedPerson = personRepository.save(person);
+                        Person savedPerson = personService.save(person);
                         savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().remove(savedPerson);
                         return true;
                     } catch (Exception e) {

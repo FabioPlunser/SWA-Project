@@ -53,8 +53,6 @@ public class AuthContext {
     /**
      * Get the user that is currently logged-in.
      *
-     * @deprecated Getting the current User as a {@link Authenticable} doesn't make sense because
-     *             {@link Authenticable} is an abstract Class. Any Business-Code would need the concrete Type.
      * @return The Authenticable whose credentials were sent with the request (if valid credentials were sent).
      * @see Authenticable
      */
