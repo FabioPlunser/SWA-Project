@@ -30,10 +30,10 @@ public class MockAuthContext {
 
             }
         });
-        if (AuthContext.getCurrentUser().isEmpty()) {
+        if (AuthContext.getCurrentPerson().isEmpty()) {
             return null;
         } else {
-            return AuthContext.getCurrentUser().get();
+            return AuthContext.getCurrentPerson().get();
         }
     }
 }
