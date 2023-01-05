@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @Service("userDeckService")
 public class UserDeckService {
@@ -134,7 +135,16 @@ public class UserDeckService {
      */
     private Deck save(Deck deck) {
         try {
-            return deckRepository.save(deck);
+            Deck savedDeck = deckRepository.save(deck);
+            for (Card card : deck.getCards()) {
+                card.setDeck(savedDeck);
+                try {
+                    cardRepository.save(card);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+            return savedDeck;
         } catch (Exception e) {
             return null;
         }
@@ -153,14 +163,6 @@ public class UserDeckService {
             deck.setCreator(person);
             Deck savedDeck = save(deck);
             if (savedDeck != null) {
-                for (Card card : savedDeck.getCards()) {
-                    card.setDeck(savedDeck);
-                    try {
-                        cardRepository.save(card);
-                    } catch (Exception e) {
-                        return false;
-                    }
-                }
                 person.getCreatedDecks().add(savedDeck);
                 person.getSavedDecks().add(savedDeck);
                 try {
@@ -177,15 +179,7 @@ public class UserDeckService {
         }
     }
 
-    /**
-     * Updates one of the owned decks of the logged in user in the repository with the given parameters
-     * Deleted and blocked decks cannot be updated
-     *
-     * @param deckId id of the deck that is to be updated
-     * @param name new name of the deck, set to null if no change is desired
-     * @param description new description of the deck, set to null if no change is desired
-     * @return true if the deck was updated, false otherwise
-     */
+/*
     public boolean update(UUID deckId, String name, String description) {
         //TODO also update the cards of given deck
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
@@ -196,6 +190,43 @@ public class UserDeckService {
                 if (name != null) deck.setName(name);
                 if (description != null) deck.setDescription(description);
                 return save(deck) != null;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+*/
+    /**
+     * Updates one of the owned decks of the logged in user in the repository with the given parameters
+     * Deleted and blocked decks cannot be updated
+     * Will change name and description of deck if given
+     * Can also update/create/delete cards in the given deck
+     *
+     * @param deck deck to be updated -  at least deckId must be given
+     * @return true if the deck was updated, false otherwise
+     */
+    public boolean update(Deck deck) {
+        Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+        if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
+            Deck savedDeck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deck.getDeckId())).findFirst().orElse(null);
+            if (savedDeck != null) {
+                if (savedDeck.isBlocked() || savedDeck.isDeleted()) return false;
+                if (deck.getName() != null) savedDeck.setName(deck.getName());
+                if (deck.getDescription() != null) savedDeck.setDescription(deck.getDescription());
+                List<Card> cardsToUpdate = deck.getCards().stream().filter(c -> c.getCardId() != null).toList();
+                List<Card> cardsToDelete = savedDeck.getCards().stream().filter(c -> !deck.getCards().contains(c)).toList();
+                List<Card> cardsToCreate = deck.getCards().stream().filter(c -> c.getCardId() == null).toList();
+                savedDeck.setCards(Stream.concat(cardsToUpdate.stream(), cardsToCreate.stream()).toList());
+                for (Card card : cardsToDelete) {
+                    try {
+                        cardRepository.delete(card);
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
+                return save(savedDeck) != null;
             } else {
                 return false;
             }

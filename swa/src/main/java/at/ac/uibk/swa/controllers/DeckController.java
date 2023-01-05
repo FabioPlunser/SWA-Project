@@ -65,7 +65,7 @@ public class DeckController {
     ) {
         //TODO also update the cards
         //TODO fix unknown media type error can't update deck
-        if (userDeckService.update(deck.getDeckId(), deck.getName(), deck.getDescription())) {
+        if (userDeckService.update(deck)) {
             return MessageResponse.builder()
                     .ok()
                     .message("Deck updated")
