@@ -91,17 +91,6 @@ public class CardService {
             return Optional.empty();
         }
     }
-    //TODO: vielleicht mit normaler Liste arbeiten die im Zweifelsfall leer ist? -->selbiges für andere Optional Listen
-    //deck Objekt statt deckId
-    /*
-        List<Card> cards = deck.getCards()
-            .stream()
-            .filter(i -> {
-                var p = i.getLearningProgress(person);
-                return p.isPresent() && p.get().getNextLearn().isBefore(LocalDateTime.now());
-            })
-            .collect(Collectors.toList());
-     */
 
     /**
      * Finds a card within the repository by its id
@@ -179,6 +168,7 @@ public class CardService {
      * @return true if card has been created, false otherwise
      */
     @Transactional
+    // TODO: Check if required - card creation via UserDeckService (create/update)
     public boolean create(Card card, UUID deckId) {
         if (card != null && card.getCardId() == null) {
             Deck deck = getDeckIfWriteAccess(deckId).orElse(null);
@@ -219,6 +209,7 @@ public class CardService {
      * @param isFlipped card flipped or not flipped
      * @return true if card has been updated, false otherwise
      */
+    // TODO: Check if required - card updating via UserDeckService (update)
     public boolean update(UUID cardId, String frontText, String backText, boolean isFlipped) {
         Optional<Card> maybeCard = findById(cardId);
         if (maybeCard.isPresent()) {
@@ -245,6 +236,7 @@ public class CardService {
      * @param cardId id of the card to be deleted
      * @return true if card has been updated, false otherwise
      */
+    // TODO: Check if required - card deletion via UserDeckService (update)
     public boolean delete(UUID cardId) {
         Optional<Card> maybeCard = findById(cardId);
         if (maybeCard.isPresent()) {
