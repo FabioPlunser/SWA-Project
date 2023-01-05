@@ -46,16 +46,12 @@ public class Person extends Authenticable implements Serializable {
     @Builder.Default
     @OnlyDeserialize
     @Setter(AccessLevel.PRIVATE)
-    @OneToMany(
-            mappedBy = "creator",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER
-    )
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "creator")
     private List<Deck> createdDecks = new ArrayList<>();
 
     @OnlyDeserialize
     @Builder.Default
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "subscribedPersons", cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "subscribedPersons")
     private List<Deck> savedDecks = new ArrayList<>();
 
     /**
