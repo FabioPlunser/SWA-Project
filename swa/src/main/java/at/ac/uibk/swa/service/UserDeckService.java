@@ -182,12 +182,16 @@ public class UserDeckService {
     /**
      * Updates one of the owned decks of the logged in user in the repository with the given parameters
      * Deleted and blocked decks cannot be updated
-     * Will change name and description of deck if given
-     * Can also update/create/delete cards in the given deck
+     * Will change name, description and publicity of deck if given
+     * Will also update/create/delete cards in the given deck
+     *  - cards with given id:  update, if part of the deck, ignore otherwise
+     *  - cards without id:     create
+     *  - deletes all cards from the deck, that are not given
      *
      * @param deck deck to be updated -  at least deckId must be given
      * @return true if the deck was updated, false otherwise
      */
+    @Transactional
     public boolean update(Deck deck) {
         Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
         if (maybeUser.isPresent() && maybeUser.get() instanceof Person person) {
@@ -196,9 +200,17 @@ public class UserDeckService {
                 if (savedDeck.isBlocked() || savedDeck.isDeleted()) return false;
                 if (deck.getName() != null) savedDeck.setName(deck.getName());
                 if (deck.getDescription() != null) savedDeck.setDescription(deck.getDescription());
-                List<Card> cardsToUpdate = deck.getCards().stream().filter(c -> c.getCardId() != null).toList();
-                List<Card> cardsToDelete = savedDeck.getCards().stream().filter(c -> !deck.getCards().contains(c)).toList();
-                List<Card> cardsToCreate = deck.getCards().stream().filter(c -> c.getCardId() == null).toList();
+                savedDeck.setPublished(deck.isPublished());
+                List<Card> cardsToUpdate = deck.getCards().stream()
+                        .filter(c -> c.getCardId() != null)
+                        .filter(c -> savedDeck.getCards().contains(c))
+                        .toList();
+                List<Card> cardsToDelete = savedDeck.getCards().stream()
+                        .filter(c -> !deck.getCards().contains(c))
+                        .toList();
+                List<Card> cardsToCreate = deck.getCards().stream()
+                        .filter(c -> c.getCardId() == null)
+                        .toList();
                 savedDeck.setCards(Stream.concat(cardsToUpdate.stream(), cardsToCreate.stream()).toList());
                 for (Card card : cardsToDelete) {
                     try {
