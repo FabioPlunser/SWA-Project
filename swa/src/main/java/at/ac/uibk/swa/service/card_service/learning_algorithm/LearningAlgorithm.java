@@ -40,7 +40,7 @@ public class LearningAlgorithm {
             } else if (n == 2) {
                 newLearningProgress.setInterval(6);
             } else {
-                newLearningProgress.setInterval((int) (current.getInterval() * current.getEFactor()));
+                newLearningProgress.setInterval((int) Math.ceil(current.getInterval() * current.getEFactor()));
                 newLearningProgress.setEFactor(Math.max(1.3, current.getEFactor() - 0.8 + 0.28 * difficulty - 0.02 * difficulty * difficulty));
             }
         }
