@@ -55,11 +55,9 @@ public class TestCardControllerGeneral {
     private Person createUserAndLogin(boolean admin) {
         String username = StringGenerator.username();
         String password = StringGenerator.password();
-        Set<GrantedAuthority> permissions = new java.util.HashSet<>();
+        Set<GrantedAuthority> permissions = new java.util.HashSet<>(Set.of(Permission.USER));
         if (admin) {
             permissions.add(Permission.ADMIN);
-        } else {
-            permissions.add(Permission.USER);
         }
         Person person = new Person(username, StringGenerator.email(), password, permissions);
         assertTrue(personService.create(person), "Unable to create user");

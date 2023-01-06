@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.CredentialsContainer;
@@ -86,6 +88,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "auth_id"))
+    @Fetch(FetchMode.SELECT)
     private Set<GrantedAuthority> permissions = Permission.defaultAuthorities();
 
     public void setPermissions(Set<Permission> permissions) {
