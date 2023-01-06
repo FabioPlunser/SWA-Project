@@ -38,12 +38,12 @@ public class CardController {
         if (cardService.create(card, deckId)) {
             return MessageResponse.builder()
                 .ok()
-                .message("Card created")
+                .message("Card " + card.getCardId() + " created in " + deckId)
                 .build();
         }
         return MessageResponse.builder()
             .notOk()
-            .message("Card not created")
+            .message("Card " + card.getCardId() + " not created in " + deckId)
             .build();
     }
 
@@ -60,12 +60,12 @@ public class CardController {
         if (cardService.update(card.getCardId(), card.getFrontText(), card.getBackText(), card.isFlipped())) {
             return MessageResponse.builder()
                 .ok()
-                .message("Card updated")
+                .message("Card " + card.getCardId() + " updated")
                 .build();
         }
         return MessageResponse.builder()
             .notOk()
-            .message("Card not updated")
+            .message("Card " + card.getCardId() + " not updated")
             .build();
     }
 
@@ -82,12 +82,12 @@ public class CardController {
         if (cardService.delete(cardId)){
             return MessageResponse.builder()
                 .ok()
-                .message("Card deleted")
+                .message("Card " + cardId + " deleted")
                 .build();
         }
         return MessageResponse.builder()
             .notOk()
-            .message("Card not deleted")
+            .message("Card " + cardId + " not deleted")
             .build();
     }
 
