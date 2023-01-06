@@ -23,14 +23,4 @@ public interface PersonRepository extends CrudRepository<Person, UUID> {
     @Modifying
     @Query("update Person p set p.token = :token where p.id = :id")
     int updateToken(@Param("id") UUID id, @Param("token") UUID token);
-
-    default <S extends Person> S saveWithoutCredentials(S person) {
-        Optional<Person> maybePerson = this.findById(person.getPersonId());
-        if (maybePerson.isPresent()) {
-            Person dbPerson = maybePerson.get();
-            person.setPassword(dbPerson.getPassword());
-            person.setToken(dbPerson.getToken());
-        }
-        return save(person);
-    }
 }

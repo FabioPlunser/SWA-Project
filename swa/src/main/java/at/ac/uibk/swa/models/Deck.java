@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.models;
 
 import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
+import at.ac.uibk.swa.models.annotations.OnlySerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -48,10 +49,12 @@ public class Deck implements Serializable {
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "is_blocked", nullable = false)
+    @JsonIgnore
     private boolean isBlocked;
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "is_deleted", nullable = false)
+    @JsonIgnore
     private boolean isDeleted;
 
     @JsonIgnore
@@ -68,7 +71,6 @@ public class Deck implements Serializable {
     )
     private List<Card> cards = new ArrayList<>();
 
-    //TODO: shouldn't this be subscrib*ing* persons?
     @JsonIgnore
     @Builder.Default
     @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

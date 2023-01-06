@@ -69,8 +69,7 @@ public class TestCardControllerGeneral {
         Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numberOfCards; i++) {
-            //cards.add(new Card(StringGenerator.cardText(), StringGenerator.cardText(), false));
-            cards.add(new Card("ft", "bt", false));
+            cards.add(new Card(StringGenerator.cardText(), StringGenerator.cardText(), false));
         }
         deck.setCards(cards);
         assertTrue(userDeckService.create(deck), "Unable to create deck");
@@ -97,7 +96,6 @@ public class TestCardControllerGeneral {
     ) throws Exception {
         // given: a deck created by a user
         Deck deck = createDeck(10, published, creatorIsAlsoAdmin);
-        String token = "Bearer ";
 
         if (blocked) {
             createUserAndLogin(true);
@@ -109,8 +107,9 @@ public class TestCardControllerGeneral {
             userDeckService.delete(deck.getDeckId());
         }
 
+        String token = "Bearer ";
         if (userIsOwner) {
-             token += deck.getCreator().getToken().toString();
+             token += deck.getCreator().getToken();
         } else {
             token += createUserAndLogin(userIsAdminIfNotOwner).getToken();
         }
