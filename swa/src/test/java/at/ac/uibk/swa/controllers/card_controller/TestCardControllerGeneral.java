@@ -55,9 +55,11 @@ public class TestCardControllerGeneral {
     private Person createUserAndLogin(boolean admin) {
         String username = StringGenerator.username();
         String password = StringGenerator.password();
-        Set<GrantedAuthority> permissions = new java.util.HashSet<>(Set.of(Permission.USER));
+        Set<GrantedAuthority> permissions = new java.util.HashSet<>();
         if (admin) {
-             permissions.add(Permission.ADMIN);
+            permissions.add(Permission.ADMIN);
+        } else {
+            permissions.add(Permission.USER);
         }
         Person person = new Person(username, StringGenerator.email(), password, permissions);
         assertTrue(personService.create(person), "Unable to create user");
@@ -90,12 +92,12 @@ public class TestCardControllerGeneral {
             boolean published,
             boolean blocked,
             boolean deleted,
-            boolean creatorIsAlsoAdmin,
+            boolean creatorIsAdmin,
             boolean userIsOwner,
             boolean userIsAdminIfNotOwner
     ) throws Exception {
         // given: a deck created by a user
-        Deck deck = createDeck(10, published, creatorIsAlsoAdmin);
+        Deck deck = createDeck(10, published, creatorIsAdmin);
 
         if (blocked) {
             createUserAndLogin(true);
@@ -114,7 +116,7 @@ public class TestCardControllerGeneral {
             token += createUserAndLogin(userIsAdminIfNotOwner).getToken();
         }
 
-        boolean userIsAdmin = (userIsOwner && creatorIsAlsoAdmin) || (!userIsOwner && userIsAdminIfNotOwner);
+        boolean userIsAdmin = (userIsOwner && creatorIsAdmin) || (!userIsOwner && userIsAdminIfNotOwner);
         boolean expectCards = !deleted && !(blocked && !userIsAdmin) && (published || userIsOwner || userIsAdmin);
 
         // when: getting all cards for that deck
