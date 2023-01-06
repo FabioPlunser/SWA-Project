@@ -110,6 +110,10 @@ public class SecurityConfiguration {
                 .logout().disable()
         ;
 
+        // Make H2-Console available for testing
+        // TODO: Review possible security issues, remove for prod
+        http.headers().frameOptions().disable();
+
         // Register the custom Authentication Entry Point and Access Denied Handler.
         http.exceptionHandling()
                 .authenticationEntryPoint(entryPoint)

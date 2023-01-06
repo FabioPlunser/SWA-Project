@@ -1,3 +1,9 @@
+
+server:
+  port: 3000
+  servlet:
+    context-path: /
+
 spring:
   datasource:
     # Use an in-memory Database for testing
@@ -11,3 +17,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console

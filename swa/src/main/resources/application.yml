@@ -23,6 +23,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
   # profiles.include: 'secrets'
   # datasource:

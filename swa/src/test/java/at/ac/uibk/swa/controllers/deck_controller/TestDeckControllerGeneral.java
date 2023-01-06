@@ -46,8 +46,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TestDeckControllerGeneral {
     @Autowired
     private PersonService personService;
-    @Autowired
-    private WebApplicationContext webApplicationContext;
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
@@ -202,5 +200,11 @@ class TestDeckControllerGeneral {
             assertFalse(updatedDeck.getCards().contains(createdDeck.getCards().get(i)), "Found a card that should have been deleted");
         }
         assertEquals(numberOfCardsToCreate - numberOfCardsToDelete, cardRepository.count() - numberOfCardsBefore, "Did not create as many cards as expected");
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/get-cards-of-deck")
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .param("deckId", updatedDeck.getDeckId().toString())
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(status().isOk()).andDo(print());
     }
 }
