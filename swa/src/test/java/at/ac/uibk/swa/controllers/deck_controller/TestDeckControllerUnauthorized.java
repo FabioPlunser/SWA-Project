@@ -94,7 +94,7 @@ class TestDeckControllerUnauthorized {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/getPublishedDecks"))
                 .andExpectAll(
                         status().isUnauthorized()
-                ).andDo(print());
+                );
     }
 
     @Test

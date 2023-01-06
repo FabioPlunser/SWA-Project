@@ -299,7 +299,9 @@ public class DeckController {
 
 
     /**
-     * Get all Decks a user has set to public.
+     * Get all Decks that are available for subscription
+     * Does not include decks to which the requesting user has already subscribed
+     *
      * @return A List of Decks.
      */
     @GetMapping("/api/get-published-decks")

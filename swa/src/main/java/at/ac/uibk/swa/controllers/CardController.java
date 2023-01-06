@@ -97,7 +97,7 @@ public class CardController {
      * @return
      */
     @GetMapping("/api/get-cards-of-deck")
-    public RestResponse getCardsByDeck(
+    public RestResponse getCardsOfDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
 

@@ -39,18 +39,18 @@ public class UserDeckService {
     }
 
     /**
-     * Finds all decks in the repository that are public and available for subscription (not deleted/blocked)
-     * Might return decks that are already subscribed
-     * TODO: Change that? Person as parameter would be required
+     * Finds all decks in the repository that are public and available for subscription (not deleted/blocked/already subscribed)
+     *
      * TODO: Currently only decks of the current user are returned -> return every public deck except the ones of the current user
      * @return list of all available decks
      */
     public List<Deck> findAllAvailableDecks() {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         return deckRepository.findAll().stream()
-                .filter(d -> d.isPublished() || (maybePerson.isPresent() && d.getCreator().equals(maybePerson.get())))
-                .filter(Predicate.not(Deck::isBlocked))
                 .filter(Predicate.not(Deck::isDeleted))
+                .filter(Predicate.not(Deck::isBlocked))
+                .filter(Deck::isPublished)
+                .filter(d -> maybePerson.isEmpty() || !maybePerson.get().getSavedDecks().contains(d))
                 .toList();
     }
 
@@ -137,7 +137,7 @@ public class UserDeckService {
      * @return deck that has been saved if successful, null otherwise
      */
     @Transactional
-    private Deck save(Deck deck) {
+    public Deck save(Deck deck) {
         try {
             Deck savedDeck = deckRepository.save(deck);
             for (Card card : deck.getCards()) {
