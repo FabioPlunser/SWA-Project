@@ -63,8 +63,6 @@ public class DeckController {
     public RestResponse updateDeck(
             @RequestBody final Deck deck
     ) {
-        //TODO also update the cards
-        //TODO fix unknown media type error can't update deck
         if (userDeckService.update(deck)) {
             return MessageResponse.builder()
                     .ok()
