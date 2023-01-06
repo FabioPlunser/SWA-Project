@@ -9,8 +9,6 @@ import at.ac.uibk.swa.service.UserDeckService;
 import at.ac.uibk.swa.util.MockAuthContext;
 import at.ac.uibk.swa.util.SetupH2Console;
 import at.ac.uibk.swa.util.StringGenerator;
-import org.h2.tools.Server;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,8 +21,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.print.DocFlavor;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
