@@ -1,10 +1,8 @@
 package at.ac.uibk.swa.models;
 
-import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
-import at.ac.uibk.swa.models.annotations.OnlySerialize;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.core.util.Json;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -33,28 +31,35 @@ public class Deck implements Serializable {
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "deck_id", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private UUID deckId;
 
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "name", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String name;
 
     @Lob
     // @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "description", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String description;
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)
+    @JsonAlias("isPublished")
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Column(name = "is_published", nullable = false)
     private boolean isPublished;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JdbcTypeCode(SqlTypes.BOOLEAN)
+    @JsonAlias("isBlocked")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "is_blocked", nullable = false)
     private boolean isBlocked;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JdbcTypeCode(SqlTypes.BOOLEAN)
+    @JsonAlias("isDeleted")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
@@ -63,8 +68,8 @@ public class Deck implements Serializable {
     @JoinColumn(name = "creator_id", nullable = false)
     private Person creator;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Builder.Default
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(
             mappedBy = "deck",
             orphanRemoval = true,

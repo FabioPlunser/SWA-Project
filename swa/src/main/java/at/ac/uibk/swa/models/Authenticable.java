@@ -1,12 +1,12 @@
 package at.ac.uibk.swa.models;
 
-import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
-import at.ac.uibk.swa.models.annotations.OnlySerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.CredentialsContainer;
@@ -58,12 +58,13 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "username", nullable = false, unique = true)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String username;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Setter(AccessLevel.NONE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "password", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     // NOTE: Implicitly do not store this field in the Database
@@ -76,21 +77,23 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     @Setter(AccessLevel.NONE)
     private boolean password_hashed = true;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "token", nullable = true, unique = true)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID token;
 
     @Builder.Default
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Column(name = "name", nullable = false)
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "auth_id"))
+    @Fetch(FetchMode.SELECT)
     private Set<GrantedAuthority> permissions = Permission.defaultAuthorities();
 
     public void setPermissions(Set<Permission> permissions) {
         // SAFETY: Permission implements GrantedAuthority
-        this.permissions = (Set<GrantedAuthority>) (Set) permissions;
+        this.permissions = (Set) permissions;
     }
     //endregion
 

@@ -4,7 +4,6 @@ import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
-import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
@@ -50,12 +49,9 @@ public class TestCardControllerGeneral {
     private Person createUserAndLogin(boolean admin) {
         String username = StringGenerator.username();
         String password = StringGenerator.password();
-        //Set<GrantedAuthority> permissions = new java.util.HashSet<>();
-        Set<GrantedAuthority> permissions = new java.util.HashSet<>();
+        Set<GrantedAuthority> permissions = new java.util.HashSet<>(Set.of(Permission.USER));
         if (admin) {
             permissions.add(Permission.ADMIN);
-        } else {
-            permissions.add(Permission.USER);
         }
         Person person = new Person(username, StringGenerator.email(), password, permissions);
         assertTrue(personService.create(person), "Unable to create user");

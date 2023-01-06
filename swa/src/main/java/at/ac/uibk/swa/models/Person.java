@@ -1,6 +1,5 @@
 package at.ac.uibk.swa.models;
 
-import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -41,17 +40,18 @@ public class Person extends Authenticable implements Serializable {
     @Setter(AccessLevel.PRIVATE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "email", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String email;
 
     @Builder.Default
-    @OnlyDeserialize
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "creator")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Deck> createdDecks = new ArrayList<>();
 
-    @OnlyDeserialize
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "subscribedPersons")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Deck> savedDecks = new ArrayList<>();
 
     /**

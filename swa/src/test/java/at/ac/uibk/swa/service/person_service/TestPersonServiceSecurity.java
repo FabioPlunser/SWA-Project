@@ -8,6 +8,7 @@ import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -15,8 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -25,6 +25,9 @@ public class TestPersonServiceSecurity {
     private PersonService personService;
     @Autowired
     private PersonRepository personRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Test
     public void loginWithValidCredentials() {
@@ -134,5 +137,45 @@ public class TestPersonServiceSecurity {
         // then: retrieving user by token should not be possible anymore
         Optional<Person> maybeLoggedOutPerson = personService.findByToken(token);
         assertTrue(maybeLoggedOutPerson.isEmpty(), "Token still valid after logout");
+    }
+
+    @Test
+    public void testPasswordHashingWithNullUpdate() {
+        // given: demo user in database, logged in
+        String username = StringGenerator.username();
+        String password = StringGenerator.password();
+        Person person = new Person(username, StringGenerator.email(), password, Set.of());
+        assertTrue(personService.create(person), "Unable to create user for test");
+        person = personService.findById(person.getId()).get();
+
+        // when: saving user again using old Password
+        String hashedPassword = person.getPassword();
+        assertTrue(personService.update(person, null, null, null), "Unable to create user for test");
+
+        // then: password is not hashed again
+        assertEquals(hashedPassword, person.getPassword());
+        // then: The Password still matches
+        assertTrue(passwordEncoder.matches(password, hashedPassword));
+        assertTrue(passwordEncoder.matches(password, person.getPassword()));
+    }
+
+    @Test
+    public void testPasswordHashingWithUpdate() {
+        // given: demo user in database, logged in
+        String username = StringGenerator.username();
+        String password = StringGenerator.password();
+        Person person = new Person(username, StringGenerator.email(), password, Set.of());
+        assertTrue(personService.create(person), "Unable to create user for test");
+        person = personService.findById(person.getId()).get();
+
+        // when: saving user again using new Password
+        String hashedPassword = person.getPassword();
+        assertTrue(personService.update(person, null, password, null), "Unable to create user for test");
+
+        // then: password is hashed again
+        assertNotEquals(hashedPassword, person.getPassword());
+        // then: The Password still matches
+        assertTrue(passwordEncoder.matches(password, hashedPassword));
+        assertTrue(passwordEncoder.matches(password, person.getPassword()));
     }
 }
