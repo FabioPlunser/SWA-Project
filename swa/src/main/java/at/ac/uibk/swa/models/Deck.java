@@ -71,12 +71,19 @@ public class Deck implements Serializable {
     //TODO: shouldn't this be subscrib*ing* persons?
     @JsonIgnore
     @Builder.Default
-    @ManyToMany(mappedBy = "savedDecks", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "person_saved_deck",
+            joinColumns = @JoinColumn(name = "deck_id", referencedColumnName = "deck_id"),
+            inverseJoinColumns = @JoinColumn(name = "person_id", referencedColumnName = "person_id"))
     private List<Person> subscribedPersons = new ArrayList<>();
 
     @JsonIgnore
     public boolean isCreator(Person person) {
         return this.creator.equals(person);
+    }
+
+    public boolean addSubscriber(Person person) {
+        return this.subscribedPersons.add(person);
     }
 
     @Override

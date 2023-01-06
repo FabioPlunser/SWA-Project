@@ -70,6 +70,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     //       That means if a new Instance is created using a Constructor, the Password is not hashed (see CTOR).
     //       But if it is pulled from the database, the Password is assumed to be hashed (see default Value).
     @Transient
+    @JsonIgnore
     @Builder.Default
     @Setter(AccessLevel.NONE)
     private boolean password_hashed = true;
@@ -135,6 +136,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     }
 
     @Override
+    @JsonIgnore
     public Collection<GrantedAuthority> getAuthorities() {
         return this.permissions;
     }
