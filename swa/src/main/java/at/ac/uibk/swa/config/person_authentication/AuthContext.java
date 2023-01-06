@@ -100,7 +100,7 @@ public class AuthContext {
     public static boolean anyPermission(Collection<GrantedAuthority> required) {
         return getCurrentUser()
                 .map(Authenticable::getPermissions)
-                .map(permissions -> required.stream().anyMatch(r -> permissions.contains(r)))
+                .map(permissions -> required.stream().anyMatch(permissions::contains))
                 .orElse(false);
     }
 
@@ -114,7 +114,7 @@ public class AuthContext {
     public static boolean allPermissions(Collection<GrantedAuthority> required) {
         return getCurrentUser()
                 .map(Authenticable::getPermissions)
-                .map(permissions -> required.stream().allMatch(r -> permissions.contains(r)))
+                .map(permissions -> required.stream().allMatch(permissions::contains))
                 .orElse(false);
     }
 

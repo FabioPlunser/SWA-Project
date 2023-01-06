@@ -11,7 +11,6 @@ import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.UserDeckService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -234,7 +233,7 @@ public class DeckController {
      */
     @GetMapping("/api/get-user-decks")
     public RestResponse getUserDecks()  {
-        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());
         }
@@ -269,7 +268,7 @@ public class DeckController {
      */
     @GetMapping("/api/get-subscribed-decks")
     public RestResponse getSubscribedDecks()  {
-        Optional<List<Deck>> maybeDecks = userDeckService.getSavedNotOwnedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllSubscribedDecks();
         if (maybeDecks.isPresent()) {
             return new ListResponse<>(maybeDecks.get());
         }

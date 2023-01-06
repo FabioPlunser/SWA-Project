@@ -97,6 +97,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- In-memory Database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+        </dependency>
+
 
 <!-- Test dependencies -->
 
@@ -112,14 +119,6 @@
             <artifactId>spring-security-test</artifactId>
             <version>6.0.0</version>
             <scope>test</scope>
-        </dependency>
-
-        <!-- Test (in-memory) Database -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.200</version>
-            <!-- <scope>test</scope> -->
         </dependency>
 
     </dependencies>

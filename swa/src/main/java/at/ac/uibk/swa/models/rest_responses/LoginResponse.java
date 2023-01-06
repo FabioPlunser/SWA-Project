@@ -34,7 +34,7 @@ public class LoginResponse extends TokenResponse implements Serializable {
             B extends LoginResponseBuilder<C, B>>
         extends TokenResponseBuilder<C, B>
     {
-        public LoginResponseBuilder person(Person person) {
+        public LoginResponseBuilder<C, B> person(Person person) {
             this.personId = person.getPersonId();
             this.permissions = person.getPermissions();
             this.token(person.getToken());

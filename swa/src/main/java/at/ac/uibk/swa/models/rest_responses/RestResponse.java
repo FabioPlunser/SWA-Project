@@ -26,15 +26,15 @@ import java.io.Serializable;
 public abstract class RestResponse implements Serializable {
 
     //region Constructors
-    public RestResponse(boolean success) {
+    protected RestResponse(boolean success) {
         this(success, success ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    public RestResponse(boolean success, int statusCode) {
+    protected RestResponse(boolean success, int statusCode) {
         this(success, HttpStatusCode.valueOf(statusCode));
     }
 
-    public RestResponse(boolean success, HttpStatus status) {
+    protected RestResponse(boolean success, HttpStatus status) {
         this(success, status.value());
     }
     //endregion

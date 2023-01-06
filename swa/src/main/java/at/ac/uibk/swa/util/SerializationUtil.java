@@ -3,7 +3,11 @@ package at.ac.uibk.swa.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+// All your Constructors are belong to us!
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SerializationUtil {
 
     /**

@@ -1,18 +1,15 @@
 package at.ac.uibk.swa.service;
 
 import at.ac.uibk.swa.config.person_authentication.AuthContext;
-import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.CardRepository;
 import at.ac.uibk.swa.repositories.DeckRepository;
-import at.ac.uibk.swa.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,9 +25,9 @@ public class UserDeckService {
     @Autowired
     CardRepository cardRepository;
 
-    private final String DECK_UNPUBLISHED_INFO = "Deck has been unpublished";
-    private final String DECK_BLOCKED_INFO = "Deck has been blocked";
-    private final String DECK_DELETED_INFO = "Deck has been deleted";
+    private static final String DECK_UNPUBLISHED_INFO = "Deck has been unpublished";
+    private static final String DECK_BLOCKED_INFO = "Deck has been blocked";
+    private static final String DECK_DELETED_INFO = "Deck has been deleted";
 
     /**
      * Finds a deck within the repository by its id
@@ -66,7 +63,7 @@ public class UserDeckService {
      *
      * @return a list of all decks to which that person has subscribed or nothing if nobody is logged in
      */
-    public Optional<List<Deck>> getAllSavedDecks() {
+    public Optional<List<Deck>> getAllViewableDecks() {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
             Person person = maybePerson.get();
@@ -107,12 +104,11 @@ public class UserDeckService {
      *
      * @return a list of all decks to which that person has subscribed to (but did not create) or nothing if nobody is logged in
      */
-    // TODO: Rename this Method to something more fitting
-    public Optional<List<Deck>> getSavedNotOwnedDecks() {
+    public Optional<List<Deck>> getAllSubscribedDecks() {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
             Person person = maybePerson.get();
-            return getAllSavedDecks().map(decks -> decks.stream().filter(Predicate.not(d -> d.isCreator(person))).toList());
+            return getAllViewableDecks().map(decks -> decks.stream().filter(Predicate.not(d -> d.isCreator(person))).toList());
         }
         return Optional.empty();
     }
@@ -145,11 +141,7 @@ public class UserDeckService {
             Deck savedDeck = deckRepository.save(deck);
             for (Card card : deck.getCards()) {
                 card.setDeck(savedDeck);
-                try {
-                    cardRepository.save(card);
-                } catch (Exception e) {
-                    return null;
-                }
+                cardRepository.save(card);
             }
             return savedDeck;
         } catch (Exception e) {

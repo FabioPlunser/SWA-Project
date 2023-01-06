@@ -73,7 +73,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     @JsonIgnore
     @Builder.Default
     @Setter(AccessLevel.NONE)
-    private boolean password_hashed = true;
+    private boolean passwordHashed = true;
 
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "token", nullable = true, unique = true)
@@ -114,13 +114,13 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     //region Setting/Hashing Password
     public void setPassword(String password) {
         this.password = password;
-        this.password_hashed = false;
+        this.passwordHashed = false;
     }
 
     public void hashPassword(PasswordEncoder encoder) {
-        if (!this.password_hashed) {
+        if (!this.passwordHashed) {
             this.password = encoder.encode(this.password);
-            this.password_hashed = true;
+            this.passwordHashed = true;
         }
     }
     //endregion
@@ -169,7 +169,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     @Override
     public void eraseCredentials() {
         this.password = null;
-        this.password_hashed = false;
+        this.passwordHashed = false;
         this.token = null;
     }
     //endregion

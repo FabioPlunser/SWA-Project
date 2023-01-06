@@ -39,7 +39,7 @@ public class SwaExceptionHandlerController extends ResponseEntityExceptionHandle
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) throws IOException {
-        errorController.handleAuthorizationError(request, response, accessDeniedException);
+        errorController.handleErrorManual(request, response, accessDeniedException);
     }
 
     @ExceptionHandler(Exception.class)

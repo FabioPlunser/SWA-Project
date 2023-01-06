@@ -40,7 +40,6 @@ public class CardService {
      */
     public Optional<List<Card>> getAllCards(UUID deckId) {
         Optional<Deck> maybeDeck = userDeckService.findById(deckId);
-        Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybeDeck.isPresent()) {
             Deck deck = maybeDeck.get();
             if (deck.isDeleted() ||

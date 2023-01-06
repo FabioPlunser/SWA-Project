@@ -26,10 +26,10 @@ public enum Permission implements GrantedAuthority {
         return Set.of(ADMIN);
     }
 
-    private final static Set<Permission> ALL_PERMISSIONS = Arrays.stream(Permission.values()).collect(Collectors.toSet());
+    private static final Set<Permission> ALL_PERMISSIONS = Set.of(Permission.values());
 
     public static Set<Permission> allPermissions() {
-        return (Set) ALL_PERMISSIONS;
+        return ALL_PERMISSIONS;
     }
 
     public static Set<GrantedAuthority> allAuthorities() {

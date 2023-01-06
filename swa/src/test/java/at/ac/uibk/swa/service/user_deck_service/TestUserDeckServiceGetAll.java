@@ -11,7 +11,6 @@ import at.ac.uibk.swa.util.MockAuthContext;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -55,7 +54,7 @@ public class TestUserDeckServiceGetAll {
         assertTrue(userDeckService.create(deck), "Unable to create deck");
 
         // when: loading all decks for that user
-        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
 
         // then: the user should be able to see that deck (and only that) without a change to its description
         assertTrue(maybeDecks.isPresent(), "Unable to load decks");
@@ -75,7 +74,7 @@ public class TestUserDeckServiceGetAll {
         assertTrue(userDeckService.publish(deck.getDeckId()), "Unable to publish deck");
 
         // when: loading all decks for that user
-        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
 
         // then: the user should be able to see that deck (and only that) without a change to its description
         assertTrue(maybeDecks.isPresent(), "Unable to load decks");
@@ -97,7 +96,7 @@ public class TestUserDeckServiceGetAll {
         MockAuthContext.setLoggedInUser(personService.findById(person.getPersonId()).orElse(null));
 
         // when: loading all decks for that user
-        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
 
         // then: the user should be able to see that deck (and only that), but the description should be changed
         // and contain info on the blocking
@@ -119,7 +118,7 @@ public class TestUserDeckServiceGetAll {
         assertTrue(userDeckService.delete(deck.getDeckId()), "Unable to delete deck");
 
         // when: loading all decks for that user
-        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
 
         // then: the user should not be able to see that deck
         assertTrue(maybeDecks.isPresent(), "Unable to load decks");
@@ -144,7 +143,7 @@ public class TestUserDeckServiceGetAll {
         MockAuthContext.setLoggedInUser(personService.findById(person.getPersonId()).orElse(null));
 
         // when: loading all decks for the user
-        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
 
         // then: the user should be able to see the deck (and only that), but the description should be changed and
         // contain info on unpublishing
@@ -168,7 +167,7 @@ public class TestUserDeckServiceGetAll {
         assertTrue(userDeckService.subscribe(deck.getDeckId()), "Unable to subscribe to deck");
 
         // when: loading all decks for the user
-        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
 
         // then: the user should be able to see that deck (and only that) without a change to its description
         assertTrue(maybeDecks.isPresent(), "Unable to load decks");
@@ -194,7 +193,7 @@ public class TestUserDeckServiceGetAll {
         MockAuthContext.setLoggedInUser(personService.findById(person.getPersonId()).orElse(null));
 
         // when: loading all decks for the user
-        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
 
         // then: the user should be able to see that deck (and only that), but the description should be changed and
         // contain info on blocking
@@ -223,7 +222,7 @@ public class TestUserDeckServiceGetAll {
         MockAuthContext.setLoggedInUser(personService.findById(person.getPersonId()).orElse(null));
 
         // when: loading all decks for the user
-        Optional<List<Deck>> maybeDecks = userDeckService.getAllSavedDecks();
+        Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
 
         // then: the user should be able to see that deck (and only that), but the description should be changed and
         // contain info on deleting
