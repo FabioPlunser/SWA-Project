@@ -28,6 +28,10 @@ public class UserDeckService {
     @Autowired
     CardRepository cardRepository;
 
+    private final String DECK_UNPUBLISHED_INFO = "Deck has been unpublished";
+    private final String DECK_BLOCKED_INFO = "Deck has been blocked";
+    private final String DECK_DELETED_INFO = "Deck has been deleted";
+
     /**
      * Finds a deck within the repository by its id
      *
@@ -41,7 +45,6 @@ public class UserDeckService {
     /**
      * Finds all decks in the repository that are public and available for subscription (not deleted/blocked/already subscribed)
      *
-     * TODO: Currently only decks of the current user are returned -> return every public deck except the ones of the current user
      * @return list of all available decks
      */
     public List<Deck> findAllAvailableDecks() {
@@ -68,9 +71,9 @@ public class UserDeckService {
         if (maybePerson.isPresent()) {
             Person person = maybePerson.get();
             return Optional.of(person.getSavedDecks().stream()
-                    .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) { d.setDescription("Deck has been unpublished"); } return d;})
-                    .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
-                    .map(d -> {if (d.isDeleted()) { d.setDescription("Deck has been deleted"); } return d;})
+                    .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) { d.setDescription(DECK_UNPUBLISHED_INFO); } return d;})
+                    .map(d -> {if (d.isBlocked()) { d.setDescription(DECK_BLOCKED_INFO); } return d;})
+                    .map(d -> {if (d.isDeleted()) { d.setDescription(DECK_DELETED_INFO); } return d;})
                     .toList());
         } else {
             return Optional.empty();
@@ -88,7 +91,7 @@ public class UserDeckService {
             Person person = maybePerson.get();
             return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
-                    .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
+                    .map(d -> {if (d.isBlocked()) { d.setDescription(DECK_BLOCKED_INFO); } return d;})
                     .toList());
         } else {
             return Optional.empty();
@@ -125,7 +128,7 @@ public class UserDeckService {
             Person person = maybeUser.get();
             return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
-                    .map(d -> {if (d.isBlocked()) { d.setDescription("Deck has been blocked"); } return d;})
+                    .map(d -> {if (d.isBlocked()) { d.setDescription(DECK_BLOCKED_INFO); } return d;})
                     .toList());
         }
         return Optional.empty();

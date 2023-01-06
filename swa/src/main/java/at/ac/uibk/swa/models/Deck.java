@@ -69,7 +69,7 @@ public class Deck implements Serializable {
     private Person creator;
 
     @Builder.Default
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(
             mappedBy = "deck",
             orphanRemoval = true,
