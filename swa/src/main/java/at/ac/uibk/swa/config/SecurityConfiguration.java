@@ -51,6 +51,9 @@ public class SecurityConfiguration {
 
     @Autowired
     private RestAccessDeniedHandler accessDeniedHandler;
+
+    @Autowired
+    private StartupConfig.Profile activeProfile;
     //endregion
 
     //region Authentication Manager Bean
@@ -111,9 +114,10 @@ public class SecurityConfiguration {
         ;
 
         // Make H2-Console available for testing
-        // TODO: Review possible security issues, remove for prod
-        http.headers().frameOptions().disable();
-
+        if (activeProfile.equals(StartupConfig.Profile.TEST)) {
+            http.headers().frameOptions().disable();
+        }
+        
         // Register the custom Authentication Entry Point and Access Denied Handler.
         http.exceptionHandling()
                 .authenticationEntryPoint(entryPoint)

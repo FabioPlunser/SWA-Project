@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -45,7 +44,7 @@ public class StartupConfig {
     /**
      * The In-Memory Database Driver used for testing and in development.
      */
-    private Class testDbDriver = org.h2.Driver.class;
+    private Class<org.h2.Driver> testDbDriver = org.h2.Driver.class;
 
 
     @EventListener(ApplicationReadyEvent.class)
@@ -68,7 +67,7 @@ public class StartupConfig {
                     Person person = new Person(
                             "Admin", "admin@noreply.com", unhashedPassword,
                             UUID.fromString("62b3e09e-c529-40c6-85c6-1afc53e17408"),
-                            Set.of(Permission.ADMIN)
+                            Permission.adminAuthorities()
                     );
                     if (this.personService.create(person)) {
                         log.info(String.format("Created User \"%s\" with Password \"%s\" and Token \"%s\"",
@@ -84,7 +83,7 @@ public class StartupConfig {
     /**
      * Helper Class for easier Handling of the possible Profiles.
      */
-    private enum Profile {
+    public enum Profile {
         DEV,
         PROD,
         TEST,
