@@ -55,12 +55,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TestDeckControllerCreateUpdate {
     @Autowired
     private PersonService personService;
+    @Autowired
+    UserDeckService userDeckService;
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    UserDeckService userDeckService;
     @Autowired
     DeckRepository deckRepository;
     @Autowired
