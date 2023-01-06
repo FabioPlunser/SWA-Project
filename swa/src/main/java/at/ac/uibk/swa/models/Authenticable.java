@@ -3,6 +3,7 @@ package at.ac.uibk.swa.models;
 import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
 import at.ac.uibk.swa.models.annotations.OnlySerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -59,7 +60,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @OnlyDeserialize
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Setter(AccessLevel.NONE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "password", nullable = false)
@@ -75,7 +76,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     @Setter(AccessLevel.NONE)
     private boolean password_hashed = true;
 
-    @OnlySerialize
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "token", nullable = true, unique = true)
     private UUID token;
