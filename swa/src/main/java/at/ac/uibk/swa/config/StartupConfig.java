@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -67,7 +68,7 @@ public class StartupConfig {
                     Person person = new Person(
                             "Admin", "admin@noreply.com", unhashedPassword,
                             UUID.fromString("62b3e09e-c529-40c6-85c6-1afc53e17408"),
-                            Permission.allAuthorities()
+                            Set.of(Permission.ADMIN)
                     );
                     if (this.personService.create(person)) {
                         log.info(String.format("Created User \"%s\" with Password \"%s\" and Token \"%s\"",
