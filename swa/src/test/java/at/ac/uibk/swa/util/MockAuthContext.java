@@ -18,19 +18,6 @@ public class MockAuthContext {
      * @return AuthContext.getCurrentUser().get() or null if none has be returned
      */
     public static Authenticable setLoggedInUser(Authenticable user) {
-        SecurityContextHolder.setContext(new SecurityContext() {
-            UsernamePasswordAuthenticationToken token;
-
-            @Override
-            public Authentication getAuthentication() {
-                return token;
-            }
-
-            @Override
-            public void setAuthentication(Authentication authentication) {
-                token = (UsernamePasswordAuthenticationToken) authentication;
-            }
-        });
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, UUID.randomUUID()));
         if (AuthContext.getCurrentUser().isEmpty()) {
             return null;
