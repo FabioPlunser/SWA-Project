@@ -4,19 +4,17 @@ import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
 import at.ac.uibk.swa.util.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,10 +28,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.ArrayUtils.toArray;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -55,6 +50,7 @@ public class TestCardControllerGeneral {
     private Person createUserAndLogin(boolean admin) {
         String username = StringGenerator.username();
         String password = StringGenerator.password();
+        //Set<GrantedAuthority> permissions = new java.util.HashSet<>();
         Set<GrantedAuthority> permissions = new java.util.HashSet<>();
         if (admin) {
             permissions.add(Permission.ADMIN);
