@@ -3,14 +3,17 @@ package at.ac.uibk.swa.config;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.PersonService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 
 import java.util.UUID;
 
+@Slf4j
 @Configuration
 public class StartupConfig {
     @Autowired
@@ -21,7 +24,16 @@ public class StartupConfig {
      */
     @Value("${spring.profiles.active}")
     private String activeProfileString;
-    private Profile activeProfile;
+
+    /**
+     * Gets the currently active "application.properties" Profile.
+     *
+     * @return The currently active Configuration Profile.
+     */
+    @Bean
+    public Profile getActiveProfile() {
+        return Profile.fromString(activeProfileString);
+    }
 
     /**
      * Injected Name of the Database Driver specified in the Application Properties.
@@ -36,7 +48,12 @@ public class StartupConfig {
 
     @EventListener(ApplicationReadyEvent.class)
     public void createBaseAdminUser() {
-        this.activeProfile = Profile.fromString(activeProfileString);
+        Profile activeProfile = getActiveProfile();
+        if (activeProfile.isUnknown()) {
+            log.warn(String.format("Unknown Active Profile: \"%s\"", activeProfileString));
+        } else {
+            log.debug(String.format("Active Profile: \"%s\"", activeProfile));
+        }
         switch (activeProfile) {
             case DEV -> {
                 if (dbDriver.equals(testDbDriver.getName())) {
@@ -66,6 +83,10 @@ public class StartupConfig {
             } catch (Exception e) {
                 return Profile.OTHER;
             }
+        }
+
+        public boolean isUnknown() {
+            return this == OTHER;
         }
     }
 }

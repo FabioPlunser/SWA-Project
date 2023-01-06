@@ -11,6 +11,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-# Enable the following two options to see the SQL on the CMD-Line (beware Indentation!!)
+# ----- Enable the following two options to see the SQL on the CMD-Line (beware Indentation!!) ----- #
         # format_sql: true
     # show-sql: true
+# -------------------------------------------------------------------------------------------------- #
