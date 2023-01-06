@@ -7,11 +7,13 @@ import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
 import at.ac.uibk.swa.util.MockAuthContext;
+import at.ac.uibk.swa.util.SetupH2Console;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.h2.tools.Server;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@ExtendWith({SetupH2Console.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestCardControllerGeneral {
     @Autowired
@@ -43,13 +46,6 @@ public class TestCardControllerGeneral {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
-
-
-    @BeforeAll
-    public void initTest() throws SQLException {
-        Server.createWebServer("-web", "-webAllowOthers", "-webPort", "3000")
-                .start();
-    }
 
     private Person createUserAndLogin() {
         String username = StringGenerator.username();
