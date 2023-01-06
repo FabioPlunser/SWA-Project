@@ -4,6 +4,7 @@ import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
 import at.ac.uibk.swa.models.annotations.OnlySerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.core.util.Json;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -47,14 +48,14 @@ public class Deck implements Serializable {
     @Column(name = "is_published", nullable = false)
     private boolean isPublished;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "is_blocked", nullable = false)
-    @JsonIgnore
     private boolean isBlocked;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "is_deleted", nullable = false)
-    @JsonIgnore
     private boolean isDeleted;
 
     @JsonIgnore
@@ -62,8 +63,8 @@ public class Deck implements Serializable {
     @JoinColumn(name = "creator_id", nullable = false)
     private Person creator;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Builder.Default
-    @OnlyDeserialize
     @OneToMany(
             mappedBy = "deck",
             orphanRemoval = true,
