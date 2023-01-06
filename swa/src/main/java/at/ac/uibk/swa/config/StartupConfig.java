@@ -46,22 +46,34 @@ public class StartupConfig {
      */
     private Class testDbDriver = org.h2.Driver.class;
 
+
     @EventListener(ApplicationReadyEvent.class)
-    public void createBaseAdminUser() {
+    public void logActiveProfile() {
         Profile activeProfile = getActiveProfile();
         if (activeProfile.isUnknown()) {
             log.warn(String.format("Unknown Active Profile: \"%s\"", activeProfileString));
         } else {
             log.debug(String.format("Active Profile: \"%s\"", activeProfile));
         }
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void createBaseAdminUser() {
+        Profile activeProfile = getActiveProfile();
         switch (activeProfile) {
             case DEV -> {
                 if (dbDriver.equals(testDbDriver.getName())) {
-                    this.personService.create(new Person(
-                            "Admin", "admin@noreply.com", "password",
+                    String unhashedPassword = "password";
+                    Person person = new Person(
+                            "Admin", "admin@noreply.com", unhashedPassword,
                             UUID.fromString("62b3e09e-c529-40c6-85c6-1afc53e17408"),
                             Permission.allAuthorities()
-                    ));
+                    );
+                    if (this.personService.create(person)) {
+                        log.info(String.format("Created User \"%s\" with Password \"%s\" and Token \"%s\"",
+                                person.getUsername(), unhashedPassword, person.getToken()
+                        ));
+                    }
                 }
             }
             default -> {}
