@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ExtendWith({SetupH2Console.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TestDeckControllerGeneral {
+class TestDeckControllerCreateUpdate {
     @Autowired
     private PersonService personService;
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
