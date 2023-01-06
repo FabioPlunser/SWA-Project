@@ -46,10 +46,10 @@ public class DeckController {
             @RequestBody final Deck deck
     ) {
         if (!userDeckService.create(deck)) {
-            return MessageResponse.builder().notOk().message("Deck could not be created.").build();
+            return MessageResponse.builder().notOk().message("Deck " + deck.getDeckId() + " could not be created.").build();
         }
 
-        return MessageResponse.builder().ok().message("Deck created successfully.").build();
+        return MessageResponse.builder().ok().message("Deck " + deck.getDeckId() + " created successfully.").build();
     }
 
     /**
@@ -68,12 +68,12 @@ public class DeckController {
         if (userDeckService.update(deck)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck updated")
+                    .message("Deck " + deck.getDeckId() + " updated")
                     .build();
         }
         return MessageResponse.builder()
                 .notOk()
-                .message("Deck not updated")
+                .message("Deck " + deck.getDeckId() + " not updated")
                 .build();
     }
 
@@ -90,12 +90,12 @@ public class DeckController {
         if (userDeckService.publish(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck published")
+                    .message("Deck " + deckId + " published")
                     .build();
         }
         return MessageResponse.builder()
                 .notOk()
-                .message("Deck publicity not changed")
+                .message("Deck " + deckId + " publicity not changed")
                 .build();
     }
 
@@ -111,12 +111,12 @@ public class DeckController {
         if (userDeckService.unpublish(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck unpublished")
+                    .message("Deck " + deckId + " unpublished")
                     .build();
         }
         return MessageResponse.builder()
                 .notOk()
-                .message("Deck publicity not changed")
+                .message("Deck " + deckId + " publicity not changed")
                 .build();
     }
 
@@ -133,12 +133,12 @@ public class DeckController {
         if (userDeckService.subscribe(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck subscribed")
+                    .message("Deck " + deckId + " subscribed")
                     .build();
         }
         return MessageResponse.builder()
                 .notOk()
-                .message("Deck not subscribed")
+                .message("Deck " + deckId + " not subscribed")
                 .build();
     }
 
@@ -154,12 +154,12 @@ public class DeckController {
         if (userDeckService.unsubscribe(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck unsubscribed")
+                    .message("Deck " + deckId + " unsubscribed")
                     .build();
         }
         return MessageResponse.builder()
                 .notOk()
-                .message("Deck not unsubscribed")
+                .message("Deck " + deckId + " not unsubscribed")
                 .build();
     }
 
@@ -177,12 +177,12 @@ public class DeckController {
         if (adminDeckService.block(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck blocked")
+                    .message("Deck " + deckId + " blocked")
                     .build();
         }
         return MessageResponse.builder()
                 .notOk()
-                .message("Deck not blocked")
+                .message("Deck " + deckId + " not blocked")
                 .build();
     }
 
@@ -200,12 +200,12 @@ public class DeckController {
         if (adminDeckService.unblock(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck unblocked")
+                    .message("Deck " + deckId + " unblocked")
                     .build();
         }
         return MessageResponse.builder()
                 .notOk()
-                .message("Deck not unblocked")
+                .message("Deck " + deckId + " not unblocked")
                 .build();
     }
 
@@ -221,12 +221,12 @@ public class DeckController {
         if (userDeckService.delete(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck deleted")
+                    .message("Deck " + deckId + " deleted")
                     .build();
         }
         return MessageResponse.builder()
                 .notOk()
-                .message("Deck not deleted")
+                .message("Deck " + deckId + " not deleted")
                 .build();
     }
 
