@@ -59,7 +59,6 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String username;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Setter(AccessLevel.NONE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "password", nullable = false)
