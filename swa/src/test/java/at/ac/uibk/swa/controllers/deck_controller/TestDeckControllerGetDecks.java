@@ -58,14 +58,12 @@ public class TestDeckControllerGetDecks {
     @Autowired
     private DeckRepository deckRepository;
 
-    private Person createUserAndLogin(boolean admin) {
+    private Person createUserAndLogin(boolean alsoAdmin) {
         String username = StringGenerator.username();
         String password = StringGenerator.password();
-        Set<GrantedAuthority> permissions = new java.util.HashSet<>();
-        if (admin) {
+        Set<GrantedAuthority> permissions = new java.util.HashSet<>(Set.of(Permission.USER));
+        if (alsoAdmin) {
             permissions.add(Permission.ADMIN);
-        } else {
-            permissions.add(Permission.USER);
         }
         Person person = new Person(username, StringGenerator.email(), password, permissions);
         assertTrue(personService.create(person), "Unable to create user");
