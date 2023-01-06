@@ -31,10 +31,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -155,24 +152,24 @@ public class TestDeckControllerGetDecks {
         );
     }
 
-    private Stream<Arguments> getSubscribedDecksConfig() {
+    private Stream<Arguments> getCreatedAndSubscribedDecksConfig() {
         return ArgumentGenerator.booleans(3);
     }
 
     @ParameterizedTest
-    @MethodSource("getSubscribedDecksConfig")
-    public void getSubscribedDecks (
+    @MethodSource("getCreatedAndSubscribedDecksConfig")
+    public void getCreatedAndSubscribedDecks (
             boolean unpublish,
             boolean block,
             boolean delete
     ) throws Exception {
-        // given: two decks, to which a user has subscribed
-        Person person = createUserAndLogin(false);
-        int numberOfDecks = 2;
-        List<Deck> decks = new ArrayList<>();
+        // given: one deck to which a user has subscribed and one deck, that the user has created
+        Deck createdDeck = createDeck(1, true, block, delete, null);
+        Person person = createdDeck.getCreator();
         String expectedDescription = null;
-        for (int i = 0; i < numberOfDecks; i++) {
-            Deck deck = createDeck(1, true, block, delete, person);
+        Deck subscribedDeck = createDeck(1, true, block, delete, person);
+        List<Deck> decks = new ArrayList<>(Arrays.asList(createdDeck, subscribedDeck));
+        for (Deck deck : decks) {
             if (unpublish) {
                 MockAuthContext.setLoggedInUser(deck.getCreator());
                 userDeckService.unpublish(deck.getDeckId());
@@ -188,7 +185,6 @@ public class TestDeckControllerGetDecks {
                 userDeckService.delete(deck.getDeckId());
                 expectedDescription = "deleted";
             }
-            decks.add(deck);
         }
         MockAuthContext.setLoggedInUser(null);
 
@@ -196,27 +192,40 @@ public class TestDeckControllerGetDecks {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/get-subscribed-decks")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + person.getToken())
                 .contentType(MediaType.APPLICATION_JSON)
-        // then: expected decks must be returned, description must be changed if applicable
+        // then: only the subscribed deck must be returned, description must be changed if applicable
         ).andExpectAll(
                 status().isOk(),
                 jsonPath("$.items").isArray(),
-                jsonPath("$.items").value(Matchers.hasSize(numberOfDecks)),
-                jsonPath("$.items[*].deckId").value(
-                        Matchers.containsInAnyOrder(
-                                decks.stream()
-                                        .map(d -> d.getDeckId().toString())
-                                        .toArray(String[]::new)
-                        )
-                ),
+                jsonPath("$.items").value(Matchers.hasSize(1)),
+                jsonPath("$.items[0].deckId").value(Matchers.is(subscribedDeck.getDeckId().toString())),
                 jsonPath("$.items[0].description").value(
-                        expectedDescription != null ?
+                        (unpublish || block || delete) ?
                                 Matchers.containsString(expectedDescription) :
-                                Matchers.anything()
+                                Matchers.is(subscribedDeck.getDescription())
+                )
+        );
+
+        // when: loading all decks that the given user has created
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/get-created-decks")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + person.getToken())
+                .contentType(MediaType.APPLICATION_JSON)
+        // then: only the created decks must be returned, description must be changed if applicable
+        ).andExpectAll(
+                status().isOk(),
+                jsonPath("$.items").isArray(),
+                jsonPath("$.items").value(Matchers.hasSize(delete ? 0 : 1)),
+                jsonPath("$.items[*].deckId").value(
+                        delete ?
+                                Matchers.anything() :
+                                Matchers.contains(Matchers.containsString(createdDeck.getDeckId().toString()))
                 ),
-                jsonPath("$.items[1].description").value(
-                        expectedDescription != null ?
-                                Matchers.containsString(expectedDescription) :
-                                Matchers.anything()
+                jsonPath("$.items[*].description").value(
+                        delete ?
+                                Matchers.anything() :
+                                Matchers.contains(block ?
+                                        Matchers.containsString(expectedDescription) :
+                                        Matchers.is(createdDeck.getDescription())
+                                )
                 )
         );
     }
