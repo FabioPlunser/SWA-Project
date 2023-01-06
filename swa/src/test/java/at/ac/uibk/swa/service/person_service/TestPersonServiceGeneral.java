@@ -102,7 +102,7 @@ public class TestPersonServiceGeneral {
         String newUsername = StringGenerator.username();
         String newPassword = StringGenerator.password();
         Set<Permission> newPermissions = Set.of(Permission.ADMIN, Permission.USER);
-        assertTrue(personService.update(person, newUsername, newPermissions, newPassword), "Could not update user");
+        assertTrue(personService.update(person, newUsername, newPassword, newPermissions), "Could not update user");
 
         // then: logging in should be possible with new credentials only and other attributes must be correct
         Optional<Person> maybePerson = personService.login(newUsername, newPassword);

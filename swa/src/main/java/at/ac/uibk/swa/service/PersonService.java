@@ -155,7 +155,7 @@ public class PersonService {
      * @param password The new Password.
      * @return true if the user could be found and could be updated, false otherwise.
      */
-    public boolean update(Person person, String username, Set<Permission> permissions, String password) {
+    public boolean update(Person person, String username, String password, Set<Permission> permissions) {
         if(person != null && person.getPersonId() != null) {
             if (username    != null) person.setUsername(username);
             if (permissions != null) person.setPermissions(permissions);
@@ -180,7 +180,7 @@ public class PersonService {
      */
     public boolean update(UUID personId, String username, Set<Permission> permissions, String password) {
         Optional<Person> maybePerson = findById(personId);
-        return maybePerson.filter(person -> update(person, username, permissions, password)).isPresent();
+        return maybePerson.filter(person -> update(person, username, password, permissions)).isPresent();
     }
 
     private boolean updateToken(Person person) {
