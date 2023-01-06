@@ -23,13 +23,15 @@ spring:
     console:
       enabled: false
 
+  # profiles:
+  #     active: 'prod'
   # profiles.include: 'secrets'
   # datasource:
   #   driver-class: org.mariadb.jdbc.Driver
   #   url: "jdbc:mariadb://localhost/swa"
   # jpa:
   #   hibernate:
-  #     ddl-auto: none
+  #     ddl-auto: create
 
   mvc:
     static-path-pattern: '/**'

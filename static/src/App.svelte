@@ -110,7 +110,6 @@
 	
 	
 	async function getDecks(){
-		console.log("getDecks");
 		if($userPermissionsStore.includes("ADMIN")){
 			allDecks = await getAllDecks();
 		}

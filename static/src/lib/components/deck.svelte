@@ -7,7 +7,7 @@
 
     export let deck; 
 
-    let { deckId, name, description, published, blocked} = deck;
+    let { deckId, name, description, published, blocked, cards} = deck;
     
     
     let hover = false
@@ -63,7 +63,7 @@
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4">
                 <div class="grid grid-rows-3 gap-2">
-                    <div class="badge badge-primary">Cards to learn: </div>
+                    <div class="badge badge-primary">Number of Cards: {cards.length} </div>
                     {#if published}
                     <div class="badge badge-info">Published</div>
                     {:else}

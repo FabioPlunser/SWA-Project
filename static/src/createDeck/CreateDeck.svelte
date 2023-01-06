@@ -45,45 +45,6 @@
     },
   };
 
-  // async function handleSubmit(event) {
-  //   const action = event.target.action;
-  //   const method = event.target.method;
-  //   const myHeader = new Headers()
-  //   myHeader.append("Content-Type", "application/json");
-  //   myHeader.append("Authorization", "Bearer " + $tokenStore);
-    
-  //   const formData = new FormData(event.target);
-  //   errors = validateForm(event, form);
-  //   if(!isFormValid(errors)){
-  //       return;
-  //   }
-
-  //   var object = {};
-  //   formData.forEach((value, key) => object[key] = value);
-  //   object.cards = cards; 
-  //   var data = JSON.stringify(object);
-
-    
-  //   const requestOptions = {
-  //     method: method, 
-  //     headers: myHeader,
-  //     body: data,
-  //   }
-
-    
-  //   let res = await fetch(action, requestOptions);
-  //   res = await res.json();
-  //   console.log(res);
-  //   //if success reset form
-  //   if(res.success){
-  //     event.target.reset();
-  //     cards = [];
-  //   }
-    
-  //   addToastByRes(res);
-  // }
-
-
   async function handlePostFetch(data){
     data.detail.e.target.reset();
     addToastByRes(data.detail.res);

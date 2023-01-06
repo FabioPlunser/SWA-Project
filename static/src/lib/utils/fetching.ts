@@ -18,10 +18,13 @@ export async function fetching(url: string, method: string, params?: json[], dat
   let myHeaders = new Headers();
   myHeaders.append("Authorization", "Bearer " + get(tokenStore));
 
-  console.log("fetching", url, method, params, data, json)
   if(params){
-    for(let param of params){
-      url = url + '?' + Object.keys(param) + '=' + Object.values(param);
+    for(let i=0; i<params.length; i++){
+      if(i === 0){
+        url = url + '?' + Object.keys(params[i]) + '=' + Object.values(params[i]);
+      }else{
+        url = url + '&' + Object.keys(params[i]) + '=' + Object.values(params[i]);
+      }
     }
   }
   
@@ -47,10 +50,8 @@ export async function fetching(url: string, method: string, params?: json[], dat
     };
   }
 
-  console.log("requestOptions", requestOptions);
   let res = await fetch(url, requestOptions);
   res = await res.json();
-  console.log(res);
   return res;
 }
 
