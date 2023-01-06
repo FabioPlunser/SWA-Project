@@ -109,9 +109,9 @@ public class PersonController {
             @RequestParam(name = "password", required = false) final String password
     ) {
         if (personService.update(personId, username, permissions, password))
-            return new MessageResponse(true, "User updated successfully!");
+            return new MessageResponse(true, "User " + personId + " updated successfully!");
 
-        return new MessageResponse(false, "Could not update User - User does not exist!");
+        return new MessageResponse(false, "Could not update User " + personId + " - User does not exist!");
     }
     //endregion
 
@@ -128,9 +128,9 @@ public class PersonController {
             @RequestParam("personId") final UUID personId
     ) {
         if (!personService.delete(personId))
-            return new MessageResponse(false, "Could not delete User - User does not exist!");
+            return new MessageResponse(false, "Could not delete User " + personId + " - User does not exist!");
 
-        return new MessageResponse(true, "User deleted successfully!");
+        return new MessageResponse(true, "User " + personId + " deleted successfully!");
     }
     //endregion
 
