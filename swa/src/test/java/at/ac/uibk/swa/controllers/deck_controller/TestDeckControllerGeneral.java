@@ -71,9 +71,11 @@ class TestDeckControllerGeneral {
     private Person createUserAndLogin(boolean admin) {
         String username = StringGenerator.username();
         String password = StringGenerator.password();
-        Set<GrantedAuthority> permissions = new java.util.HashSet<>(Set.of(Permission.USER));
+        Set<GrantedAuthority> permissions = new java.util.HashSet<>();
         if (admin) {
             permissions.add(Permission.ADMIN);
+        } else {
+            permissions.add(Permission.USER);
         }
         Person person = new Person(username, StringGenerator.email(), password, permissions);
         assertTrue(personService.create(person), "Unable to create user");
@@ -188,9 +190,7 @@ class TestDeckControllerGeneral {
         content.put("deckId", initialDeck.getDeckId().toString());
         content.put("name", updatedDeckName);
         content.put("description", updatedDeckDescription);
-        if (initiallyPublished != finallyPublished) {
-            content.put("published", finallyPublished);
-        }
+        content.put("published", finallyPublished);
         content.put("blocked", tryToBlock);
         content.put("deleted", tryToDelete);
         ArrayNode contentCards = mapper.createArrayNode();
@@ -208,9 +208,7 @@ class TestDeckControllerGeneral {
             cardFrontTexts.add(frontText);
             contentCard.put("backText", backText);
             cardBackTexts.add(backText);
-            if (cardsInitiallyFlipped != cardsFinallyFlipped) {
-                contentCard.put("flipped", cardsFinallyFlipped);
-            }
+            contentCard.put("flipped", cardsFinallyFlipped);
             contentCards.addPOJO(contentCard);
         }
         int numberOfCardsToCreate = 10;
@@ -218,10 +216,11 @@ class TestDeckControllerGeneral {
             ObjectNode contentCard = mapper.createObjectNode();
             String frontText = StringGenerator.cardText();
             String backText = StringGenerator.cardText();
-            contentCard.put("frontText", StringGenerator.cardText());
+            contentCard.put("frontText", frontText);
             cardFrontTexts.add(frontText);
-            contentCard.put("backText", StringGenerator.cardText());
+            contentCard.put("backText", backText);
             cardBackTexts.add(backText);
+            contentCard.put("flipped", cardsFinallyFlipped);
             contentCards.addPOJO(contentCard);
         }
         content.putPOJO("cards", contentCards);
@@ -231,7 +230,7 @@ class TestDeckControllerGeneral {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + initialDeck.getCreator().getToken())
                         .content(content.toString())
                         .contentType(MediaType.APPLICATION_JSON)
-        // then: response must be ok, number of created decks and cards must be as desired
+        // then: response must be ok, created decks and cards must be as desired
         ).andExpectAll(
                 status().isOk()
         );
@@ -246,13 +245,13 @@ class TestDeckControllerGeneral {
         assertFalse(updatedDeck.isBlocked(), "Deck got blocked although this should not be possible via update-deck");
         assertFalse(updatedDeck.isDeleted(), "Deck got deleted although this should not be possible via update-deck");
 
-        assertEquals(numberOfCardsToUpdate + numberOfCardsToCreate - numberOfCardsToDelete, updatedDeck.getCards().size(), "Did not find as many cards as expected");
+        assertEquals(numberOfCardsToUpdate + numberOfCardsToCreate, updatedDeck.getCards().size(), "Found an unexpected number of cards");
 
         for (int i = 0; i < numberOfCardsToUpdate; i++) {
             assertTrue(updatedDeck.getCards().contains(initialDeck.getCards().get(i)), "Did not find a card that should have been updated");
         }
         for (int i = numberOfCardsToUpdate; i < numberOfCardsToUpdate + numberOfCardsToDelete; i++) {
-            assertTrue(updatedDeck.getCards().contains(initialDeck.getCards().get(i)), "Found a card that should have been deleted");
+            assertFalse(updatedDeck.getCards().contains(initialDeck.getCards().get(i)), "Found a card that should have been deleted");
         }
 
         for (int i = 0; i < numberOfCardsToUpdate + numberOfCardsToCreate; i++) {

@@ -137,7 +137,7 @@ public class UserDeckService {
      * @return deck that has been saved if successful, null otherwise
      */
     @Transactional
-    private Deck save(Deck deck) {
+    public Deck save(Deck deck) {
         try {
             Deck savedDeck = deckRepository.save(deck);
             for (Card card : deck.getCards()) {
