@@ -117,7 +117,7 @@ public class SecurityConfiguration {
         if (activeProfile.equals(StartupConfig.Profile.TEST)) {
             http.headers().frameOptions().disable();
         }
-        
+
         // Register the custom Authentication Entry Point and Access Denied Handler.
         http.exceptionHandling()
                 .authenticationEntryPoint(entryPoint)

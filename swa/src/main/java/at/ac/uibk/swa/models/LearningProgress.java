@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -41,25 +42,30 @@ public class LearningProgress implements Serializable, Cloneable {
     @Column(name = "progress_id", nullable = false)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @GeneratedValue(strategy=GenerationType.AUTO)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private UUID learningProgressId;
 
     @Builder.Default
     @Column(name = "learning_interval", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private int interval = 0;
 
     @Builder.Default
     @Column(name = "e_factor", nullable = false)
     @JdbcTypeCode(SqlTypes.DOUBLE)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private double eFactor = 2.5;
 
     @Setter(AccessLevel.PRIVATE)
     @Builder.Default
     @Column(name = "num_repetitions", nullable = false)
     @JdbcTypeCode(SqlTypes.BIGINT)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private int repetitions = 0;
 
     @Builder.Default
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Column(name = "next_learn", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime nextLearn = LocalDateTime.now();
 
