@@ -1,7 +1,8 @@
 package at.ac.uibk.swa.models;
 
-import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -32,19 +33,24 @@ public class Card implements Serializable {
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "card_id", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private UUID cardId;
 
     @Lob
     // @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "front_text", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String frontText;
 
     @Lob
     // @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "back_text", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String backText;
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)
+    @JsonAlias("isFlipped")
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Column(name = "is_flipped", nullable = false)
     private boolean isFlipped;
 

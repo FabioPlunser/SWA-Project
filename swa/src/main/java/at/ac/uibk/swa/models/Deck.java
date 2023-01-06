@@ -1,7 +1,6 @@
 package at.ac.uibk.swa.models;
 
-import at.ac.uibk.swa.models.annotations.OnlyDeserialize;
-import at.ac.uibk.swa.models.annotations.OnlySerialize;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -32,29 +31,36 @@ public class Deck implements Serializable {
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "deck_id", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private UUID deckId;
 
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "name", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String name;
 
     @Lob
     // @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "description", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String description;
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)
+    @JsonAlias("isPublished")
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Column(name = "is_published", nullable = false)
     private boolean isPublished;
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)
+    @JsonAlias("isBlocked")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "is_blocked", nullable = false)
-    @JsonIgnore
     private boolean isBlocked;
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)
+    @JsonAlias("isDeleted")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "is_deleted", nullable = false)
-    @JsonIgnore
     private boolean isDeleted;
 
     @JsonIgnore
@@ -63,7 +69,7 @@ public class Deck implements Serializable {
     private Person creator;
 
     @Builder.Default
-    @OnlyDeserialize
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @OneToMany(
             mappedBy = "deck",
             orphanRemoval = true,
