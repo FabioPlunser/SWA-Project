@@ -1,9 +1,9 @@
 <script lang="ts">
-
   import favicon  from '/favicon.png';
   import Nav from "../lib/components/nav.svelte";
   import Modal from "../lib/components/modal.svelte";
   import Spinner from '../lib/components/Spinner.svelte';
+  import Form from '../lib/components/Form.svelte';
 
   import { redirect } from '../lib/utils/redirect';
   import { handleLogout } from '../lib/utils/handleLogout';
@@ -11,6 +11,7 @@
   import { addToastByRes } from '../lib/utils/addToToastStore';
   import { Validators, validateForm, isFormValid} from "../lib/utils/Validators";
   import { fetching, formFetch } from '../lib/utils/fetching';
+  import { validate_each_argument } from 'svelte/internal';
   
   $: $adminSelectedUserStore = selectedUser;
 
@@ -55,10 +56,10 @@
       validators: [Validators.required],
     },
     email: {
-      validators: [Validators.required],
+      validators: [Validators.required, Validators.email],
     },
     password: {
-      validators: [Validators.required],
+      validators: [Validators.required, Validators.minLength(8)],
     },
     permissions: {
       validators: [Validators.required],
@@ -70,35 +71,29 @@
       validators: [Validators.required],
     },
     email: {
-      validators: [Validators.required],
+      validators: [Validators.required, Validators.email],
     },
     permissions: {
       validators: [Validators.required],
     },
   };
 
-  async function handleSubmit(e){
-    const action = e.target.action;
-    const method = e.target.method.toUpperCase();
-      
-    errors = validateForm(e, updateForm);
-    errors = validateForm(e, createForm);
-    if(!isFormValid(errors)){
-        return;
-    }
+  async function handleCreatePostFetch(){
+    showCreateModal = false, 
+    await getAllUser();
+  }
 
-    if(action.includes("delete") && formData.get("permissions").toString().includes("ADMIN")){
+  async function handleUpdatePostFetch(){
+    showEditModal = false, 
+    await getAllUser();
+  }
+
+  async function handleDeletePreFetch(e){
+    const formData = new FormData(e.detail.target);
+    if(formData.get("permissions").toString().includes("ADMIN")){
       if(!confirm(`Are you sure you want to delete ${formData.get("username").toString()}?`)) return;
     }
-    if(action.includes("create")){
-      showCreateModal = !showCreateModal;
-    } 
-    if(action.includes("update")){
-      showEditModal = !showEditModal;
-    } 
-    
-    let res = await formFetch(e);
-    await getAllUser();
+    // 
   }
 
 
@@ -115,7 +110,7 @@
     <Modal open={showCreateModal} on:close={()=>showCreateModal=false} closeOnBodyClick={false}>
         <h1 class="flex justify-center underline text-2xl">Create User</h1>
         <br class="pt-4"/>
-        <form method='POST' action='api/create-user' on:submit|preventDefault={handleSubmit}>
+        <Form url="/api/create-user" method="POST" dataFormat="FormData" formValidators={createForm} bind:errors={errors} on:postFetch={handleCreatePostFetch}>
             <div class="flex flex-col">
               <div class="form-control">
                   <label class="input-group">
@@ -174,7 +169,7 @@
                 <button class="btn btn-primary" on:click={()=> showCreateModal = false}>Close</button>
               </div>
             </div>
-        </form>
+          </Form>
     </Modal>
 {/if}
 
@@ -182,7 +177,7 @@
   <Modal open={showEditModal} on:close={()=>showEditModal=false} closeOnBodyClick={false}>
       <h1 class="flex justify-center">Edit User</h1>
       <br class="pt-4"/>
-      <form class="flex justify-center" method="POST" action="api/update-user" on:submit|preventDefault={handleSubmit}>
+      <Form url="/api/update-user" method="POST" dataFormat="FormData" formValidators={updateForm} bind:errors={errors} on:postFetch={handleUpdatePostFetch} >
         <input name="personId" type="hidden" bind:value={selectedUser.personId} required>
         <div class="flex flex-col">
           <div class="form-control">
@@ -242,7 +237,7 @@
             <button class="btn btn-primary" on:click={()=> showEditModal = false}>Close</button>
           </div>
         </div>
-      </form>
+      </Form>
   </Modal>
 {/if}
 
@@ -284,7 +279,7 @@
               {#each users as user}
                   {#if user.username.toLowerCase().includes(searchUsername.toLowerCase()) && user.email.toLowerCase().includes(searchEmail.toLowerCase()) && user.permissions.toString().toLowerCase().includes(searchPermission.toLowerCase())}
                         <tr>
-                          <td><form action="api/deleteUser" method="POST" on:submit|preventDefault={handleSubmit} id={user.personId} name="personId"/>{user.personId.slice(0,5)+"..."}</td>
+                          <td><Form url="/api/delete-user" method="DELETE" dataFormat="FormData" id={user.personId} on:preFetch={handleDeletePreFetch} on:postFetch={async () => await getAllUser()}/>{user.personId.slice(0,5)+"..."}</td>
                           <input type="hidden" form={user.personId} bind:value={user.personId} name="personId"/>
                           <td><input form={user.personId} type="text" name="username" bind:value={user.username} class="bg-transparent" readonly/></td>
                           <td><input form={user.personId} type="text" name="email" bind:value={user.email} class="bg-transparent" readonly/></td>

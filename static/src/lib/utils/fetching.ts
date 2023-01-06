@@ -2,92 +2,56 @@ import { addToastByRes } from "./addToToastStore";
 import { tokenStore } from "../stores/tokenStore";
 import { get } from "svelte/store";
 
-let token = get(tokenStore);
-let myHeaders = new Headers();
-myHeaders.append("Authorization", "Bearer " + token);
 
-export async function formFetch(e, json?: boolean) {
-    const action = e.target.action;
-    const method = e.target.method.toUpperCase();
-    let formData = new FormData(e.target);
-
-    if(json) {
-      myHeaders.append("Content-Type", "application/json");
-      const data = {};
-      for (let [key, value] of formData.entries()) {
-        data[key] = value;
-      }
-      formData = JSON.stringify(data);
-    }
-
-    if(method === 'GET') {
-      let requestOptions = {
-        method: 'GET',
-        headers: myHeaders,
-      };
-      let res = await fetch(action, requestOptions)
-      res = await res.json();
-      if(!res.success){
-        addToastByRes(res);
-      }
-      return res;
-    }
-    
-    if(method === 'POST') {
-      let requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: formData,
-      };
-      let res = await fetch(action, requestOptions);
-      res = await res.json();
-      addToastByRes(res);
-      return res;
-    }
-}
-
-export async function fetching(url: string, method: string, params?: JSON[]){
+/**
+ * a general fetching function for all fetch requests
+ * @param url the url to fetch
+ * @param method the method to use
+ * @param data the data to send OPTIONAL
+ * @param json if the data is json O
+ * @param params the params to add to the url OPTIONAL
+ * @returns the response
+ * @example fetching('http://localhost:3000/api/v1/users', 'GET', null, false, [{limit: 10}, {offset: 0}])
+ */
+export async function fetching(url: string, method: string, params?: json[], data?, json?:boolean){
   let requestOptions;
-  let res;
+  let myHeaders = new Headers();
+  myHeaders.append("Authorization", "Bearer " + get(tokenStore));
 
-
-  if(method === 'GET') {   
+  if(params){
+    for(let i=0; i<params.length; i++){
+      if(i === 0){
+        url = url + '?' + Object.keys(params[i]) + '=' + Object.values(params[i]);
+      }else{
+        url = url + '&' + Object.keys(params[i]) + '=' + Object.values(params[i]);
+      }
+    }
+  }
+  
+  if(method === 'GET'){
     requestOptions = {
-      method: 'GET',
+      method: method,
       headers: myHeaders,
     };
-    if(params){
-      for(let param of params){
-        url = url + '?' + Object.keys(param) + '=' + Object.values(param);
-      }
-    }
-    res = await fetch(url, requestOptions);
-    res = await res.json();
-    // addToastByRes(res);
-    return res;
+  }
+  else if(json && (method === 'POST' || method === 'PUT' || method === 'DELETE')){
+    myHeaders.append("Content-Type", "application/json");
+    requestOptions = {
+      method: method,
+      headers: myHeaders,
+      body: JSON.stringify(data),
+    };
+  }
+  else if(!json && (method === 'POST' || method === 'PUT' || method === 'DELETE')){
+    requestOptions = {
+      method: method,
+      headers: myHeaders,
+      body: data,
+    };
   }
 
-  if(method === 'POST') {
-    if(params){
-      requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-      };
-
-      for(let param of params){
-        url = url + '?' + Object.keys(param) + '=' + Object.values(param);
-      }
-    }else{
-      requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: JSON.stringify(data),
-      };
-    }
-
-    res = await fetch(url, requestOptions);
-    res = await res.json();
-    addToastByRes(res);
-    return res;
-  }
+  let res = await fetch(url, requestOptions);
+  res = await res.json();
+  return res;
 }
+

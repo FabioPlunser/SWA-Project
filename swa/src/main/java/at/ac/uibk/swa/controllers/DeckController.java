@@ -83,7 +83,7 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @PostMapping("/api/publish")
+    @PostMapping("/api/publish-deck")
     public RestResponse publish(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
@@ -104,7 +104,7 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @PostMapping("/api/unpublish")
+    @PostMapping("/api/unpublish-deck")
     public RestResponse unpublish(
             @RequestParam(name = "deckId") final UUID deckId
     ) {

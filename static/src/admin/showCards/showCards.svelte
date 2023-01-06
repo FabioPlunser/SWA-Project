@@ -8,7 +8,8 @@
   import { redirect } from '../../lib/utils/redirect';
   import { handleLogout } from "../../lib/utils/handleLogout";
 	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
-  import { tokenStore} from '../../lib/stores/tokenStore';
+  import { addToastByRes } from "../../lib/utils/addToToastStore";
+  import { fetching } from "../../lib/utils/fetching";
 
   let buttons = [
     { text: "Back", action: () => redirect("admin/show-decks") },
@@ -18,7 +19,7 @@
   ];
 
   async function getCardsOfDeck(){ 
-    let res = await fetch("/api/get-cards-of-deck", "GET", [{deckId: $adminSelectedDeckStore.deckId}]);
+    let res = await fetching("/api/get-cards-of-deck", "GET", [{deckId: $adminSelectedDeckStore.deckId}]);
     if(res.success) return res.items;
     else addToastByRes(res);
   }

@@ -4,6 +4,7 @@
 
     import { tokenStore } from "../stores/tokenStore";
     import { addToast, addToastByRes } from '../utils/addToToastStore';
+  import { fetching } from '../utils/fetching';
 
     export let deck; 
     let { deckId, name, description, published, blocked} = deck;
@@ -24,38 +25,15 @@
     async function handleBlockDeck(){
         blocked = !blocked;
         if(blocked){
-            let res = await fetch(`/api/block-deck?deckId=${deckId}`, {
-                method: "POST",
-                headers: myHeaders,            
-            });
-            res = await res.json();
+            let res = await fetching("/api/block-deck", "POST", [{deckId: deckId}]);
             addToastByRes(res);
-            dispatch('blockDeck', "blockDeck");
         }
         if(!blocked){
-            let res = await fetch(`/api/unblock-deck?deckId=${deckId}`, {
-                method: "POST",
-                headers: myHeaders,            
-            });
-            res = await res.json();
+            let res = await fetching("/api/unblock-deck", "POST", [{deckId: deckId}]);
             addToastByRes(res);
-            dispatch('blockDeck', "blockDeck");
         }
     }
-    
-    
 
-    async function handleDeleteDeck() {
-        let res = await fetch(`/api/delete-deck?deckId=${deckId}`, {
-            method: "DELETE",
-            headers: myHeaders,
-        });
-        res = await res.json();
-        addToastByRes(res);
-        dispatch('deleteDeck', "deleteDeck");
-    }
-
-    
 </script>
 
 
@@ -82,7 +60,6 @@
 
         <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
                 <button class="btn btn-primary" on:click={handleBlockDeck}>Block Deck</button>
-                <button class="btn btn-primary" on:click={handleDeleteDeck}>Delete Deck</button>
         </div>
 </div>
 {/if}

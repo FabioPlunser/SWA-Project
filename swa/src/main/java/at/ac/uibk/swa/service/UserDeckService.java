@@ -136,6 +136,7 @@ public class UserDeckService {
      * @param deck deck to save
      * @return deck that has been saved if successful, null otherwise
      */
+    @Transactional
     private Deck save(Deck deck) {
         try {
             Deck savedDeck = deckRepository.save(deck);
@@ -165,19 +166,10 @@ public class UserDeckService {
         if (deck != null && deck.getDeckId() == null && maybePerson.isPresent()) {
             Person person = maybePerson.get();
             deck.setCreator(person);
-            Deck savedDeck = save(deck);
-            if (savedDeck != null) {
-                person.getCreatedDecks().add(savedDeck);
-                person.getSavedDecks().add(savedDeck);
-                try {
-                    personService.save(person);
-                } catch (Exception e) {
-                    return false;
-                }
-                return true;
-            } else {
-                return false;
-            }
+            deck.addSubscriber(person);
+            person.getCreatedDecks().add(deck);
+            person.getSavedDecks().add(deck);
+            return save(deck) != null;
         } else {
             return false;
         }
@@ -330,11 +322,11 @@ public class UserDeckService {
             Person person = maybePerson.get();
             Deck deck = findAllAvailableDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null && person.getPersonId() != null) {
-                if (!person.getSavedDecks().contains(deck)) {
-                    person.getSavedDecks().add(deck);
+                if (!deck.getSubscribedPersons().contains(person)) {
+                    deck.addSubscriber(person);
                     try {
-                        Person savedPerson = personService.save(person);
-                        savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().add(savedPerson);
+                        deckRepository.save(deck);
+                        person.getSavedDecks().add(deck);
                         return true;
                     } catch (Exception e) {
                         return false;

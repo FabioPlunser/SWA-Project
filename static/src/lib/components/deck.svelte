@@ -7,7 +7,7 @@
 
     export let deck; 
 
-    let { deckId, name, description, published, blocked} = deck;
+    let { deckId, name, description, published, blocked, cards} = deck;
     
     
     let hover = false
@@ -25,37 +25,29 @@
     async function handlePublishDeck(){
         published = !published;
 
-        let test = [{deckId: deckId}]
-        test.entries()
-
-        
+    
         if(published){
-            let res = await fetching("/api/publish", "POST", null , [{deckId: deckId}]);
-            res = await res.json();
+            let res = await fetching("/api/publish-deck", "POST", [{deckId: deckId}]);
             addToastByRes(res);
-            dispatch('publishDeck', "publishDeck");
         }
         if(!published){
-            let res = await fetching("/api/unpublish", "POST", null, [{deckId: deckId}]);
-            res = await res.json();
+            let res = await fetching("/api/unpublish-deck", "POST", [{deckId: deckId}]);
             addToastByRes(res);
-            dispatch('publishDeck', "publishDeck");
         }
     }
 
     async function handleDeleteDeck() {
-        let res = await fetching("/api/publish", "DELETE", [{deckId: deckId}]);
-        res = await res.json();
+        let res = await fetching("/api/delete-deck", "DELETE", [{deckId: deckId}]);
         addToastByRes(res);
-        dispatch('deleteDeck', "deleteDeck");
+        dispatch('deleteDeck');
     }
     
     function handleListCards() {
-        dispatch('listCards', "listCards");
+        dispatch('listCards');
     }
     
     function handleLearnDeck(){
-        dispatch('learnDeck', "learnDeck");
+        dispatch('learnDeck');
     }
     
 </script>
@@ -71,7 +63,7 @@
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4">
                 <div class="grid grid-rows-3 gap-2">
-                    <div class="badge badge-primary">Cards to learn: </div>
+                    <div class="badge badge-primary">Number of Cards: {cards.length} </div>
                     {#if published}
                     <div class="badge badge-info">Published</div>
                     {:else}

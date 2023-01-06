@@ -3,16 +3,13 @@
   import Nav from '../lib/components/nav.svelte';
 	import SvelteToast from '../lib/components/SvelteToast.svelte';
   import DualSideCard from './../lib/components/dualSideCard.svelte';
-
+  import Form from '../lib/components/form.svelte';
 
   import { redirect } from "../lib/utils/redirect";
   import { handleLogout } from '../lib/utils/handleLogout';
-  import { addToast, addToastByRes } from '../lib/utils/addToToastStore';
+  import { addToastByRes } from '../lib/utils/addToToastStore';
   import { tokenStore } from "../lib/stores/tokenStore";
-	import { personIdStore } from "../lib/stores/personIdStore";
   import { Validators, validateForm, isFormValid} from "../lib/utils/Validators";
-  import { formFetch } from '../lib/utils/fetching';
-
 
 
   let buttons = [
@@ -36,7 +33,7 @@
   }
 
   let errors = {};
-  let form = {
+  let formValidators = {
     name: {
       validators: [Validators.required],
     },
@@ -48,44 +45,11 @@
     },
   };
 
-  async function handleSubmit(event) {
-    const action = event.target.action;
-    const method = event.target.method;
-    const myHeader = new Headers()
-    myHeader.append("Content-Type", "application/json");
-    myHeader.append("Authorization", "Bearer " + $tokenStore);
-    
-    const formData = new FormData(event.target);
-    errors = validateForm(event, form);
-    if(!isFormValid(errors)){
-        return;
-    }
-
-    var object = {};
-    formData.forEach((value, key) => object[key] = value);
-    object.cards = cards; 
-    var data = JSON.stringify(object);
-
-    
-    const requestOptions = {
-      method: method, 
-      headers: myHeader,
-      body: data,
-    }
-
-    
-    let res = await fetch(action, requestOptions);
-    res = await res.json();
-    console.log(res);
-    //if success reset form
-    if(res.success){
-      event.target.reset();
-      cards = [];
-    }
-    
-    addToastByRes(res);
+  async function handlePostFetch(data){
+    data.detail.e.target.reset();
+    addToastByRes(data.detail.res);
+    cards=[];
   }
-
 
 </script>
 
@@ -99,7 +63,7 @@
 <main class="mt-20 m-2">
   <h1 class="flex justify-center text-2xl underline">Create Deck</h1>
   <br class="pt-4"/>
-  <form class="flex justify-center" method="POST" action="api/create-deck" on:submit|preventDefault={handleSubmit}>
+  <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat="JSON" formValidators={formValidators} bind:errors  addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
     <div class="flex flex-col">
       <div class="form-control">
         <label class="input-group">
@@ -147,7 +111,7 @@
         <button class="btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>
       </div>
     </div>
-  </form>
+  </Form>
   
   <br class="mt-4"/>
   <div class="grid grid-cols-4 gap-2">

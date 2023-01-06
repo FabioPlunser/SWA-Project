@@ -5,7 +5,6 @@ import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.PersonRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -184,16 +183,9 @@ public class PersonService {
         return maybePerson.filter(person -> update(person, username, permissions, password)).isPresent();
     }
 
-    //region Update Token
     private boolean updateToken(Person person) {
-        return updateToken(person.getId(), person.getToken());
+        return personRepository.updateToken(person) != null;
     }
-
-    @Transactional
-    private boolean updateToken(UUID id, UUID token) {
-        return personRepository.updateToken(id, token) == 1;
-    }
-    //endregion
     //endregion
 
     //region Delete
