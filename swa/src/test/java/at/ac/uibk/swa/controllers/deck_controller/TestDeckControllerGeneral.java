@@ -205,6 +205,6 @@ class TestDeckControllerGeneral {
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .param("deckId", updatedDeck.getDeckId().toString())
                 .contentType(MediaType.APPLICATION_JSON)
-        ).andExpectAll(status().isOk()).andDo(print());
+        ).andExpectAll(status().isOk());
     }
 }
