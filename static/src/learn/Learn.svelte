@@ -10,6 +10,7 @@
 	import { userSelectedDeckStore } from '../lib/stores/userSelectedDeckStore';
 	import { fetching } from '../lib/utils/fetching';
 	import { addToastByRes } from "../lib/utils/addToToastStore";
+	import type { Params } from "../lib/utils/fetching";
    
 	$: if($tokenStore.length < 30) redirect("login");
 	$: getAllCardsToLearn();
@@ -24,15 +25,15 @@
 
 	async function getAllCardsToLearn(){
 		console.log("getAllCardsToLearn");
-		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{deckId: $userSelectedDeckStore.deckId}]);
+		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{name:"deckId", value: $userSelectedDeckStore.deckId}]);
 		cards = res.items;	
 	}
 
 	$: console.log(cards);
 	async function nextCard(card, g){
-		let data = [
-			{cardId: card.cardId},
-			{g: g}
+		let data: Params[] = [
+			{name: "cardId", value: card.cardId},
+			{name: "g", value: g},
 		]
 
 		let res = await fetching("/api/learn", "POST", data);

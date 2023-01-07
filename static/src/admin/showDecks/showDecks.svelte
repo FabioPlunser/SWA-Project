@@ -22,7 +22,7 @@
   
   async function fetchDecks(){
     selectedUser = $adminSelectedUserStore;
-    let res = await fetching("/api/get-given-user-decks", "GET", [{personId: selectedUser.personId}]);
+    let res = await fetching("/api/get-given-user-decks", "GET", [{name:"personId", value: selectedUser.personId}]);
     if(!res.success){
       return;
     }
@@ -32,12 +32,12 @@
   let decks = fetchDecks();
 
   async function blockDeck(deck){
-    let res = await fetching("/api/block-deck", "POST", [{deckId: deck.deckId}]);
+    let res = await fetching("/api/block-deck", "POST", [{name:"deckId", value: deck.deckId}]);
     if(res.success) fetchDecks();
   }
 
   async function unblockDeck(deck){
-    let res = await fetching("/api/unblock-deck", "POST", [{deckId: deck.deckId}]);
+    let res = await fetching("/api/unblock-deck", "POST", [{name:"deckId", value: deck.deckId}]);
     if(res.success) fetchDecks();
   }
 

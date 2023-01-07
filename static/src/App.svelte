@@ -1,15 +1,15 @@
 <script lang="ts">
 	import Nav from './lib/components/nav.svelte';
-	import MediaQuery from './lib/utils/mediaQuery.svelte';
 	import SvelteToast from './lib/components/SvelteToast.svelte';
 	
 	import Deck from './lib/components/deck.svelte';
 	import AdminDeck from './lib/components/adminDeck.svelte';
+	import SubscribedDeck from './lib/components/subscribedDeck.svelte';
 	import Modal from './lib/components/modal.svelte';
 	import Spinner from './lib/components/Spinner.svelte';
 	import Form from './lib/components/Form.svelte';
 
-	import { addToast } from './lib/utils/addToToastStore';
+	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
 	import { redirect } from "./lib/utils/redirect";
 	import { tokenStore } from "./lib/stores/tokenStore";
 	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
@@ -118,11 +118,14 @@
 
 
 	async function handleSubscribe(deck){
-		await fetching(`/api/subscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]);
+		let res = await fetching(`/api/subscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]);
+		addToastByRes(res);
 	}
 
 	async function handleUnsubscribe(deck){
-		await fetching(`/api/unsubscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]); 
+		let res = await fetching(`/api/unsubscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]); 
+		addToastByRes(res);
+
 	}	
 
 </script>
@@ -256,12 +259,10 @@
 						{#key subscribedDecks}
 							<div class="grid grid-cols-4 gap-4">
 								{#each subscribedDecks as deck}
-								<Deck 
+								<SubscribedDeck 
 									{deck}
-									on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
 									on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
 									on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
-									on:deleteDeck={()=> getDecks()}
 								/>
 								{/each}
 							</div>	

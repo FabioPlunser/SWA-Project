@@ -19,7 +19,7 @@
   ];
 
   async function getCardsOfDeck(){ 
-    let res = await fetching("/api/get-cards-of-deck", "GET", [{deckId: $adminSelectedDeckStore.deckId}]);
+    let res = await fetching("/api/get-cards-of-deck", "GET", [{name:"deckId", value: $adminSelectedDeckStore.deckId}]);
     if(res.success) return res.items;
     else addToastByRes(res);
   }

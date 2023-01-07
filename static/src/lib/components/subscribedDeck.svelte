@@ -6,7 +6,7 @@
     import { fetching } from '../utils/fetching';
 
     export let deck; 
-    export let subscribedDeck: boolean = false;
+    console.log("subscribedDeck", deck);
     let { deckId, name, description, published, blocked, cards} = deck;
     
     $: getAllCardsToLearn();
@@ -87,11 +87,6 @@
                         {:else}
                         <div class="badge badge-error">No cards to learn</div>
                     {/if}
-                    {#if published}
-                    <div class="badge badge-info">Published</div>
-                    {:else}
-                    <div class="badge badge-error">Not Published</div>
-                    {/if}
                     {#if cards && cardsToLearn}
                         Progress: <progress class="progress progress-success bg-gray-700" value={cards.length - cardsToLearn.length} max={cards.length}></progress>
                     {:else}
@@ -105,9 +100,6 @@
         <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
             <button class="btn btn-primary" on:click={handleLearnDeck}>Learn Deck</button>
             <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
-            <button class="btn btn-primary" on:click={handleEditDeck}>Edit Deck</button>
-            <button class="btn {published ? "btn-secondary" : "btn-primary"}" on:click={handlePublishDeck}>Publish Deck</button>
-            <button class="btn btn-primary" on:click={handleDeleteDeck}>Delete Deck</button>
         </div>       
 </div>
 {/if}

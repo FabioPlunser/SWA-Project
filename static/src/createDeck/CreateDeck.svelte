@@ -3,7 +3,7 @@
   import Nav from '../lib/components/nav.svelte';
 	import SvelteToast from '../lib/components/SvelteToast.svelte';
   import DualSideCard from './../lib/components/dualSideCard.svelte';
-  import Form from '../lib/components/form.svelte';
+  import Form from '../lib/components/Form.svelte';
 
   import { redirect } from "../lib/utils/redirect";
   import { handleLogout } from '../lib/utils/handleLogout';
