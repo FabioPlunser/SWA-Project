@@ -88,7 +88,7 @@
       <div class="form-control">
         <label class="input-group">
         <span class="w-36">Publish</span>
-        <select name="isPublished" class="flex input w-full bg-slate-900">
+        <select name="published" class="flex input w-full bg-slate-900">
             <option value={false}>false</option>
             <option value={true}>true</option>
         </select>
