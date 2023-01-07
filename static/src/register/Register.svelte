@@ -1,7 +1,7 @@
 <script lang="ts">
-    import favicon from "/favicon.png";
+    import favicon  from '../assets/favicon.png';
     import SvelteToast from "../lib/components/SvelteToast.svelte";
-    import Form from "../lib/components/form.svelte";
+    import Form from "../lib/components/Form.svelte";
 
 	import { redirect } from '../lib/utils/redirect';
     import { tokenStore } from "../lib/stores/tokenStore";

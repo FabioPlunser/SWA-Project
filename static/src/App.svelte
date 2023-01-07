@@ -9,14 +9,14 @@
 	import Spinner from './lib/components/Spinner.svelte';
 	import Form from './lib/components/Form.svelte';
 
-	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
+	import { addToast } from './lib/utils/addToToastStore';
 	import { redirect } from "./lib/utils/redirect";
 	import { tokenStore } from "./lib/stores/tokenStore";
 	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
 	import { handleLogout } from './lib/utils/handleLogout';
 	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
-  	import { formFetch, fetching } from './lib/utils/fetching';
-
+  	import { fetching } from './lib/utils/fetching';
+	import type { IDeck } from './lib/utils/types';
 
 	$: if($tokenStore.length < 30) redirect("login");
 	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
@@ -24,10 +24,10 @@
 	$: getSubscribedDecks();
 	$: getPublicDecks();
 
-	let allDecks = [];
+	let allDecks: IDeck[] = [];
 
 	let showEditDeckModal = false;
-	let selectedDeck = null;
+	let selectedDeck: IDeck = null;
 	let showPublicDecks = false;
 	let searchPublicDeckName = "";
 
@@ -68,8 +68,6 @@
 		}
 	}
 	
- 
-
 	async function getUserDecks(){
 		let res = await fetching("/api/get-created-decks", "GET");
 		if(res.success){
@@ -120,11 +118,11 @@
 
 
 	async function handleSubscribe(deck){
-		await fetching(`/api/subscribe-deck`, "POST", [{deckId: deck.deckId}]);
+		await fetching(`/api/subscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]);
 	}
 
 	async function handleUnsubscribe(deck){
-		await fetching(`/api/unsubscribe-deck`, "POST", [{deckId: deck.deckId}]); 
+		await fetching(`/api/unsubscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]); 
 	}	
 
 </script>

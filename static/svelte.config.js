@@ -1,15 +1,7 @@
-import sveltePreprocess from "svelte-preprocess";
-import typescript from "@rollup/plugin-typescript";
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 
 export default {
-  // Consult https://github.com/sveltejs/svelte-preprocess
+  // Consult https://svelte.dev/docs#compile-time-svelte-preprocess
   // for more information about preprocessors
-  preprocess: [
-    sveltePreprocess({
-      postcss: true,
-    }),
-  ],
-  files: {
-    assets:"src/static",
-  },
-};
+  preprocess: vitePreprocess(),
+}

@@ -2,6 +2,10 @@ import { addToastByRes } from "./addToToastStore";
 import { tokenStore } from "../stores/tokenStore";
 import { get } from "svelte/store";
 
+export interface Params {
+  name: string;
+  value: string;
+}
 
 /**
  * a general fetching function for all fetch requests
@@ -13,7 +17,7 @@ import { get } from "svelte/store";
  * @returns the response
  * @example fetching('http://localhost:3000/api/v1/users', 'GET', null, false, [{limit: 10}, {offset: 0}])
  */
-export async function fetching(url: string, method: string, params?: json[], data?, json?:boolean){
+export async function fetching(url: string, method: string, params?: Params[], data?, json?:boolean){
   let requestOptions;
   let myHeaders = new Headers();
   myHeaders.append("Authorization", "Bearer " + get(tokenStore));
@@ -21,9 +25,9 @@ export async function fetching(url: string, method: string, params?: json[], dat
   if(params){
     for(let i=0; i<params.length; i++){
       if(i === 0){
-        url = url + '?' + Object.keys(params[i]) + '=' + Object.values(params[i]);
+        url = url + '?' + params[i].name + '=' + params[i].value;
       }else{
-        url = url + '&' + Object.keys(params[i]) + '=' + Object.values(params[i]);
+        url = url + '&' + params[i].name + '=' + params[i].value;
       }
     }
   }

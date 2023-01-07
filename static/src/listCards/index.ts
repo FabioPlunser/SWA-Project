@@ -1,4 +1,4 @@
-import "/app.postcss";
+import "../app.postcss";
 import App from "./listCards.svelte";
 
 // import '@brainandbones/skeleton/themes/theme-skeleton.css';

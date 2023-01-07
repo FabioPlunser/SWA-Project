@@ -27,12 +27,12 @@
     let cardsToLearn = [];
 
     async function getAllCardsToLearn(){
-		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{deckId: deckId}]);
+		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{name: "deckId", value: deckId}]);
 		cardsToLearn = res.items;	
 	}
 
     async function getCardsOfDeck(){
-        let res = await fetching("/api/get-cards-of-deck", "GET", [{deckId: deckId}]);
+        let res = await fetching("/api/get-cards-of-deck", "GET", [{name: "deckId", value: deckId}]);
         cards = res.items;
     }
 
@@ -41,17 +41,17 @@
 
     
         if(published){
-            let res = await fetching("/api/publish-deck", "POST", [{deckId: deckId}]);
+            let res = await fetching("/api/publish-deck", "POST", [{name: "deckId", value: deckId}]);
             addToastByRes(res);
         }
         if(!published){
-            let res = await fetching("/api/unpublish-deck", "POST", [{deckId: deckId}]);
+            let res = await fetching("/api/unpublish-deck", "POST", [{name: "deckId", value: deckId}]);
             addToastByRes(res);
         }
     }
 
     async function handleDeleteDeck() {
-        let res = await fetching("/api/delete-deck", "DELETE", [{deckId: deckId}]);
+        let res = await fetching("/api/delete-deck", "DELETE", [{name: "deckId", value: deckId}]);
         addToastByRes(res);
         dispatch('deleteDeck');
     }

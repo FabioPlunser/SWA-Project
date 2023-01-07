@@ -1,5 +1,5 @@
 <script lang="ts">
-  import favicon from "/favicon.png";
+  import favicon  from '../../assets/favicon.png';
   import Nav from "../../lib/components/nav.svelte";
   import Spinner from "../../lib/components/Spinner.svelte";
 	import SvelteToast from './../../lib/components/SvelteToast.svelte';
