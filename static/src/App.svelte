@@ -125,7 +125,7 @@
 
 	async function handleUnsubscribe(deck){
 		await fetching(`/api/unsubscribe-deck`, "POST", [{deckId: deck.deckId}]); 
-	}
+	}	
 
 </script>
 

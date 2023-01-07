@@ -9,7 +9,9 @@
 
     let { deckId, name, description, published, blocked, cards} = deck;
     
-    
+    $: getAllCardsToLearn();
+    $: getCardsOfDeck();
+
     let hover = false
     function handleMouseOut() {
         hover = false
@@ -22,6 +24,18 @@
         dispatch('editDeck', "editDeck");
     }
     
+    let cardsToLearn = [];
+
+    async function getAllCardsToLearn(){
+		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{deckId: deckId}]);
+		cardsToLearn = res.items;	
+	}
+
+    async function getCardsOfDeck(){
+        let res = await fetching("/api/get-cards-of-deck", "GET", [{deckId: deckId}]);
+        cards = res.items;
+    }
+
     async function handlePublishDeck(){
         published = !published;
 
@@ -62,14 +76,27 @@
             <p>{description}</p>
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4">
-                <div class="grid grid-rows-3 gap-2">
-                    <div class="badge badge-primary">Number of Cards: {cards.length} </div>
+                <div class="grid grid-rows gap-2">
+                    {#if cards}
+                        <div class="badge badge-primary">Number of cards: {cards.length} </div>
+                        {:else}
+                        <div class="badge badge-error">No cards</div>
+                    {/if}
+                    {#if cardsToLearn}
+                        <div class="badge badge-primary">Number of cards to learn: {cardsToLearn.length} </div>
+                        {:else}
+                        <div class="badge badge-error">No cards to learn</div>
+                    {/if}
                     {#if published}
                     <div class="badge badge-info">Published</div>
                     {:else}
                     <div class="badge badge-error">Not Published</div>
                     {/if}
-                    Progress: <progress class="progress progress-success bg-gray-700" value={50} max={100}></progress>
+                    {#if cards && cardsToLearn}
+                        Progress: <progress class="progress progress-success bg-gray-700" value={cards.length - cardsToLearn.length} max={cards.length}></progress>
+                    {:else}
+                        <div class="badge badge-error">No cards to learn</div>
+                    {/if}
                 </div>
             </div>
         </div>
