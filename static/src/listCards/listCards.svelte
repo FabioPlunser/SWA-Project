@@ -84,12 +84,16 @@
         </Form>
     </div>
     <br class="mt-4"/>
-    <div class="grid grid-cols-4 gap-2">
+    <div class="grid grid-cols-3 gap-2">
         {#each newCards as card}
-            <DualSideCard {card} on:deleteCard={()=>handleDeleteNewCard(card)}/>
+            <div>
+                <DualSideCard {card} on:deleteCard={()=>handleDeleteNewCard(card)}/>
+            </div>
         {/each}
         {#each cards as card}
-            <DualSideCard {card} on:deleteCard={()=>handleDeleteCard(card)}/>
+            <div>
+                <DualSideCard {card} on:deleteCard={()=>handleDeleteCard(card)}/>
+            </div>
         {/each}
         
     </div>
