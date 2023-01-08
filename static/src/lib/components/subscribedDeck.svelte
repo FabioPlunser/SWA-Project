@@ -6,7 +6,6 @@
     import { fetching } from '../utils/fetching';
 
     export let deck; 
-    console.log("subscribedDeck", deck);
     let { deckId, name, description, published, blocked, cards} = deck;
     
     $: getAllCardsToLearn();
@@ -20,9 +19,6 @@
         hover = true
     }
     
-    function handleEditDeck() {
-        dispatch('editDeck', "editDeck");
-    }
     
     let cardsToLearn = [];
 
@@ -36,26 +32,6 @@
         cards = res.items;
     }
 
-    async function handlePublishDeck(){
-        published = !published;
-
-    
-        if(published){
-            let res = await fetching("/api/publish-deck", "POST", [{name: "deckId", value: deckId}]);
-            addToastByRes(res);
-        }
-        if(!published){
-            let res = await fetching("/api/unpublish-deck", "POST", [{name: "deckId", value: deckId}]);
-            addToastByRes(res);
-        }
-    }
-
-    async function handleDeleteDeck() {
-        let res = await fetching("/api/delete-deck", "DELETE", [{name: "deckId", value: deckId}]);
-        addToastByRes(res);
-        dispatch('deleteDeck');
-    }
-    
     function handleListCards() {
         dispatch('listCards');
     }
@@ -63,7 +39,12 @@
     function handleLearnDeck(){
         dispatch('learnDeck');
     }
-    
+
+
+	async function handleUnsubscribe(){
+		let res = await fetching(`/api/unsubscribe-deck`, "POST", [{name: "deckId", value: deckId}]); 
+		addToastByRes(res);
+	}	
 </script>
 
 
@@ -100,6 +81,7 @@
         <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
             <button class="btn btn-primary" on:click={handleLearnDeck}>Learn Deck</button>
             <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
+            <button class="btn btn-primary" on:click={handleUnsubscribe}>Unsubscribe</button>
         </div>       
 </div>
 {/if}

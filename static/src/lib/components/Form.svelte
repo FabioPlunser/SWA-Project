@@ -24,6 +24,7 @@
 
 
     async function handleSubmit(e) {
+        console.log("submitForm");
         let res;
         const formData = new FormData(e.target);
 

@@ -125,7 +125,6 @@
 	async function handleUnsubscribe(deck){
 		let res = await fetching(`/api/unsubscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]); 
 		addToastByRes(res);
-
 	}	
 
 </script>
@@ -161,7 +160,7 @@
 						</label>
 					</div>
 					<br class="pt-2"/>
-					<button class="btn btn-primary" on:click={()=>{$userSelectedDeckStore = selectedDeck; redirect("list-cards")}}>Edit Cards</button>
+					<button class="btn btn-primary" type="button" on:click={()=>{$userSelectedDeckStore = selectedDeck; redirect("edit-cards")}}>Edit Cards</button>
 					<br class="pt-4"/>
 					<div class="flex justify-between">
 						<button type="submit" class="btn btn-primary" on:click={()=>showEditDeckModal=false}>Update</button>
