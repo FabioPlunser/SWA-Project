@@ -18,7 +18,6 @@
         { text: "Logout", action: handleLogout }
     ];
 
-    let newCards = [];
     let cards = [];
 
     async function getCardsFromDeck(){
@@ -37,12 +36,8 @@
 <Nav title="ListCards" buttons={navButtons}/>
 <SvelteToast/>
 <main class="mt-20 m-10">
+    {#if cards.length > 0}
     <div class="grid grid-cols-3 gap-2">
-        {#each newCards as card}
-            <div>
-                <DualSideCard {card}/>
-            </div>
-        {/each}
         {#each cards as card}
             <div>
                 <DualSideCard {card}/>
@@ -50,4 +45,7 @@
         {/each}
         
     </div>
+    {:else}
+        <h1 class="text-2xl text-center">No cards found</h1>
+    {/if}
 </main>

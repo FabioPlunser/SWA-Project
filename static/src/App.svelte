@@ -223,12 +223,12 @@
 
 	{#if page == "my-decks"}
 		<div>
-			<h1 class="text-4xl font-bold flex justify-start m-2">My Decks</h1>
+			<h1 class="text-4xl font-bold m-2">My Decks</h1>
 				{#await userDecks}
 						<Spinner />
 				{:then userDecks}
 					{#if userDecks.length == 0}
-						<h1 class="text-2xl flex justify-center">No Decks Found</h1>
+						<h1 class="text-2xl m-2">No Decks Found</h1>
 					{:else}
 						<div class="grid grid-cols-4 gap-4">
 							{#key userDecks}
@@ -248,12 +248,12 @@
 		</div>
 
 		<div>
-			<h1 class="text-4xl font-bold flex justify-start m-2">Subscribed Decks</h1>
+			<h1 class="text-4xl font-bold m-2">Subscribed Decks</h1>
 				{#await subscribedDecks}
 						<Spinner />
 				{:then subscribedDecks}
 					{#if subscribedDecks.length == 0}
-						<h1 class="text-2xl flex justify-center">No subscribed Decks</h1>
+						<h1 class="text-2xl m-2">No subscribed Decks</h1>
 					{:else}
 						{#key subscribedDecks}
 							<div class="grid grid-cols-4 gap-4">
@@ -305,7 +305,7 @@
 				<Spinner/>
 			{:then allDecks}
 				{#if allDecks.length == 0}
-					<h1 class="flex justify-center">No Decks</h1>
+					<h1 class="text-2xl font-bold flex justify-center">No Decks</h1>
 				{:else}
 					{#key allDecks}
 						<div class="grid grid-cols-4 gap-4">

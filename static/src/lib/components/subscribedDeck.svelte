@@ -49,7 +49,7 @@
 
 
 <!-- svelte-ignore a11y-mouse-events-have-key-events -->
-{#if !blocked}
+{#if !blocked && published}
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
         <div class="{hover ? "hidden" : "block"}" >
             <h1 class="underline flex justify-center text-xl">{name}</h1>
@@ -86,12 +86,15 @@
 </div>
 {/if}
 
-{#if blocked}
-<div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative opacity-50">
-    <div >
+{#if blocked || !published}
+<div class="bg-slate-900 rounded-xl shadow-xl p-5 h-auto relative opacity-50">
+    <div>
         <h1 class="underline flex justify-center text-xl">{name}</h1>
-        <br class="my-4"/>
-        <p>{description}</p>
+        <br class="mt-4"/>
+        <p class="flex justify-center">{description}</p>
     </div>
+    <br class="mt-4"/>
+
+    <button class="btn btn-primary" on:click={handleUnsubscribe}>Unsubscribe</button>
 </div>
 {/if}
