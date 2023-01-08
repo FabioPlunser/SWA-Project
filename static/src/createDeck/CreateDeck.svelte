@@ -61,7 +61,7 @@
 <SvelteToast />
 <Nav title="Decks" {buttons}/>
 <main class="mt-20 m-2">
-  <h1 class="flex justify-center text-2xl underline">Create Deck</h1>
+  <h1 class="flex justify-center text-2xl font-bold">Create Deck</h1>
   <br class="pt-4"/>
   <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat="JSON" formValidators={formValidators} bind:errors  addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
     <div class="flex flex-col">
@@ -105,7 +105,7 @@
       </div>
 
       <br class="pt-4"/>
-      <h1 class="flex justify-center text-2xl underline">Cards</h1>
+      <h1 class="flex justify-center text-2xl font-bold">Cards</h1>
       <br class="pt-4"/>
       <div class="tooltip" data-tip="Add Card">
         <button class="btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>

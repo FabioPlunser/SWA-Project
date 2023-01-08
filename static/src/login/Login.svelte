@@ -40,7 +40,7 @@
 <SvelteToast/>
 <main class="flex justify-center items-center mx-auto h-screen text-white">
     <div class="rounded-xl shadow-2xl bg-slate-900 max-w-fit p-10">
-        <h1 class="underline text-2xl mx-auto flex justify-center p-2">Login</h1>
+        <h1 class="font-bold text-2xl mx-auto flex justify-center p-2">Login</h1>
         <Form url="/api/login" method="POST" dataFormat="FormData" {formValidators} bind:errors on:postFetch={handlePostFetch}>
             <div class="form-control">
                 <label class="input-group">

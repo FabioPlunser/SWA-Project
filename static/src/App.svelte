@@ -137,11 +137,11 @@
 
 
 <SvelteToast />
-<Nav title="Decks overview" buttons={navButtons} />
+<Nav title="Decks" buttons={navButtons} />
 <main class="m-20">
 	{#if showEditDeckModal}
 		<Modal open={showEditDeckModal} on:close={()=> showEditDeckModal = false} closeOnBodyClick={false}>
-			<h1 class="flex justify-center text-2xl underline">Edit Deck</h1>
+			<h1 class="flex justify-center text-2xl font-bold">Edit Deck</h1>
 			<br class="pt-4"/>
 			<Form url="/api/update-deck" method="POST" dataFormat="JSON" on:postFetch={getDecks}>
 			<!-- <form class="flex justify-center" method="POST" action="api/update-deck" on:submit|preventDefault={handleSubmit}> -->
@@ -177,7 +177,7 @@
 	{#if showPublicDecks}
 		<Modal open={showPublicDecks} on:close={()=>showPublicDecks=false} closeOnBodyClick={false}>
 			<div class="flex flex-col min-w-fit">
-				<h1 class="flex justify-center text-2xl underline">Public Decks</h1>
+				<h1 class="flex justify-center text-2xl font-bold">Public Decks</h1>
 				<br class="mt-4"/>
 				<input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
 				<br class="mt-4"/>
@@ -224,7 +224,7 @@
 
 	{#if page == "my-decks"}
 		<div>
-			<h1 class="text-4xl underline flex justify-center m-2">MyDecks</h1>
+			<h1 class="text-4xl font-bold flex justify-start m-2">My Decks</h1>
 				{#await userDecks}
 						<Spinner />
 				{:then userDecks}
@@ -249,12 +249,12 @@
 		</div>
 
 		<div>
-			<h1 class="text-4xl underline flex justify-center m-2">Subscribed Decks</h1>
+			<h1 class="text-4xl font-bold flex justify-start m-2">Subscribed Decks</h1>
 				{#await subscribedDecks}
 						<Spinner />
 				{:then subscribedDecks}
 					{#if subscribedDecks.length == 0}
-						<h1 class="flex justify-center">No subscribed Decks</h1>
+						<h1 class="text-2xl flex justify-center">No subscribed Decks</h1>
 					{:else}
 						{#key subscribedDecks}
 							<div class="grid grid-cols-4 gap-4">

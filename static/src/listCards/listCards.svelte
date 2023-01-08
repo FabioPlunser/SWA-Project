@@ -29,7 +29,7 @@
         cards = res.items;
     }
     function addCard() {
-        newCards.push({created: true, index: index, frontText: "SOLID", backText: "Single Responsibility"});
+        newCards.push({created: true, index: index, frontText: "", backText: ""});
         newCards = [...newCards];
         index++;
     }

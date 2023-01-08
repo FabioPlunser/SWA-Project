@@ -35,13 +35,13 @@
 <Nav title="ShowCards" {buttons}/>
 <SvelteToast/>
 <main class="mt-20 m-2">
-  <h1 class="flex justify-center text-2xl underline">Cards of Deck {$adminSelectedDeckStore.title}</h1>
+  <h1 class="flex justify-center text-2xl font-bold">Cards of Deck {$adminSelectedDeckStore.title}</h1>
   <br/>
   {#await cards}
     <Spinner/>
   {:then cards}
     {#if cards.length == 0}
-      <h1 class="flex justify-center text-2xl underline">No Cards</h1>
+      <h1 class="flex justify-center text-2xl font-bold">No Cards</h1>
     {:else}
       <div class="grid grid-cols-4 gap-4">
         {#each cards as card}
