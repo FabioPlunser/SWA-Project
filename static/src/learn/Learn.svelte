@@ -24,12 +24,11 @@
 	let cards = [];
 
 	async function getAllCardsToLearn(){
-		console.log("getAllCardsToLearn");
 		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{name:"deckId", value: $userSelectedDeckStore.deckId}]);
 		cards = res.items;	
 	}
 
-	$: console.log(cards);
+
 	async function nextCard(card, g){
 		let data: Params[] = [
 			{name: "cardId", value: card.cardId},

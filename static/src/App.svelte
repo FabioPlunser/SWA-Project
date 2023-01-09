@@ -33,7 +33,7 @@
 	let showEditDeckModal = false;
 	let selectedDeck: IDeck = null;
 	let listCards = false;
-	$: console.log(listCards);
+	
 	let showPublicDecks = false;
 	let selectedPublicDeck = null;
 	let searchPublicDeckName = "";

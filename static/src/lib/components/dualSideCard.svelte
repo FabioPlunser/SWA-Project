@@ -10,7 +10,16 @@
       dispatch('deleteCard', card);
   }
 
-  $: minHeight = `${1 +  card.backText.split("\n").length * 2.5}em`;
+  let frontText = "";
+  let backText = "";
+
+  if (card){
+    frontText = card.frontText;
+    backText = card.backText;
+  }
+
+  $: backTextMinHeight = `${1+backText.split(" ").length}em`;
+  $: frontTextMinHeight = `${1+frontText.split(" ").length}em`
 </script>
 
 {#if editable}
@@ -21,9 +30,9 @@
       <h1 class="flex justify-center text-xl">Card {card.id}</h1>
     {/if}
 
-    <textarea bind:value={card.frontText} placeholder="question" class="textarea p-2 bg-slate-800 w-auto" />
+    <textarea bind:value={frontText} placeholder="question" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {frontTextMinHeight}"/>
     <br class="mt-4"/>
-    <textarea bind:value={card.backText} placeholder="answer" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {minHeight}" />
+    <textarea bind:value={backText} placeholder="answer" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {backTextMinHeight}" />
 
     <br class="mt-4"/>
     <div class="card-action">
@@ -38,8 +47,8 @@
       <h1 class="flex justify-center text-xl">Card {card.id}</h1>
     {/if}
 
-    <textarea bind:value={card.frontText} readonly class="textarea p-2 bg-slate-800 w-auto {textAreaStyle}" />
+    <textarea bind:value={frontText} readonly class="textarea p-2 bg-slate-800 w-auto {textAreaStyle}" style="min-height: {frontTextMinHeight}"/>
     <br class="mt-4"/>
-    <textarea bind:value={card.backText} readonly class="textarea p-2 bg-slate-800 w-auto {textAreaStyle}" style="min-height: {minHeight}" />
+    <textarea bind:value={backText} readonly class="textarea p-2 bg-slate-800 w-auto {textAreaStyle}" style="min-height: {backTextMinHeight}" />
   </div>
 {/if}
