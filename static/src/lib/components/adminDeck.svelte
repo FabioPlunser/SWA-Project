@@ -1,14 +1,12 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
-
     import { tokenStore } from "../stores/tokenStore";
-    import { addToast, addToastByRes } from '../utils/addToToastStore';
-  import { fetching } from '../utils/fetching';
+    import { addToastByRes } from '../utils/addToToastStore';
+    import { fetching } from '../utils/fetching';
 
     export let deck; 
-    let { deckId, name, description, published, blocked} = deck;
-    
+    let { deckId, name, description, published, blocked, cards} = deck;
+
+    $: getCardsOfDeck();
     
     let hover = false
     function handleMouseOut() {
@@ -18,7 +16,7 @@
         hover = true
     }
     
-
+    
     const myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + $tokenStore);
     
@@ -34,6 +32,10 @@
         }
     }
 
+    async function getCardsOfDeck(){
+        let res = await fetching("/api/get-cards-of-deck", "GET", [{name: "deckId", value: deckId}]);
+        cards = res.items;
+    }
 </script>
 
 
@@ -47,13 +49,16 @@
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4">
                 <div class="grid grid-rows-3 gap-2">
-                    <div class="badge badge-primary">Cards to learn: </div>
+                    {#if cards}
+                        <div class="badge badge-primary">Number of cards: {cards.length} </div>
+                    {:else}
+                        <div class="badge badge-error">No cards</div>
+                    {/if}
                     {#if published}
                     <div class="badge badge-info">Published</div>
                     {:else}
                     <div class="badge badge-error">Not Published</div>
                     {/if}
-                    Progress: <progress class="progress progress-success bg-gray-700" value={50} max={100}></progress>
                 </div>
             </div>
         </div>

@@ -14,6 +14,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class MessageResponse extends RestResponse implements Serializable {
 
+    private static String type = "Message";
+
     private String message;
 
     public MessageResponse(boolean successful, String message) {

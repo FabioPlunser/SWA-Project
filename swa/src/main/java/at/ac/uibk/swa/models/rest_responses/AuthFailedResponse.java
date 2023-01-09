@@ -14,5 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class AuthFailedResponse extends RestResponse implements Serializable {
 
+    private static String type = "AuthFailure";
+
     private String message;
 }

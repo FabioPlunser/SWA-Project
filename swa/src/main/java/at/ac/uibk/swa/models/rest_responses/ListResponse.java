@@ -20,6 +20,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.MODULE)
 public class ListResponse<T extends Serializable> extends RestResponse implements Serializable {
 
+    private static String type = "List";
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<T> items;
 
