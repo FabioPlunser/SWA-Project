@@ -284,7 +284,7 @@ public class DeckController {
     public RestResponse getCreatedDecks()  {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllOwnedDecks();
         if (maybeDecks.isPresent()) {
-            return new ListResponse<>(maybeDecks.get());
+            return new UserDeckListResponse(maybeDecks.get());
         }
         return MessageResponse.builder()
                 .error()
@@ -301,7 +301,7 @@ public class DeckController {
      */
     @GetMapping("/api/get-published-decks")
     public RestResponse getPublishedDecks() {
-        return new ListResponse<>(userDeckService.findAllAvailableDecks());
+        return  new DeckListResponse(userDeckService.findAllAvailableDecks());
     }
 
     /**

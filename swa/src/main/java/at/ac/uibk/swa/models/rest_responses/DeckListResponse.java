@@ -3,6 +3,7 @@ package at.ac.uibk.swa.models.rest_responses;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Person;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
@@ -23,6 +24,7 @@ public class DeckListResponse extends ListResponse<DeckListResponse.DeckInfo> im
     @Getter
     public static class DeckInfo implements Serializable {
 
+        @JsonUnwrapped
         private Deck deck;
         private int numCards;
 

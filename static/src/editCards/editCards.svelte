@@ -58,6 +58,8 @@
         isPublished: $userSelectedDeckStore.isPublished,
         cards: cards
     }
+
+    $: console.log(data);
 </script>
 
 
@@ -86,14 +88,14 @@
     </div>
     <br class="mt-4"/>
     <div class="grid grid-cols-3 gap-2">
-        {#each newCards as card}
+        {#each newCards as card, index}
             <div>
-                <DualSideCard {card} editable={true} on:deleteCard={()=>handleDeleteNewCard(card)} />
+                <DualSideCard {card} {index} editable={true} on:deleteCard={()=>handleDeleteNewCard(card)} />
             </div>
         {/each}
-        {#each cards as card}
+        {#each cards as card, index}
             <div>
-                <DualSideCard {card} editable={true} on:deleteCard={()=>handleDeleteCard(card)}/>
+                <DualSideCard {card} {index} editable={true} on:deleteCard={()=>handleDeleteCard(card)}/>
             </div>
         {/each}
         

@@ -139,7 +139,6 @@
         let res = await fetching("/api/get-cards-of-deck", "GET", [{name: "deckId", value: deck.deckId}]);
         return res.items;
     }
-
 </script>
 
 <svelte:head>
@@ -215,22 +214,26 @@
 						{#if publicDecks.length == 0}
 							<h1 class="text-2xl flex justify-center">No Decks Found</h1>
 						{:else}
-							{#key publicDecks}
-								<div class="grid grid-cols-4 gap-2">
-									{#each publicDecks as deck}
-										{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
-											<div class="card bg-gray-700 p-5 w-fit min-w-fit">
-												<h1 class="card-title">{deck.name}</h1>
-												<p class="card-subtitle">{deck.description}</p>
-												<div class="card-actions">
-													<button class="btn btn-primary" on:click={()=> {handleSubscribe(deck)}}>Subscribe</button>
-													<button class="btn btn-secondary" on:click={()=> {selectedPublicDeck=deck}}>Cards</button>
-												</div>
+							<div class="grid grid-cols-4 gap-2">
+								{#each publicDecks as deck}
+									{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
+										<div class="card bg-gray-700 p-5 w-fit min-w-fit">
+											<h1 class="card-title">{deck.name}</h1>
+											<p class="card-subtitle">{deck.description}</p>
+											{#if deck.numCards > 0}
+												<div class="badge badge-primary">Number of cards: {deck.numCards} </div>
+												{:else}
+												<div class="badge badge-error">No cards</div>
+											{/if}
+											<br class="pt-4"/>
+											<div class="card-actions">
+												<button class="btn btn-primary" on:click={()=> {handleSubscribe(deck)}}>Subscribe</button>
+												<button class="btn btn-secondary" on:click={()=> {selectedPublicDeck=deck}}>Cards</button>
 											</div>
-										{/if}
-									{/each}
-								</div>
-							{/key}
+										</div>
+									{/if}
+								{/each}
+							</div>
 						{/if}
 					{/await}
 				</div>
@@ -253,9 +256,9 @@
 					{#await getCardsFromDeck(selectedDeck)}
 						<Spinner/>
 					{:then cards}
-						{#each cards as card}
+						{#each cards as card, index (card.cardId)}
 							<div>
-								<DualSideCard {card} cardStyle="bg-slate-800" textAreaStyle="bg-slate-700"/>
+								<DualSideCard {card} {index} cardBg="bg-slate-800" textBg="bg-slate-700"/>
 							</div>
 						{/each}
 					{/await}
@@ -298,7 +301,7 @@
 					<h1 class="text-2xl m-2">No Decks Found</h1>
 				{:else}
 					<div class="grid grid-cols-4 gap-4">
-							{#each userDecks as deck}
+							{#each userDecks as deck (deck.deckId)}
 								{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
 								<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
 									<Deck 
@@ -306,7 +309,7 @@
 										on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
 										on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
 										on:listCards={()=> {listCards=true; selectedDeck = deck}}
-										on:deleteDeck={()=> getDecks()}
+										on:deleteDeck={async ()=> {await getUserDecks(); userDecks=[...userDecks];}}
 									/>
 								</div>
 								{/if}
