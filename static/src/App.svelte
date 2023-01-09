@@ -29,6 +29,9 @@
 	$: getPublicDecks();
 
 	let allDecks: IDeck[] = [];
+	let userDecks = [];
+	let subscribedDecks = [];
+	let publicDecks = [];
 
 	let showEditDeckModal = false;
 	let selectedDeck: IDeck = null;
@@ -79,8 +82,8 @@
 	}
 	
 
-	let userDecks = fetchUserDecks();
-	async function fetchUserDecks(){
+	
+	async function getUserDecks(){
 		let res = await fetching("/api/get-created-decks", "GET");
 		if(res.success){
 			userDecks = res.items;
@@ -91,13 +94,9 @@
 		} 
 
 	}
-	async function getUserDecks(){
-		userDecks = fetchUserDecks();
-	}
 	
-
-	let subscribedDecks = fetchSubscribedDecks();
-	async function fetchSubscribedDecks(){
+	
+	async function getSubscribedDecks(){
 		let res = await fetching("/api/get-subscribed-decks", "GET");
 		if(res.success){
 			subscribedDecks = res.items;
@@ -107,12 +106,8 @@
 			addToast("Error fetching subscribed decks", "alert-error");
 		}
 	}
-	async function getSubscribedDecks(){
-		subscribedDecks = fetchSubscribedDecks();
-	}
 	
-	let publicDecks = fetchPublicDecks();
-	async function fetchPublicDecks(){
+	async function getPublicDecks(){
 		let res = await fetching("/api/get-published-decks", "GET");
 		if(res.success){
 			publicDecks = res.items;
@@ -122,10 +117,7 @@
 			addToast("Error fetching public decks", "alert-error");
 		}
 	}
-	async function getPublicDecks(){
-		publicDecks = fetchPublicDecks();
-	}
-	
+
 	
 	async function getDecks(){
 		if($userPermissionsStore.includes("ADMIN")){
@@ -302,33 +294,25 @@
 			</div>
 			{#if showMyDecks}
 			<div>
-			<!-- <Dropdown text="Sort" style="dropdown" options={[{name: "Most cards", action: ()=>sortMostCards()}]}/> -->
-				{#await userDecks}
-						<Spinner />
-				{:then userDecks}
-					{#if userDecks.length == 0}
-						<h1 class="text-2xl m-2">No Decks Found</h1>
-					{:else}
-						<div class="grid grid-cols-4 gap-4">
-							{#key userDecks}
-								{#each userDecks as deck}
-									{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
-									<div in:fly={{y: -100, duration: 300}} out:fly={{y: -100, duration: 300}}>
-										<Deck 
-											{deck}
-											on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
-											on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-											on:listCards={()=> {listCards=true; selectedDeck = deck}}
-											on:deleteDeck={()=> getDecks()}
-										/>
-									</div>
-									{/if}
-								{/each}
-
-							{/key}
-						</div>
-					{/if}
-				{/await}
+				{#if userDecks.length == 0}
+					<h1 class="text-2xl m-2">No Decks Found</h1>
+				{:else}
+					<div class="grid grid-cols-4 gap-4">
+							{#each userDecks as deck}
+								{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
+								<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
+									<Deck 
+										{deck}
+										on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+										on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+										on:listCards={()=> {listCards=true; selectedDeck = deck}}
+										on:deleteDeck={()=> getDecks()}
+									/>
+								</div>
+								{/if}
+							{/each}
+					</div>
+				{/if}
 			</div>
 			{/if}
 		</div>
@@ -342,30 +326,24 @@
 			</div>
 			{#if showSubscribedDecks}
 			<div>
-				{#await subscribedDecks}
-						<Spinner />
-				{:then subscribedDecks}
-					{#if subscribedDecks.length == 0}
-						<h1 class="text-2xl m-2">No subscribed Decks</h1>
-					{:else}
-						{#key subscribedDecks}
-							<div class="grid grid-cols-4 gap-4">
-								{#each subscribedDecks as deck}
-									{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
-									<div in:fly={{y: -100, duration: 300}} out:fly={{y: -100, duration: 300}}>
-										<SubscribedDeck 
-											{deck}
-											on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-											on:listCards={()=> {listCards=true; selectedDeck = deck}}
-											on:unsubscribe={()=>getSubscribedDecks()}										
-										/>
-									</div>
-									{/if}
-								{/each}
-							</div>	
-						{/key}
-					{/if}
-				{/await}
+				{#if subscribedDecks.length == 0}
+					<h1 class="text-2xl m-2">No subscribed Decks</h1>
+				{:else}
+					<div class="grid grid-cols-4 gap-4">
+						{#each subscribedDecks as deck (deck.deckId)}
+							{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
+							<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
+								<SubscribedDeck
+									{deck}
+									on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+									on:listCards={()=> {listCards=true; selectedDeck = deck}}
+									on:unsubscribe={()=>getSubscribedDecks()}										
+								/>
+							</div>
+							{/if}
+						{/each}
+					</div>	
+				{/if}
 			</div>
 			{/if}
 		</div>
