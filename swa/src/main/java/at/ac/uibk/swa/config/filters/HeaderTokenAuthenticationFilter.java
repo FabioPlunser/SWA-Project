@@ -1,6 +1,8 @@
 package at.ac.uibk.swa.config.filters;
 
+import at.ac.uibk.swa.config.person_authentication.JwtToken;
 import at.ac.uibk.swa.util.ConversionUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,9 +41,8 @@ public class BearerTokenAuthenticationFilter extends AbstractAuthenticationProce
         Optional<UsernamePasswordAuthenticationToken> authenticationToken =
                 // Get the Authorization Header
                 Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION))
-                        // The Bearer Token is a UUID and stored in the Authorization Header
-                        // It has the form: "Bearer <Token>"
-                        .map(header -> header.substring("Bearer".length()).trim())
+                        // The Jwt Token is a UUID and stored in the Authorization Header
+                        .map(header -> new ObjectMapper().readValue(header, JwtToken.class))
                         // Try to convert the Token given in the Authorization-Header to a UUID
                         .map(ConversionUtil::tryConvertUUID)
                         // If the Token is a valid UUID then pass it onto the AuthenticationFilter

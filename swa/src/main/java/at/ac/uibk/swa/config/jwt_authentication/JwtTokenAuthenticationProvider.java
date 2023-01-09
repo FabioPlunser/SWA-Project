@@ -1,12 +1,10 @@
 package at.ac.uibk.swa.config.person_authentication;
 
-import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.models.exceptions.TokenExpiredException;
 import at.ac.uibk.swa.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -29,7 +27,7 @@ import java.util.UUID;
  * @see org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
  */
 @Component
-public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
     private PersonService loginService;
