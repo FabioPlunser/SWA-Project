@@ -34,7 +34,7 @@ public class PersonAuthenticationProvider extends AbstractUserDetailsAuthenticat
     @Autowired
     private PersonService loginService;
 
-    @Value("${swa.token.expiration-duration}")
+    @Value("${swa.token.expiration-duration:1h}")
     private Duration tokenExpirationDuration;
 
     @Override
