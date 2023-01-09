@@ -351,10 +351,10 @@ public class UserDeckService {
             Deck deck = person.getSavedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
             if (deck != null && deck.getDeckId() != null && person.getPersonId() != null) {
                 if (person.getSavedDecks().contains(deck)) {
-                    person.getSavedDecks().remove(deck);
+                    deck.removeSubscriber(person);
                     try {
-                        Person savedPerson = personService.save(person);
-                        savedPerson.getSavedDecks().get(savedPerson.getSavedDecks().indexOf(deck)).getSubscribedPersons().remove(savedPerson);
+                        deckRepository.save(deck);
+                        person.getSavedDecks().remove(deck);
                         return true;
                     } catch (Exception e) {
                         return false;

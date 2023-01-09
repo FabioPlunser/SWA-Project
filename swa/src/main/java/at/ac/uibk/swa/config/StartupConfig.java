@@ -22,7 +22,7 @@ public class StartupConfig {
     /**
      * Injected Name of the Active Profile specified in the Application Properties.
      */
-    @Value("${spring.profiles.active}")
+    @Value("${spring.profiles.active:}")
     private String activeProfileString;
 
     /**
@@ -38,7 +38,7 @@ public class StartupConfig {
     /**
      * Injected Name of the Database Driver specified in the Application Properties.
      */
-    @Value("${spring.datasource.driver-class-name}")
+    @Value("${spring.datasource.driver-class-name:}")
     private String dbDriver;
 
     /**
@@ -77,6 +77,7 @@ public class StartupConfig {
                     ));
                 }
             }
+            default -> { /* Do nothing by default */ }
         }
     }
 

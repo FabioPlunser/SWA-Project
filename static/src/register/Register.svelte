@@ -8,6 +8,7 @@
     import { personIdStore } from "../lib/stores/personIdStore";
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
     import { Validators} from "../lib/utils/Validators";
+  import { addToastByRes } from '../lib/utils/addToToastStore';
 
     // $: if($jwt.token) redirect("");
     $: document.cookie = `Token=${$jwt.token}`;

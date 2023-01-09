@@ -19,6 +19,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class LoginResponse extends TokenResponse implements Serializable {
 
+    private static String type = "Login";
+
     private UUID personId;
     private Set<GrantedAuthority> permissions;
 
