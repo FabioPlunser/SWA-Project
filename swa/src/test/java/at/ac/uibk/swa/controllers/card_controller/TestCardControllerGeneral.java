@@ -8,15 +8,12 @@ import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
 import at.ac.uibk.swa.util.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,10 +27,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.ArrayUtils.toArray;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -52,11 +46,11 @@ public class TestCardControllerGeneral {
     @Autowired
     private MockMvc mockMvc;
 
-    private Person createUserAndLogin(boolean admin) {
+    private Person createUserAndLogin(boolean alsoAdmin) {
         String username = StringGenerator.username();
         String password = StringGenerator.password();
         Set<GrantedAuthority> permissions = new java.util.HashSet<>(Set.of(Permission.USER));
-        if (admin) {
+        if (alsoAdmin) {
             permissions.add(Permission.ADMIN);
         }
         Person person = new Person(username, StringGenerator.email(), password, permissions);
@@ -64,8 +58,8 @@ public class TestCardControllerGeneral {
         return (Person) MockAuthContext.setLoggedInUser(personService.login(username, password).orElse(null));
     }
 
-    private Deck createDeck(int numberOfCards, boolean published, boolean asAdmin) {
-        createUserAndLogin(asAdmin);
+    private Deck createDeck(int numberOfCards, boolean published, boolean asAlsoAdmin) {
+        createUserAndLogin(asAlsoAdmin);
         Deck deck = new Deck(StringGenerator.deckName(), StringGenerator.deckDescription());
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < numberOfCards; i++) {
@@ -90,12 +84,12 @@ public class TestCardControllerGeneral {
             boolean published,
             boolean blocked,
             boolean deleted,
-            boolean creatorIsAdmin,
+            boolean creatorIsAlsoAdmin,
             boolean userIsOwner,
             boolean userIsAdminIfNotOwner
     ) throws Exception {
         // given: a deck created by a user
-        Deck deck = createDeck(10, published, creatorIsAdmin);
+        Deck deck = createDeck(10, published, creatorIsAlsoAdmin);
 
         if (blocked) {
             createUserAndLogin(true);
@@ -114,7 +108,7 @@ public class TestCardControllerGeneral {
             token += createUserAndLogin(userIsAdminIfNotOwner).getToken();
         }
 
-        boolean userIsAdmin = (userIsOwner && creatorIsAdmin) || (!userIsOwner && userIsAdminIfNotOwner);
+        boolean userIsAdmin = (userIsOwner && creatorIsAlsoAdmin) || (!userIsOwner && userIsAdminIfNotOwner);
         boolean expectCards = !deleted && !(blocked && !userIsAdmin) && (published || userIsOwner || userIsAdmin);
 
         // when: getting all cards for that deck
