@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.controllers.error_controllers;
 
+import at.ac.uibk.swa.models.exceptions.TokenExpiredException;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponseEntity;
 import at.ac.uibk.swa.util.SerializationUtil;
@@ -39,6 +40,20 @@ public class SwaErrorController implements ErrorController {
     ) {
         return MessageResponse.builder()
                 .message("Authentication failed!")
+                .statusCode(HttpStatus.UNAUTHORIZED)
+                .toEntity();
+    }
+
+    @ResponseBody
+    @RequestMapping(TOKEN_EXPIRED_ERROR_ENDPOINT)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public RestResponseEntity handleTokenExpiredError(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            TokenExpiredException tokenExpiredException
+    ) {
+        return MessageResponse.builder()
+                .message(tokenExpiredException.getMessage())
                 .statusCode(HttpStatus.UNAUTHORIZED)
                 .toEntity();
     }
@@ -93,7 +108,11 @@ public class SwaErrorController implements ErrorController {
         RestResponseEntity responseEntity;
 
         if (exception instanceof AuthenticationException authenticationException) {
-            responseEntity = handleAuthenticationError(request, response, authenticationException);
+            if (exception instanceof TokenExpiredException tokenExpiredException) {
+                responseEntity = handleTokenExpiredError(request, response, tokenExpiredException);
+            } else {
+                responseEntity = handleAuthenticationError(request, response, authenticationException);
+            }
         } else if (exception instanceof AccessDeniedException accessDeniedException) {
             responseEntity = handleAuthorizationError(request, response, accessDeniedException);
         } else {

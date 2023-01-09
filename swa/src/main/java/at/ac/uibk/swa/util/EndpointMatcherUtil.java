@@ -25,6 +25,7 @@ public class EndpointMatcherUtil {
     //region Error Endpoints
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class ErrorEndpoints {
+        public static final String TOKEN_EXPIRED_ERROR_ENDPOINT = "/api/token-expired";
         public static final String AUTHENTICATION_ERROR_ENDPOINT = "/api/unauthorized";
         public static final String AUTHORIZATION_ERROR_ENDPOINT = "/api/forbidden";
         public static final String NOT_FOUND_ERROR_ENDPOINT = "/api/notFound";

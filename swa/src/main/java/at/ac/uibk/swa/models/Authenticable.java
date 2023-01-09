@@ -78,14 +78,12 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     @Setter(AccessLevel.NONE)
     private boolean passwordHashed = true;
 
-    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "token", nullable = true, unique = true)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID token;
 
-    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     @Builder.Default
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
