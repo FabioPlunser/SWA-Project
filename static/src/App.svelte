@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Nav from './lib/components/nav.svelte';
 	import SvelteToast from './lib/components/SvelteToast.svelte';
-	
+
 	import Deck from './lib/components/deck.svelte';
 	import AdminDeck from './lib/components/adminDeck.svelte';
 	import SubscribedDeck from './lib/components/subscribedDeck.svelte';
@@ -9,9 +9,10 @@
 	import Spinner from './lib/components/Spinner.svelte';
 	import Form from './lib/components/Form.svelte';
 	import DualSideCard from './lib/components/dualSideCard.svelte';
-
 	import Dropdown from './lib/components/dropdown.svelte';
 
+	import { fade, fly } from 'svelte/transition';
+	import { flip } from 'svelte/animate';
 	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
 	import { redirect } from "./lib/utils/redirect";
 	import { tokenStore } from "./lib/stores/tokenStore";
@@ -31,6 +32,8 @@
 
 	let showEditDeckModal = false;
 	let selectedDeck: IDeck = null;
+	let listCards = false;
+	$: console.log(listCards);
 	let showPublicDecks = false;
 	let selectedPublicDeck = null;
 	let searchPublicDeckName = "";
@@ -140,8 +143,8 @@
 		getSubscribedDecks()
 	}
 	
-	async function getCardsFromDeck(){
-        let res = await fetching("/api/get-cards-of-deck", "GET", [{name: "deckId", value: $userSelectedDeckStore.deckId}]);
+	async function getCardsFromDeck(deck){
+        let res = await fetching("/api/get-cards-of-deck", "GET", [{name: "deckId", value: deck.deckId}]);
         return res.items;
     }
 
@@ -197,17 +200,16 @@
 				<div class="flex flex-col min-w-fit">
 					<h1 class="flex justify-center text-2xl font-bold">Cards of Public Deck {selectedPublicDeck.name}</h1>
 					<div class="grid grid-cols-3 gap-2 mt-4">
-						{#await getCardsFromDeck()}
+						{#await getCardsFromDeck(selectedPublicDeck)}
 							<Spinner/>
 						{:then cards}
 							{#each cards as card}
 								<div>
-									<DualSideCard {card} style="bg-slate-700"/>
+									<DualSideCard {card} cardStyle="bg-slate-800" textAreaStyle="bg-slate-700"/>
 								</div>
 							{/each}
 						{/await}
 					</div>
-					
 				</div>
 			{:else}
 				<div class="flex flex-col min-w-fit">
@@ -241,8 +243,6 @@
 					{/await}
 				</div>
 			{/if}
-
-
 			<div class="mt-12 modal-action">
 				<div class="flex fixed bottom-0 right-0 m-2">
 					{#if selectedPublicDeck}
@@ -253,7 +253,29 @@
 			</div>
 		</Modal>
 	{/if}
-
+	{#if listCards}
+		<Modal open={listCards} on:close={()=>listCards=false} closeOnBodyClick={false}>
+			<div class="flex flex-col min-w-fit">
+				<h1 class="flex justify-center text-2xl font-bold">Cards of Public Deck {selectedDeck.name}</h1>
+				<div class="grid grid-cols-3 gap-2 mt-4">
+					{#await getCardsFromDeck(selectedDeck)}
+						<Spinner/>
+					{:then cards}
+						{#each cards as card}
+							<div>
+								<DualSideCard {card} cardStyle="bg-slate-800" textAreaStyle="bg-slate-700"/>
+							</div>
+						{/each}
+					{/await}
+				</div>
+			</div>
+			<div class="mt-12 modal-action">
+				<div class="flex fixed bottom-0 right-0 m-2">
+					<button class="btn btn-primary m-1" on:click={()=> showPublicDecks = false}>Close</button>
+				</div>
+			</div>
+		</Modal>
+	{/if}
 
 	{#if $userPermissionsStore.includes('ADMIN')}
 		<div class="btn-group flex justify-center mb-8">
@@ -281,6 +303,7 @@
 				</div>
 			</div>
 			{#if showMyDecks}
+			<div>
 			<!-- <Dropdown text="Sort" style="dropdown" options={[{name: "Most cards", action: ()=>sortMostCards()}]}/> -->
 				{#await userDecks}
 						<Spinner />
@@ -292,19 +315,23 @@
 							{#key userDecks}
 								{#each userDecks as deck}
 									{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
+									<div in:fly={{y: -100, duration: 300}} out:fly={{y: -100, duration: 300}}>
 										<Deck 
 											{deck}
 											on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
 											on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-											on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
+											on:listCards={()=> {listCards=true; selectedDeck = deck}}
 											on:deleteDeck={()=> getDecks()}
 										/>
+									</div>
 									{/if}
 								{/each}
+
 							{/key}
 						</div>
 					{/if}
 				{/await}
+			</div>
 			{/if}
 		</div>
 
@@ -316,6 +343,7 @@
 				</div>
 			</div>
 			{#if showSubscribedDecks}
+			<div>
 				{#await subscribedDecks}
 						<Spinner />
 				{:then subscribedDecks}
@@ -326,17 +354,20 @@
 							<div class="grid grid-cols-4 gap-4">
 								{#each subscribedDecks as deck}
 									{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
+									<div in:fly={{y: -100, duration: 300}} out:fly={{y: -100, duration: 300}}>
 										<SubscribedDeck 
 											{deck}
 											on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-											on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
+											on:listCards={()=> {listCards=true; selectedDeck = deck}}
 										/>
+									</div>
 									{/if}
 								{/each}
 							</div>	
 						{/key}
 					{/if}
 				{/await}
+			</div>
 			{/if}
 		</div>
 	{/if}

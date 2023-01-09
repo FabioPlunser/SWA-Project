@@ -3,7 +3,8 @@
   const dispatch = createEventDispatcher();
   export let card;
   export let editable = false;
-  export let style = "";
+  export let cardStyle = "";
+  export let textAreaStyle = "";
 
   function handleDeleteCard(card) {
       dispatch('deleteCard', card);
@@ -14,7 +15,7 @@
 </script>
 
 {#if editable}
-  <div class="card p-5 w-auto bg-slate-900" class:style>
+  <div class="card p-5 w-auto bg-slate-900 {cardStyle}">
     {#if card.cardId}
         <h1 class="flex justify-center text-xl">Card {card.cardId.slice(0, 5)}</h1>
     {:else}
@@ -31,15 +32,15 @@
     </div>
   </div>
 {:else}
-  <div class="card p-5 w-auto bg-slate-900 {style}" >
+  <div class="card p-5 w-auto bg-slate-900 {cardStyle}" >
     {#if card.cardId}
         <h1 class="flex justify-center text-xl">Card {card.cardId.slice(0, 5)}</h1>
     {:else}
       <h1 class="flex justify-center text-xl">Card {card.id}</h1>
     {/if}
 
-    <textarea bind:value={card.frontText} readonly class="textarea p-2 bg-slate-800 w-auto" />
+    <textarea bind:value={card.frontText} readonly class="textarea p-2 bg-slate-800 w-auto {textAreaStyle}" />
     <br class="mt-4"/>
-    <textarea bind:value={card.backText} readonly class="textarea p-2 bg-slate-800 w-auto" style="min-height: {minHeight}" />
+    <textarea bind:value={card.backText} readonly class="textarea p-2 bg-slate-800 w-auto {textAreaStyle}" style="min-height: {minHeight}" />
   </div>
 {/if}
