@@ -108,6 +108,26 @@ cd swa
 mvn spring-boot:run
 ```
 
+## Continous development
+You can open 3 terminals or 3 pains in a terminal with following commands, so the server reload automatically on any change in the backend and front end code. 
+
+Als erstes
+```
+gradle assemble -t
+````
+Dann 
+```
+gradle bootRun
+```
+
+und 
+
+```
+npm run buildC
+```
+
+__nicht vergessen die Befehle müssen gleichzeit laufen__
+
 # Contributing
 
 Only members of the group can contribute to this project.
