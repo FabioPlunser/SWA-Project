@@ -25,6 +25,7 @@ public class UserDeckListResponse extends ListResponse<UserDeckListResponse.User
         super(decks.stream().map(deck -> new UserDeckInfo(deck, person)).toList());
     }
 
+    @Getter
     public static class UserDeckInfo implements Serializable {
         private Deck deck;
         private int numCards;
