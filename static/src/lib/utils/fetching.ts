@@ -1,5 +1,5 @@
 import { addToastByRes } from "./addToToastStore";
-import { tokenStore } from "../stores/tokenStore";
+import { jwt } from "../stores/jwt";
 import { get } from "svelte/store";
 
 export interface Params {
@@ -19,8 +19,8 @@ export interface Params {
  */
 export async function fetching(url: string, method: string, params?: Params[], data?, json?:boolean){
   let requestOptions;
-  let myHeaders = new Headers();
-  myHeaders.append("Authorization", "Bearer " + get(tokenStore));
+  let myHeaders = new Headers(); 
+  myHeaders.append("Authorization", JSON.stringify(get(jwt)));
 
   if(params){
     for(let i=0; i<params.length; i++){
