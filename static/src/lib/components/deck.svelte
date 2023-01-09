@@ -79,7 +79,7 @@
                     {:else}
                     <div class="badge badge-error">Not Published</div>
                     {/if}
-                    Progress: <progress class="progress progress-success bg-gray-700" value={numCards - numCardsToLearn} max={numCards}></progress>
+                    <!-- Progress: <progress class="progress progress-success bg-gray-700" value={numCards - numCardsToLearn} max={numCards}></progress> -->
                 </div>
             </div>
         </div>
