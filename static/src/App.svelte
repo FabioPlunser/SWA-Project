@@ -254,9 +254,9 @@
 		</Modal>
 	{/if}
 	{#if listCards}
-		<Modal open={listCards} on:close={()=>listCards=false} closeOnBodyClick={false}>
+		<Modal open={listCards} on:close={()=>listCards=false} closeOnBodyClick={true}>
 			<div class="flex flex-col min-w-fit">
-				<h1 class="flex justify-center text-2xl font-bold">Cards of Public Deck {selectedDeck.name}</h1>
+				<h1 class="flex justify-center text-2xl font-bold">Cards of Deck {selectedDeck.name}</h1>
 				<div class="grid grid-cols-3 gap-2 mt-4">
 					{#await getCardsFromDeck(selectedDeck)}
 						<Spinner/>
@@ -271,7 +271,7 @@
 			</div>
 			<div class="mt-12 modal-action">
 				<div class="flex fixed bottom-0 right-0 m-2">
-					<button class="btn btn-primary m-1" on:click={()=> showPublicDecks = false}>Close</button>
+					<button class="btn btn-primary m-1" on:click={()=> listCards = false}>Close</button>
 				</div>
 			</div>
 		</Modal>

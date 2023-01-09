@@ -10,7 +10,6 @@
       dispatch('deleteCard', card);
   }
 
-  // 
   $: minHeight = `${1 +  card.backText.split("\n").length * 2.5}em`;
 </script>
 
