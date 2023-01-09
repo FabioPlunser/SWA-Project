@@ -6,7 +6,7 @@
     import { fetching } from '../utils/fetching';
 
     export let deck; 
-    export let subscribedDeck: boolean = false;
+    export let cardsToLearn = [];
     let { deckId, name, description, published, blocked, cards} = deck;
     
     $: getAllCardsToLearn();
@@ -23,8 +23,6 @@
     function handleEditDeck() {
         dispatch('editDeck', "editDeck");
     }
-    
-    let cardsToLearn = [];
 
     async function getAllCardsToLearn(){
 		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{name: "deckId", value: deckId}]);
@@ -113,11 +111,13 @@
 {/if}
 
 {#if blocked}
-<div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative opacity-50">
+<div class="bg-slate-900 rounded-xl shadow-xl p-5 relative opacity-50">
     <div >
-        <h1 class="underline flex justify-center text-xl">{name}</h1>
-        <br class="my-4"/>
+        <h1 class="flex justify-center text-xl">{name}</h1>
+        <br class="mt-4"/>
         <p>{description}</p>
+        <br class="mt-4"/>
+        <button class="btn btn-primary" on:click={handleDeleteDeck}>Delete Deck</button>
     </div>
 </div>
 {/if}

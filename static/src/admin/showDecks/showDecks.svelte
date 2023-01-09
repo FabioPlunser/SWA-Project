@@ -53,13 +53,13 @@
 <Nav title="ShowDecks" {buttons}/>
 <SvelteToast/>
 <main class="mt-20 m-2">
-  <h1 class="flex justify-center text-2xl underline">Decks of {selectedUser.username}</h1>
+  <h1 class="flex justify-center text-2xl font-bold">Decks of {selectedUser.username}</h1>
   <br/>
     {#await decks}
       <Spinner/>
     {:then decks}
       {#if decks.length === 0}
-        <h1 class="text-xl underline flex justify-center">User has no Decks</h1>
+        <h1 class="text-xl font-bold flex justify-center">User has no Decks</h1>
       {:else}
         {#key decks}
           <div class="grid grid-cols-4 gap-4">
