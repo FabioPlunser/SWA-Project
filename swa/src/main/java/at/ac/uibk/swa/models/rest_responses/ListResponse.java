@@ -19,8 +19,8 @@ import java.util.Optional;
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.MODULE)
 public class ListResponse<T extends Serializable> extends RestResponse implements Serializable {
-
-    private static String type = "List";
+    @JsonInclude
+    public String getType() { return "List"; }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<T> items;

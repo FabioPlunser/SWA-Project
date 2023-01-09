@@ -14,8 +14,9 @@ import java.util.List;
 @SuperBuilder
 public class DeckListResponse extends ListResponse<DeckListResponse.DeckInfo> implements Serializable {
 
+    @Override
     @JsonInclude
-    private static String type = "DeckList";
+    public String getType() { return "DeckList"; }
 
     public DeckListResponse(List<Deck> decks) {
         super(decks.stream().map(deck -> new DeckInfo(deck)).toList());
