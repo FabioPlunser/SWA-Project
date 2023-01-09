@@ -359,6 +359,7 @@
 											{deck}
 											on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
 											on:listCards={()=> {listCards=true; selectedDeck = deck}}
+											on:unsubscribe={()=>getSubscribedDecks()}										
 										/>
 									</div>
 									{/if}

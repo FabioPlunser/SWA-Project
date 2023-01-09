@@ -44,6 +44,7 @@
 	async function handleUnsubscribe(){
 		let res = await fetching(`/api/unsubscribe-deck`, "POST", [{name: "deckId", value: deckId}]); 
 		addToastByRes(res);
+        dispatch("unsubscribe")
 	}	
 </script>
 
