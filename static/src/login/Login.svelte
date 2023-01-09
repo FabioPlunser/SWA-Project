@@ -8,7 +8,7 @@
     import { personIdStore } from "../lib/stores/personIdStore";
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
     import { Validators} from "../lib/utils/Validators";
-  import { addToastByRes } from '../lib/utils/addToToastStore';
+    import { addToastByRes } from '../lib/utils/addToToastStore';
 
     // $: if($jwt.token) redirect("");
     $: document.cookie = `Token=${$jwt.token}`;
@@ -27,9 +27,12 @@
 
     function handlePostFetch(data){
         let res = data.detail.res; 
-        $jwt = {token: res.token, username: username}
-        $personIdStore = res.personId;
-        $userPermissionsStore= res.permissions;
+        if(res.success){
+            $jwt = {token: res.token, username: username}
+            $personIdStore = res.personId;
+            $userPermissionsStore= res.permissions;
+        }
+            
     }
 </script>
 

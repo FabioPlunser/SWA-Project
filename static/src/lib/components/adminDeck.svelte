@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { tokenStore } from "../stores/tokenStore";
     import { addToastByRes } from '../utils/addToToastStore';
     import { fetching } from '../utils/fetching';
 
@@ -15,10 +14,6 @@
     function handleMouseOver() {
         hover = true
     }
-    
-    
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + $tokenStore);
     
     async function handleBlockDeck(){
         blocked = !blocked;

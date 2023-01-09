@@ -5,14 +5,14 @@
 	import { fly, fade } from 'svelte/transition';
 	
 	import { redirect } from '../lib/utils/redirect';
-    import { tokenStore } from "../lib/stores/tokenStore";
+    import { jwt } from "../lib/stores/jwt";
 	import { handleLogout } from '../lib/utils/handleLogout';
 	import { userSelectedDeckStore } from '../lib/stores/userSelectedDeckStore';
 	import { fetching } from '../lib/utils/fetching';
 	import { addToastByRes } from "../lib/utils/addToToastStore";
 	import type { Params } from "../lib/utils/fetching";
    
-	$: if($tokenStore.length < 30) redirect("login");
+	$: if($jwt.token != null) redirect("login");
 	$: getAllCardsToLearn();
 
 

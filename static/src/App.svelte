@@ -15,14 +15,14 @@
 	import { flip } from 'svelte/animate';
 	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
 	import { redirect } from "./lib/utils/redirect";
-	import { tokenStore } from "./lib/stores/tokenStore";
+	import { jwt } from "./lib/stores/jwt";
 	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
 	import { handleLogout } from './lib/utils/handleLogout';
 	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
   	import { fetching } from './lib/utils/fetching';
 	import type { IDeck } from './lib/utils/types';
 
-	$: if($tokenStore.length < 30) redirect("login");
+	// $: if($jwt.token == null) redirect("login");
 	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
 	$: getUserDecks();
 	$: getSubscribedDecks();
@@ -62,11 +62,7 @@
 	if ($userPermissionsStore.includes("ADMIN")) {
 		navButtons.splice(2, 0, { text: "Admin", action: () => redirect("admin") });
 	}
-
-	const myHeaders = new Headers();
-	myHeaders.append("Authorization", "Bearer " + $tokenStore);
-
-
+	
 	async function getAllDecks(){
 		let res = await fetching("/api/get-all-decks", "GET");
 		if(res.success){

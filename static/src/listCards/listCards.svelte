@@ -5,12 +5,10 @@
 	import DualSideCard from './../lib/components/dualSideCard.svelte';
 
     import { redirect } from '../lib/utils/redirect';
-    import { tokenStore } from "../lib/stores/tokenStore";
     import { userSelectedDeckStore } from "../lib/stores/userSelectedDeckStore";
     import { handleLogout } from '../lib/utils/handleLogout';
     import { fetching } from "../lib/utils/fetching";
     
-    $: if($tokenStore.length < 30) redirect("login");
     $: getCardsFromDeck();
 
     let navButtons = [

@@ -1,5 +1,5 @@
 export function handleLogout() {
-  localStorage.removeItem('token');
+  localStorage.removeItem('jwt');
   document.cookie = '';
   window.location.href = '/';
 }

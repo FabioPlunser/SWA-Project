@@ -6,13 +6,13 @@
     import Form from "../lib/components/Form.svelte";
 
     import { redirect } from '../lib/utils/redirect';
-    import { tokenStore } from "../lib/stores/tokenStore";
+    import { jwt } from "../lib/stores/jwt";
     import { userSelectedDeckStore } from "../lib/stores/userSelectedDeckStore";
     import { handleLogout } from '../lib/utils/handleLogout';
     import { addToastByRes } from "../lib/utils/addToToastStore";
     import { fetching } from "../lib/utils/fetching";
     
-    $: if($tokenStore.length < 30) redirect("login");
+    $: if($jwt.token == null) redirect("login");
     $: getCardsFromDeck();
 
     let navButtons = [

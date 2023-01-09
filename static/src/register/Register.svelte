@@ -30,9 +30,11 @@
 
     function handlePostFetch(data){
         let res = data.detail.res;
-        $jwt = {token: res.token, username: username}
-        $personIdStore = res.id;
-        $userPermissionsStore= res.permissions;
+        if(res.success){
+            $jwt = {token: res.token, username: username}
+            $personIdStore = res.personId;
+            $userPermissionsStore= res.permissions;
+        }
     }
 </script>
 
