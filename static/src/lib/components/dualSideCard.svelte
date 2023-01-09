@@ -3,6 +3,7 @@
   const dispatch = createEventDispatcher();
   export let card;
   export let editable = false;
+  export let style = "";
 
   function handleDeleteCard(card) {
       dispatch('deleteCard', card);
@@ -13,7 +14,7 @@
 </script>
 
 {#if editable}
-  <div class="card p-5 w-auto bg-slate-900">
+  <div class="card p-5 w-auto bg-slate-900" class:style>
     {#if card.cardId}
         <h1 class="flex justify-center text-xl">Card {card.cardId.slice(0, 5)}</h1>
     {:else}
@@ -30,7 +31,7 @@
     </div>
   </div>
 {:else}
-  <div class="card p-5 w-auto bg-slate-900">
+  <div class="card p-5 w-auto bg-slate-900 {style}" >
     {#if card.cardId}
         <h1 class="flex justify-center text-xl">Card {card.cardId.slice(0, 5)}</h1>
     {:else}

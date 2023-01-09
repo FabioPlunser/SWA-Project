@@ -117,7 +117,7 @@
   <div class="grid grid-cols-3 gap-2">
     {#each cards as card}
       <div>
-        <DualSideCard {card} on:deleteCard={()=>handleDeleteCard(card)}/>
+        <DualSideCard {card} editable={true} on:deleteCard={()=>handleDeleteCard(card)} />
       </div>
     {/each}
   </div>

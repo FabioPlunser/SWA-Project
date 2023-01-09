@@ -6,7 +6,7 @@
     import { fetching } from '../utils/fetching';
 
     export let deck; 
-    export let subscribedDeck: boolean = false;
+    export let cardsToLearn = [];
     let { deckId, name, description, published, blocked, cards} = deck;
     
     $: getAllCardsToLearn();
@@ -23,8 +23,6 @@
     function handleEditDeck() {
         dispatch('editDeck', "editDeck");
     }
-    
-    let cardsToLearn = [];
 
     async function getAllCardsToLearn(){
 		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{name: "deckId", value: deckId}]);

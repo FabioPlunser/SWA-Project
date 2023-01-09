@@ -8,6 +8,9 @@
 	import Modal from './lib/components/modal.svelte';
 	import Spinner from './lib/components/Spinner.svelte';
 	import Form from './lib/components/Form.svelte';
+	import DualSideCard from './lib/components/dualSideCard.svelte';
+
+	import Dropdown from './lib/components/dropdown.svelte';
 
 	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
 	import { redirect } from "./lib/utils/redirect";
@@ -29,7 +32,11 @@
 	let showEditDeckModal = false;
 	let selectedDeck: IDeck = null;
 	let showPublicDecks = false;
+	let selectedPublicDeck = null;
 	let searchPublicDeckName = "";
+	let searchDeck = "";
+	let showMyDecks = true;
+	let showSubscribedDecks = true;
 
 	let adminShowBlockedDecks = true;
 	let adminShowDeletedDecks = true;
@@ -37,7 +44,7 @@
 	let page = 'my-decks';
 
 	let navButtons = [
-		{ text: `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`, action: () => { showPublicDecks = true; getPublicDecks()}},
+		{ text: `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`, action: ()=>{showPublicDecks=true; getPublicDecks()}},
 		{ text: "Create Deck", action: () => redirect("create-deck") },
 		{ text: "Logout", action: () => handleLogout()}
 	]
@@ -68,7 +75,9 @@
 		}
 	}
 	
-	async function getUserDecks(){
+
+	let userDecks = fetchUserDecks();
+	async function fetchUserDecks(){
 		let res = await fetching("/api/get-created-decks", "GET");
 		if(res.success){
 			userDecks = res.items;
@@ -79,10 +88,13 @@
 		} 
 
 	}
-	let userDecks = getUserDecks();
+	async function getUserDecks(){
+		userDecks = fetchUserDecks();
+	}
+	
 
-
-	async function getSubscribedDecks(){
+	let subscribedDecks = fetchSubscribedDecks();
+	async function fetchSubscribedDecks(){
 		let res = await fetching("/api/get-subscribed-decks", "GET");
 		if(res.success){
 			subscribedDecks = res.items;
@@ -92,9 +104,12 @@
 			addToast("Error fetching subscribed decks", "alert-error");
 		}
 	}
-	let subscribedDecks = getSubscribedDecks();
-
-	async function getPublicDecks(){
+	async function getSubscribedDecks(){
+		subscribedDecks = fetchSubscribedDecks();
+	}
+	
+	let publicDecks = fetchPublicDecks();
+	async function fetchPublicDecks(){
 		let res = await fetching("/api/get-published-decks", "GET");
 		if(res.success){
 			publicDecks = res.items;
@@ -104,28 +119,31 @@
 			addToast("Error fetching public decks", "alert-error");
 		}
 	}
-	let publicDecks = getPublicDecks();
+	async function getPublicDecks(){
+		publicDecks = fetchPublicDecks();
+	}
 	
 	
 	async function getDecks(){
 		if($userPermissionsStore.includes("ADMIN")){
 			allDecks = await getAllDecks();
 		}
-		userDecks = getUserDecks();
-		subscribedDecks =  getSubscribedDecks();
-		publicDecks = getPublicDecks();
+		getUserDecks();
+		getSubscribedDecks();
+		getPublicDecks();
 	}
 
 
 	async function handleSubscribe(deck){
 		let res = await fetching(`/api/subscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]);
 		addToastByRes(res);
+		getSubscribedDecks()
 	}
-
-	async function handleUnsubscribe(deck){
-		let res = await fetching(`/api/unsubscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]); 
-		addToastByRes(res);
-	}	
+	
+	async function getCardsFromDeck(){
+        let res = await fetching("/api/get-cards-of-deck", "GET", [{name: "deckId", value: $userSelectedDeckStore.deckId}]);
+        return res.items;
+    }
 
 </script>
 
@@ -175,40 +193,63 @@
 	{/if}
 	{#if showPublicDecks}
 		<Modal open={showPublicDecks} on:close={()=>showPublicDecks=false} closeOnBodyClick={false}>
-			<div class="flex flex-col min-w-fit">
-				<h1 class="flex justify-center text-2xl font-bold">Public Decks</h1>
-				<br class="mt-4"/>
-				<input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
-				<br class="mt-4"/>
-				{#await publicDecks}
-					<Spinner/>
-				{:then publicDecks}
-					{#if publicDecks.length == 0}
-						<h1 class="text-2xl flex justify-center">No Decks Found</h1>
-					{:else}
-						{#key publicDecks}
-							<div class="grid grid-cols-4 gap-2">
-								{#each publicDecks as deck}
-									{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
-										<div class="card bg-gray-700 p-5 w-fit min-w-fit">
-											<h1 class="card-title">{deck.name}</h1>
-											<p class="card-subtitle">{deck.description}</p>
-											{#if deck.subscribed}
-												<button class="btn btn-secondary" on:click={()=> handleUnsubscribe(deck)}>Unsubscribe</button>
-											{:else}
-											<button class="btn btn-primary" on:click={()=> handleSubscribe(deck)}>Subscribe</button>
-											{/if}
-										</div>
-									{/if}
-								{/each}
-							</div>
-						{/key}
-					{/if}
-				{/await}
-			</div>
+			{#if selectedPublicDeck}
+				<div class="flex flex-col min-w-fit">
+					<h1 class="flex justify-center text-2xl font-bold">Cards of Public Deck {selectedPublicDeck.name}</h1>
+					<div class="grid grid-cols-3 gap-2 mt-4">
+						{#await getCardsFromDeck()}
+							<Spinner/>
+						{:then cards}
+							{#each cards as card}
+								<div>
+									<DualSideCard {card} style="bg-slate-700"/>
+								</div>
+							{/each}
+						{/await}
+					</div>
+					
+				</div>
+			{:else}
+				<div class="flex flex-col min-w-fit">
+					<h1 class="flex justify-center text-2xl font-bold">Public Decks</h1>
+					<br class="mt-4"/>
+					<input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
+					<br class="mt-4"/>
+					{#await publicDecks}
+						<Spinner/>
+					{:then publicDecks}
+						{#if publicDecks.length == 0}
+							<h1 class="text-2xl flex justify-center">No Decks Found</h1>
+						{:else}
+							{#key publicDecks}
+								<div class="grid grid-cols-4 gap-2">
+									{#each publicDecks as deck}
+										{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
+											<div class="card bg-gray-700 p-5 w-fit min-w-fit">
+												<h1 class="card-title">{deck.name}</h1>
+												<p class="card-subtitle">{deck.description}</p>
+												<div class="card-actions">
+													<button class="btn btn-primary" on:click={()=> {handleSubscribe(deck)}}>Subscribe</button>
+													<button class="btn btn-secondary" on:click={()=> {selectedPublicDeck=deck}}>Cards</button>
+												</div>
+											</div>
+										{/if}
+									{/each}
+								</div>
+							{/key}
+						{/if}
+					{/await}
+				</div>
+			{/if}
 
-			<div class="modal-action">
-				<button class="fixed btn btn-primary bottom-0 right-0 m-2 mt-12" on:click={()=> showPublicDecks = false}>Close</button>
+
+			<div class="mt-12 modal-action">
+				<div class="flex fixed bottom-0 right-0 m-2">
+					{#if selectedPublicDeck}
+						<button class="btn btn-secondary m-1" on:click={()=> selectedPublicDeck=null}>Back</button>
+					{/if}
+					<button class="btn btn-primary m-1" on:click={()=> showPublicDecks = false}>Close</button>
+				</div>
 			</div>
 		</Modal>
 	{/if}
@@ -222,8 +263,25 @@
 	{/if}
 
 	{#if page == "my-decks"}
+		<div class="flex justify-center">
+			<div class="flex justify-center mx-auto w-full">
+				<label class="input-group flex justify-center w-full ">
+				<span class=""><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+					<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+				  </svg></span>
+				<input type="text" placeholder="Search for Deck" class="input input-bordered bg-slate-900" bind:value={searchDeck}/>
+				</label>
+			</div>
+		</div>
 		<div>
-			<h1 class="text-4xl font-bold m-2">My Decks</h1>
+			<div class="flex">
+				<h1 class="text-4xl font-bold m-2">My Decks</h1>
+				<div class="flex items-center">
+					<input type="checkbox" class="flex items-center toggle toggle-info" bind:checked={showMyDecks} />
+				</div>
+			</div>
+			{#if showMyDecks}
+			<!-- <Dropdown text="Sort" style="dropdown" options={[{name: "Most cards", action: ()=>sortMostCards()}]}/> -->
 				{#await userDecks}
 						<Spinner />
 				{:then userDecks}
@@ -233,22 +291,31 @@
 						<div class="grid grid-cols-4 gap-4">
 							{#key userDecks}
 								{#each userDecks as deck}
-								<Deck 
-									{deck}
-									on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
-									on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-									on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
-									on:deleteDeck={()=> getDecks()}
-								/>
+									{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
+										<Deck 
+											{deck}
+											on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+											on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+											on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
+											on:deleteDeck={()=> getDecks()}
+										/>
+									{/if}
 								{/each}
 							{/key}
 						</div>
 					{/if}
 				{/await}
+			{/if}
 		</div>
 
 		<div>
-			<h1 class="text-4xl font-bold m-2">Subscribed Decks</h1>
+			<div class="flex">
+				<h1 class="text-4xl font-bold m-2">Subscribed Decks</h1>
+				<div class="flex items-center">
+					<input type="checkbox" class="flex items-center toggle toggle-info" bind:checked={showSubscribedDecks} />
+				</div>
+			</div>
+			{#if showSubscribedDecks}
 				{#await subscribedDecks}
 						<Spinner />
 				{:then subscribedDecks}
@@ -258,16 +325,19 @@
 						{#key subscribedDecks}
 							<div class="grid grid-cols-4 gap-4">
 								{#each subscribedDecks as deck}
-								<SubscribedDeck 
-									{deck}
-									on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-									on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
-								/>
+									{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
+										<SubscribedDeck 
+											{deck}
+											on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+											on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
+										/>
+									{/if}
 								{/each}
 							</div>	
 						{/key}
 					{/if}
 				{/await}
+			{/if}
 		</div>
 	{/if}
 
@@ -289,11 +359,11 @@
 			</div>
 			
 			<div class="flex justify-center mx-auto w-full">
-				<label class="input-group flex justify-center w-full">
-				<span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+				<label class="input-group flex justify-center w-full ">
+				<span class=""><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
 					<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
 				  </svg></span>
-				<input type="text" placeholder="Search for word in Name or Description" class="input input-bordered" bind:value={adminSearch}/>
+				<input type="text" placeholder="Search for Deck" class="input input-bordered bg-slate-900" bind:value={adminSearch}/>
 				</label>
 			</div>
 

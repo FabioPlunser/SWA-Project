@@ -43,7 +43,6 @@
                 <DualSideCard {card}/>
             </div>
         {/each}
-        
     </div>
     {:else}
         <h1 class="text-2xl text-center">No cards found</h1>
