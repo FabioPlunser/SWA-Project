@@ -4,14 +4,12 @@ import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
-import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
 import at.ac.uibk.swa.util.ArgumentGenerator;
 import at.ac.uibk.swa.util.MockAuthContext;
 import at.ac.uibk.swa.util.SetupH2Console;
 import at.ac.uibk.swa.util.StringGenerator;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,8 +47,6 @@ public class TestDeckControllerSubscribeUnsubscribe {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private DeckRepository deckRepository;
 
     private Person createUserAndLogin(boolean alsoAdmin) {
         String username = StringGenerator.username();
