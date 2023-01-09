@@ -15,6 +15,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class TokenResponse extends RestResponse implements Serializable {
 
+    private static String type = "Token";
+
     private UUID token;
 
     public TokenResponse(boolean success, UUID token) {
