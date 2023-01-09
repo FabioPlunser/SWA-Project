@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.config.person_authentication;
+package at.ac.uibk.swa.config.jwt_authentication;
 
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.models.exceptions.TokenExpiredException;
@@ -48,13 +48,13 @@ public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthentic
             String userName,
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
     ) {
-        UUID token = (UUID) usernamePasswordAuthenticationToken.getCredentials();
+        JwtToken token = (JwtToken) usernamePasswordAuthenticationToken.getCredentials();
 
         // Try to find the User with the given Session Token
-        Optional<Person> maybePerson = loginService.findByToken(token);
+        Optional<Person> maybePerson = loginService.findByUsernameAndToken(token);
         return maybePerson
                 .map(person -> {this.checkTokenExpired(person); return person;})
-                .orElseThrow(() -> new BadCredentialsException(formatTokenError(token)));
+                .orElseThrow(() -> new BadCredentialsException(formatTokenError(token.getToken())));
     }
 
     private static String formatTokenError(UUID token) {

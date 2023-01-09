@@ -1,8 +1,6 @@
 package at.ac.uibk.swa.config.filters;
 
-import at.ac.uibk.swa.config.person_authentication.JwtToken;
 import at.ac.uibk.swa.util.ConversionUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,9 +24,9 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
  * @author David Rieser
  * @see AbstractAuthenticationProcessingFilter
  */
-public class BearerTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class HeaderTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    public BearerTokenAuthenticationFilter(final RequestMatcher requiresAuth) {
+    public HeaderTokenAuthenticationFilter(final RequestMatcher requiresAuth) {
         super(requiresAuth);
     }
 
@@ -41,12 +39,10 @@ public class BearerTokenAuthenticationFilter extends AbstractAuthenticationProce
         Optional<UsernamePasswordAuthenticationToken> authenticationToken =
                 // Get the Authorization Header
                 Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION))
-                        // The Jwt Token is a UUID and stored in the Authorization Header
-                        .map(header -> new ObjectMapper().readValue(header, JwtToken.class))
-                        // Try to convert the Token given in the Authorization-Header to a UUID
-                        .map(ConversionUtil::tryConvertUUID)
-                        // If the Token is a valid UUID then pass it onto the AuthenticationFilter
-                        .map(token -> new UsernamePasswordAuthenticationToken(null, token));
+                        // The Jwt Token is stored in the Authorization Header
+                        .map(ConversionUtil::tryConvertJwtToken)
+                        // If the JwtToken is a valid UUID then pass it onto the AuthenticationFilter
+                        .map(token -> new UsernamePasswordAuthenticationToken(token.getUsername(), token.getToken()));
 
         // If a Cookie-Token was found, pass it to the AuthenticationManager/AuthenticationProvider.
         if (authenticationToken.isPresent()) {

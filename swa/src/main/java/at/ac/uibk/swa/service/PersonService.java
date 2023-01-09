@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.service;
 
-import at.ac.uibk.swa.config.person_authentication.AuthContext;
+import at.ac.uibk.swa.config.jwt_authentication.AuthContext;
+import at.ac.uibk.swa.config.jwt_authentication.JwtToken;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.PersonRepository;
@@ -87,16 +88,8 @@ public class PersonService {
      * @param token current token of the person to be found
      * @return person if found, otherwise nothing
      */
-    public Optional<Person> findByToken(UUID token) {
-        // TODO: Should this also get a Username and check if the Token is associated with the given username?
-        //       Theoretically not needed because the Token has a unique Constraint
-        //       but would make it even harder to brute force for a Token as you would need to guess the username
-        //       and the Token at the same time.
-        // NOTE: Maybe switch to JWT? UUID is OK, but definitely not the best solution
-
-        return Optional.of(token)
-                .map(personRepository::findByToken)
-                .flatMap(Function.identity());
+    public Optional<Person> findByUsernameAndToken(JwtToken token) {
+        return personRepository.findByUsernameAndToken(token.getUsername(), token.getToken());
     }
 
     /**

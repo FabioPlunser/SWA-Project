@@ -47,8 +47,8 @@ public class CookieTokenAuthenticationFilter extends AbstractAuthenticationProce
                             .findFirst()
                             // Get the Value of the Cookie
                             .map(Cookie::getValue)
-                            // Try to parse the Cookie as a Token
-                            .map(ConversionUtil::tryConvertUUID)
+                            // The Jwt Token is stored in the Authorization Header
+                            .map(ConversionUtil::tryConvertJwtToken)
                             // If the Token is a valid UUID then pass it onto the AuthenticationFilter as a Credential
                             .map(token -> new UsernamePasswordAuthenticationToken(null, token));
 
