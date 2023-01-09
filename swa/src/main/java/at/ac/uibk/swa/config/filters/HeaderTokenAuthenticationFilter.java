@@ -42,7 +42,7 @@ public class HeaderTokenAuthenticationFilter extends AbstractAuthenticationProce
                         // The Jwt Token is stored in the Authorization Header
                         .map(ConversionUtil::tryConvertJwtToken)
                         // If the JwtToken is a valid UUID then pass it onto the AuthenticationFilter
-                        .map(token -> new UsernamePasswordAuthenticationToken(token.getUsername(), token.getToken()));
+                        .map(token -> new UsernamePasswordAuthenticationToken(null, token));
 
         // If a Cookie-Token was found, pass it to the AuthenticationManager/AuthenticationProvider.
         if (authenticationToken.isPresent()) {
