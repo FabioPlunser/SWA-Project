@@ -4,6 +4,8 @@ import at.ac.uibk.swa.config.person_authentication.AuthContext;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.LearningProgress;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.util.DoubleCounter;
+import at.ac.uibk.swa.util.DoublePredicateCountingCollector;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -13,7 +15,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Getter
 @SuperBuilder
@@ -32,7 +33,8 @@ public class UserDeckListResponse extends ListResponse<UserDeckListResponse.User
         @JsonUnwrapped
         private Deck deck;
         private int numCards;
-        private long numCardsToLearn;
+        private long numCardsToRepeat;
+        private long numNotLearnedCards;
 
         public UserDeckInfo(Deck deck) throws CredentialException {
             this(deck, AuthContext.getCurrentPerson().orElseThrow(() -> new CredentialException()));
@@ -41,12 +43,17 @@ public class UserDeckListResponse extends ListResponse<UserDeckListResponse.User
         public UserDeckInfo(Deck deck, Person person) {
             this.deck = deck;
             this.numCards = this.deck.getCards().size();
+
             LocalDateTime now = LocalDateTime.now();
-            this.numCardsToLearn = deck.getCards().stream()
+            DoubleCounter counter = deck.getCards().stream()
                     .map(card -> card.getLearningProgress(person))
-                    .map( lp -> lp.map(learningProgress -> learningProgress.getNextLearn().isBefore(now)).orElse(true))
-                    .filter(x -> x)
-                    .count();
+                    .collect(new DoublePredicateCountingCollector<Optional<LearningProgress>>(
+                            Optional::isEmpty,
+                            lp -> lp.map(learningProgress -> learningProgress.getNextLearn().isBefore(now)).orElse(false)
+                    ));
+
+            this.numNotLearnedCards = counter.matchesFirst;
+            this.numCardsToRepeat = counter.matchesSecond;
         }
     }
 }
