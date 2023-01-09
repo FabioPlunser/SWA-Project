@@ -3,6 +3,7 @@ package at.ac.uibk.swa.controllers.error_controllers;
 import at.ac.uibk.swa.models.exceptions.TokenExpiredException;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponseEntity;
+import at.ac.uibk.swa.models.rest_responses.TokenExpiredResponse;
 import at.ac.uibk.swa.util.SerializationUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,8 +53,8 @@ public class SwaErrorController implements ErrorController {
             HttpServletResponse response,
             TokenExpiredException tokenExpiredException
     ) {
-        return MessageResponse.builder()
-                .message(tokenExpiredException.getMessage())
+        return TokenExpiredResponse.builder()
+                .exception(tokenExpiredException)
                 .statusCode(HttpStatus.UNAUTHORIZED)
                 .toEntity();
     }
