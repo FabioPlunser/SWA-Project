@@ -1,4 +1,8 @@
 
+swa:
+  token:
+    expiration-duration: 1d
+
 server:
   port: 3000
   servlet:
