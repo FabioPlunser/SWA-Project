@@ -94,6 +94,10 @@ public class Deck implements Serializable {
         return this.subscribedPersons.add(person);
     }
 
+    public boolean removeSubscriber(Person person) {
+        return this.subscribedPersons.remove(person);
+    }
+
     @Override
     public String toString() {
         return "Deck{" +
