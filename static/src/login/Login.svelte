@@ -9,6 +9,7 @@
     import { personIdStore } from "../lib/stores/personIdStore";
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
     import { Validators} from "../lib/utils/Validators";
+  import { addToastByRes } from '../lib/utils/addToToastStore';
 
     $: if($tokenStore.length > 30) redirect("");
     $: document.cookie = `Token=${$tokenStore}`;
@@ -26,9 +27,13 @@
 
     function handlePostFetch(data){
         let res = data.detail.res; 
-        $tokenStore = res.token;
-        $personIdStore = res.personId;
-        $userPermissionsStore= res.permissions;
+        addToastByRes(res);
+        if(res.success){
+            $tokenStore = res.token;
+            $personIdStore = res.personId;
+            $userPermissionsStore= res.permissions;
+        }
+        
     }
 </script>
 
@@ -40,7 +45,11 @@
 <SvelteToast/>
 <main class="flex justify-center items-center mx-auto h-screen text-white">
     <div class="rounded-xl shadow-2xl bg-slate-900 max-w-fit p-10">
-        <h1 class="underline text-2xl mx-auto flex justify-center p-2">Login</h1>
+        <div class="flex justify-center">
+            <img class="flex justify-center w-24" src={favicon} alt="favicon"/>
+            <h1 class="items-center text-2xl font-bold flex justify-center">Memory</h1>
+        </div>
+        <h1 class="font-bold text-2xl flex justify-center p-2">Login</h1>
         <Form url="/api/login" method="POST" dataFormat="FormData" {formValidators} bind:errors on:postFetch={handlePostFetch}>
             <div class="form-control">
                 <label class="input-group">
