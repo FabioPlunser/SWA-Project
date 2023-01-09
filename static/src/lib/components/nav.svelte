@@ -1,5 +1,5 @@
 <script lang="ts">
-  import favicon from "/favicon.png";
+  import favicon  from '../../assets/favicon.png';
   export let title = "";
   export let buttons = [];
 </script>

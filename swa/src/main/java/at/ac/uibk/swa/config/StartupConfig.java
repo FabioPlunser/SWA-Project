@@ -62,21 +62,22 @@ public class StartupConfig {
         Profile activeProfile = getActiveProfile();
         switch (activeProfile) {
             case DEV -> {
-                if (dbDriver.equals(testDbDriver.getName())) {
-                    String unhashedPassword = "password";
-                    Person person = new Person(
-                            "Admin", "admin@noreply.com", unhashedPassword,
-                            UUID.fromString("62b3e09e-c529-40c6-85c6-1afc53e17408"),
-                            Permission.adminAuthorities()
-                    );
-                    if (this.personService.create(person)) {
-                        log.info(String.format("Created User \"%s\" with Password \"%s\" and Token \"%s\"",
-                                person.getUsername(), unhashedPassword, person.getToken()
-                        ));
-                    }
+                if (!dbDriver.equals(testDbDriver.getName()))
+                    break;
+
+                String unhashedPassword = "password";
+                Person person = new Person(
+                        "Admin", "admin@noreply.com", unhashedPassword,
+                        UUID.fromString("62b3e09e-c529-40c6-85c6-1afc53e17408"),
+                        Permission.adminAuthorities()
+                );
+                if (this.personService.create(person)) {
+                    log.info(String.format("Created User \"%s\" with Password \"%s\" and Token \"%s\"",
+                            person.getUsername(), unhashedPassword, person.getToken()
+                    ));
                 }
             }
-            default -> {}
+            default -> { /* Do nothing by default */ }
         }
     }
 

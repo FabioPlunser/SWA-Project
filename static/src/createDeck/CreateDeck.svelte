@@ -1,9 +1,9 @@
 <script lang="ts">
-  import favicon from '/favicon.png';
+  import favicon from '../assets/favicon.png';
   import Nav from '../lib/components/nav.svelte';
 	import SvelteToast from '../lib/components/SvelteToast.svelte';
   import DualSideCard from './../lib/components/dualSideCard.svelte';
-  import Form from '../lib/components/form.svelte';
+  import Form from '../lib/components/Form.svelte';
 
   import { redirect } from "../lib/utils/redirect";
   import { handleLogout } from '../lib/utils/handleLogout';
@@ -21,7 +21,7 @@
   let id = 0;
 
   function addCard() {
-    cards.push({id: id, frontText: "SOLID", backText: "Single Responsibility"});
+    cards.push({id: id, frontText: "", backText: ""});
     cards = [...cards];
     id++;
   }
@@ -88,7 +88,7 @@
       <div class="form-control">
         <label class="input-group">
         <span class="w-36">Publish</span>
-        <select name="isPublished" class="flex input w-full bg-slate-900">
+        <select name="published" class="flex input w-full bg-slate-900">
             <option value={false}>false</option>
             <option value={true}>true</option>
         </select>
@@ -114,9 +114,11 @@
   </Form>
   
   <br class="mt-4"/>
-  <div class="grid grid-cols-4 gap-2">
+  <div class="grid grid-cols-3 gap-2">
     {#each cards as card}
-      <DualSideCard {card} on:deleteCard={()=>handleDeleteCard(card)}/>
+      <div>
+        <DualSideCard {card} on:deleteCard={()=>handleDeleteCard(card)}/>
+      </div>
     {/each}
   </div>
 </main>

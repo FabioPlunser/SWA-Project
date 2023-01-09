@@ -1,10 +1,10 @@
 package at.ac.uibk.swa.service;
 
 import at.ac.uibk.swa.config.person_authentication.AuthContext;
-import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.PersonRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
+@Slf4j
 @Service("personService")
 public class PersonService {
 
@@ -56,7 +57,7 @@ public class PersonService {
                 return Optional.of(person);
             }
         } catch (Exception e) {
-            System.out.println(e);
+            log.warn("Database Error while updating Token for User %s", person);
         }
 
         return Optional.empty();
@@ -132,7 +133,7 @@ public class PersonService {
      */
     public Person save(Person person) {
         try {
-            if (!person.isPassword_hashed())
+            if (!person.isPasswordHashed())
                 person.hashPassword(passwordEncoder);
             return personRepository.save(person);
         } catch (Exception e) {

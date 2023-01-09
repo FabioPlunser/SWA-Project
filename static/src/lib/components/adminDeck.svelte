@@ -25,11 +25,11 @@
     async function handleBlockDeck(){
         blocked = !blocked;
         if(blocked){
-            let res = await fetching("/api/block-deck", "POST", [{deckId: deckId}]);
+            let res = await fetching("/api/block-deck", "POST", [{name:"deckId", value: deckId}]);
             addToastByRes(res);
         }
         if(!blocked){
-            let res = await fetching("/api/unblock-deck", "POST", [{deckId: deckId}]);
+            let res = await fetching("/api/unblock-deck", "POST", [{name:"deckId", value: deckId}]);
             addToastByRes(res);
         }
     }

@@ -38,7 +38,7 @@ public class CreatedUserResponse extends RestResponse implements Serializable {
             B extends CreatedUserResponseBuilder<C, B>>
         extends RestResponseBuilder<C, B>
     {
-        public CreatedUserResponseBuilder person(Person person) {
+        public CreatedUserResponseBuilder<C, B> person(Person person) {
             this.id = person.getPersonId();
             this.username = person.getUsername();
             this.token = person.getToken();

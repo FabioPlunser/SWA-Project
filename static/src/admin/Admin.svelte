@@ -1,5 +1,5 @@
 <script lang="ts">
-  import favicon  from '/favicon.png';
+  import favicon  from '../assets/favicon.png';
   import Nav from "../lib/components/nav.svelte";
   import Modal from "../lib/components/modal.svelte";
   import Spinner from '../lib/components/Spinner.svelte';
@@ -10,7 +10,7 @@
 	import { adminSelectedUserStore} from '../lib/stores/adminSelectedUserStore';
   import { addToastByRes } from '../lib/utils/addToToastStore';
   import { Validators, validateForm, isFormValid} from "../lib/utils/Validators";
-  import { fetching, formFetch } from '../lib/utils/fetching';
+  import { fetching } from '../lib/utils/fetching';
   import { validate_each_argument } from 'svelte/internal';
   
   $: $adminSelectedUserStore = selectedUser;

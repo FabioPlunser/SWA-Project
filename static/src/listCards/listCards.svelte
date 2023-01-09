@@ -1,8 +1,9 @@
 <script lang="ts">
-    import favicon from "/favicon.png";
+    import favicon  from '../assets/favicon.png';
     import Nav from "../lib/components/nav.svelte";
     import SvelteToast from "../lib/components/SvelteToast.svelte";
 	import DualSideCard from './../lib/components/dualSideCard.svelte';
+    import Form from "../lib/components/form.svelte";
 
     import { redirect } from '../lib/utils/redirect';
     import { tokenStore } from "../lib/stores/tokenStore";
@@ -10,7 +11,6 @@
     import { handleLogout } from '../lib/utils/handleLogout';
     import { addToastByRes } from "../lib/utils/addToToastStore";
     import { fetching } from "../lib/utils/fetching";
-  import Form from "../lib/components/form.svelte";
     
     $: if($tokenStore.length < 30) redirect("login");
     $: getCardsFromDeck();
@@ -25,7 +25,7 @@
     let index = 0;
 
     async function getCardsFromDeck(){
-        let res = await fetching("/api/get-cards-of-deck", "GET", [{deckId: $userSelectedDeckStore.deckId}]);
+        let res = await fetching("/api/get-cards-of-deck", "GET", [{name: "deckId", value: $userSelectedDeckStore.deckId}]);
         cards = res.items;
     }
     function addCard() {
@@ -39,7 +39,7 @@
     }
 
     async function handleDeleteCard(card) {
-        let res = await fetching("/api/delete-card", "DELETE", [{cardId: card.cardId}]);
+        let res = await fetching("/api/delete-card", "DELETE", [{name: "deckId", value: card.cardId}]);
         addToastByRes(res);
         getCardsFromDeck();
     }
@@ -84,12 +84,16 @@
         </Form>
     </div>
     <br class="mt-4"/>
-    <div class="grid grid-cols-4 gap-2">
+    <div class="grid grid-cols-3 gap-2">
         {#each newCards as card}
-            <DualSideCard {card} on:deleteCard={()=>handleDeleteNewCard(card)}/>
+            <div>
+                <DualSideCard {card} on:deleteCard={()=>handleDeleteNewCard(card)}/>
+            </div>
         {/each}
         {#each cards as card}
-            <DualSideCard {card} on:deleteCard={()=>handleDeleteCard(card)}/>
+            <div>
+                <DualSideCard {card} on:deleteCard={()=>handleDeleteCard(card)}/>
+            </div>
         {/each}
         
     </div>

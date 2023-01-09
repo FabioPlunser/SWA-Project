@@ -20,55 +20,55 @@ public class RedirectController {
     @GetMapping("/")
     public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("index.html");
+        modelAndView.setViewName("src/index.html");
         return modelAndView;
     }
     @GetMapping("/login")
     public ModelAndView login() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("login/index.html");
+        modelAndView.setViewName("src/login/index.html");
         return modelAndView;
     }
     @GetMapping("/register")
     public ModelAndView register() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("register/index.html");
+        modelAndView.setViewName("src/register/index.html");
         return modelAndView;
     }
     @GetMapping("/learn")
     public ModelAndView learn() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("learn/index.html");
+        modelAndView.setViewName("src/learn/index.html");
         return modelAndView;
     }
     @GetMapping("/list-cards")
     public ModelAndView listCards() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("listCards/index.html");
+        modelAndView.setViewName("src/listCards/index.html");
         return modelAndView;
     }
     @GetMapping("/admin")
     public ModelAndView adminPage() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin/index.html");
+        modelAndView.setViewName("src/admin/index.html");
         return modelAndView;
     }
     @GetMapping("/admin/show-decks")
     public ModelAndView showDecks() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("/admin/showDecks/index.html");
+        modelAndView.setViewName("src/admin/showDecks/index.html");
         return modelAndView;
     }
     @GetMapping("/admin/show-cards")
     public ModelAndView showCards() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("/admin/showCards/index.html");
+        modelAndView.setViewName("src/admin/showCards/index.html");
         return modelAndView;
     }
     @GetMapping("/create-deck")
     public ModelAndView createDeck() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("/createDeck/index.html");
+        modelAndView.setViewName("src/createDeck/index.html");
         return modelAndView;
     }
 }

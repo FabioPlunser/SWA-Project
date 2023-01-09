@@ -42,7 +42,7 @@ public class CardController {
                 .build();
         }
         return MessageResponse.builder()
-            .notOk()
+            .error()
             .message("Card " + card.getCardId() + " not created in " + deckId)
             .build();
     }
@@ -64,7 +64,7 @@ public class CardController {
                 .build();
         }
         return MessageResponse.builder()
-            .notOk()
+            .error()
             .message("Card " + card.getCardId() + " not updated")
             .build();
     }
@@ -86,7 +86,7 @@ public class CardController {
                 .build();
         }
         return MessageResponse.builder()
-            .notOk()
+            .error()
             .message("Card " + cardId + " not deleted")
             .build();
     }
@@ -106,7 +106,7 @@ public class CardController {
             return new ListResponse<>(maybeCards.get());
         }
         return MessageResponse.builder()
-            .notOk()
+            .error()
             .message("No Cards found")
             .build();
     }

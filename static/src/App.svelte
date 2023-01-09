@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Nav from './lib/components/nav.svelte';
-	import MediaQuery from './lib/utils/mediaQuery.svelte';
 	import SvelteToast from './lib/components/SvelteToast.svelte';
 	
 	import Deck from './lib/components/deck.svelte';
 	import AdminDeck from './lib/components/adminDeck.svelte';
+	import SubscribedDeck from './lib/components/subscribedDeck.svelte';
 	import Modal from './lib/components/modal.svelte';
 	import Spinner from './lib/components/Spinner.svelte';
 	import Form from './lib/components/Form.svelte';
@@ -15,8 +15,8 @@
 	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
 	import { handleLogout } from './lib/utils/handleLogout';
 	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
-  	import { formFetch, fetching } from './lib/utils/fetching';
-
+  	import { fetching } from './lib/utils/fetching';
+	import type { IDeck } from './lib/utils/types';
 
 	$: if($tokenStore.length < 30) redirect("login");
 	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
@@ -24,10 +24,10 @@
 	$: getSubscribedDecks();
 	$: getPublicDecks();
 
-	let allDecks = [];
+	let allDecks: IDeck[] = [];
 
 	let showEditDeckModal = false;
-	let selectedDeck = null;
+	let selectedDeck: IDeck = null;
 	let showPublicDecks = false;
 	let searchPublicDeckName = "";
 
@@ -68,8 +68,6 @@
 		}
 	}
 	
- 
-
 	async function getUserDecks(){
 		let res = await fetching("/api/get-created-decks", "GET");
 		if(res.success){
@@ -120,12 +118,15 @@
 
 
 	async function handleSubscribe(deck){
-		await fetching(`/api/subscribe-deck`, "POST", [{deckId: deck.deckId}]);
+		let res = await fetching(`/api/subscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]);
+		addToastByRes(res);
 	}
 
 	async function handleUnsubscribe(deck){
-		await fetching(`/api/unsubscribe-deck`, "POST", [{deckId: deck.deckId}]); 
-	}
+		let res = await fetching(`/api/unsubscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]); 
+		addToastByRes(res);
+
+	}	
 
 </script>
 
@@ -258,12 +259,10 @@
 						{#key subscribedDecks}
 							<div class="grid grid-cols-4 gap-4">
 								{#each subscribedDecks as deck}
-								<Deck 
+								<SubscribedDeck 
 									{deck}
-									on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
 									on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
 									on:listCards={()=> {$userSelectedDeckStore = deck; redirect("list-cards")}}
-									on:deleteDeck={()=> getDecks()}
 								/>
 								{/each}
 							</div>	

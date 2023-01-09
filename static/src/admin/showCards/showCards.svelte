@@ -1,5 +1,5 @@
 <script lang="ts">
-  import favicon from "/favicon.png";
+  import favicon  from '../../assets/favicon.png';
   import Nav from "../../lib/components/nav.svelte";
   import DualSideCard from "../../lib/components/dualSideCard.svelte";
   import Spinner from "../../lib/components/Spinner.svelte";
@@ -19,7 +19,7 @@
   ];
 
   async function getCardsOfDeck(){ 
-    let res = await fetching("/api/get-cards-of-deck", "GET", [{deckId: $adminSelectedDeckStore.deckId}]);
+    let res = await fetching("/api/get-cards-of-deck", "GET", [{name:"deckId", value: $adminSelectedDeckStore.deckId}]);
     if(res.success) return res.items;
     else addToastByRes(res);
   }
