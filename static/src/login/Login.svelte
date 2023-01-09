@@ -10,8 +10,8 @@
     import { Validators} from "../lib/utils/Validators";
     import { addToastByRes } from '../lib/utils/addToToastStore';
 
-    // $: if($jwt.token) redirect("");
-    $: document.cookie = `Token=${$jwt.token}`;
+    $: if($jwt) redirect("");
+    $: document.cookie = `Token=${$jwt?.token}`;
 
     let username = "";
 
