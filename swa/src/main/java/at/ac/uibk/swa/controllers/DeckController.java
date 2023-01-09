@@ -45,7 +45,7 @@ public class DeckController {
             @RequestBody final Deck deck
     ) {
         if (!userDeckService.create(deck)) {
-            return MessageResponse.builder().notOk().message("Deck " + deck.getDeckId() + " could not be created.").build();
+            return MessageResponse.builder().error().message("Deck " + deck.getDeckId() + " could not be created.").build();
         }
 
         return MessageResponse.builder().ok().message("Deck " + deck.getDeckId() + " created successfully.").build();
@@ -69,7 +69,7 @@ public class DeckController {
                     .build();
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Deck " + deck.getDeckId() + " not updated")
                 .build();
     }
@@ -91,7 +91,7 @@ public class DeckController {
                     .build();
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Deck " + deckId + " publicity not changed")
                 .build();
     }
@@ -112,7 +112,7 @@ public class DeckController {
                     .build();
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Deck " + deckId + " publicity not changed")
                 .build();
     }
@@ -134,7 +134,7 @@ public class DeckController {
                     .build();
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Deck " + deckId + " not subscribed")
                 .build();
     }
@@ -155,7 +155,7 @@ public class DeckController {
                     .build();
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Deck " + deckId + " not unsubscribed")
                 .build();
     }
@@ -178,7 +178,7 @@ public class DeckController {
                     .build();
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Deck " + deckId + " not blocked")
                 .build();
     }
@@ -201,7 +201,7 @@ public class DeckController {
                     .build();
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Deck " + deckId + " not unblocked")
                 .build();
     }
@@ -222,7 +222,7 @@ public class DeckController {
                     .build();
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Deck " + deckId + " not deleted")
                 .build();
     }
@@ -238,7 +238,7 @@ public class DeckController {
             return new ListResponse<>(maybeDecks.get());
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Could not get decks")
                 .build();
     }
@@ -257,7 +257,7 @@ public class DeckController {
             return new ListResponse<>(maybeDecks.get());
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Could not get decks")
                 .build();
     }
@@ -273,7 +273,7 @@ public class DeckController {
             return new ListResponse<>(maybeDecks.get());
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Could not get decks")
                 .build();
     }
@@ -289,7 +289,7 @@ public class DeckController {
             return new ListResponse<>(maybeDecks.get());
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Could not get decks")
                 .build();
     }
@@ -332,7 +332,7 @@ public class DeckController {
             return new ListResponse<>(cards);
         }
         return MessageResponse.builder()
-                .notOk()
+                .error()
                 .message("Could not get cards")
                 .build();
 

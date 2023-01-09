@@ -77,6 +77,7 @@ public class StartupConfig {
                     ));
                 }
             }
+            default -> { /* Do nothing by default */ }
         }
     }
 
