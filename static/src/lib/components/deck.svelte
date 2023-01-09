@@ -79,11 +79,7 @@
                     {:else}
                     <div class="badge badge-error">Not Published</div>
                     {/if}
-                    {#if numCards > 0 && numCardsToLearn > 0}
-                        Progress: <progress class="progress progress-success bg-gray-700" value={numCards - numCardsToLearn} max={numCards}></progress>
-                    {:else}
-                        <div class="badge badge-error">No cards to learn</div>
-                    {/if}
+                    Progress: <progress class="progress progress-success bg-gray-700" value={numCards - numCardsToLearn} max={numCards}></progress>
                 </div>
             </div>
         </div>

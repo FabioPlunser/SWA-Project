@@ -13,14 +13,13 @@
   <div id="flip-box" class="[perspective:1000px] bg-transparent w-96 h-80 transition-all text-2xl" on:click={handleFlip}>
     <div id="flip-box-inner" class="relative w-full h-full duration-100 [transform-style:preserve-3d]" class:flip-it={isFlipped}>
       <div id="flip-box-front" class="flex justify-center absolute w-full h-full [-webkit-backface-visibility: hidden] [backface-visibility:hidden] bg-slate-900 text-white shadow-xl rounded-2xl"> 
-        <div class="flex items-center m-2 justify-center">
-            <h1>{frontText}</h1>
-
+        <div class="flex items-center justify-center">
+          <textarea bind:value={frontText} readonly class="resize-none bg-transparent text-center focus:outline-none cursor-pointer" />
         </div>
       </div>
       <div id="flip-box-back" class="flex justify-center absolute w-full h-full [backface-visibility:hidden] bg-slate-900 text-white shadow-xl rounded-2xl [transform:rotateY(180deg)] [transform: translate (-50%, -50%)]" class:conceal-answer={isFlipped}>
-        <div class="flex items-center m-2">
-            <span>{backText}</span>
+        <div class="flex items-center justify-center">
+            <textarea bind:value={backText} readonly class="resize-none bg-transparent text-center focus:outline-none cursor-pointer" />
         </div>
       </div>  
     </div>
