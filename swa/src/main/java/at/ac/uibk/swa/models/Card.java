@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -70,6 +72,7 @@ public class Card implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "progress_id", referencedColumnName = "progress_id")}
     )
     @MapKeyJoinColumn(name = "person_id")
+    @Fetch(FetchMode.SELECT)
     private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
 
     @JsonIgnore

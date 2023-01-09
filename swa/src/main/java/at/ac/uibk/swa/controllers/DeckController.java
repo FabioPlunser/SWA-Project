@@ -4,9 +4,7 @@ import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.annotations.AnyPermission;
-import at.ac.uibk.swa.models.rest_responses.ListResponse;
-import at.ac.uibk.swa.models.rest_responses.MessageResponse;
-import at.ac.uibk.swa.models.rest_responses.RestResponse;
+import at.ac.uibk.swa.models.rest_responses.*;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.UserDeckService;
@@ -235,7 +233,7 @@ public class DeckController {
     public RestResponse getUserDecks()  {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
         if (maybeDecks.isPresent()) {
-            return new ListResponse<>(maybeDecks.get());
+            return new UserDeckListResponse(maybeDecks.get());
         }
         return MessageResponse.builder()
                 .error()
@@ -254,7 +252,7 @@ public class DeckController {
     ){
         Optional<List<Deck>> maybeDecks = userDeckService.getDecksOfGivenPerson(personId);
         if (maybeDecks.isPresent()) {
-            return new ListResponse<>(maybeDecks.get());
+            return new UserDeckListResponse(maybeDecks.get());
         }
         return MessageResponse.builder()
                 .error()
@@ -270,7 +268,7 @@ public class DeckController {
     public RestResponse getSubscribedDecks()  {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSubscribedDecks();
         if (maybeDecks.isPresent()) {
-            return new ListResponse<>(maybeDecks.get());
+            return new UserDeckListResponse(maybeDecks.get());
         }
         return MessageResponse.builder()
                 .error()
@@ -313,7 +311,7 @@ public class DeckController {
     @AnyPermission(Permission.ADMIN)
     @GetMapping("/api/get-all-decks")
     public RestResponse getAllDecks() {
-        return new ListResponse<>(adminDeckService.findAll());
+        return new DeckListResponse(adminDeckService.findAll());
     }
 
     /**
