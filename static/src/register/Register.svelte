@@ -4,14 +4,16 @@
     import Form from "../lib/components/Form.svelte";
 
 	import { redirect } from '../lib/utils/redirect';
-    import { tokenStore } from "../lib/stores/tokenStore";
+    import { jwt } from "../lib/stores/jwt";
     import { personIdStore } from "../lib/stores/personIdStore";
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
     import { Validators} from "../lib/utils/Validators";
 
-    $: if($tokenStore.length > 30) redirect("");
-    $: document.cookie = `Token=${$tokenStore}`;
+    // $: if($jwt.token) redirect("");
+    $: document.cookie = `Token=${$jwt.token}`;
     
+    let username = "";
+
     let errors = {};
     let formValidators = {
         username: {
@@ -27,7 +29,7 @@
 
     function handlePostFetch(data){
         let res = data.detail.res;
-        $tokenStore = res.token;
+        $jwt = {token: res.token, username: username}
         $personIdStore = res.id;
         $userPermissionsStore= res.permissions;
     }
@@ -47,7 +49,7 @@
                 <div class="form-control">
                     <label class="input-group">
                     <span class="w-36">Username</span>
-                    <input name="username" type="text" placeholder="Max" class="input input-bordered w-full" />
+                    <input name="username" bind:value={username} type="text" placeholder="Max" class="input input-bordered w-full" />
                     </label>
                     {#if errors?.username?.required?.error}
                         <p class="text-red-500">Username is required</p>

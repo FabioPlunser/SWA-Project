@@ -56,6 +56,7 @@ export async function fetching(url: string, method: string, params?: Params[], d
 
   let res = await fetch(url, requestOptions);
   res = await res.json();
+  console.log(res);
   return res;
 }
 
