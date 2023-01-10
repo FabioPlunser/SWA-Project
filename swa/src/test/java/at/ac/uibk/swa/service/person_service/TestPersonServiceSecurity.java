@@ -93,7 +93,7 @@ public class TestPersonServiceSecurity {
 
 
         // then: user returned by handing over token must be original user
-        Optional<Person> maybePersonByToken = personService.findByToken(token);
+        Optional<Person> maybePersonByToken = personService.findByUsernameAndToken(username, token);
         assertTrue(maybePersonByToken.isPresent(), "Did not find user by token");
         assertEquals(person, maybePersonByToken.get(), "Got user " + maybePersonByToken.get() + " when user " + person + " was expected");
     }
@@ -115,7 +115,7 @@ public class TestPersonServiceSecurity {
         assertTrue(personService.logout(), "Could not log out");
 
         // then: retrieving user by token should not be possible anymore
-        Optional<Person> maybeLoggedOutPerson = personService.findByToken(token);
+        Optional<Person> maybeLoggedOutPerson = personService.findByUsernameAndToken(username, token);
         assertTrue(maybeLoggedOutPerson.isEmpty(), "Token still valid after logout");
     }
 
@@ -135,7 +135,7 @@ public class TestPersonServiceSecurity {
         assertTrue(personService.logout(), "Could not log out");
 
         // then: retrieving user by token should not be possible anymore
-        Optional<Person> maybeLoggedOutPerson = personService.findByToken(token);
+        Optional<Person> maybeLoggedOutPerson = personService.findByUsernameAndToken(username, token);
         assertTrue(maybeLoggedOutPerson.isEmpty(), "Token still valid after logout");
     }
 

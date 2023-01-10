@@ -4,7 +4,6 @@
     */
     import { createEventDispatcher } from "svelte";
     import { fetching } from "../utils/fetching";
-    import { tokenStore } from "../stores/tokenStore";
 
     let dispatch = createEventDispatcher();
     import { validateForm, isFormValid } from "../utils/Validators";
@@ -17,11 +16,6 @@
     export let errors = {};
     export let formValidators = {};
     export let id = "";
-
-
-    let myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + $tokenStore);
-
 
     async function handleSubmit(e) {
         let res;

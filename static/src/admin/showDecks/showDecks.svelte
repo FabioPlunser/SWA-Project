@@ -47,6 +47,7 @@
 <svelte:head>
   <title>Admin ShowDecks</title>
   <link rel="icon" type="image/png" href={favicon} />
+  <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 

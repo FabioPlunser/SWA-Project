@@ -2,6 +2,7 @@ package at.ac.uibk.swa.models.rest_responses;
 
 import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Person;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +20,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class LoginResponse extends TokenResponse implements Serializable {
 
-    private static String type = "Login";
+    @Override
+    @JsonInclude
+    public String getType() { return "Login"; }
 
     private UUID personId;
     private Set<GrantedAuthority> permissions;

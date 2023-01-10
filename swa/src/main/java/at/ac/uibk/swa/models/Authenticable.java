@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +35,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 
     //region Constructors
     protected Authenticable(String username, String password, UUID token, Set<GrantedAuthority> permissions) {
-        this(null, username, password, false, token, permissions);
+        this(null, username, password, false, token, LocalDateTime.now(), permissions);
     }
 
     protected Authenticable(String username, String password, Set<GrantedAuthority> permissions) {
@@ -77,10 +78,17 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
     @Setter(AccessLevel.NONE)
     private boolean passwordHashed = true;
 
+    @Setter(AccessLevel.NONE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "token", nullable = true, unique = true)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID token;
+
+    @Setter(AccessLevel.NONE)
+    @Builder.Default
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @Column(name = "token_creation_date", nullable = true, columnDefinition = "TIMESTAMP")
+    private LocalDateTime tokenCreationDate = null;
 
     @Builder.Default
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
@@ -125,6 +133,13 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
             this.password = encoder.encode(this.password);
             this.passwordHashed = true;
         }
+    }
+    //endregion
+
+    //region Setting Token
+    public void setToken(UUID token) {
+        this.token = token;
+        this.tokenCreationDate = token != null ? LocalDateTime.now() : null;
     }
     //endregion
 

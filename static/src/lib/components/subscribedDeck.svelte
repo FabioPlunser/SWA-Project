@@ -69,11 +69,11 @@
                         {:else}
                         <div class="badge badge-error">No cards to learn</div>
                     {/if}
-                    {#if cards && cardsToLearn}
+                    <!-- {#if cards && cardsToLearn}
                         Progress: <progress class="progress progress-success bg-gray-700" value={cards.length - cardsToLearn.length} max={cards.length}></progress>
                     {:else}
                         <div class="badge badge-error">No cards to learn</div>
-                    {/if}
+                    {/if} -->
                 </div>
             </div>
         </div>

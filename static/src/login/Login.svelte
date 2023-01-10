@@ -3,17 +3,17 @@
     import SvelteToast from "../lib/components/SvelteToast.svelte";
     import Form from "../lib/components/Form.svelte";
 
-
     import { redirect } from "../lib/utils/redirect";
-    import { tokenStore } from "../lib/stores/tokenStore";
+    import { jwt } from "../lib/stores/jwt";
     import { personIdStore } from "../lib/stores/personIdStore";
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
     import { Validators} from "../lib/utils/Validators";
-  import { addToastByRes } from '../lib/utils/addToToastStore';
+    import { addToast, addToastByRes } from '../lib/utils/addToToastStore';
 
-    $: if($tokenStore.length > 30) redirect("");
-    $: document.cookie = `Token=${$tokenStore}`;
+    $: if($jwt && !$jwt.expired) redirect("");
+    $: document.cookie = `Token=${$jwt?.token}`;
 
+    let username = "";
 
     let errors = {};
     let formValidators = {
@@ -26,25 +26,31 @@
     };
 
     function handlePostFetch(data){
-        let res = data.detail.res; 
-        addToastByRes(res);
+        let res = data.detail.res;
+        
         if(res.success){
-            $tokenStore = res.token;
+            $jwt = {token: res.token, username: username}
             $personIdStore = res.personId;
             $userPermissionsStore= res.permissions;
-        }
-        
+        }else{
+            addToastByRes(res);
+        }        
     }
 </script>
 
 <svelte:head>
 	<link rel="icon" type="image/png" href="{favicon}"/>
 	<title>Login</title>
+    <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <SvelteToast/>
-<main class="flex justify-center items-center mx-auto h-screen text-white">
+<main class="flex justify-center items-center h-screen text-white">
+    
     <div class="rounded-xl shadow-2xl bg-slate-900 max-w-fit p-10">
+        {#if $jwt && $jwt.expired}
+            <p class="text-red-500 flex justify-center">Your session expired please login again</p>
+        {/if}
         <div class="flex justify-center">
             <img class="flex justify-center w-24" src={favicon} alt="favicon"/>
             <h1 class="items-center text-2xl font-bold flex justify-center">Memory</h1>
@@ -54,7 +60,7 @@
             <div class="form-control">
                 <label class="input-group">
                   <span>Username</span>
-                  <input name="username" type="text" placeholder="Max" class="input input-bordered" />
+                  <input name="username" bind:value={username} type="text" placeholder="Max" class="input input-bordered" />
                 </label>
                 {#if errors?.username?.required?.error}
                     <p class="text-red-500">Username is required</p>

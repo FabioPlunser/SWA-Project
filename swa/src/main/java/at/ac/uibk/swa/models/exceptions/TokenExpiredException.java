@@ -1,9 +1,13 @@
 package at.ac.uibk.swa.models.exceptions;
 
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 
 
-public class TokenExpiredException extends AccessDeniedException {
+public class TokenExpiredException extends AuthenticationException {
+
+    public TokenExpiredException() {
+        super("Token Expired!");
+    }
 
     public TokenExpiredException(String msg) {
         super(msg);

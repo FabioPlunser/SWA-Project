@@ -6,10 +6,7 @@ import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
-import at.ac.uibk.swa.util.ArgumentGenerator;
-import at.ac.uibk.swa.util.MockAuthContext;
-import at.ac.uibk.swa.util.SetupH2Console;
-import at.ac.uibk.swa.util.StringGenerator;
+import at.ac.uibk.swa.util.*;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -90,7 +87,7 @@ public class TestDeckControllerSubscribeUnsubscribe {
 
         // when: trying to subscribe to that deck
         mockMvc.perform(MockMvcRequestBuilders.post("/api/subscribe-deck")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + person.getToken())
+                .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(person))
                 .param("deckId", deck.getDeckId().toString())
                 .contentType(MediaType.APPLICATION_JSON)
         // then: status must be ok and user must have deck added to saved decks
@@ -117,7 +114,7 @@ public class TestDeckControllerSubscribeUnsubscribe {
 
         // when: trying to unsubscribe from that deck
         mockMvc.perform(MockMvcRequestBuilders.post("/api/unsubscribe-deck")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + person.getToken())
+                        .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(person))
                         .param("deckId", deck.getDeckId().toString())
                         .contentType(MediaType.APPLICATION_JSON)
         // then: status must be ok and user must have deck removed from saved decks

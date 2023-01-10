@@ -1,6 +1,7 @@
-import { addToastByRes } from "./addToToastStore";
-import { tokenStore } from "../stores/tokenStore";
+import { addToastByRes, addToast } from "./addToToastStore";
+import { jwt } from "../stores/jwt";
 import { get } from "svelte/store";
+import { handleLogout } from "./handleLogout";
 
 export interface Params {
   name: string;
@@ -19,8 +20,8 @@ export interface Params {
  */
 export async function fetching(url: string, method: string, params?: Params[], data?, json?:boolean){
   let requestOptions;
-  let myHeaders = new Headers();
-  myHeaders.append("Authorization", "Bearer " + get(tokenStore));
+  let myHeaders = new Headers(); 
+  myHeaders.append("Authorization", JSON.stringify(get(jwt)));
 
   if(params){
     for(let i=0; i<params.length; i++){
@@ -56,6 +57,11 @@ export async function fetching(url: string, method: string, params?: Params[], d
 
   let res = await fetch(url, requestOptions);
   res = await res.json();
+  if(res.type === "TokenExpired"){
+    handleLogout(true);
+    addToast("Your session has expired, please log in again");
+    return;
+  }
   return res;
 }
 

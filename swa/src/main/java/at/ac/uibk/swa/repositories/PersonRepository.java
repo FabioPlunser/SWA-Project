@@ -18,7 +18,7 @@ public interface PersonRepository extends CrudRepository<Person, UUID> {
     @Override
     List<Person> findAll();
 
-    Optional<Person> findByToken(UUID token);
+    Optional<Person> findByUsernameAndToken(String username, UUID token);
 
     Optional<Person> findByUsername(String username);
 

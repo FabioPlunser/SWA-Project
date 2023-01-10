@@ -1,7 +1,7 @@
 package at.ac.uibk.swa.config;
 
 import at.ac.uibk.swa.config.exception_handling.RestAccessDeniedHandler;
-import at.ac.uibk.swa.config.filters.BearerTokenAuthenticationFilter;
+import at.ac.uibk.swa.config.filters.HeaderTokenAuthenticationFilter;
 import at.ac.uibk.swa.config.filters.CookieTokenAuthenticationFilter;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.util.EndpointMatcherUtil;
@@ -69,7 +69,7 @@ public class SecurityConfiguration {
     //region Custom Authentication Filter Beans
     @Bean
     AbstractAuthenticationProcessingFilter bearerAuthenticationFilter(HttpSecurity http) throws Exception {
-        final AbstractAuthenticationProcessingFilter filter = new BearerTokenAuthenticationFilter(PROTECTED_API_ROUTES);
+        final AbstractAuthenticationProcessingFilter filter = new HeaderTokenAuthenticationFilter(PROTECTED_API_ROUTES);
 
         filter.setAuthenticationManager(authManager(http));
         filter.setAuthenticationFailureHandler(failureHandler);

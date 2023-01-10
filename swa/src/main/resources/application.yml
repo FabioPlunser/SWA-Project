@@ -1,4 +1,8 @@
 
+swa:
+  token:
+    expiration-duration: 1d
+
 server:
   port: 3000
   servlet:
@@ -25,13 +29,13 @@ spring:
 
   # profiles:
   #     active: 'prod'
-  # profiles.include: 'secrets'
+  #     include: 'secrets'
   # datasource:
   #   driver-class: org.mariadb.jdbc.Driver
   #   url: "jdbc:mariadb://localhost/swa"
   # jpa:
   #   hibernate:
-  #     ddl-auto: create
+  #     ddl-auto: none
 
   mvc:
     static-path-pattern: '/**'
