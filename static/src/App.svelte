@@ -144,45 +144,46 @@
 <svelte:head>
 	<link rel="icon" type="image/png" href="/favicon.png"/>
 	<title>Decks overview</title>
+    <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
-
 
 <SvelteToast />
 <Nav title="Decks" buttons={navButtons} />
 <main class="m-20">
 	{#if showEditDeckModal}
 		<Modal open={showEditDeckModal} on:close={()=> showEditDeckModal = false} closeOnBodyClick={false}>
-			<h1 class="flex justify-center text-2xl font-bold">Edit Deck</h1>
-			<br class="pt-4"/>
-			<Form url="/api/update-deck" method="POST" dataFormat="JSON" on:postFetch={getDecks}>
-			<!-- <form class="flex justify-center" method="POST" action="api/update-deck" on:submit|preventDefault={handleSubmit}> -->
-				<input name="deckId" bind:value={selectedDeck.deckId} type="hidden" required>
-				<div class="flex flex-col">
-					<div class="form-control">
-						<label class="input-group">
-						<span class="w-36">Name</span>
-						<input bind:value={selectedDeck.name} name="name" required type="text" placeholder="Softwarearchitecture" class="input input-bordered w-full" />
-						</label>
+			<div class="max-w-full">
+				<h1 class="flex justify-center text-2xl font-bold">Edit Deck</h1>
+				<br class="pt-4"/>
+				<Form url="/api/update-deck" method="POST" dataFormat="JSON" on:postFetch={getDecks}>
+					<input name="deckId" bind:value={selectedDeck.deckId} type="hidden" required>
+					<div class="flex flex-col">
+						<div class="form-control">
+							<label class="input-group">
+							<span class="w-36">Name</span>
+							<input bind:value={selectedDeck.name} name="name" required type="text" placeholder="Softwarearchitecture" class="input input-bordered w-full" />
+							</label>
+						</div>
+						<br class="pt-4"/>
+						<div class="form-control">
+							<label class="input-group">
+							<span class="w-36">Description</span>
+							<textarea bind:value={selectedDeck.description} name="description" required placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full" />
+							</label>
+						</div>
+						<br class="pt-2"/>
+						<button class="btn btn-primary" type="button" on:click={()=>{$userSelectedDeckStore = selectedDeck; redirect("edit-cards")}}>Edit Cards</button>
+						<br class="pt-4"/>
+						<div class="flex justify-between">
+							<button type="submit" class="btn btn-primary" on:click={()=>showEditDeckModal=false}>Update</button>
+							<input type="reset" class="btn btn-primary" value="Clear"/>
+							<!-- svelte-ignore a11y-click-events-have-key-events -->
+							<button type="button" class="btn btn-primary" on:click={()=> showEditDeckModal = false}>Close</button>
+						</div>
 					</div>
-					<br class="pt-4"/>
-					<div class="form-control">
-						<label class="input-group">
-						<span class="w-36">Description</span>
-						<textarea bind:value={selectedDeck.description} name="description" required placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full" />
-						</label>
-					</div>
-					<br class="pt-2"/>
-					<button class="btn btn-primary" type="button" on:click={()=>{$userSelectedDeckStore = selectedDeck; redirect("edit-cards")}}>Edit Cards</button>
-					<br class="pt-4"/>
-					<div class="flex justify-between">
-						<button type="submit" class="btn btn-primary" on:click={()=>showEditDeckModal=false}>Update</button>
-						<input type="reset" class="btn btn-primary" value="Clear"/>
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<button type="button" class="btn btn-primary" on:click={()=> showEditDeckModal = false}>Close</button>
-					</div>
-				</div>
-			<!-- </form> -->
-			</Form>
+					
+				</Form>
+			</div>
 		</Modal>
 	{/if}
 	{#if showPublicDecks}
@@ -252,23 +253,26 @@
 	{/if}
 	{#if listCards}
 		<Modal open={listCards} on:close={()=>listCards=false} closeOnBodyClick={true}>
-			<div class="flex flex-col min-w-fit">
-				<h1 class="flex justify-center text-2xl font-bold">Cards of Deck {selectedDeck.name}</h1>
-				<div class="grid grid-cols-3 gap-2 mt-4">
-					{#await getCardsFromDeck(selectedDeck)}
-						<Spinner/>
-					{:then cards}
-						{#each cards as card, index (card.cardId)}
-							<div>
-								<DualSideCard {card} {index} cardBg="bg-slate-800" textBg="bg-slate-700"/>
-							</div>
-						{/each}
-					{/await}
+			<div class="relative max-w-full">
+				<div class="flex flex-col min-w-fit">
+					<h1 class="flex justify-center text-2xl font-bold">Cards of Deck {selectedDeck.name}</h1>
+					<div class="grid grid-cols-4 gap-2 mt-4">
+						{#await getCardsFromDeck(selectedDeck)}
+							<Spinner/>
+						{:then cards}
+							{#each cards as card, index (card.cardId)}
+								<div>
+									<DualSideCard {card} {index} cardBg="bg-slate-800" textBg="bg-slate-700"/>
+								</div>
+							{/each}
+						{/await}
+					</div>
 				</div>
-			</div>
-			<div class="mt-12 modal-action">
-				<div class="flex fixed bottom-0 right-0 m-2">
-					<button class="btn btn-primary m-1" on:click={()=> listCards = false}>Close</button>
+				
+				<div class="pt-20">
+					<div class="flex absolute bottom-0 right-0 m-2">
+						<button class="btn btn-primary m-1" on:click={()=> listCards = false}>Close</button>
+					</div>
 				</div>
 			</div>
 		</Modal>

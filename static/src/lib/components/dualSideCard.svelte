@@ -14,6 +14,8 @@
 
   $: backTextMinHeight = `${1+card.frontText.split(" ").length}em`;
   $: frontTextMinHeight = `${1+card.backText.split(" ").length}em`
+
+  let MaxNumberChars = 255;
 </script>
 
 {#if editable}
@@ -21,6 +23,7 @@
     <h1 class="flex justify-center text-xl">Card {index}</h1>
 
     <textarea bind:value={card.frontText} placeholder="question" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {frontTextMinHeight}"/>
+    <p></p>
     <br class="mt-4"/>
     <textarea bind:value={card.backText} placeholder="answer" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {backTextMinHeight}" />
 

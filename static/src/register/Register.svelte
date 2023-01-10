@@ -40,6 +40,7 @@
 <svelte:head>
 	<link rel="icon" type="image/png" href={favicon}/>
 	<title>Register</title>
+    <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <SvelteToast/>
@@ -61,7 +62,7 @@
                 <div class="form-control">
                     <label class="input-group">
                     <span class="w-36">Email</span>
-                    <input name="email" type="email" placeholder="test@example" class="flex input input-bordered w-full" />
+                    <input name="email" type="email" placeholder="google@gmail.com" class="flex input input-bordered w-full" />
                     </label>
                     {#if errors?.email?.required?.error}
                         <p class="text-red-500">Email is required</p>

@@ -66,6 +66,7 @@
 <svelte:head>
     <link rel="icon" type="image/png" href={favicon}/>
     <title>ListCards</title>
+    <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <Nav title="ListCards" buttons={navButtons}/>

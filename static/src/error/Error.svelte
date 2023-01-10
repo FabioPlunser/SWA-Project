@@ -2,6 +2,10 @@
     import Nav from "../lib/components/nav.svelte";
 </script>
 
+<svelte:head>
+    <script src="http://localhost:35729/livereload.js"></script>
+</svelte:head>
+
 <Nav title="Error 404"/>
 <div class="mt-24 h-screen">
     <div class="flex justify-center items-center">

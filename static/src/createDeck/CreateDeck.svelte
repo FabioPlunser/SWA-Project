@@ -60,6 +60,7 @@
 <svelte:head>
   <title>Create Deck</title>
   <link rel="icon" type="image/png" href={favicon}>
+  <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <SvelteToast />
@@ -68,7 +69,7 @@
   <h1 class="flex justify-center text-3xl font-bold">Create Deck</h1>
   <br class="pt-4"/>
   <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat="JSON" formValidators={formValidators} bind:errors  addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
-    <div>
+    <div class="max-w-full">
       <div class="bg-slate-900 p-5 rounded-xl">
         <div class="flex flex-col">
           <div class="form-control">
@@ -76,22 +77,25 @@
               <span class="w-36">Name</span>
               <input name="name" type="text" bind:value={name} placeholder="Softwarearchitecture" class="input input-bordered w-full bg-slate-800" />
             </label>
-            <p class="flex text-sm text-gray-400 right-0 mt-1">Max number of characters: {name.length}/{MaxNumberChars}</p>
-            {#if errors?.name?.required?.error}
-              <span class="text-red-500">{errors.name.required.message}</span>
-            {/if}
+            <div class="relative flex justify-between">
+              {#if errors?.name?.required?.error}
+                <span class="text-red-500">{errors.name.required.message}</span>
+              {/if}
+              <p class="absolute text-sm text-gray-400 right-0">{name.length}/{MaxNumberChars}</p>
+              
+            </div>
           </div>
           <br class="pt-4"/>
           <div class="form-control">
             <label class="input-group">
               <span class="w-36">Description</span>
-              <textarea name="description" bind:value={description} placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full bg-slate-800" />
+              <textarea name="description" bind:value={description} placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full bg-slate-800 resize max-w-full" />
             </label>
-            <p class="flex text-sm text-gray-400 right-0 mt-1">Max number of characters: {description.length}/{MaxNumberChars}</p>
-
-            {#if errors?.description?.required?.error}
-              <span class="text-red-500">{errors.description.required.message}</span>
-            {/if}
+            <div class="relative flex justify-between">
+              {#if errors?.description?.required?.error}
+                <span class="text-red-500">{errors.description.required.message}</span>
+              {/if}
+            </div>
           </div>
           <br class="pt-4"/>
           <div class="form-control">

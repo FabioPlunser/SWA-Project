@@ -31,13 +31,14 @@
 <svelte:head>
     <link rel="icon" type="image/png" href={favicon}/>
     <title>ListCards</title>
+    <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <Nav title="ListCards" buttons={navButtons}/>
 <SvelteToast/>
 <main class="mt-20 m-10">
     {#if cards.length > 0}
-    <div class="grid grid-cols-3 gap-2">
+    <div class="flex flex-row gap-2">
         {#each cards as card}
             <div>
                 <DualSideCard {card}/>

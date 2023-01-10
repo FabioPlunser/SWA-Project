@@ -23,8 +23,6 @@
 
     async function handlePublishDeck(){
         published = !published;
-
-    
         if(published){
             let res = await fetching("/api/publish-deck", "POST", [{name: "deckId", value: deckId}]);
             addToastByRes(res);
@@ -48,7 +46,6 @@
     function handleLearnDeck(){
         dispatch('learnDeck');
     }
-    
 </script>
 
 
@@ -58,7 +55,7 @@
         <div class="{hover ? "hidden" : "block"}" >
             <h1 class="underline flex justify-center text-xl">{name}</h1>
             <br class="my-4"/>
-            <p>{description}</p>
+            <textarea class="resize-none bg-transparent" readonly>{description}</textarea>
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4">
                 <div class="grid grid-rows gap-2">

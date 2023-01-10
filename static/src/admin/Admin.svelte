@@ -102,7 +102,7 @@
 <svelte:head>
 	<link rel="icon" type="image/png" href={favicon}/>
 	<title>Admin</title>
-    
+  <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <Nav title="Admin" {buttons}/>
@@ -193,7 +193,7 @@
           <div class="form-control">
               <label class="input-group">
               <span class="w-36">Email</span>
-              <input bind:value={selectedUser.email} name="email" type="text" placeholder="test@example.com" class="input input-bordered w-full" />
+              <input bind:value={selectedUser.email} name="email" type="text" placeholder="google@gmail.com" class="input input-bordered w-full" />
               </label>
               {#if errors?.email?.required?.error}
                 <p class="text-red-500">Email is required</p>

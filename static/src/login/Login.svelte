@@ -40,6 +40,7 @@
 <svelte:head>
 	<link rel="icon" type="image/png" href="{favicon}"/>
 	<title>Login</title>
+    <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <SvelteToast/>

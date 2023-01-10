@@ -53,6 +53,7 @@
 <svelte:head>
     <title>Learn View</title>
     <link rel="icon" type="image/gif" href="https://media.giphy.com/avatars/KirstenHurley/kdEReo8fnjUs/200h.gif"/>
+    <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 
