@@ -16,8 +16,8 @@ unit-test-job:   # This job runs in the test stage.
     - cd swa && mvn test
   #allow_failure: true
   rules: 
-   - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" # Run on main
-   - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev" # Run on dev
+   - if: $CI_COMMIT_BRANCH == "main" # Run on main
+   - if: $CI_COMMIT_BRANCH == "dev" # Run on dev
    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # Run during Merge Requests
 
 sonarqube-check:
@@ -37,7 +37,7 @@ sonarqube-check:
     - cd swa && mvn -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName="${CI_PROJECT_NAME} ${GITLAB_USER_NAME}" --fail-at-end verify sonar:sonar
   #allow_failure: true
   rules: 
-   - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" # Run on main
-   - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev" # Run on dev
+   - if: $CI_COMMIT_BRANCH == "main" # Run on main
+   - if: $CI_COMMIT_BRANCH == "dev" # Run on dev
    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # Run during Merge Requests
 
