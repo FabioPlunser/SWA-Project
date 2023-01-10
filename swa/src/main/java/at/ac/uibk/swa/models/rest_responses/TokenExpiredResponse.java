@@ -2,6 +2,7 @@ package at.ac.uibk.swa.models.rest_responses;
 
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.models.exceptions.TokenExpiredException;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -9,10 +10,14 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 public class TokenExpiredResponse extends RestResponse {
+    @Override
+    @JsonInclude
+    public String getType() { return "TokenExpired"; }
+
     private String message;
 
     public TokenExpiredResponse() {
-        this.message = "Token expired";
+        this.message = this.getType();
     }
 
     public TokenExpiredResponse(TokenExpiredException tokenExpiredException) {

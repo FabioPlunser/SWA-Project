@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.models.rest_responses;
 
-import at.ac.uibk.swa.config.person_authentication.AuthContext;
+import at.ac.uibk.swa.config.jwt_authentication.AuthContext;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.LearningProgress;
 import at.ac.uibk.swa.models.Person;
