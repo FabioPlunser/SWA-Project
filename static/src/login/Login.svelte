@@ -8,9 +8,9 @@
     import { personIdStore } from "../lib/stores/personIdStore";
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
     import { Validators} from "../lib/utils/Validators";
-    import { addToastByRes } from '../lib/utils/addToToastStore';
+    import { addToast, addToastByRes } from '../lib/utils/addToToastStore';
 
-    $: if($jwt) redirect("");
+    $: if($jwt && !$jwt.expired) redirect("");
     $: document.cookie = `Token=${$jwt?.token}`;
 
     let username = "";
@@ -26,13 +26,15 @@
     };
 
     function handlePostFetch(data){
-        let res = data.detail.res; 
+        let res = data.detail.res;
+        
         if(res.success){
             $jwt = {token: res.token, username: username}
             $personIdStore = res.personId;
             $userPermissionsStore= res.permissions;
-        }
-            
+        }else{
+            addToastByRes(res);
+        }        
     }
 </script>
 
@@ -43,8 +45,12 @@
 </svelte:head>
 
 <SvelteToast/>
-<main class="flex justify-center items-center mx-auto h-screen text-white">
+<main class="flex justify-center items-center h-screen text-white">
+    
     <div class="rounded-xl shadow-2xl bg-slate-900 max-w-fit p-10">
+        {#if $jwt && $jwt.expired}
+            <p class="text-red-500 flex justify-center">Your session expired please login again</p>
+        {/if}
         <div class="flex justify-center">
             <img class="flex justify-center w-24" src={favicon} alt="favicon"/>
             <h1 class="items-center text-2xl font-bold flex justify-center">Memory</h1>

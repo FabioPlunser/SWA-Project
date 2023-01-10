@@ -1,6 +1,7 @@
-import { addToastByRes } from "./addToToastStore";
+import { addToastByRes, addToast } from "./addToToastStore";
 import { jwt } from "../stores/jwt";
 import { get } from "svelte/store";
+import { handleLogout } from "./handleLogout";
 
 export interface Params {
   name: string;
@@ -56,7 +57,11 @@ export async function fetching(url: string, method: string, params?: Params[], d
 
   let res = await fetch(url, requestOptions);
   res = await res.json();
-  console.log(res);
+  if(res.type === "TokenExpired"){
+    handleLogout(true);
+    addToast("Your session has expired, please log in again");
+    return;
+  }
   return res;
 }
 

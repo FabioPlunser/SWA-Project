@@ -22,7 +22,7 @@
   	import { fetching } from './lib/utils/fetching';
 	import type { IDeck } from './lib/utils/types';
 
-	$: if(!$jwt) redirect("login");
+	$: if(!$jwt || ($jwt && $jwt.expired)) redirect("login");
 	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
 	$: getUserDecks();
 	$: getSubscribedDecks();
