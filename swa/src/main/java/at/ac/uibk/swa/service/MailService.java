@@ -18,9 +18,8 @@ public class MailService {
     @Autowired
     private MailConfiguration mailConfiguration;
 
-    private JavaMailSender mailSender = mailConfiguration.getJavaMailSender();
-
     public void notifyBlockedDeck(Deck deck) {
+        JavaMailSender mailSender = mailConfiguration.getJavaMailSender();
         String[] recipients = deck.getSubscribedPersons().stream().map(Person::getEmail).toArray(String[]::new);
 
         SimpleMailMessage message = new SimpleMailMessage();

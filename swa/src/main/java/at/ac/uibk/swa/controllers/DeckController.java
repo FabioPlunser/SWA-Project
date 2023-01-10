@@ -7,6 +7,7 @@ import at.ac.uibk.swa.models.annotations.AnyPermission;
 import at.ac.uibk.swa.models.rest_responses.*;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
+import at.ac.uibk.swa.service.MailService;
 import at.ac.uibk.swa.service.UserDeckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,8 @@ public class DeckController {
     private AdminDeckService adminDeckService;
     @Autowired
     private CardService cardService;
+    @Autowired
+    private MailService mailService;
 
 
     /**
@@ -170,6 +173,9 @@ public class DeckController {
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (adminDeckService.block(deckId)) {
+            //no need to check if deck is present because block() already does that
+            Deck deck = userDeckService.findById(deckId).get();
+            mailService.notifyBlockedDeck(deck);
             return MessageResponse.builder()
                     .ok()
                     .message("Deck " + deckId + " blocked")
