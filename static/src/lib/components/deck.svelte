@@ -6,11 +6,8 @@
     import { fetching } from '../utils/fetching';
 
     export let deck; 
-    export let cardsToLearn = [];
-    let { deckId, name, description, published, blocked, cards} = deck;
+    let { deckId, name, description, published, blocked, cards, numCards, numCardsToLearn} = deck;
     
-    $: getAllCardsToLearn();
-    $: getCardsOfDeck();
 
     let hover = false
     function handleMouseOut() {
@@ -24,20 +21,8 @@
         dispatch('editDeck', "editDeck");
     }
 
-    async function getAllCardsToLearn(){
-		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{name: "deckId", value: deckId}]);
-		cardsToLearn = res.items;	
-	}
-
-    async function getCardsOfDeck(){
-        let res = await fetching("/api/get-cards-of-deck", "GET", [{name: "deckId", value: deckId}]);
-        cards = res.items;
-    }
-
     async function handlePublishDeck(){
         published = !published;
-
-    
         if(published){
             let res = await fetching("/api/publish-deck", "POST", [{name: "deckId", value: deckId}]);
             addToastByRes(res);
@@ -61,7 +46,6 @@
     function handleLearnDeck(){
         dispatch('learnDeck');
     }
-    
 </script>
 
 
@@ -71,17 +55,17 @@
         <div class="{hover ? "hidden" : "block"}" >
             <h1 class="underline flex justify-center text-xl">{name}</h1>
             <br class="my-4"/>
-            <p>{description}</p>
+            <textarea class="resize-none bg-transparent" readonly>{description}</textarea>
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4">
                 <div class="grid grid-rows gap-2">
-                    {#if cards}
-                        <div class="badge badge-primary">Number of cards: {cards.length} </div>
+                    {#if numCards > 0}
+                        <div class="badge badge-primary">Number of cards: {numCards} </div>
                         {:else}
                         <div class="badge badge-error">No cards</div>
                     {/if}
-                    {#if cardsToLearn}
-                        <div class="badge badge-primary">Number of cards to learn: {cardsToLearn.length} </div>
+                    {#if numCardsToLearn > 0}
+                        <div class="badge badge-primary">Number of cards to learn: {numCardsToLearn} </div>
                         {:else}
                         <div class="badge badge-error">No cards to learn</div>
                     {/if}
@@ -90,11 +74,7 @@
                     {:else}
                     <div class="badge badge-error">Not Published</div>
                     {/if}
-                    {#if cards && cardsToLearn}
-                        Progress: <progress class="progress progress-success bg-gray-700" value={cards.length - cardsToLearn.length} max={cards.length}></progress>
-                    {:else}
-                        <div class="badge badge-error">No cards to learn</div>
-                    {/if}
+                    <!-- Progress: <progress class="progress progress-success bg-gray-700" value={numCards - numCardsToLearn} max={numCards}></progress> -->
                 </div>
             </div>
         </div>

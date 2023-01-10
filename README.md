@@ -126,7 +126,7 @@ und
 npm run buildC
 ```
 
-__nicht vergessen die Befehle müssen gleichzeit laufen__
+__don't forget these commands must be run simultaneously__
 
 # Contributing
 

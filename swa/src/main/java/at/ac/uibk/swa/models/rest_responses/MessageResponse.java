@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.models.rest_responses;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +15,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class MessageResponse extends RestResponse implements Serializable {
 
-    private static String type = "Message";
+    @Override
+    @JsonInclude
+    public String getType() { return "Message"; }
 
     private String message;
 

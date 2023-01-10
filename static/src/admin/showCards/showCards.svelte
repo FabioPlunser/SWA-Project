@@ -30,6 +30,7 @@
 <svelte:head>
   <title>Admin ShowCards</title>
   <link rel="icon" type="image/png" href="{favicon}" />
+  <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <Nav title="ShowCards" {buttons}/>
@@ -44,8 +45,8 @@
       <h1 class="flex justify-center text-2xl font-bold">No Cards</h1>
     {:else}
       <div class="grid grid-cols-4 gap-4">
-        {#each cards as card}
-          <DualSideCard {card}/>
+        {#each cards as card, i}
+          <DualSideCard {card} index={i+1}/>
         {/each}
       </div>
     {/if}
