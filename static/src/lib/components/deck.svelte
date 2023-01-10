@@ -6,8 +6,6 @@
     import { fetching } from '../utils/fetching';
 
     export let deck; 
-    export let cardsToLearn = [];
-    console.log(deck);
     let { deckId, name, description, published, blocked, cards, numCards, numCardsToLearn} = deck;
     
 

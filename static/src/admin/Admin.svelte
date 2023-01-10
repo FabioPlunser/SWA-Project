@@ -241,10 +241,8 @@
   </Modal>
 {/if}
 
-<main class="mt-20 m-2 flex-justify-center">
-  <div class="flex justify-center">
-      <button class="btn btn-primary" on:click={()=> showCreateModal = true}>Create User</button>
-  </div>
+<main class="mt-20 m-8 flex-justify-center">
+  
   <br class="mt-20"/>
   <!-- TODO add all decks of user and add the ability to block them -->
   <div class="overflow-x-auto z-0">
@@ -255,7 +253,7 @@
             <th><input bind:value={searchUsername} class="input bg-slate-900" placeholder="Username"/></th>
             <th><input bind:value={searchEmail} class="input bg-slate-900" placeholder="Email"/></th>
             <th><input bind:value={searchPermission} class="input bg-slate-900" placeholder="ADMIN"/></th>
-            <th></th>
+            <th><button class="btn btn-primary" on:click={()=> showCreateModal = true}>Create User</button></th>
             <th></th>
             <th></th>
           </tr>

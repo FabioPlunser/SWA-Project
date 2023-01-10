@@ -25,7 +25,7 @@
     <textarea bind:value={card.backText} placeholder="answer" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {backTextMinHeight}" />
 
     <br class="mt-4"/>
-    <div class="card-action">
+    <div class="card-action flex justify-center">
         <button class="btn btn-accent" type="button" on:click={()=>handleDeleteCard(card)}>Delete Card</button>
     </div>
   </div>

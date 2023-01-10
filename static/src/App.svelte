@@ -231,6 +231,8 @@
 												<button class="btn btn-secondary" on:click={()=> {selectedPublicDeck=deck}}>Cards</button>
 											</div>
 										</div>
+									{:else}
+										<h1 class="flex justify-center text-3xl">No deck found</h1>
 									{/if}
 								{/each}
 							</div>
