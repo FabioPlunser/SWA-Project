@@ -3,6 +3,7 @@ package at.ac.uibk.swa.controllers.login_controller;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.PersonService;
+import at.ac.uibk.swa.util.AuthGenerator;
 import at.ac.uibk.swa.util.EndpointMatcherUtil;
 import at.ac.uibk.swa.util.StringGenerator;
 import org.hamcrest.Matchers;
@@ -123,12 +124,11 @@ class TestLoginControllerGeneral {
         assertTrue(personService.create(person), "Unable to create user");
         Optional<Person> maybePerson = personService.login(username, password);
         assertTrue(maybePerson.isPresent(), "Unable to login");
-        String token = "Bearer " + maybePerson.get().getToken().toString();
 
         // when: logging out that user
         mockMvc.perform(MockMvcRequestBuilders
                 .post(EndpointMatcherUtil.LOGOUT_ENDPOINT)
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(maybePerson.get()))
                 .contentType(MediaType.APPLICATION_JSON)
         )
         // then: status code 200 must be returned

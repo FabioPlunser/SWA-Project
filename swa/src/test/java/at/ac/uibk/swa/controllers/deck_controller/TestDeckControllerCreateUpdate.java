@@ -8,10 +8,7 @@ import at.ac.uibk.swa.repositories.CardRepository;
 import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
-import at.ac.uibk.swa.util.ArgumentGenerator;
-import at.ac.uibk.swa.util.MockAuthContext;
-import at.ac.uibk.swa.util.SetupH2Console;
-import at.ac.uibk.swa.util.StringGenerator;
+import at.ac.uibk.swa.util.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -111,7 +108,7 @@ class TestDeckControllerCreateUpdate {
             boolean cardsFlipped
     ) throws Exception {
         // given: user created in database, logged in
-        String token = "Bearer " + createUserAndLogin(userIsAlsoAdmin).getToken();
+        Person person = createUserAndLogin(userIsAlsoAdmin);
 
         // when: creating a new deck with cards
         ObjectNode content = mapper.createObjectNode();
@@ -140,7 +137,7 @@ class TestDeckControllerCreateUpdate {
         content.putPOJO("cards", cards);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/create-deck")
-                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(person))
                         .content(content.toString())
                         .contentType(MediaType.APPLICATION_JSON)
         // then: response must be ok, created decks and cards must be as desired
@@ -226,7 +223,7 @@ class TestDeckControllerCreateUpdate {
         long numberOfDecksBefore = deckRepository.count();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/update-deck")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + initialDeck.getCreator().getToken())
+                        .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(initialDeck.getCreator()))
                         .content(content.toString())
                         .contentType(MediaType.APPLICATION_JSON)
         // then: response must be ok, created decks and cards must be as desired

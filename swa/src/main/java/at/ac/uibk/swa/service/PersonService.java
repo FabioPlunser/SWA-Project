@@ -83,13 +83,23 @@ public class PersonService {
 
     //region Find
     /**
-     * Find a person via its current token
+     * Find a person via its current token and username.
+     *
+     * @param token jwt token of the person to be found
+     * @return person if found, otherwise nothing
+     */
+    public Optional<Person> findByUsernameAndToken(JwtToken token) {
+        return findByUsernameAndToken(token.getUsername(), token.getToken());
+    }
+
+    /**
+     * Find a person via its current token and username.
      *
      * @param token current token of the person to be found
      * @return person if found, otherwise nothing
      */
-    public Optional<Person> findByUsernameAndToken(JwtToken token) {
-        return personRepository.findByUsernameAndToken(token.getUsername(), token.getToken());
+    public Optional<Person> findByUsernameAndToken(String username, UUID token) {
+        return personRepository.findByUsernameAndToken(username, token);
     }
 
     /**
