@@ -132,7 +132,8 @@
 	async function handleSubscribe(deck){
 		let res = await fetching(`/api/subscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]);
 		addToastByRes(res);
-		getSubscribedDecks()
+		getSubscribedDecks();
+		getPublicDecks();
 	}
 	
 	async function getCardsFromDeck(deck){
@@ -201,7 +202,7 @@
 					{:else}
 						<div class="grid grid-cols-4 gap-2">
 							{#each publicDecks as deck}
-								{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
+								{#if deck.name.toLowerCase().includes(searchPublicDeckName.toLowerCase()) || deck.description.toLowerCase().includes(searchPublicDeckName.toLowerCase())} 
 									<div class="card bg-gray-700 p-5 w-fit min-w-fit">
 										<h1 class="card-title">{deck.name}</h1>
 										<p class="card-subtitle">{deck.description}</p>
