@@ -6,6 +6,7 @@
   export let editable = false;
   export let cardBg = "bg-slate-900";
   export let textBg = "bg-slate-800";
+  export let title = "";
 
   function handleDeleteCard(card) {
       dispatch('deleteCard', card);
@@ -20,12 +21,15 @@
 
 {#if editable}
   <div class="card p-5 w-auto {cardBg}">
-    <h1 class="flex justify-center text-xl">Card {index}</h1>
+    {#if title}
+      <h1 class="flex justify-center text-xl">{title} {index}</h1>
+    {:else}
+      <h1 class="flex justify-center text-xl">Card {index}</h1>
+    {/if}
 
-    <textarea bind:value={card.frontText} placeholder="question" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {frontTextMinHeight}"/>
-    <p>
+    <textarea bind:value={card.frontText} placeholder="question" class="textarea p-2 bg-slate-800 w-full" style="min-height: {frontTextMinHeight}"/>
     <br class="mt-4"/>
-    <textarea bind:value={card.backText} placeholder="answer" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {backTextMinHeight}" />
+    <textarea bind:value={card.backText} placeholder="answer" class="textarea p-2 bg-slate-800 w-full" style="min-height: {backTextMinHeight}" />
 
     <br class="mt-4"/>
     <div class="card-action flex justify-center">
