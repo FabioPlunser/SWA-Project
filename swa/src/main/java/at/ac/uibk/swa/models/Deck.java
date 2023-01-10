@@ -39,8 +39,7 @@ public class Deck implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String name;
 
-    @Lob
-    // @JdbcTypeCode(SqlTypes.VARCHAR)
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "description", nullable = false)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String description;

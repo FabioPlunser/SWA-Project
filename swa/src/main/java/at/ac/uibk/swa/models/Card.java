@@ -38,14 +38,13 @@ public class Card implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private UUID cardId;
 
-    @Lob
-    // @JdbcTypeCode(SqlTypes.NVARCHAR)
+
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "front_text", nullable = false)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String frontText;
 
-    @Lob
-    // @JdbcTypeCode(SqlTypes.NVARCHAR)
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "back_text", nullable = false)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String backText;
