@@ -188,59 +188,42 @@
 	{/if}
 	{#if showPublicDecks}
 		<Modal open={showPublicDecks} on:close={()=>showPublicDecks=false} closeOnBodyClick={false}>
-			{#if selectedPublicDeck}
-				<div class="flex flex-col min-w-fit">
-					<h1 class="flex justify-center text-2xl font-bold">Cards of Public Deck {selectedPublicDeck.name}</h1>
-					<div class="grid grid-cols-3 gap-2 mt-4">
-						{#await getCardsFromDeck(selectedPublicDeck)}
-							<Spinner/>
-						{:then cards}
-							{#each cards as card}
-								<div>
-									<DualSideCard {card} cardStyle="bg-slate-800" textAreaStyle="bg-slate-700"/>
-								</div>
-							{/each}
-						{/await}
-					</div>
-				</div>
-			{:else}
-				<div class="flex flex-col min-w-fit">
-					<h1 class="flex justify-center text-2xl font-bold">Public Decks</h1>
-					<br class="mt-4"/>
-					<input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
-					<br class="mt-4"/>
-					{#await publicDecks}
-						<Spinner/>
-					{:then publicDecks}
-						{#if publicDecks.length == 0}
-							<h1 class="text-2xl flex justify-center">No Decks Found</h1>
-						{:else}
-							<div class="grid grid-cols-4 gap-2">
-								{#each publicDecks as deck}
-									{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
-										<div class="card bg-gray-700 p-5 w-fit min-w-fit">
-											<h1 class="card-title">{deck.name}</h1>
-											<p class="card-subtitle">{deck.description}</p>
-											{#if deck.numCards > 0}
-												<div class="badge badge-primary">Number of cards: {deck.numCards} </div>
-												{:else}
-												<div class="badge badge-error">No cards</div>
-											{/if}
-											<br class="pt-4"/>
-											<div class="card-actions">
-												<button class="btn btn-primary" on:click={()=> {handleSubscribe(deck)}}>Subscribe</button>
-												<button class="btn btn-secondary" on:click={()=> {selectedPublicDeck=deck}}>Cards</button>
-											</div>
+			<div class="flex flex-col min-w-fit">
+				<h1 class="flex justify-center text-2xl font-bold">Public Decks</h1>
+				<br class="mt-4"/>
+				<input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
+				<br class="mt-4"/>
+				{#await publicDecks}
+					<Spinner/>
+				{:then publicDecks}
+					{#if publicDecks.length == 0}
+						<h1 class="text-2xl flex justify-center">No Decks Found</h1>
+					{:else}
+						<div class="grid grid-cols-4 gap-2">
+							{#each publicDecks as deck}
+								{#if deck.name.includes(searchPublicDeckName) || deck.description.includes(searchPublicDeckName)} 
+									<div class="card bg-gray-700 p-5 w-fit min-w-fit">
+										<h1 class="card-title">{deck.name}</h1>
+										<p class="card-subtitle">{deck.description}</p>
+										{#if deck.numCards > 0}
+											<div class="badge badge-primary">Number of cards: {deck.numCards} </div>
+											{:else}
+											<div class="badge badge-error">No cards</div>
+										{/if}
+										<br class="pt-4"/>
+										<div class="card-actions">
+											<button class="btn btn-primary" on:click={()=> {handleSubscribe(deck)}}>Subscribe</button>
+											<button class="btn btn-secondary" on:click={()=> {showPublicDecks=false; selectedDeck=deck; listCards=true}}>Cards</button>
 										</div>
-									{:else}
-										<h1 class="flex justify-center text-3xl">No deck found</h1>
-									{/if}
-								{/each}
-							</div>
-						{/if}
-					{/await}
-				</div>
-			{/if}
+									</div>
+								{:else}
+									<h1 class="flex justify-center text-3xl">No deck found</h1>
+								{/if}
+							{/each}
+						</div>
+					{/if}
+				{/await}
+			</div>
 			<div class="mt-12 modal-action">
 				<div class="flex fixed bottom-0 right-0 m-2">
 					{#if selectedPublicDeck}
@@ -256,22 +239,19 @@
 			<div class="relative max-w-full">
 				<div class="flex flex-col min-w-fit">
 					<h1 class="flex justify-center text-2xl font-bold">Cards of Deck {selectedDeck.name}</h1>
-					<div class="grid grid-cols-4 gap-2 mt-4">
+					<div class="absolute right-0">
+						<button class="btn btn-primary" on:click={()=> listCards = false}>Close</button>
+					</div>
+					<div class="grid grid-cols-4 gap-2 mt-6">
 						{#await getCardsFromDeck(selectedDeck)}
 							<Spinner/>
 						{:then cards}
 							{#each cards as card, index (card.cardId)}
 								<div>
-									<DualSideCard {card} {index} cardBg="bg-slate-800" textBg="bg-slate-700"/>
+									<DualSideCard {card} {index} editable={false} cardBg="bg-slate-800" textBg="bg-slate-700"/>
 								</div>
 							{/each}
 						{/await}
-					</div>
-				</div>
-				
-				<div class="pt-20">
-					<div class="flex absolute bottom-0 right-0 m-2">
-						<button class="btn btn-primary m-1" on:click={()=> listCards = false}>Close</button>
 					</div>
 				</div>
 			</div>

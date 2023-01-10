@@ -23,7 +23,7 @@
     <h1 class="flex justify-center text-xl">Card {index}</h1>
 
     <textarea bind:value={card.frontText} placeholder="question" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {frontTextMinHeight}"/>
-    <p></p>
+    <p>
     <br class="mt-4"/>
     <textarea bind:value={card.backText} placeholder="answer" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {backTextMinHeight}" />
 
@@ -36,8 +36,8 @@
   <div class="card p-5 w-auto {cardBg}" >
     <h1 class="flex justify-center text-xl">Card {index}</h1>
   
-    <textarea bind:value={card.frontText} readonly class="textarea p-2 w-auto {textBg}" style="min-height: {frontTextMinHeight}"/>
+    <textarea bind:value={card.frontText} readonly class="textarea p-2 w-auto {textBg} resize-none" style="min-height: {frontTextMinHeight}"/>
     <br class="mt-4"/>
-    <textarea bind:value={card.backText} readonly class="textarea p-2 w-auto {textBg}" style="min-height: {backTextMinHeight}" />
+    <textarea bind:value={card.backText} readonly class="textarea p-2 w-auto {textBg} resize-none" style="min-height: {backTextMinHeight}" />
   </div>
 {/if}
