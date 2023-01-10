@@ -8,7 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MailService {
+public class MailService implements  {
 
     // TODO See: https://mailtrap.io/blog/spring-send-email/
     //           https://www.baeldung.com/spring-email
