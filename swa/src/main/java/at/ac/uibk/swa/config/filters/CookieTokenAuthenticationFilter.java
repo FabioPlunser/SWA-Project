@@ -44,13 +44,13 @@ public class CookieTokenAuthenticationFilter extends AbstractAuthenticationProce
 
         Optional<Cookie> usernameCookie = Arrays.stream(cookies).filter(c -> c.getName().equalsIgnoreCase("username")).findFirst();
         Optional<Cookie> tokenCookie = Arrays.stream(cookies).filter(c -> c.getName().equalsIgnoreCase("token")).findFirst();
-        if (usernameCookie.isPresent() && tokenCookie.isPresent())
+        if (usernameCookie.isEmpty() || tokenCookie.isEmpty())
             throw new AuthenticationCredentialsNotFoundException("Missing Credentials!");
 
         Optional<UUID> maybeToken = ConversionUtil.tryConvertUUIDOptional(tokenCookie.get().getValue());
-        if (maybeToken.isPresent())
+        if (maybeToken.isEmpty())
             throw new AuthenticationCredentialsNotFoundException("Missing Credentials!");
-        
+
         JwtToken jwtToken = new JwtToken(usernameCookie.get().getValue(), maybeToken.get());
         return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(null, jwtToken));
 
