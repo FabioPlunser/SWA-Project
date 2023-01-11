@@ -39,19 +39,20 @@ public class CookieTokenAuthenticationFilter extends AbstractAuthenticationProce
     ) throws AuthenticationException {
         Cookie[] cookies = httpServletRequest.getCookies();
 
-        if (cookies != null) {
-            Optional<Cookie> usernameCookie = Arrays.stream(cookies).filter(c -> c.getName().equalsIgnoreCase("username")).findFirst();
-            Optional<Cookie> tokenCookie = Arrays.stream(cookies).filter(c -> c.getName().equalsIgnoreCase("token")).findFirst();
-            if (usernameCookie.isPresent() && tokenCookie.isPresent()) {
-                Optional<UUID> maybeToken = ConversionUtil.tryConvertUUIDOptional(tokenCookie.get().getValue());
-                if (maybeToken.isPresent()) {
-                    JwtToken jwtToken = new JwtToken(usernameCookie.get().getValue(), maybeToken.get());
-                    return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(null, jwtToken));
-                }
-            }
-        }
+        if (cookies == null)
+            throw new AuthenticationCredentialsNotFoundException("No Credentials were sent with the request!");
 
-        throw new AuthenticationCredentialsNotFoundException("No Token was sent with the Request!");
+        Optional<Cookie> usernameCookie = Arrays.stream(cookies).filter(c -> c.getName().equalsIgnoreCase("username")).findFirst();
+        Optional<Cookie> tokenCookie = Arrays.stream(cookies).filter(c -> c.getName().equalsIgnoreCase("token")).findFirst();
+        if (usernameCookie.isPresent() && tokenCookie.isPresent())
+            throw new AuthenticationCredentialsNotFoundException("Missing Credentials!");
+
+        Optional<UUID> maybeToken = ConversionUtil.tryConvertUUIDOptional(tokenCookie.get().getValue());
+        if (maybeToken.isPresent())
+            throw new AuthenticationCredentialsNotFoundException("Missing Credentials!");
+        
+        JwtToken jwtToken = new JwtToken(usernameCookie.get().getValue(), maybeToken.get());
+        return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(null, jwtToken));
 
     }
 
