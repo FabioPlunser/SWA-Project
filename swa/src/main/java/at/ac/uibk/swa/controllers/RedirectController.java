@@ -59,10 +59,22 @@ public class RedirectController {
         modelAndView.setViewName("/src/createDeck/index.html");
         return modelAndView;
     }
-    @GetMapping("/admin/{endpoint}")
-    public ModelAndView endPoint(@PathVariable("endpoint") String endPoint) {
+    @GetMapping("/admin")
+    public ModelAndView adminPage() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("/src/admin/" + endPoint);
+        modelAndView.setViewName("/src/admin/index.html");
+        return modelAndView;
+    }
+    @GetMapping("/admin/show-decks")
+    public ModelAndView showDecks() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/src/admin/showDecks/index.html");
+        return modelAndView;
+    }
+    @GetMapping("/admin/show-cards")
+    public ModelAndView showCards() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/src/admin/showCards/index.html");
         return modelAndView;
     }
 }

@@ -3,6 +3,7 @@ package at.ac.uibk.swa.controllers;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.models.annotations.AnyPermission;
+import at.ac.uibk.swa.models.annotations.ApiRestController;
 import at.ac.uibk.swa.models.rest_responses.CreatedUserResponse;
 import at.ac.uibk.swa.models.rest_responses.ListResponse;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
@@ -23,7 +24,7 @@ import static at.ac.uibk.swa.util.EndpointMatcherUtil.REGISTER_ENDPOINT;
  * @author David Rieser
  */
 @SuppressWarnings("unused")
-@RestController
+@ApiRestController
 public class PersonController {
 
     //region Autowired Components
@@ -62,7 +63,7 @@ public class PersonController {
      * @return A RestResponse indicating whether the user could be created or not.
      */
     @AnyPermission(Permission.ADMIN)
-    @PostMapping("/api/create-user")
+    @PostMapping("/create-user")
     public RestResponse create(
             @RequestParam("username") final String username,
             @RequestParam("password") final String password,
@@ -100,7 +101,7 @@ public class PersonController {
      * @return A RESTResponse indicating Success
      */
     @AnyPermission(Permission.ADMIN)
-    @PostMapping("/api/update-user")
+    @PostMapping("/update-user")
     public RestResponse updateUser(
             @RequestParam(name = "personId") final UUID personId,
             @RequestParam(name = "username", required = false) final String username,
@@ -123,7 +124,7 @@ public class PersonController {
      * @return A RestResponse indicating whether the operation was successful or not.
      */
     @AnyPermission(Permission.ADMIN)
-    @DeleteMapping("/api/delete-user")
+    @DeleteMapping("/delete-user")
     public RestResponse deleteUser(
             @RequestParam("personId") final UUID personId
     ) {
@@ -141,7 +142,7 @@ public class PersonController {
      * @return A RestReponse containing a List of all users.
      */
     @AnyPermission(Permission.ADMIN)
-    @GetMapping("/api/get-all-users")
+    @GetMapping("/get-all-users")
     public RestResponse getAllUsers() {
         return new ListResponse<>(personService.getPersons());
     }
@@ -152,7 +153,7 @@ public class PersonController {
      * @return A List of all possible Permissions.
      */
     @AnyPermission(Permission.ADMIN)
-    @GetMapping("/api/get-all-permissions")
+    @GetMapping("/get-all-permissions")
     public RestResponse getAllPermissions() {
         return new ListResponse<>(Stream.of(Permission.values()).map(Enum::name).toList());
     }

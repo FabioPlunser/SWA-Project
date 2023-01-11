@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.models.Card;
+import at.ac.uibk.swa.models.annotations.ApiRestController;
 import at.ac.uibk.swa.models.rest_responses.ListResponse;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponse;
@@ -17,7 +18,7 @@ import java.util.UUID;
  *
  * @author Fabian Magreiter
  */
-@RestController
+@ApiRestController
 public class CardController {
 
     @Autowired
@@ -30,7 +31,7 @@ public class CardController {
      * @param deckId
      * @return A MessageResponse indicating success or failure.
      */
-    @PostMapping("/api/create-card")
+    @PostMapping("/create-card")
     public RestResponse createCard(
             @RequestBody final Card card,
             @RequestParam(name = "deckId") final UUID deckId
@@ -53,7 +54,7 @@ public class CardController {
      * @param card
      * @return A MessageResponse indicating success or failure.
      */
-    @PostMapping("/api/update-card")
+    @PostMapping("/update-card")
     public RestResponse updateCard(
             @RequestBody final Card card
     ) {
@@ -74,7 +75,7 @@ public class CardController {
      * @param cardId
      * @return A MessageResponse indicating success or failure.
      */
-    @DeleteMapping("/api/delete-card")
+    @DeleteMapping("/delete-card")
     public RestResponse deleteCard(
             @RequestParam(name = "cardId") final UUID cardId
     ) {
@@ -96,7 +97,7 @@ public class CardController {
      * @param deckId
      * @return
      */
-    @GetMapping("/api/get-cards-of-deck")
+    @GetMapping("/get-cards-of-deck")
     public RestResponse getCardsOfDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {

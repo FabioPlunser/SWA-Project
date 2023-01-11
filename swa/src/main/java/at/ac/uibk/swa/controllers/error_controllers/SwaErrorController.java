@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.controllers.error_controllers;
 
+import at.ac.uibk.swa.models.annotations.ApiRestController;
 import at.ac.uibk.swa.models.exceptions.TokenExpiredException;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponseEntity;
@@ -27,7 +28,7 @@ import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.*;
  *
  * @author David Rieser
  */
-@Controller
+@ApiRestController
 @SuppressWarnings("unused")
 public class SwaErrorController implements ErrorController {
 
@@ -39,6 +40,7 @@ public class SwaErrorController implements ErrorController {
             HttpServletResponse response,
             AuthenticationException accessDeniedException
     ) {
+        // TODO: Return HTML-Page if request URL is not an API-Route
         return MessageResponse.builder()
                 .message("Authentication failed!")
                 .statusCode(HttpStatus.UNAUTHORIZED)
@@ -53,6 +55,7 @@ public class SwaErrorController implements ErrorController {
             HttpServletResponse response,
             TokenExpiredException tokenExpiredException
     ) {
+        // TODO: Return HTML-Page if request URL is not an API-Route
         return TokenExpiredResponse.builder()
                 .exception(tokenExpiredException)
                 .statusCode(HttpStatus.UNAUTHORIZED)
@@ -67,6 +70,7 @@ public class SwaErrorController implements ErrorController {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) {
+        // TODO: Return HTML-Page if request URL is not an API-Route
         return MessageResponse.builder()
                 .message("Insufficient Privileges!")
                 .statusCode(HttpStatus.FORBIDDEN)
@@ -80,6 +84,7 @@ public class SwaErrorController implements ErrorController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
+        // TODO: Return HTML-Page if request URL is not an API-Route
         return MessageResponse.builder()
                 .message("Endpoint not found!")
                 .statusCode(HttpStatus.NOT_FOUND)
@@ -94,6 +99,7 @@ public class SwaErrorController implements ErrorController {
             HttpServletResponse response,
             Exception exception
     ) {
+        // TODO: Return HTML-Page if request URL is not an API-Route
         return MessageResponse.builder()
                 .success(false)
                 .message("Internal Server Error!")
