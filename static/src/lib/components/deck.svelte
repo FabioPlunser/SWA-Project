@@ -6,7 +6,7 @@
     import { fetching } from '../utils/fetching';
 
     export let deck; 
-    let { deckId, name, description, published, blocked, cards, numCards, numCardsToLearn} = deck;
+    let { deckId, name, description, published, blocked, numCards, numCardsToRepeat, numNotLearnedCards} = deck;
     
 
     let hover = false
@@ -60,13 +60,18 @@
             <div class="bottom-0 absolute mb-4">
                 <div class="grid grid-rows gap-2">
                     {#if numCards > 0}
-                        <div class="badge badge-primary">Number of cards: {numCards} </div>
+                        <div class="badge badge-primary">Cards: {numCards} </div>
                         {:else}
                         <div class="badge badge-error">No cards</div>
                     {/if}
-                    {#if numCardsToLearn > 0}
-                        <div class="badge badge-primary">Number of cards to learn: {numCardsToLearn} </div>
-                        {:else}
+                    {#if numCardsToRepeat >0}
+                        <div class="badge badge-primary">Cards to repeat: {numCardsToRepeat} </div>
+                    {:else}
+                        <div class="badge badge-error">No cards to repeat</div>
+                    {/if}
+                    {#if numNotLearnedCards > 0}
+                        <div class="badge badge-primary">Cards to learn: {numNotLearnedCards} </div>
+                    {:else}
                         <div class="badge badge-error">No cards to learn</div>
                     {/if}
                     {#if published}

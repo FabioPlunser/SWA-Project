@@ -1,3 +1,5 @@
+import { redirect } from './redirect';
+
 export function handleLogout(expired?: boolean) {
   if(expired){
     localStorage.setItem('jwt', JSON.stringify({expired: true}));
@@ -5,5 +7,5 @@ export function handleLogout(expired?: boolean) {
     localStorage.removeItem('jwt');
   }
   document.cookie = '';
-  window.location.href = '/';
+  redirect('');
 }
