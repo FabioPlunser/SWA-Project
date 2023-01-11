@@ -7,13 +7,11 @@
 
     import { fly } from "svelte/transition";
     import { redirect } from '../lib/utils/redirect';
-    import { jwt } from "../lib/stores/jwt";
     import { userSelectedDeckStore } from "../lib/stores/userSelectedDeckStore";
     import { handleLogout } from '../lib/utils/handleLogout';
     import { addToastByRes } from "../lib/utils/addToToastStore";
     import { fetching } from "../lib/utils/fetching";
     
-    $: if($jwt.token == null) redirect("login");
     $: getCardsFromDeck();
 
     let navButtons = [

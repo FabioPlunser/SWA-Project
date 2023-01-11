@@ -2,17 +2,14 @@
     import FlipCard from "../lib/components/flipCard.svelte";
 	import Nav from "../lib/components/nav.svelte";
 	import SvelteToast from "../lib/components/SvelteToast.svelte";
-	import { fly, fade } from 'svelte/transition';
 	
 	import { redirect } from '../lib/utils/redirect';
-    import { jwt } from "../lib/stores/jwt";
 	import { handleLogout } from '../lib/utils/handleLogout';
 	import { userSelectedDeckStore } from '../lib/stores/userSelectedDeckStore';
 	import { fetching } from '../lib/utils/fetching';
 	import { addToastByRes } from "../lib/utils/addToToastStore";
 	import type { Params } from "../lib/utils/fetching";
    
-	$: if($jwt.token != null) redirect("login");
 	$: getAllCardsToLearn();
 
 

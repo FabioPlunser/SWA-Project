@@ -8,7 +8,6 @@
   import { handleLogout } from "../../lib/utils/handleLogout";
   import { adminSelectedUserStore } from '../../lib/stores/adminSelectedUserStore';
 	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
-  import { addToastByRes } from "../../lib/utils/addToToastStore";
   import { fetching } from "../../lib/utils/fetching";
 
   $: selectedUser = $adminSelectedUserStore;
