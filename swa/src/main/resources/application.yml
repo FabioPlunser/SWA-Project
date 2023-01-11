@@ -8,6 +8,10 @@ server:
   servlet:
     context-path: /
 
+logging:
+  level:
+    web: INFO
+
 springdoc:
   api-docs:
     enabled: false

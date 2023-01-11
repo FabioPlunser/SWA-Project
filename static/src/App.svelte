@@ -9,20 +9,18 @@
 	import Spinner from './lib/components/Spinner.svelte';
 	import Form from './lib/components/Form.svelte';
 	import DualSideCard from './lib/components/dualSideCard.svelte';
-	import Dropdown from './lib/components/dropdown.svelte';
+	import { jwt } from "./lib/stores/jwt";
 
-	import { fade, fly } from 'svelte/transition';
-	import { flip } from 'svelte/animate';
+	import { fly } from 'svelte/transition';
 	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
 	import { redirect } from "./lib/utils/redirect";
-	import { jwt } from "./lib/stores/jwt";
 	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
 	import { handleLogout } from './lib/utils/handleLogout';
 	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
   	import { fetching } from './lib/utils/fetching';
 	import type { IDeck } from './lib/utils/types';
 
-	$: if(!$jwt || ($jwt && $jwt.expired)) redirect("login");
+	$: if(!$jwt) redirect("login");
 	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
 	$: getUserDecks();
 	$: getSubscribedDecks();
@@ -32,6 +30,8 @@
 	let userDecks = [];
 	let subscribedDecks = [];
 	let publicDecks = [];
+
+	$: console.log(userDecks);
 
 	let showEditDeckModal = false;
 	let selectedDeck: IDeck = null;

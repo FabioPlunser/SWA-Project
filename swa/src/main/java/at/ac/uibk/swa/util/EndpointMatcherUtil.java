@@ -52,7 +52,7 @@ public class EndpointMatcherUtil {
     //region Route Matchers
     public static final RequestMatcher ANONYMOUS_ROUTES = AnyRequestMatcher.INSTANCE;
     public static final RequestMatcher API_ROUTES = new AntPathRequestMatcher("/api/**");
-    public static final RequestMatcher ADMIN_ROUTES = new AntPathRequestMatcher("/admin/**");
+    public static final RequestMatcher ADMIN_ROUTES = new AntPathRequestMatcher("/src/admin/**");
 
     private static final RequestMatcher PUBLIC_API_ROUTES = new OrRequestMatcher(
             new AntPathRequestMatcher(LOGIN_ENDPOINT),
