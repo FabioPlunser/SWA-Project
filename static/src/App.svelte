@@ -286,15 +286,17 @@
 					<div class="grid grid-cols-4 gap-4">
 							{#each userDecks as deck (deck.deckId)}
 								{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
-								<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
-									<Deck 
-										{deck}
-										on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
-										on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-										on:listCards={()=> {listCards=true; selectedDeck = deck}}
-										on:deleteDeck={async ()=> {await getUserDecks(); userDecks=[...userDecks];}}
-									/>
-								</div>
+									<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
+										<Deck 
+											{deck}
+											on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+											on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+											on:listCards={()=> {listCards=true; selectedDeck = deck}}
+											on:deleteDeck={async ()=> {await getUserDecks(); userDecks=[...userDecks];}}
+										/>
+									</div>
+								{:else}
+									<h1>No deck found</h1>
 								{/if}
 							{/each}
 					</div>
@@ -318,14 +320,16 @@
 					<div class="grid grid-cols-4 gap-4">
 						{#each subscribedDecks as deck (deck.deckId)}
 							{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
-							<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
-								<SubscribedDeck
-									{deck}
-									on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
-									on:listCards={()=> {listCards=true; selectedDeck = deck}}
-									on:unsubscribe={()=>getSubscribedDecks()}										
-								/>
-							</div>
+								<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
+									<SubscribedDeck
+										{deck}
+										on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
+										on:listCards={()=> {listCards=true; selectedDeck = deck}}
+										on:unsubscribe={()=>getSubscribedDecks()}										
+									/>
+								</div>
+								{:else}
+								<h1>No deck found</h1>
 							{/if}
 						{/each}
 					</div>	
@@ -380,6 +384,8 @@
 									{:else if !deck.blocked && !deck.deleted}
 										<AdminDeck {deck}/>
 									{/if}
+								{:else}
+									<h1>No deck found</h1>
 								{/if}
 							{/each}
 						</div>

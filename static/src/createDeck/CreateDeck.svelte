@@ -10,8 +10,7 @@
   import { handleLogout } from '../lib/utils/handleLogout';
   import { addToastByRes } from '../lib/utils/addToToastStore';
   import { Validators } from "../lib/utils/Validators";
-
-
+  
   let buttons = [
     { text: "Home", action: () => redirect("") },
     { text: "Logout", action: () => handleLogout()}
@@ -21,9 +20,22 @@
   let id = 0;
 
   function addCard() {
-    cards.push({id: id, frontText: "", backText: ""});
+    cards.push({id: id, frontText: "", backText: "", isFlipped: false});
     cards = [...cards];
     id++;
+  }
+
+  /**
+   * When isFlipped is checked two cards need to be created one flipped and one not flipped
+   */
+  function updateCard(data){
+    let card = data.detail;
+    cards.map(c => {
+      if(c.id === card.id){
+        c = card;
+      }
+    });
+    cards = [...cards];
   }
 
   function handleDeleteCard(card) {
@@ -51,9 +63,12 @@
     cards=[];
   }
 
+
+
   let MaxNumberChars = 255;
   let name = "";
   let description = "";
+
 </script>
 
 <svelte:head>
@@ -67,7 +82,7 @@
 <main class="mt-20 m-8">
   <h1 class="flex justify-center text-3xl font-bold">Create Deck</h1>
   <br class="pt-4"/>
-  <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat="JSON" formValidators={formValidators} bind:errors  addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
+  <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat="JSON" formValidators={formValidators} bind:errors addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
     <div class="max-w-full">
       <div class="bg-slate-900 p-5 rounded-xl">
         <div class="flex flex-col">
@@ -132,7 +147,7 @@
   <div class="grid grid-cols-4 gap-2">
     {#each cards as card, i (card.id)}
       <div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
-        <DualSideCard {card} index={i+1} editable={true} on:deleteCard={()=>handleDeleteCard(card)} />
+        <DualSideCard {card} flippable={true} on:isFlipped={updateCard} index={i+1} editable={true} on:deleteCard={()=>handleDeleteCard(card)} />
       </div>
     {/each}
   </div>

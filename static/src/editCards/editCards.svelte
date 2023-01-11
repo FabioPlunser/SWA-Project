@@ -13,7 +13,7 @@
     import { fetching } from "../lib/utils/fetching";
     
     $: getCardsFromDeck();
-
+    $: console.log("cards", cards);
     let navButtons = [
         { text: "DeckView", action: () => redirect("") },
         { text: "Logout", action: handleLogout }
@@ -32,8 +32,6 @@
     }
     
     let cards = [];
-    $: console.log("cards", cards);
-    $: console.log("newCards", newCards);
     async function getCardsFromDeck(){
         let res = await fetching("/api/get-cards-of-deck", "GET", [{name: "deckId", value: $userSelectedDeckStore.deckId}]);
         cards = res.items;
@@ -53,8 +51,9 @@
     
 
     async function handleDeleteCard(card) {
+        console.log("card", card);
         if(card.newCard){
-            console.log("delete", card)
+            console.log("card", card);
             newCards = newCards.filter(c => c.id !== card.id);
             newCards = [...newCards];
         }else{

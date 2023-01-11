@@ -12,19 +12,31 @@
    
 	$: getAllCardsToLearn();
 
-
 	let buttons = [
 		{ tag: "button", id: "", text: "DeckView", action: () => redirect("") },
 		{ tag: "button", id: "", text: "Logout", action: handleLogout }
 	];
 
+	$: console.log(cards);
 	let cards = [];
 
 	async function getAllCardsToLearn(){
 		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{name:"deckId", value: $userSelectedDeckStore.deckId}]);
 		cards = res.items;	
+		checkIsFlipped();
 	}
 
+	function checkIsFlipped()
+	{
+		let flippableCards = Array.of(cards.find(c => c.isFlipped));
+		console.log("flippedCards", flippableCards);
+		if(flippableCards){
+			for(let card of flippableCards){
+				cards.push({id: card.id, frontText: card.frontText, backText: card.backText, isFlipped: false});
+			}
+		}
+		cards = [...cards];	
+	}
 
 	async function nextCard(card, g){
 		let data: Params[] = [
