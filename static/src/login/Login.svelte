@@ -11,7 +11,10 @@
     import { addToast, addToastByRes } from '../lib/utils/addToToastStore';
 
     $: if($jwt && !$jwt.expired) redirect("");
-    $: document.cookie = `Token=${$jwt?.token}`;
+    $: {
+        document.cookie = `token=${$jwt?.token}`;
+        document.cookie = `username=${$jwt?.username}`;
+    }
 
     let username = "";
 

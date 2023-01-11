@@ -9,9 +9,11 @@
     import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
     import { Validators} from "../lib/utils/Validators";
     
-    $: if($jwt.token) redirect("");
-    $: document.cookie = `Token=${$jwt?.token}`;
-    
+    $: if($jwt && !$jwt.expired) redirect("");
+    $: {
+        document.cookie = `token=${$jwt?.token}`;
+        document.cookie = `username=${$jwt?.username}`;
+    }
     let username = "";
 
     let errors = {};
