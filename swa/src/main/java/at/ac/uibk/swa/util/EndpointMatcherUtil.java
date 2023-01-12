@@ -20,10 +20,15 @@ import java.util.Arrays;
 public class EndpointMatcherUtil {
 
     //region Base Routes
+    @Getter
     @Value("${swa.api.base:/api}")
     private String apiBaseRoute;
+    @Getter
     @Value("${swa.admin.base:/admin}")
     private String adminBaseRoute;
+    @Getter
+    @Value("${swa.error.base:/error}")
+    private String errorBaseRoute;
 
     public String apiRoute(String route) {
         return apiBaseRoute + route;

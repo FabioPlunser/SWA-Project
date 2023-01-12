@@ -6,6 +6,8 @@ swa:
     base: /src/admin
   api:
     base: /api
+  error:
+    base: /error
 
 server:
   port: 3000
