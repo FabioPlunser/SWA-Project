@@ -1,8 +1,0 @@
-{
-  "devDependencies": {
-    "bad-words": "^3.0.4",
-    "bcrypt": "^5.1.0",
-    "bootstrap-icons": "^1.10.3",
-    "washyourmouthoutwithsoap": "^1.0.2"
-  }
-}

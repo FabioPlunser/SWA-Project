@@ -5,6 +5,7 @@
   import DualSideCard from './../lib/components/dualSideCard.svelte';
   import Form from '../lib/components/Form.svelte';
 
+  import { marked } from 'marked';
   import { fly } from "svelte/transition";
   import { redirect } from "../lib/utils/redirect";
   import { handleLogout } from '../lib/utils/handleLogout';
@@ -18,7 +19,8 @@
 
   let cards = [];
   let id = 0;
-
+  let useMarkdown = false;
+  
   function addCard() {
     cards.push({id: id, frontText: "", backText: "", isFlipped: false});
     cards = [...cards];
@@ -69,6 +71,10 @@
   let name = "";
   let description = "";
 
+  let deckDescriptionFocus = false;
+  let deckHeight = 0;
+  let deckWidth = 0;
+  $: console.log(deckHeight, deckWidth);
 </script>
 
 <svelte:head>
@@ -86,11 +92,11 @@
     <div class="max-w-full">
       <div class="bg-slate-900 p-5 rounded-xl">
         <div class="flex flex-col">
-          <div class="form-control">
-            <label class="input-group">
-              <span class="w-36">Name</span>
-              <input name="name" type="text" bind:value={name} placeholder="Softwarearchitecture" class="input input-bordered w-full bg-slate-800" />
-            </label>
+          <div class="form-control">   
+              <label class="input-group">
+                <span class="w-36">Name</span>
+                <input name="name" type="text" bind:value={name} placeholder="Softwarearchitecture" class="input w-full bg-slate-800" />
+              </label>
             <div class="relative flex justify-between">
               {#if errors?.name?.required?.error}
                 <span class="text-red-500">{errors.name.required.message}</span>
@@ -100,17 +106,32 @@
             </div>
           </div>
           <br class="pt-4"/>
-          <div class="form-control">
-            <label class="input-group">
-              <span class="w-36">Description</span>
-              <textarea name="description" bind:value={description} placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full bg-slate-800 resize max-w-full" />
-            </label>
-            <div class="relative flex justify-between">
-              {#if errors?.description?.required?.error}
-                <span class="text-red-500">{errors.description.required.message}</span>
-              {/if}
+            <div class="form-control">
+                {#if useMarkdown}
+                  {#if deckDescriptionFocus}
+                      <label class="input-group">
+                        <span class="w-36">Description</span>
+                        <textarea name="description" bind:value={description} on:mouseleave={()=>deckDescriptionFocus = false} placeholder="Softwarearchitecture" class="w-full textarea rounded-l-none bg-slate-800 resize" style="height: {deckHeight}px; width: {deckWidth}px"/>
+                      </label>
+                  {:else}
+                      <div class="input-group">
+                        <span class="w-36">Description</span>
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <div class="w-full textarea prose  bg-slate-800" style="height: {deckHeight}px; width: {deckWidth}px" on:mouseenter={()=>deckDescriptionFocus = true}>{@html marked(description)}</div>
+                      </div>
+                  {/if}
+                  {:else}
+                    <label class="input-group" bind:clientHeight={deckHeight} bind:clientWidth={deckWidth}>
+                      <span class="w-36">Description</span>
+                      <textarea name="description" bind:value={description} placeholder="A deck to learn softwarearchitecture" class="w-full textarea rounded-l-none bg-slate-800 resize" style="height: {deckHeight}px; width: {deckWidth}px"/>
+                    </label>
+                {/if}
+              <div class="relative flex justify-between">
+                {#if errors?.description?.required?.error}
+                  <span class="text-red-500">{errors.description.required.message}</span>
+                {/if}
+              </div>
             </div>
-          </div>
           <br class="pt-4"/>
           <div class="form-control">
             <label class="input-group">
@@ -130,6 +151,9 @@
 
         <div class="flex justify-center">
           <button class="btn btn-primary" type="submit">Submit Deck</button>
+          <div class="flex items-center ml-4">
+            Markdown: <input type="checkbox" bind:checked={useMarkdown} class="ml-4 checkbox checkbox-secondary"/>
+          </div>
         </div>
       </div>
 
