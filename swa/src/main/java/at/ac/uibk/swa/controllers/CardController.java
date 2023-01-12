@@ -42,7 +42,7 @@ public class CardController {
         if (cardService.create(card, deckId)) {
             return MessageResponse.builder()
                 .ok()
-                .message("Card created in " + getDeckNameIfPresent(deckId))
+                .message("Card created in " + userDeckService.getDeckNameIfPresent(deckId))
                 .build();
         }
         return MessageResponse.builder()
@@ -113,14 +113,5 @@ public class CardController {
             .error()
             .message("No Cards found")
             .build();
-    }
-
-    private String getDeckNameIfPresent(UUID deckId) {
-        String name = "";
-        Optional<Deck> maybeDeck = userDeckService.findById(deckId);
-        if (maybeDeck.isPresent()) {
-            name = maybeDeck.get().getName();
-        }
-        return name;
     }
 }
