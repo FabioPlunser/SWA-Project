@@ -42,13 +42,13 @@ public class TestRouteAuthentication {
         return "/";
     }
     private String TEST_API_ENDPOINT() {
-        return endpointMatcherUtil.API_LOGOUT_ENDPOINT;
+        return endpointMatcherUtil.ApiRoute("/test");
     }
     private String TEST_API_ADMIN_ENDPOINT() {
-        return endpointMatcherUtil.ApiRoute("/get-all-users");
+        return endpointMatcherUtil.ApiRoute("/testAdmin");
     }
     private String TEST_ADMIN_ENDPOINT() {
-        return endpointMatcherUtil.AdminRoute("/index.html");
+        return endpointMatcherUtil.AdminRoute("/test");
     }
 
     private String[] TEST_ERROR_ENDPOINTS() {
@@ -225,7 +225,7 @@ public class TestRouteAuthentication {
         // given: No created Persons
 
         // when: Accessing an Api Route without Credentials (anonymous)
-        mockMvc.perform(MockMvcRequestBuilders.post(TEST_API_ENDPOINT())
+        mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect an Authentication Exception resulting in a 401 Error Code
         ).andExpectAll(
@@ -239,7 +239,7 @@ public class TestRouteAuthentication {
         Person notSavedPerson = new Person("", "", "", UUID.randomUUID(), Set.of());
 
         // when: Accessing an Admin Page with Credentials (anonymous)
-        mockMvc.perform(MockMvcRequestBuilders.post(TEST_API_ENDPOINT())
+        mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
                         .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(notSavedPerson))
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect an Authentication Exception resulting in a 401 Error Code
@@ -254,7 +254,7 @@ public class TestRouteAuthentication {
         Person person = createUserWithToken(false);
 
         // when: Accessing an Admin Page with Credentials
-        mockMvc.perform(MockMvcRequestBuilders.post(TEST_API_ENDPOINT())
+        mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
                         .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(person))
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect that the Page is returned
@@ -269,7 +269,7 @@ public class TestRouteAuthentication {
         Person person = createUserWithToken(true);
 
         // when: Accessing an Admin Page with Credentials
-        mockMvc.perform(MockMvcRequestBuilders.post(TEST_API_ENDPOINT())
+        mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
                         .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(person))
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect that the Page is returned
