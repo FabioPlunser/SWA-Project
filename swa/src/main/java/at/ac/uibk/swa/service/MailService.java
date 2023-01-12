@@ -12,9 +12,6 @@ import org.springframework.stereotype.Service;
 @Service("mailService")
 public class MailService {
 
-    // TODO See: https://mailtrap.io/blog/spring-send-email/
-    //           https://www.baeldung.com/spring-email
-
     @Autowired
     private MailConfiguration mailConfiguration;
     @Autowired
@@ -22,10 +19,13 @@ public class MailService {
 
     public void notifyBlockedDeck(Deck deck) {
         String[] recipients = deck.getSubscribedPersons().stream().map(Person::getEmail).toArray(String[]::new);
+        sendMessage(String.format("Deck \"%s\" has been blocked!", deck.getName()), recipients);
+    }
 
+    public void sendMessage(String text, String[] recipients) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(recipients);
-        message.setSubject(String.format("Deck \"%s\" has been blocked!", deck.getName()));
+        message.setSubject(text);
         message.setText("");
 
         mailSender.send(message);
