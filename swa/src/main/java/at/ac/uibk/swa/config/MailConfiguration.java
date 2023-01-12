@@ -10,14 +10,14 @@ import java.util.Properties;
 @Configuration
 public class MailConfiguration {
 
-    @Bean
+    /*@Bean
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
+        mailSender.setHost("mail.gmx.net");
         mailSender.setPort(587);
 
-        mailSender.setUsername("test@gmail.com");
-        mailSender.setPassword("password");
+        mailSender.setUsername("simpson-lisa@gmx.at");
+        mailSender.setPassword("p1a2s3s4!");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
@@ -26,5 +26,5 @@ public class MailConfiguration {
         props.put("mail.debug", "true");
 
         return mailSender;
-    }
+    }*/
 }
