@@ -42,17 +42,17 @@ public class TestRouteAuthentication {
         return "/";
     }
     private String TEST_API_ENDPOINT() {
-        return endpointMatcherUtil.ApiRoute("/test");
+        return endpointMatcherUtil.apiRoute("/test");
     }
     private String TEST_API_ADMIN_ENDPOINT() {
-        return endpointMatcherUtil.ApiRoute("/testAdmin");
+        return endpointMatcherUtil.apiRoute("/testAdmin");
     }
     private String TEST_ADMIN_ENDPOINT() {
-        return endpointMatcherUtil.AdminRoute("/test");
+        return endpointMatcherUtil.adminRoute("/test");
     }
 
     private String[] TEST_ERROR_ENDPOINTS() {
-        return endpointMatcherUtil.API_ERROR_ENDPOINTS;
+        return endpointMatcherUtil.getApiErrorEndpoints();
     }
     //endregion
 

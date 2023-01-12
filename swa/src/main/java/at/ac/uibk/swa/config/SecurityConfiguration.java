@@ -69,7 +69,7 @@ public class SecurityConfiguration {
     //region Custom Authentication Filter Beans
     @Bean
     AbstractAuthenticationProcessingFilter bearerAuthenticationFilter(HttpSecurity http) throws Exception {
-        final AbstractAuthenticationProcessingFilter filter = new HeaderTokenAuthenticationFilter(endpointMatcherUtil.PROTECTED_API_ROUTES);
+        final AbstractAuthenticationProcessingFilter filter = new HeaderTokenAuthenticationFilter(endpointMatcherUtil.getProtectedApiRoutes());
 
         filter.setAuthenticationManager(authManager(http));
         filter.setAuthenticationFailureHandler(failureHandler);
@@ -79,7 +79,7 @@ public class SecurityConfiguration {
 
     @Bean
     AbstractAuthenticationProcessingFilter cookieAuthenticationFilter(HttpSecurity http) throws Exception {
-        final AbstractAuthenticationProcessingFilter filter = new CookieTokenAuthenticationFilter(endpointMatcherUtil.ADMIN_ROUTES);
+        final AbstractAuthenticationProcessingFilter filter = new CookieTokenAuthenticationFilter(endpointMatcherUtil.getAdminRoutes());
 
         filter.setAuthenticationManager(authManager(http));
         filter.setAuthenticationFailureHandler(failureHandler);
@@ -100,8 +100,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth ->
                     auth
                             // Only allow authenticated Users to use the API
-                            .requestMatchers(endpointMatcherUtil.PROTECTED_API_ROUTES).authenticated()
-                            .requestMatchers(endpointMatcherUtil.ADMIN_ROUTES).hasAuthority(Permission.ADMIN.toString())
+                            .requestMatchers(endpointMatcherUtil.getProtectedApiRoutes()).authenticated()
+                            .requestMatchers(endpointMatcherUtil.getAdminRoutes()).hasAuthority(Permission.ADMIN.toString())
                             // Permit everyone to get the static resources
                             .requestMatchers(AnyRequestMatcher.INSTANCE).permitAll()
                 )
