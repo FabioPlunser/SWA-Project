@@ -40,6 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TestLoginControllerGeneral {
     @Autowired
     private PersonService personService;
+    @Autowired
+    private EndpointMatcherUtil endpointMatcherUtil;
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
@@ -55,7 +57,7 @@ class TestLoginControllerGeneral {
 
         // when: logging in as that user
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(EndpointMatcherUtil.LOGIN_ENDPOINT)
+                        .post(endpointMatcherUtil.API_LOGIN_ENDPOINT)
                         .param("username", username)
                         .param("password", password)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,7 +86,7 @@ class TestLoginControllerGeneral {
 
         // when: trying to log in as that user with wrong password
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(EndpointMatcherUtil.LOGIN_ENDPOINT)
+                        .post(endpointMatcherUtil.API_LOGIN_ENDPOINT)
                         .param("username", username)
                         .param("password", "wrong-password")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +104,7 @@ class TestLoginControllerGeneral {
 
         // when: trying to log in as that user with wrong password
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(EndpointMatcherUtil.LOGIN_ENDPOINT)
+                        .post(endpointMatcherUtil.API_LOGIN_ENDPOINT)
                         .param("username", StringGenerator.username())
                         .param("password", StringGenerator.password())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -127,7 +129,7 @@ class TestLoginControllerGeneral {
 
         // when: logging out that user
         mockMvc.perform(MockMvcRequestBuilders
-                .post(EndpointMatcherUtil.LOGOUT_ENDPOINT)
+                .post(endpointMatcherUtil.API_LOGOUT_ENDPOINT)
                 .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(maybePerson.get()))
                 .contentType(MediaType.APPLICATION_JSON)
         )
@@ -143,7 +145,7 @@ class TestLoginControllerGeneral {
 
         // when: logging out with random token
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(EndpointMatcherUtil.LOGOUT_ENDPOINT)
+                        .post(endpointMatcherUtil.API_LOGOUT_ENDPOINT)
                         .header(HttpHeaders.AUTHORIZATION, UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -159,7 +161,7 @@ class TestLoginControllerGeneral {
 
         // when: logging out without token
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(EndpointMatcherUtil.LOGOUT_ENDPOINT)
+                        .post(endpointMatcherUtil.API_LOGOUT_ENDPOINT)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
         // then: status code 401 must be returned

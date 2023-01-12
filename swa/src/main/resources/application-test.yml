@@ -1,3 +1,8 @@
+
+logging:
+  level:
+    web: TRACE
+
 spring:
   datasource:
     # Use an in-memory Database for testing

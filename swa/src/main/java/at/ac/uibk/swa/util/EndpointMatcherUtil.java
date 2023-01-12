@@ -63,6 +63,8 @@ public class EndpointMatcherUtil {
                     .map(ReflectionUtil::<String>getStaticFieldValueTyped)
                     .toArray(String[]::new);
 
+    public String[] API_ERROR_ENDPOINTS;
+
     private RequestMatcher ERROR_ROUTES;
     //endregion
 
@@ -96,9 +98,12 @@ public class EndpointMatcherUtil {
         this.API_LOGOUT_ENDPOINT = this.ApiRoute(LOGOUT_ENDPOINT);
         this.API_REGISTER_ENDPOINT = this.ApiRoute(REGISTER_ENDPOINT);
 
+        this.API_ERROR_ENDPOINTS = Arrays.stream(this.ERROR_ENDPOINTS)
+                .map(this::ApiRoute)
+                .toArray(String[]::new);
+
         this.ERROR_ROUTES = new OrRequestMatcher(
-                Arrays.stream(this.ERROR_ENDPOINTS)
-                        .map(this::ApiRoute)
+                Arrays.stream(this.API_ERROR_ENDPOINTS)
                         .map(AntPathRequestMatcher::new)
                         .toArray(AntPathRequestMatcher[]::new)
         );
