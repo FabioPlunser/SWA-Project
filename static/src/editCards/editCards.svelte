@@ -15,7 +15,7 @@
     $: getCardsFromDeck();
     $: console.log("cards", cards);
     let navButtons = [
-        { text: "DeckView", href: "/" },
+        { text: "Home", href: "/" },
     ];
 
     let showNewCards = true;
@@ -97,7 +97,7 @@
                 <h1 class="text-3xl font-bold">Cards of Deck {$userSelectedDeckStore.name}</h1>
                 <div class="flex justify-center flex-row ">
                     <div class="tooltip" data-tip="Update Cards of deck">
-                        <button class="ml-2 btn btn-primary" type="submit">Update Cards</button>
+                        <button class="ml-2 btn btn-primary" type="submit">Submit Changes</button>
                     </div>
                 </div>
             </div>
@@ -132,7 +132,7 @@
                 
             </div>
             <div class="flex items-center">
-                <span class="mx-2">Show new cars: </span> <input type="checkbox" class="flex items-center toggle toggle-info" bind:checked={showNewCards} />
+                <span class="mx-2">Show new cards: </span> <input type="checkbox" class="flex items-center toggle toggle-info" bind:checked={showNewCards} />
             </div>
         </div>  
 

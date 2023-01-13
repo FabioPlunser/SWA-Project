@@ -43,7 +43,7 @@
         <button class="btn btn-accent" type="button" on:click={()=>handleDeleteCard(card)}>Delete Card</button>
         {#if flippable}
           <label>
-            <span class="ml-4">Learn both sites</span>
+            <span class="ml-4">Learn both sides</span>
             <input type="checkbox" bind:checked={isFlipped} on:change={handleFlip} class="ml-4"/>
           </label>
         {/if}

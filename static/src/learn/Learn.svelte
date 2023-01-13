@@ -13,7 +13,7 @@
 	$: getAllCardsToLearn();
 
 	let buttons = [
-		{ text: "DeckView", href: "/" },
+		{ text: "Home", href: "/" },
 	];
 
 	$: console.log(cards);
