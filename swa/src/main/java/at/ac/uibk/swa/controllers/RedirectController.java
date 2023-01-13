@@ -53,6 +53,12 @@ public class RedirectController {
         modelAndView.setViewName("/src/editCards/index.html");
         return modelAndView;
     }
+    @GetMapping("/create-deck")
+    public ModelAndView createDeck() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/src/createDeck/index.html");
+        return modelAndView;
+    }
     @GetMapping("/admin")
     public ModelAndView adminPage() {
         ModelAndView modelAndView = new ModelAndView();
@@ -69,12 +75,6 @@ public class RedirectController {
     public ModelAndView showCards() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("/src/admin/showCards/index.html");
-        return modelAndView;
-    }
-    @GetMapping("/create-deck")
-    public ModelAndView createDeck() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("/src/createDeck/index.html");
         return modelAndView;
     }
 }

@@ -4,6 +4,7 @@ import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.annotations.AnyPermission;
+import at.ac.uibk.swa.models.annotations.ApiRestController;
 import at.ac.uibk.swa.models.rest_responses.*;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
@@ -21,7 +22,7 @@ import java.util.UUID;
  *
  * @author Fabian Magreiter
  */
-@RestController
+@ApiRestController
 @SuppressWarnings("unused")
 public class DeckController {
 
@@ -38,7 +39,7 @@ public class DeckController {
      * @param deck
      * @return A MessageResponse indicating success or failure.
      */
-    @PostMapping("/api/create-deck")
+    @PostMapping("/create-deck")
     public RestResponse createDeck(
             @RequestBody final Deck deck
     ) {
@@ -56,7 +57,7 @@ public class DeckController {
      * @param deck The Deck to update.
      * @return A MessageResponse indicating success or failure.
      */
-    @PostMapping("/api/update-deck")
+    @PostMapping("/update-deck")
     public RestResponse updateDeck(
             @RequestBody final Deck deck
     ) {
@@ -78,7 +79,7 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @PostMapping("/api/publish-deck")
+    @PostMapping("/publish-deck")
     public RestResponse publish(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
@@ -99,7 +100,7 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @PostMapping("/api/unpublish-deck")
+    @PostMapping("/unpublish-deck")
     public RestResponse unpublish(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
@@ -121,7 +122,7 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @PostMapping("/api/subscribe-deck")
+    @PostMapping("/subscribe-deck")
     public RestResponse subscribeDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
@@ -142,7 +143,7 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @PostMapping("/api/unsubscribe-deck")
+    @PostMapping("/unsubscribe-deck")
     public RestResponse unsubscribeDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
@@ -165,7 +166,7 @@ public class DeckController {
      * @return
      */
     @AnyPermission(Permission.ADMIN)
-    @PostMapping("/api/block-deck")
+    @PostMapping("/block-deck")
     public RestResponse blockDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
@@ -188,7 +189,7 @@ public class DeckController {
      * @return
      */
     @AnyPermission(Permission.ADMIN)
-    @PostMapping("/api/unblock-deck")
+    @PostMapping("/unblock-deck")
     public RestResponse unblockDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
@@ -209,7 +210,7 @@ public class DeckController {
      * @param deckId
      * @return
      */
-    @DeleteMapping("/api/delete-deck")
+    @DeleteMapping("/delete-deck")
     public RestResponse deleteDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
@@ -229,7 +230,7 @@ public class DeckController {
      * Gets all Decks that the current User is subscribed to or created.
      * @return A List of Decks.
      */
-    @GetMapping("/api/get-user-decks")
+    @GetMapping("/get-user-decks")
     public RestResponse getUserDecks()  {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
         if (maybeDecks.isPresent()) {
@@ -246,7 +247,7 @@ public class DeckController {
      * @return A List of Decks.
      */
     @AnyPermission(Permission.ADMIN)
-    @GetMapping("/api/get-given-user-decks")
+    @GetMapping("/get-given-user-decks")
     public RestResponse getGivenUserDecks(
             @RequestParam(name = "personId") final UUID personId
     ){
@@ -264,7 +265,7 @@ public class DeckController {
      * Gets all Decks that the current User is subscribed to.
      * @return A List of Decks.
      */
-    @GetMapping("/api/get-subscribed-decks")
+    @GetMapping("/get-subscribed-decks")
     public RestResponse getSubscribedDecks()  {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSubscribedDecks();
         if (maybeDecks.isPresent()) {
@@ -280,7 +281,7 @@ public class DeckController {
      * Gets all Decks that the current User created.
      * @return A List of Decks.
      */
-    @GetMapping("/api/get-created-decks")
+    @GetMapping("/get-created-decks")
     public RestResponse getCreatedDecks()  {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllOwnedDecks();
         if (maybeDecks.isPresent()) {
@@ -299,7 +300,7 @@ public class DeckController {
      *
      * @return A List of Decks.
      */
-    @GetMapping("/api/get-published-decks")
+    @GetMapping("/get-published-decks")
     public RestResponse getPublishedDecks() {
         return  new DeckListResponse(userDeckService.findAllAvailableDecks());
     }
@@ -309,7 +310,7 @@ public class DeckController {
      * @return A List of Decks.
      */
     @AnyPermission(Permission.ADMIN)
-    @GetMapping("/api/get-all-decks")
+    @GetMapping("/get-all-decks")
     public RestResponse getAllDecks() {
         return new DeckListResponse(adminDeckService.findAll());
     }
@@ -320,7 +321,7 @@ public class DeckController {
      *
      * @return A List of Cards that should be learned sorted by nextLearn-Date.
      */
-    @GetMapping("/api/get-all-cards-to-learn")
+    @GetMapping("/get-all-cards-to-learn")
     public RestResponse getAllCardsToLearn(
             @RequestParam(name = "deckId") final UUID deckId
     ) {

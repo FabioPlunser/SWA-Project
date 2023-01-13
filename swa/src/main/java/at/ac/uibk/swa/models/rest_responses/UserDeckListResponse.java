@@ -25,7 +25,8 @@ public class UserDeckListResponse extends ListResponse<UserDeckListResponse.User
     public String getType() { return "UserDeckList"; }
 
     public UserDeckListResponse(List<Deck> decks) {
-        this(decks, AuthContext.getCurrentPerson().get());
+        this(decks, AuthContext.getCurrentPerson().orElseThrow(() -> new NullPointerException("Could not find Person")));
+
     }
 
     public UserDeckListResponse(List<Deck> decks, Person person) {
@@ -41,7 +42,7 @@ public class UserDeckListResponse extends ListResponse<UserDeckListResponse.User
         private long numNotLearnedCards;
 
         public UserDeckInfo(Deck deck) throws CredentialException {
-            this(deck, AuthContext.getCurrentPerson().orElseThrow(() -> new CredentialException()));
+            this(deck, AuthContext.getCurrentPerson().orElseThrow((CredentialException::new)));
         }
 
         public UserDeckInfo(Deck deck, Person person) {
@@ -56,8 +57,8 @@ public class UserDeckListResponse extends ListResponse<UserDeckListResponse.User
                             lp -> lp.map(learningProgress -> learningProgress.getNextLearn().isBefore(now)).orElse(false)
                     ));
 
-            this.numNotLearnedCards = counter.matchesFirst;
-            this.numCardsToRepeat = counter.matchesSecond;
+            this.numNotLearnedCards = counter.getMatchesFirst();
+            this.numCardsToRepeat = counter.getMatchesSecond();
         }
     }
 }

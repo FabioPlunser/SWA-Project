@@ -7,29 +7,29 @@ import java.util.stream.Collector;
 public class DoublePredicateCountingCollector<T>
         implements Collector<T, DoubleCounter, DoubleCounter>
 {
-    private Predicate<T> _firstPredicate;
-    private Predicate<T> _secondPredicate;
+    private final Predicate<T> firstPredicate;
+    private final Predicate<T> secondPredicate;
 
     public DoublePredicateCountingCollector(
             Predicate<T> firstPredicate, Predicate<T> secondPredicate)
     {
-        this._firstPredicate = firstPredicate;
-        this._secondPredicate = secondPredicate;
+        this.firstPredicate = firstPredicate;
+        this.secondPredicate = secondPredicate;
     }
 
     @Override
     public Supplier<DoubleCounter> supplier() {
-        return () -> new DoubleCounter();
+        return DoubleCounter::new;
     }
 
     @Override
     public BiConsumer<DoubleCounter, T> accumulator() {
         return (acc, elem) -> {
-            if (this._firstPredicate.test(elem)) {
-                acc.matchesFirst ++;
+            if (this.firstPredicate.test(elem)) {
+                acc.first();
             }
-            if (this._secondPredicate.test(elem)) {
-                acc.matchesSecond ++;
+            if (this.secondPredicate.test(elem)) {
+                acc.second();
             }
         };
     }
@@ -37,8 +37,8 @@ public class DoublePredicateCountingCollector<T>
     @Override
     public BinaryOperator<DoubleCounter> combiner() {
         return (acc1, acc2) -> new DoubleCounter(
-                acc1.matchesFirst + acc2.matchesFirst,
-                acc1.matchesSecond + acc2.matchesSecond
+                acc1.getMatchesFirst() + acc2.getMatchesFirst(),
+                acc1.getMatchesSecond() + acc2.getMatchesSecond()
         );
     }
 

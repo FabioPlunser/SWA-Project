@@ -20,9 +20,6 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.ADMIN_ROUTES;
-import static at.ac.uibk.swa.util.EndpointMatcherUtil.PROTECTED_API_ROUTES;
-
 /**
  * Class for configuring the Authentication Process of the Web-Server.
  * <br/>
@@ -53,6 +50,9 @@ public class SecurityConfiguration {
     private RestAccessDeniedHandler accessDeniedHandler;
 
     @Autowired
+    private EndpointMatcherUtil endpointMatcherUtil;
+
+    @Autowired
     private StartupConfig.Profile activeProfile;
     //endregion
 
@@ -69,7 +69,7 @@ public class SecurityConfiguration {
     //region Custom Authentication Filter Beans
     @Bean
     AbstractAuthenticationProcessingFilter bearerAuthenticationFilter(HttpSecurity http) throws Exception {
-        final AbstractAuthenticationProcessingFilter filter = new HeaderTokenAuthenticationFilter(PROTECTED_API_ROUTES);
+        final AbstractAuthenticationProcessingFilter filter = new HeaderTokenAuthenticationFilter(endpointMatcherUtil.getProtectedApiRoutes());
 
         filter.setAuthenticationManager(authManager(http));
         filter.setAuthenticationFailureHandler(failureHandler);
@@ -79,7 +79,7 @@ public class SecurityConfiguration {
 
     @Bean
     AbstractAuthenticationProcessingFilter cookieAuthenticationFilter(HttpSecurity http) throws Exception {
-        final AbstractAuthenticationProcessingFilter filter = new CookieTokenAuthenticationFilter(ADMIN_ROUTES);
+        final AbstractAuthenticationProcessingFilter filter = new CookieTokenAuthenticationFilter(endpointMatcherUtil.getAdminRoutes());
 
         filter.setAuthenticationManager(authManager(http));
         filter.setAuthenticationFailureHandler(failureHandler);
@@ -100,8 +100,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth ->
                     auth
                             // Only allow authenticated Users to use the API
-                            .requestMatchers(PROTECTED_API_ROUTES).authenticated()
-                            .requestMatchers(ADMIN_ROUTES).hasAuthority(Permission.ADMIN.toString())
+                            .requestMatchers(endpointMatcherUtil.getProtectedApiRoutes()).authenticated()
+                            .requestMatchers(endpointMatcherUtil.getAdminRoutes()).hasAuthority(Permission.ADMIN.toString())
                             // Permit everyone to get the static resources
                             .requestMatchers(AnyRequestMatcher.INSTANCE).permitAll()
                 )
