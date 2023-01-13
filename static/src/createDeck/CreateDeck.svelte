@@ -4,11 +4,9 @@
 	import SvelteToast from '$components/SvelteToast.svelte';
   import DualSideCard from '$components/dualSideCard.svelte';
   import Form from '$components/Form.svelte';
+  import SvelteMarkdown from 'svelte-markdown'
 
-  import { marked } from 'marked';
   import { fly } from "svelte/transition";
-  import { redirect } from "$utils/redirect";
-  import { handleLogout } from '$utils/handleLogout';
   import { addToastByRes } from '$utils/addToToastStore';
   import { Validators } from "$utils/Validators";
   
@@ -69,11 +67,7 @@
   let MaxNumberChars = 255;
   let name = "";
   let description = "";
-
-  let deckDescriptionFocus = false;
-  let deckHeight = 0;
-  let deckWidth = 0;
-  $: console.log(deckHeight, deckWidth);
+  let descriptionFocus = false;
 </script>
 
 <svelte:head>
@@ -91,77 +85,67 @@
     <div class="max-w-full">
       <div class="bg-slate-900 p-5 rounded-xl">
         <div class="flex flex-col">
-          <div class="form-control">   
-              <label class="input-group">
-                <span class="w-36">Name</span>
-                <input name="name" type="text" bind:value={name} placeholder="Softwarearchitecture" class="input w-full bg-slate-800" />
-              </label>
-            <div class="relative flex justify-between">
-              {#if errors?.name?.required?.error}
-                <span class="text-red-500">{errors.name.required.message}</span>
-              {/if}
-              <p class="absolute text-sm text-gray-400 right-0">{name.length}/{MaxNumberChars}</p>
-              
-            </div>
+          <label class="input-group">
+            <span class="w-40">Name</span>
+            <input name="name" type="text" bind:value={name} placeholder="Softwarearchitecture" class="input w-full bg-slate-800" />
+          </label>
+          <div class="relative flex justify-between">
+            {#if errors?.name?.required?.error}
+              <span class="text-red-500">{errors.name.required.message}</span>
+            {/if}
+            <p class="absolute text-sm text-gray-400 right-0">{name.length}/{MaxNumberChars}</p>
           </div>
+      
           <br class="pt-4"/>
-            <div class="form-control">
-                {#if useMarkdown}
-                  {#if deckDescriptionFocus}
-                      <label class="input-group">
-                        <span class="w-36">Description</span>
-                        <textarea name="description" bind:value={description} on:mouseleave={()=>deckDescriptionFocus = false} placeholder="Softwarearchitecture" class="w-full textarea rounded-l-none bg-slate-800 resize" style="height: {deckHeight}px; width: {deckWidth}px"/>
-                      </label>
-                  {:else}
-                      <div class="input-group">
-                        <span class="w-36">Description</span>
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
-                        <div class="w-full textarea prose  bg-slate-800" style="height: {deckHeight}px; width: {deckWidth}px" on:mouseenter={()=>deckDescriptionFocus = true}>{@html marked(description)}</div>
-                      </div>
-                  {/if}
-                  {:else}
-                    <label class="input-group" bind:clientHeight={deckHeight} bind:clientWidth={deckWidth}>
-                      <span class="w-36">Description</span>
-                      <textarea name="description" bind:value={description} placeholder="A deck to learn softwarearchitecture" class="w-full textarea rounded-l-none bg-slate-800 resize" style="height: {deckHeight}px; width: {deckWidth}px"/>
-                    </label>
-                {/if}
-              <div class="relative flex justify-between">
-                {#if errors?.description?.required?.error}
-                  <span class="text-red-500">{errors.description.required.message}</span>
-                {/if}
-              </div>
-            </div>
-          <br class="pt-4"/>
-          <div class="form-control">
-            <label class="input-group">
-            <span class="w-36">Publish</span>
-            <select name="published" class="flex input w-full bg-slate-800">
-                <option value={false}>false</option>
-                <option value={true}>true</option>
-            </select>
-            </label>
-            {#if errors?.isPublished?.required?.error}
-              <span class="text-red-500">{errors.isPublished.required.message}</span>
+
+          <input name="description" type="hidden" bind:value={description} />
+
+          <!-- svelte-ignore a11y-label-has-associated-control -->
+          <label class="input-group">
+            <span class="w-40">Description</span>
+            {#if descriptionFocus}
+              <textarea on:blur={()=>descriptionFocus=false} contenteditable id="divTextarea" bind:value={description} placeholder="Description" class="bg-slate-800  min-h-full  w-full p-2 rounded-xl"/>
+              <!-- <div  on:blur={()=>descriptionFocus=false} contenteditable id="divTextarea" bind:innerHTML={description} placeholder="Description" class="bg-slate-800  min-h-full  w-full p-2 rounded-xl"/> -->
+            {:else}
+              <!-- svelte-ignore a11y-click-events-have-key-events -->
+              <div on:click={()=>descriptionFocus=true} id="divTextarea" placeholder="Description" class="bg-slate-800 min-h-full w-full p-2 rounded-xl prose prose-sm"><SvelteMarkdown source={description}/></div>  
+            {/if}
+          </label>
+          <div class="relative flex justify-between">
+            {#if errors?.description?.required?.error}
+              <span class="text-red-500">{errors.description.required.message}</span>
             {/if}
           </div>
-        </div>
+          
+          <br class="pt-4"/>
+          
+          <label class="input-group">
+          <span class="w-40">Publish</span>
+          <select name="published" class="flex input w-full bg-slate-800">
+              <option value={false}>false</option>
+              <option value={true}>true</option>
+          </select>
+          </label>
+          {#if errors?.isPublished?.required?.error}
+            <span class="text-red-500">{errors.isPublished.required.message}</span>
+          {/if} 
+      
 
-        <br class="pt-4"/>
 
-        <div class="flex justify-center">
-          <button class="btn btn-primary" type="submit">Submit Deck</button>
-          <div class="flex items-center ml-4">
-            Markdown: <input type="checkbox" bind:checked={useMarkdown} class="ml-4 checkbox checkbox-secondary"/>
+          <br class="pt-4"/>
+
+          <div class="flex justify-center">
+            <button class="btn btn-primary" type="submit">Submit Deck</button>
+            
           </div>
-        </div>
       </div>
-
-
       <br class="pt-4"/>
       <h1 class="flex justify-center text-3xl font-bold">Cards</h1>
       <br class="pt-4"/>
-      <div class="tooltip flex justify-center" data-tip="Add Card">
-        <button class="flex justify-center btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>
+      <div class="flex justify-center">
+        <div class="tooltip flex justify-center" data-tip="Add Card">
+          <button class="flex justify-center btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>
+        </div>
       </div>
     </div>
   </Form>
@@ -175,3 +159,13 @@
     {/each}
   </div>
 </main>
+
+<style>
+  #divTextarea {
+      -moz-appearance: textfield-multiline;
+      -webkit-appearance: textarea;
+      /* border: 1px solid gray; */
+      /* font: medium -moz-fixed; */
+      /* font: -webkit-small-control; */
+  }
+</style>
