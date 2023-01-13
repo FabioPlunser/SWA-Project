@@ -53,7 +53,7 @@ public abstract class RestResponse implements Serializable {
      * @return The Type of the Response.
      */
     @JsonInclude
-    public String getType() { return "Base"; }
+    public abstract String getType();
 
     //region Status Code
     @JsonIgnore

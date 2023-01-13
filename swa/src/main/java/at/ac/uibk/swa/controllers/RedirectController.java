@@ -23,6 +23,12 @@ public class RedirectController {
         modelAndView.setViewName("/src/index.html");
         return modelAndView;
     }
+    @GetMapping("${swa.error.base:/error}")
+    public ModelAndView error() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/src/error/index.html");
+        return modelAndView;
+    }
     @GetMapping("/login")
     public ModelAndView login() {
         ModelAndView modelAndView = new ModelAndView();
