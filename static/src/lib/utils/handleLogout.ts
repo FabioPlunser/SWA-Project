@@ -1,4 +1,4 @@
-import { redirect } from './redirect';
+import { redirect } from '$utils/redirect';
 
 export function handleLogout(expired?: boolean) {
   if(expired){
@@ -6,6 +6,6 @@ export function handleLogout(expired?: boolean) {
   }else{
     localStorage.removeItem('jwt');
   }
-  document.cookie = '';
-  redirect('');
+  document.cookie = "";
+  redirect("");
 }

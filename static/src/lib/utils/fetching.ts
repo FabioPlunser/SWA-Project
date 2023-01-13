@@ -1,7 +1,7 @@
-import { addToastByRes, addToast } from "./addToToastStore";
-import { jwt } from "../stores/jwt";
+import { addToastByRes, addToast } from "$utils/addToToastStore";
+import { jwt } from "$stores/jwtStore";
 import { get } from "svelte/store";
-import { handleLogout } from "./handleLogout";
+import { handleLogout } from "$utils/handleLogout";
 
 export interface Params {
   name: string;

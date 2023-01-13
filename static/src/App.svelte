@@ -1,26 +1,26 @@
 <script lang="ts">
-	import Nav from './lib/components/nav.svelte';
-	import SvelteToast from './lib/components/SvelteToast.svelte';
+	import Nav from '$components/nav.svelte';
+	import SvelteToast from '$components/SvelteToast.svelte';
 
-	import Deck from './lib/components/deck.svelte';
-	import AdminDeck from './lib/components/adminDeck.svelte';
-	import SubscribedDeck from './lib/components/subscribedDeck.svelte';
-	import Modal from './lib/components/modal.svelte';
-	import Spinner from './lib/components/Spinner.svelte';
-	import Form from './lib/components/Form.svelte';
-	import DualSideCard from './lib/components/dualSideCard.svelte';
-	import { jwt } from "./lib/stores/jwt";
+	import Deck from '$components/deck.svelte';
+	import AdminDeck from '$components/adminDeck.svelte';
+	import SubscribedDeck from '$components/subscribedDeck.svelte';
+	import Modal from '$components/modal.svelte';
+	import Spinner from '$components/Spinner.svelte';
+	import Form from '$components/Form.svelte';
+	import DualSideCard from '$components/dualSideCard.svelte';
+	import { jwt } from "$stores/jwtStore";
 
 	import { fly } from 'svelte/transition';
-	import { addToast, addToastByRes } from './lib/utils/addToToastStore';
-	import { redirect } from "./lib/utils/redirect";
-	import { userPermissionsStore } from './lib/stores/userPermissionsStore';
-	import { handleLogout } from './lib/utils/handleLogout';
-	import { userSelectedDeckStore } from './lib/stores/userSelectedDeckStore';
-  	import { fetching } from './lib/utils/fetching';
-	import type { IDeck } from './lib/utils/types';
+	import { addToast, addToastByRes } from '$utils/addToToastStore';
+	import { redirect } from "$utils/redirect";
+	import { userPermissionsStore } from '$stores/userPermissionsStore';
+	import { handleLogout } from '$utils/handleLogout';
+	import { userSelectedDeckStore } from '$stores/userSelectedDeckStore';
+  	import { fetching } from '$utils/fetching';
+	import type { IDeck } from '$utils/types';
 
-	$: if(!$jwt) redirect("login");
+	$: if(!$jwt || $jwt?.expired) redirect("login");
 	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
 	$: getUserDecks();
 	$: getSubscribedDecks();
@@ -51,8 +51,7 @@
 
 	let navButtons = [
 		{ text: `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`, action: ()=>{showPublicDecks=true; getPublicDecks()}},
-		{ text: "Create Deck", action: () => redirect("create-deck") },
-		{ text: "Logout", action: () => handleLogout()}
+		{ text: "Create Deck", href: "create-deck" },
 	]
 
 	if (navigator.userAgent.indexOf("Mac") != -1) {

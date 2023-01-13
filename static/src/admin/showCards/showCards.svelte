@@ -1,21 +1,20 @@
 <script lang="ts">
-  import favicon  from '../../assets/favicon.png';
-  import Nav from "../../lib/components/nav.svelte";
-  import DualSideCard from "../../lib/components/dualSideCard.svelte";
-  import Spinner from "../../lib/components/Spinner.svelte";
-	import SvelteToast from './../../lib/components/SvelteToast.svelte';
+  import favicon  from '$assets/favicon.png';
+  import Nav from "$components/nav.svelte";
+  import DualSideCard from "$components/dualSideCard.svelte";
+  import Spinner from "$components/Spinner.svelte";
+	import SvelteToast from '$components/SvelteToast.svelte';
   
-  import { redirect } from '../../lib/utils/redirect';
-  import { handleLogout } from "../../lib/utils/handleLogout";
-	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
-  import { addToastByRes } from "../../lib/utils/addToToastStore";
-  import { fetching } from "../../lib/utils/fetching";
+  import { redirect } from '$utils/redirect';
+  import { handleLogout } from "$utils/handleLogout";
+	import { adminSelectedDeckStore } from '$stores/adminSelectedDeckStore';
+  import { addToastByRes } from "$utils/addToToastStore";
+  import { fetching } from "$utils/fetching";
 
   let buttons = [
-    { text: "Back", action: () => redirect("admin/show-decks") },
-    { text: "Admin", action: () => redirect("admin") },
-    { text: "Home", action: () => redirect("") },
-    { text: "Logout",action: () => handleLogout()}
+    { text: "Back", href: "admin/show-decks" },
+    { text: "Admin", href: "admin" },
+    { text: "Home", href: "/" }
   ];
 
   async function getCardsOfDeck(){ 

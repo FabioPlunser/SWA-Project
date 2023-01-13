@@ -3,10 +3,10 @@
      * @param {string} dataFormat - "JSON" or "FormData"
     */
     import { createEventDispatcher } from "svelte";
-    import { fetching } from "../utils/fetching";
+    import { fetching } from "$utils/fetching";
 
     let dispatch = createEventDispatcher();
-    import { validateForm, isFormValid } from "../utils/Validators";
+    import { validateForm, isFormValid } from "$utils/Validators";
 
     export let style = "";
     export let dataFormat = "JSON";

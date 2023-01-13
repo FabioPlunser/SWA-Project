@@ -1,5 +1,5 @@
 <script lang="ts">
-  import favicon  from '../assets/favicon.png';
+  import favicon  from '$assets/favicon.png';
   import Nav from "../lib/components/nav.svelte";
   import Modal from "../lib/components/modal.svelte";
   import Spinner from '../lib/components/Spinner.svelte';
@@ -27,9 +27,8 @@
   let searchPermission = "";
 
   let buttons = [
-    { text: "Home", action: () => redirect("") },
-    { text: "Admin",action: () => redirect("admin")},
-    { text: "Logout",action: () => handleLogout()}
+    { text: "Home", href: "/" },
+    { text: "Admin", href: "/admin"},
   ];
 
 

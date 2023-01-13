@@ -1,4 +1,4 @@
-import {toast} from '../stores/toastStore'
+import {toast} from '$stores/toastStore'
 
 export function addToast(message='', theme='alert-info') {
     toast.push(message, {theme: theme})

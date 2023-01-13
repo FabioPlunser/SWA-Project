@@ -1,22 +1,21 @@
 <script lang="ts">
-  import favicon  from '../../assets/favicon.png';
-  import Nav from "../../lib/components/nav.svelte";
-  import Spinner from "../../lib/components/Spinner.svelte";
-	import SvelteToast from './../../lib/components/SvelteToast.svelte';
+  import favicon  from '$assets/favicon.png';
+  import Nav from "$components/nav.svelte";
+  import Spinner from "$components/Spinner.svelte";
+	import SvelteToast from '$components/SvelteToast.svelte';
 
-  import { redirect } from '../../lib/utils/redirect';
-  import { handleLogout } from "../../lib/utils/handleLogout";
-  import { adminSelectedUserStore } from '../../lib/stores/adminSelectedUserStore';
-	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
-  import { fetching } from "../../lib/utils/fetching";
+  import { redirect } from '$utils/redirect';
+  import { handleLogout } from "$utils/handleLogout";
+  import { adminSelectedUserStore } from '$stores/adminSelectedUserStore';
+	import { adminSelectedDeckStore } from '$stores/adminSelectedDeckStore';
+  import { fetching } from "$utils/fetching";
 
   $: selectedUser = $adminSelectedUserStore;
   $: fetchDecks();
 
   let buttons = [
-    { text: "Admin", action: () => redirect("admin") },
-    { text: "Home", action: () => redirect("") },
-    { text: "Logout",action: () => handleLogout()}
+    { text: "Admin", href: "/admin" },
+    { text: "Home",  href: "/" },
   ];
   
   async function fetchDecks(){

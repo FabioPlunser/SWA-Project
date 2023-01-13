@@ -1,20 +1,19 @@
 <script lang="ts">
-    import FlipCard from "../lib/components/flipCard.svelte";
-	import Nav from "../lib/components/nav.svelte";
-	import SvelteToast from "../lib/components/SvelteToast.svelte";
+    import FlipCard from "$components/flipCard.svelte";
+	import Nav from "$components/nav.svelte";
+	import SvelteToast from "$components/SvelteToast.svelte";
 	
-	import { redirect } from '../lib/utils/redirect';
-	import { handleLogout } from '../lib/utils/handleLogout';
-	import { userSelectedDeckStore } from '../lib/stores/userSelectedDeckStore';
-	import { fetching } from '../lib/utils/fetching';
-	import { addToastByRes } from "../lib/utils/addToToastStore";
-	import type { Params } from "../lib/utils/fetching";
+	import { redirect } from '$utils/redirect';
+	import { handleLogout } from '$utils/handleLogout';
+	import { userSelectedDeckStore } from '$stores/userSelectedDeckStore';
+	import { fetching } from '$utils/fetching';
+	import { addToastByRes } from "$utils/addToToastStore";
+	import type { Params } from "$utils/fetching";
    
 	$: getAllCardsToLearn();
 
 	let buttons = [
-		{ tag: "button", id: "", text: "DeckView", action: () => redirect("") },
-		{ tag: "button", id: "", text: "Logout", action: handleLogout }
+		{ text: "DeckView", href: "/" },
 	];
 
 	$: console.log(cards);

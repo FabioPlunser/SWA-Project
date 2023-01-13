@@ -1,14 +1,25 @@
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { resolve } from 'path';
+import path from 'path';
 
 export default defineConfig({
   plugins: [svelte()],
+  resolve: {
+    alias: {
+      $components: path.resolve('./src/lib/components'),
+      $stores: path.resolve('./src/lib/stores'),
+      $utils: path.resolve('./src/lib/utils'),
+      $src: path.resolve('./src'),
+      $assets: path.resolve('./src/lib/assets'),
+    }
+  },
   // root: "./src/",
   // publicDir: './public',
   build: {
     outDir: "../swa/src/main/resources/static/",
     emptyOutDir: true,
+    
     rollupOptions: {
       input: {
         main: resolve(__dirname, "src", "index.html"),

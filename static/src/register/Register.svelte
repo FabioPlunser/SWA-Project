@@ -1,13 +1,13 @@
 <script lang="ts">
-    import favicon  from '../assets/favicon.png';
-    import SvelteToast from "../lib/components/SvelteToast.svelte";
-    import Form from "../lib/components/Form.svelte";
+    import favicon  from '$assets/favicon.png';
+    import SvelteToast from "$components/SvelteToast.svelte";
+    import Form from "$components/Form.svelte";
 
-	import { redirect } from '../lib/utils/redirect';
-    import { jwt } from "../lib/stores/jwt";
-    import { personIdStore } from "../lib/stores/personIdStore";
-    import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
-    import { Validators} from "../lib/utils/Validators";
+	import { redirect } from '$utils/redirect';
+    import { jwt } from "$stores/jwtStore";
+    import { personIdStore } from "$stores/personIdStore";
+    import { userPermissionsStore } from "$stores/userPermissionsStore";
+    import { Validators} from "$utils/Validators";
     
     $: if($jwt && !$jwt.expired) redirect("");
     $: {

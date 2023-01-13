@@ -2,8 +2,8 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    import { addToastByRes } from '../utils/addToToastStore';
-    import { fetching } from '../utils/fetching';
+    import { addToastByRes } from '$utils/addToToastStore';
+    import { fetching } from '$utils/fetching';
 
     export let deck; 
     let { deckId, name, description, published, blocked, cards} = deck;

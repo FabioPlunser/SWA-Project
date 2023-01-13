@@ -1,22 +1,21 @@
 <script lang="ts">
-    import favicon  from '../assets/favicon.png';
-    import Nav from "../lib/components/nav.svelte";
-    import SvelteToast from "../lib/components/SvelteToast.svelte";
-	import DualSideCard from '../lib/components/dualSideCard.svelte';
-    import Form from "../lib/components/Form.svelte";
+    import favicon  from '$assets/favicon.png';
+    import Nav from "$components/nav.svelte";
+    import SvelteToast from "$components/SvelteToast.svelte";
+	import DualSideCard from '$components/dualSideCard.svelte';
+    import Form from "$components/Form.svelte";
 
     import { fly } from "svelte/transition";
-    import { redirect } from '../lib/utils/redirect';
-    import { userSelectedDeckStore } from "../lib/stores/userSelectedDeckStore";
-    import { handleLogout } from '../lib/utils/handleLogout';
-    import { addToastByRes } from "../lib/utils/addToToastStore";
-    import { fetching } from "../lib/utils/fetching";
+    import { redirect } from '$utils/redirect';
+    import { userSelectedDeckStore } from "$stores/userSelectedDeckStore";
+    import { handleLogout } from '$utils/handleLogout';
+    import { addToastByRes } from "$utils/addToToastStore";
+    import { fetching } from "$utils/fetching";
     
     $: getCardsFromDeck();
     $: console.log("cards", cards);
     let navButtons = [
-        { text: "DeckView", action: () => redirect("") },
-        { text: "Logout", action: handleLogout }
+        { text: "DeckView", href: "/" },
     ];
 
     let showNewCards = true;

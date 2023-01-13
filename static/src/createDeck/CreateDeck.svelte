@@ -1,20 +1,19 @@
 <script lang="ts">
-  import favicon from '../assets/favicon.png';
-  import Nav from '../lib/components/nav.svelte';
-	import SvelteToast from '../lib/components/SvelteToast.svelte';
-  import DualSideCard from './../lib/components/dualSideCard.svelte';
-  import Form from '../lib/components/Form.svelte';
+  import favicon from '$assets/favicon.png';
+  import Nav from '$components/nav.svelte';
+	import SvelteToast from '$components/SvelteToast.svelte';
+  import DualSideCard from '$components/dualSideCard.svelte';
+  import Form from '$components/Form.svelte';
 
   import { marked } from 'marked';
   import { fly } from "svelte/transition";
-  import { redirect } from "../lib/utils/redirect";
-  import { handleLogout } from '../lib/utils/handleLogout';
-  import { addToastByRes } from '../lib/utils/addToToastStore';
-  import { Validators } from "../lib/utils/Validators";
+  import { redirect } from "$utils/redirect";
+  import { handleLogout } from '$utils/handleLogout';
+  import { addToastByRes } from '$utils/addToToastStore';
+  import { Validators } from "$utils/Validators";
   
   let buttons = [
-    { text: "Home", action: () => redirect("") },
-    { text: "Logout", action: () => handleLogout()}
+    { text: "Home", href: "/" },
   ]
 
   let cards = [];
