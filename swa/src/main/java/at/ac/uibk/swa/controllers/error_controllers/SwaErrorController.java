@@ -44,7 +44,7 @@ public class SwaErrorController implements ErrorController {
     private RedirectResponse generateRedirectFromException(int status, Exception exception) {
         return RedirectResponse.builder()
                 .redirectLocation(String.format(
-                        "%s?status=%i&header=%s&message=%s",
+                        "%s?status=%d&header=%s&message=%s",
                         endpointMatcherUtil.getErrorBaseRoute(),
                         status, exception.getClass().getSimpleName(), exception.getMessage()
                 ))

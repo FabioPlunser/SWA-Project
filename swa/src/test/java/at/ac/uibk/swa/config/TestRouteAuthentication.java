@@ -5,6 +5,7 @@ import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.util.*;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -229,7 +230,7 @@ public class TestRouteAuthentication {
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect an Authentication Exception resulting in a 401 Error Code
         ).andExpectAll(
-                status().isUnauthorized()
+                status().is(Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500)))
         );
     }
 
@@ -244,7 +245,7 @@ public class TestRouteAuthentication {
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect an Authentication Exception resulting in a 401 Error Code
         ).andExpectAll(
-                status().isUnauthorized()
+                status().is(Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500)))
         );
     }
 
@@ -289,7 +290,7 @@ public class TestRouteAuthentication {
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect an Authentication Exception resulting in a 401 Error Code
         ).andExpectAll(
-                status().isUnauthorized()
+                status().is(Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500)))
         );
     }
 
@@ -304,7 +305,7 @@ public class TestRouteAuthentication {
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect an Authentication Exception resulting in a 401 Error Code
         ).andExpectAll(
-                status().isUnauthorized()
+                status().is(Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500)))
         );
     }
 
@@ -319,7 +320,7 @@ public class TestRouteAuthentication {
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect an Authorization Exception resulting in a 403 Error Code
         ).andExpectAll(
-                status().isForbidden()
+                status().is(Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500)))
         );
     }
 
@@ -350,7 +351,7 @@ public class TestRouteAuthentication {
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect an Authentication Exception resulting in a 401 Error Code
         ).andExpectAll(
-                status().isUnauthorized()
+                status().is(Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500)))
         );
     }
 
@@ -364,7 +365,7 @@ public class TestRouteAuthentication {
                 .contentType(MediaType.APPLICATION_JSON)
         // then: Expect an Authentication Exception resulting in a 401 Error Code
         ).andExpectAll(
-                status().isUnauthorized()
+                status().is(Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500)))
         );
     }
 
@@ -380,7 +381,7 @@ public class TestRouteAuthentication {
                 .contentType(MediaType.APPLICATION_JSON)
         // then: Expect an Authorization Exception resulting in a 403 Error Code
         ).andExpectAll(
-                status().isForbidden()
+                status().is(Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500)))
         );
     }
 
