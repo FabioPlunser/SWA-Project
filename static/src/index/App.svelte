@@ -29,10 +29,8 @@
 	let userDecks = [];
 	let subscribedDecks = [];
 
-	$: console.log(userDecks);
-
 	let showEditDeckModal = false;
-	let selectedDeck: IDeck = null;
+	let selectedDeck = null;
 	let listCards = false;
 	
 	let showPublicDecks = false;
@@ -107,6 +105,15 @@
 		getSubscribedDecks();
 	}
 
+	$: {
+		if(selectedDeck){
+			let index = userDecks.findIndex(deck => deck.deckId == selectedDeck.deckId);
+			if(index != -1){
+				userDecks[index] = selectedDeck;
+				userDecks = [...userDecks];
+			}
+		}
+	}
 </script>
 
 <svelte:head>
@@ -119,7 +126,7 @@
 <Nav title="Decks" buttons={navButtons} />
 <main class="m-20">
 	{#if showEditDeckModal}
-		<EditDeckModal bind:showEditDeckModal getDecks={getUserDecks} {selectedDeck} />
+		<EditDeckModal bind:showEditDeckModal getDecks={getUserDecks} bind:selectedDeck />
 	{/if}
 	{#if showPublicDecks}
 		<PublicDecksModal bind:showPublicDecks bind:selectedDeck bind:listCards on:refresh={getDecks} />

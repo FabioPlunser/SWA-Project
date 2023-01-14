@@ -9,7 +9,7 @@
      */
     export let open = false;
     export let closeOnBodyClick = true;
-
+    
 
     function handleDispatch() {
 

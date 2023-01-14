@@ -4,8 +4,10 @@
 	import SvelteToast from '$components/SvelteToast.svelte';
   import DualSideCard from '$components/dualSideCard.svelte';
   import Form from '$components/Form.svelte';
-  import SvelteMarkdown from 'svelte-markdown'
+  import Markdown from '$components/markdown.svelte';
   import FormError from '$components/formError.svelte';
+  import autosize from 'svelte-autosize';
+
 
   import { fly } from "svelte/transition";
   import { addToastByRes } from '$utils/addToToastStore';
@@ -87,7 +89,6 @@
           <FormError name="name" key="required" message="Name is required"/>
           <FormError name="name" key="maxLength" message="Max length is 255"/>
 
-      
           <br class="pt-4"/>
           
           <!-- svelte-ignore a11y-label-has-associated-control -->
@@ -95,10 +96,14 @@
             <span class="w-40">Description</span>
             <input type="hidden" name="description" bind:value={description}/>
             {#if descriptionFocus}
-              <textarea on:blur={()=>descriptionFocus=false} contenteditable id="divTextarea" bind:value={description} placeholder="Description" class="bg-slate-800  min-h-full  w-full p-2 rounded-xl"/>
+              <textarea use:autosize on:mouseleave={()=>descriptionFocus=false} name="description" contenteditable id="divTextarea" bind:value={description} placeholder="Description" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2 rounded-l-none  resize"/>
             {:else}
-              <!-- svelte-ignore a11y-click-events-have-key-events -->
-              <div on:click={()=>descriptionFocus=true} id="divTextarea" placeholder="Description" class="bg-slate-800 min-h-[60px] w-full p-2 rounded-xl prose prose-sm prose-dark"><SvelteMarkdown bind:source={description}/></div>  
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <div on:click={()=>descriptionFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2 rounded-l-none">
+                    <div>
+                        <Markdown data={description}/>
+                    </div>
+                </div>  
             {/if}
           </label>
           <FormError name="description" key="required" message="Description is required"/>
@@ -140,10 +145,3 @@
     {/each}
   </div>
 </main>
-
-<style>
-  #divTextarea {
-      -moz-appearance: textfield-multiline;
-      -webkit-appearance: textarea;
-  }
-</style>

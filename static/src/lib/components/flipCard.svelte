@@ -1,8 +1,7 @@
 <script lang="ts">
   export let card; 
   let {frontText, backText, isFlipped} = card;
-  import SvelteMarkdown from 'svelte-markdown';
-
+  import Markdown from '$components/markdown.svelte';
 
   function handleFlip(){
     isFlipped = !isFlipped;
@@ -15,15 +14,15 @@
   <div id="flip-box-inner" class="relative w-full h-full duration-100 [transform-style:preserve-3d]" class:flip-it={isFlipped}>
     <div id="flip-box-front" class="flex justify-center absolute w-full h-full [-webkit-backface-visibility: hidden] [backface-visibility:hidden] bg-slate-900 text-white shadow-xl rounded-2xl"> 
       <div class="flex items-center justify-center">
-        <div  id="divTextarea" class="w-full p-2 rounded-xl prose prose-sm prose-dark" >
-          <SvelteMarkdown bind:source={frontText}/>
+        <div class="w-full p-2 rounded-xl prose prose-sm prose-dark" >
+          <Markdown data={frontText}/>
         </div>  
       </div>
     </div>
     <div id="flip-box-back" class="flex justify-center absolute w-full h-full [backface-visibility:hidden] bg-slate-900 text-white shadow-xl rounded-2xl [transform:rotateY(180deg)] [transform: translate (-50%, -50%)]" class:conceal-answer={isFlipped}>
       <div class="flex items-center justify-center">
-          <div  id="divTextarea" class="w-full p-2 rounded-xl prose prose-sm prose-dark" >
-            <SvelteMarkdown bind:source={backText}/>
+          <div class="w-full p-2 rounded-xl prose prose-sm prose-dark" >
+            <Markdown data={backText}/>
           </div>  
       </div>
     </div>  
@@ -42,10 +41,4 @@
     transform: rotateY(180deg);
     /* transform: translate (-50%, -50%) */
   }
-
-  #divTextarea {
-      -moz-appearance: textfield-multiline;
-      -webkit-appearance: textarea;
-  }
-
 </style>

@@ -3,9 +3,10 @@
     let dispatch = createEventDispatcher();
     import Modal from "$components/Modal.svelte";
     import Spinner from "$components/Spinner.svelte";
+    import Markdown from "$components/markdown.svelte";
+
     import { fetching } from "$utils/fetching";
     import { addToastByRes, addToast } from "$utils/addToToastStore";
-    import SvelteMarkdown from "svelte-markdown";
 
     export let showPublicDecks = false; 
     export let selectedDeck = null; 
@@ -52,8 +53,8 @@
                         {#if deck.name.toLowerCase().includes(searchPublicDeckName.toLowerCase()) || deck.description.toLowerCase().includes(searchPublicDeckName.toLowerCase())} 
                             <div class="card bg-gray-700 p-5 w-fit min-w-fit">
                                 <h1 class="card-title">{deck.name}</h1>
-                                <p class="card-subtitle prose prose-sm prose-dark" >
-                                    <SvelteMarkdown source={deck.description}/>
+                                <p class="card-subtitle" >
+                                    <Markdown data={deck.description}/>
                                 </p>
                                 <!-- <p class="card-subtitle">{deck.description}</p> -->
                                 {#if deck.numCards > 0}

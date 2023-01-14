@@ -11,7 +11,6 @@
     import { fetching, type Params } from "$utils/fetching";
 
     $: getCardsFromDeck();
-    $: console.log("cards", cards);
     let navButtons = [
         { text: "Home", href: "/" },
     ];
@@ -48,9 +47,7 @@
     
 
     async function handleDeleteCard(card) {
-        console.log("card", card);
         if(card.newCard){
-            console.log("card", card);
             newCards = newCards.filter(c => c.id !== card.id);
             newCards = [...newCards];
         }else{
@@ -150,7 +147,7 @@
             {#if showExistingCards}
                 {#each cards as card, i (card.cardId)}
                     <div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 100}}>
-                        <DualSideCard title="Existing Card" {card} index={i+1} editable={true} on:deleteCard={()=>handleDeleteCard(card)}/>
+                        <DualSideCard flippable={true} title="Existing Card" {card} index={i+1} editable={true} on:deleteCard={()=>handleDeleteCard(card)}/>
                     </div>
                 {/each}
             {/if}

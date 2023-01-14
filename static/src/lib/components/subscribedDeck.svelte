@@ -1,13 +1,12 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
+    import Markdown from '$components/markdown.svelte';
 
     import { addToastByRes } from '$utils/addToToastStore';
     import { fetching } from '$utils/fetching';
-    import SvelteMarkdown from 'svelte-markdown';
 
     export let deck; 
-    console.log(deck);
     let { deckId, name, description, published, blocked, numCards, numCardsToRepeat, numNotLearnedCards} = deck;
     
     $: getAllCardsToLearn();
@@ -58,9 +57,7 @@
             <h1 class="underline flex justify-center text-xl">{name}</h1>
             <br class="my-4"/>
             <div class="max-h-full overflow-hidden break-all">
-                <div id="divTextarea" class="break-all overflow-hidden min-h-[60px] w-full p-2 rounded-xl prose prose-sm prose-dark">
-                    <SvelteMarkdown bind:source={description}/>
-                </div>
+               <Markdown data={description}/>
             </div>
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4 mt-4">
@@ -103,9 +100,7 @@
         <h1 class="underline flex justify-center text-xl">{name}</h1>
         <br class="mt-4"/>
         <div class="max-h-full overflow-hidden break-all">
-            <div id="divTextarea" class="break-all overflow-hidden min-h-[60px] w-full p-2 rounded-xl prose prose-sm prose-dark">
-                <SvelteMarkdown bind:source={description}/>
-            </div>
+            <Markdown data={description}/>
         </div>
     </div>
     <br class="mt-4"/>

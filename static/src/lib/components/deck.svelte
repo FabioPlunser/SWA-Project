@@ -1,10 +1,12 @@
 <script lang="ts">
+	
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
     import { addToastByRes } from '$utils/addToToastStore';
     import { fetching } from '$utils/fetching';
-    import SvelteMarkdown from 'svelte-markdown'
+    import Markdown from '$components/markdown.svelte';
+    
 
     export let deck; 
     let { deckId, name, description, published, blocked, numCards, numCardsToRepeat, numNotLearnedCards} = deck;
@@ -51,24 +53,29 @@
     function handleLearnDeck(){
         dispatch('learnDeck');
     }
+
 </script>
+
+<svelte:head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.min.css" integrity="sha384-bYdxxUwYipFNohQlHt0bjN/LCpueqWz13HufFEV1SUatKs1cm4L6fFgCi1jT643X" crossorigin="anonymous">
+</svelte:head>
 
 
 <!-- svelte-ignore a11y-mouse-events-have-key-events -->
 {#if !blocked}
-<div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
+<div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative overflow-clip" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
         <div class="{hover ? "hidden" : "block"} max-h-full" >
             <h1 class="font-bold flex justify-center text-3xl">{name}</h1>
-            <br class="pt-4"/>
-
-            <div class="max-h-full overflow-hidden break-all">
-                <div id="divTextarea" class="break-all overflow-hidden min-h-[60px] w-full p-2 rounded-xl prose prose-sm prose-dark">
-                    <SvelteMarkdown bind:source={description}/>
+            <br class="pt-2"/>
+            <div class="max-h-full overflow-clip ">
+                <div id="divTextarea" class="max-h-[200px] overflow-clip w-full p-2 rounded-xl prose prose-sm prose-dark">
+                    <Markdown data={description}/>
                 </div>
             </div>
+
             <br class="pt-8"/>
 
-            <div class="bottom-0 absolute mb-4 mt-4">
+            <div class="bottom-0 absolute mb-4">
                 <div class="grid grid-rows gap-2">
                     <div class="gird grid-cols gap-2">
                         {#if numCards > 0}
@@ -101,12 +108,12 @@
 
 
         <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
-            <button class="btn btn-primary" on:click={handleLearnDeck}>Learn Deck</button>
+            <button class="btn btn-success" on:click={handleLearnDeck}>Learn Deck</button>
             <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
             <button class="btn btn-primary" on:click={handleEditDeck}>Edit Deck</button>
             <button class="btn btn-primary" on:click={handleEditCards}>Edit Cards</button>
             <button class="btn {published ? "btn-secondary" : "btn-primary"}" on:click={handlePublishDeck}>Publish Deck</button>
-            <button class="btn btn-primary" on:click={handleDeleteDeck}>Delete Deck</button>
+            <button class="btn btn-error" on:click={handleDeleteDeck}>Delete Deck</button>
         </div>       
 </div>
 {/if}
@@ -122,14 +129,3 @@
     </div>
 </div>
 {/if}
-
-
-<style>
-    #divTextarea {
-        -moz-appearance: textfield-multiline;
-        -webkit-appearance: textarea;
-        /* border: 1px solid gray; */
-        /* font: medium -moz-fixed; */
-        /* font: -webkit-small-control; */
-    }
-  </style>

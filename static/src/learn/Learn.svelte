@@ -17,7 +17,6 @@
 		{ text: "Home", href: "/" },
 	];
 
-	$: console.log(cards);
 	let cards = [];
 
 	async function getAllCardsToLearn(){
@@ -29,7 +28,6 @@
 	function checkIsFlipped()
 	{
 		let flippableCards = Array.of(cards.find(c => c.isFlipped));
-		console.log("flippedCards", flippableCards);
 		if(flippableCards){
 			for(let card of flippableCards){
 				cards.push({cardId: card.cardId, frontText: card.frontText, backText: card.backText, isFlipped: false});
