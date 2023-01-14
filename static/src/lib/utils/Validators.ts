@@ -1,6 +1,16 @@
 
+export interface ValidatorResult {
+    [validatorName: string]: {
+        error: boolean;
+        message?: string;
+    }
+}
+
+export type ValidatorFn = (value: string) => ValidatorResult;
+
+
 function required(value) {
-    if (value === '' || value == null) {
+    if (value === "" || value == null) {
         return { required: { error: true, message: 'Field is required' } };
     }
     return { required: { error: false } };
@@ -21,6 +31,21 @@ function minLength(number){
     }
 }
 
+function maxLength(number){
+    return function (value){
+        if(value == null || value.length > number){
+            return {
+                maxLength : {
+                    error: true,
+                    value: number,
+                    message: `Field must be at most ${number} characters long`
+                },
+            };
+        }
+        return { maxLength: { error: false } };
+    }
+}
+
 function email(value){
     var mailForma = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     if(value == null || !mailForma.test(value)){
@@ -37,6 +62,7 @@ function email(value){
 export const Validators = {
     required,
     minLength,
+    maxLength,
     email,
 };
   
