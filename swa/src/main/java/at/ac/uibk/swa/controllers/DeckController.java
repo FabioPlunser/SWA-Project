@@ -51,17 +51,19 @@ public class DeckController {
     }
 
     /**
-     * Updates the given Deck and cards of that Deck.
+     * Updates the given Deck and - if specified - cards of that Deck.
      * The Deck must be owned by the current User.
      *
      * @param deck The Deck to update.
+     * @param updateCards if true, updates the cards of the deck (default value is false)
      * @return A MessageResponse indicating success or failure.
      */
     @PostMapping("/update-deck")
     public RestResponse updateDeck(
-            @RequestBody final Deck deck
+            @RequestBody final Deck deck,
+            @RequestParam(name="update-cards", defaultValue = "false") final boolean updateCards
     ) {
-        if (userDeckService.update(deck, true)) {
+        if (userDeckService.update(deck, updateCards)) {
             return MessageResponse.builder()
                     .ok()
                     .message("Deck " + deck.getDeckId() + " updated")
@@ -72,30 +74,6 @@ public class DeckController {
                 .message("Deck " + deck.getDeckId() + " not updated")
                 .build();
     }
-
-    /**
-     * Updates the given deck's name and description only
-     * The deck must be owned by the current user
-     *
-     * @param deck The deck to update
-     * @return A MessageResponse indicating success or failure
-     */
-    @PostMapping("/update-deck-name-and-description")
-    public RestResponse updateDeckNameDescription(
-            @RequestBody final Deck deck
-    ) {
-        if (userDeckService.update(deck, false)) {
-            return MessageResponse.builder()
-                    .ok()
-                    .message("Deck " + deck.getName() + " updated")
-                    .build();
-        }
-        return MessageResponse.builder()
-                .error()
-                .message("Deck " + deck.getName() + " not updated")
-                .build();
-    }
-
 
     /**
      * Sets given deck to public.

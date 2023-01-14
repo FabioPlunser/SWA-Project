@@ -224,12 +224,13 @@ class TestDeckControllerCreateUpdate {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/update-deck")
                         .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(initialDeck.getCreator()))
+                        .param("update-cards", "true")
                         .content(content.toString())
                         .contentType(MediaType.APPLICATION_JSON)
         // then: response must be ok, created decks and cards must be as desired
         ).andExpectAll(
                 status().isOk()
-        );
+        ).andDo(print());
 
         assertEquals(0, deckRepository.count() - numberOfDecksBefore, "Created a new deck instead of updating the old one");
         Optional<Deck> maybeDeck = deckRepository.findById(initialDeck.getDeckId());
