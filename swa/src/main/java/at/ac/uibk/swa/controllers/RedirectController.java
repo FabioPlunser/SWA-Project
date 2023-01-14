@@ -20,7 +20,7 @@ public class RedirectController {
     @GetMapping("/")
     public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("/src/index.html");
+        modelAndView.setViewName("/src/index/index.html");
         return modelAndView;
     }
     @GetMapping("${swa.error.base:/error}")

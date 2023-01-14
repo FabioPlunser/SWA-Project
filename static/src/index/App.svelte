@@ -20,7 +20,7 @@
   	import { fetching } from '$utils/fetching';
 	import type { IDeck } from '$utils/types';
 
-	// $: if(!$jwt || $jwt?.expired) redirect("login");
+	$: if(!$jwt || $jwt?.expired) redirect("login");
 	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
 	$: getUserDecks();
 	$: getSubscribedDecks();

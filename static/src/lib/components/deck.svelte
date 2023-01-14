@@ -4,6 +4,8 @@
 
     import { addToastByRes } from '$utils/addToToastStore';
     import { fetching } from '$utils/fetching';
+    import SvelteMarkdown from 'svelte-markdown'
+
 
     export let deck; 
     let { deckId, name, description, published, blocked, numCards, numCardsToRepeat, numNotLearnedCards} = deck;
@@ -55,7 +57,10 @@
         <div class="{hover ? "hidden" : "block"}" >
             <h1 class="underline flex justify-center text-xl">{name}</h1>
             <br class="my-4"/>
-            <textarea class="resize-none bg-transparent" readonly>{description}</textarea>
+            <div class="prose prose-sm prose-invert">
+                <SvelteMarkdown source={description} />
+            </div>
+            <!-- <textarea class="resize-none bg-transparent" readonly>{description}</textarea> -->
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4">
                 <div class="grid grid-rows gap-2">

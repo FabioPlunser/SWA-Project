@@ -16,7 +16,6 @@
 
   let cards = [];
   let id = 0;
-  let useMarkdown = false;
   
   function addCard() {
     cards.push({id: id, frontText: "", backText: "", isFlipped: false});
@@ -105,7 +104,6 @@
             <span class="w-40">Description</span>
             {#if descriptionFocus}
               <textarea on:blur={()=>descriptionFocus=false} contenteditable id="divTextarea" bind:value={description} placeholder="Description" class="bg-slate-800  min-h-full  w-full p-2 rounded-xl"/>
-              <!-- <div  on:blur={()=>descriptionFocus=false} contenteditable id="divTextarea" bind:innerHTML={description} placeholder="Description" class="bg-slate-800  min-h-full  w-full p-2 rounded-xl"/> -->
             {:else}
               <!-- svelte-ignore a11y-click-events-have-key-events -->
               <div on:click={()=>descriptionFocus=true} id="divTextarea" placeholder="Description" class="bg-slate-800 min-h-full w-full p-2 rounded-xl prose prose-sm"><SvelteMarkdown source={description}/></div>  
@@ -130,8 +128,6 @@
             <span class="text-red-500">{errors.isPublished.required.message}</span>
           {/if} 
       
-
-
           <br class="pt-4"/>
 
           <div class="flex justify-center">
