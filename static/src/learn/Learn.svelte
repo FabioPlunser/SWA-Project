@@ -4,11 +4,12 @@
 	import SvelteToast from "$components/SvelteToast.svelte";
 	
 	import { redirect } from '$utils/redirect';
-	import { handleLogout } from '$utils/handleLogout';
 	import { userSelectedDeckStore } from '$stores/userSelectedDeckStore';
 	import { fetching } from '$utils/fetching';
 	import { addToastByRes } from "$utils/addToToastStore";
 	import type { Params } from "$utils/fetching";
+	import { fly, fade } from 'svelte/transition';
+
    
 	$: getAllCardsToLearn();
 
@@ -31,10 +32,9 @@
 		console.log("flippedCards", flippableCards);
 		if(flippableCards){
 			for(let card of flippableCards){
-				cards.push({id: card.id, frontText: card.frontText, backText: card.backText, isFlipped: false});
+				cards.push({cardId: card.cardId, frontText: card.frontText, backText: card.backText, isFlipped: false});
 			}
-		}
-		cards = [...cards];	
+		}	
 	}
 
 	async function nextCard(card, g){
@@ -44,16 +44,16 @@
 		]
 
 		let res = await fetching("/api/learn", "POST", data);
-		addToastByRes(res);
+		// addToastByRes(res);
 
 
 		cards.shift();
-		cards = [...cards];
 
 		if(cards.length == 0){
-			getAllCardsToLearn();
+			await getAllCardsToLearn();	
 		}
 
+		cards = [...cards];
 	}
 	
 </script>
@@ -66,14 +66,21 @@
 
 
 <Nav title="LearnView" buttons={buttons}/>
-<SvelteToast/>
+<!-- <SvelteToast/> -->
 <main class="mt-20">
 	{#if cards.length > 0}
-		<div class="grid grid-row gap-6 justify-center">
+		<div class="flex justify-center">
 			{#key cards}
-				<FlipCard card={cards[0]}/>
+				<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
+					<FlipCard card={cards[0]}/>
+				</div>
 			{/key}
-			<div class="grid grid-cols-6 gap-4">
+		</div>
+
+		<br class="mt-10"/>
+
+		<div class="grid grid-row gap-6 justify-center">
+			<div class="grid grid-cols-6 gap-4 justify-center">
 				<div class="tooltip tooltip-error" data-tip="Keine Ahnung; totales Blackout">
 					<button class="btn btn-error" on:click={()=>nextCard(cards[0], 0)}>0</button>
 				</div>

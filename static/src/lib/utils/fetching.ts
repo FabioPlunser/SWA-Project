@@ -22,7 +22,7 @@ export async function fetching(url: string, method: string, params?: Params[], d
   let requestOptions;
   let myHeaders = new Headers(); 
   myHeaders.append("Authorization", JSON.stringify(get(jwt)));
-  console.log("fetching", url, params, data, json);
+  
   if(params){
     for(let i=0; i<params.length; i++){
       if(i === 0){
