@@ -161,7 +161,7 @@ class TestDeckControllerCreateUpdate {
     }
 
     private Stream<Arguments> updateDeckConfig() {
-        return ArgumentGenerator.booleans(7);
+        return ArgumentGenerator.booleans(8);
     }
 
     @ParameterizedTest
@@ -170,6 +170,7 @@ class TestDeckControllerCreateUpdate {
             boolean initiallyPublished,
             boolean finallyPublished,
             boolean publishAsAdmin,
+            boolean updateCards,
             boolean cardsInitiallyFlipped,
             boolean cardsFinallyFlipped,
             boolean tryToBlock,
@@ -224,13 +225,13 @@ class TestDeckControllerCreateUpdate {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/update-deck")
                         .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(initialDeck.getCreator()))
-                        .param("update-cards", "true")
+                        .param("update-cards", String.valueOf(updateCards))
                         .content(content.toString())
                         .contentType(MediaType.APPLICATION_JSON)
         // then: response must be ok, created decks and cards must be as desired
         ).andExpectAll(
                 status().isOk()
-        ).andDo(print());
+        );
 
         assertEquals(0, deckRepository.count() - numberOfDecksBefore, "Created a new deck instead of updating the old one");
         Optional<Deck> maybeDeck = deckRepository.findById(initialDeck.getDeckId());
@@ -242,19 +243,27 @@ class TestDeckControllerCreateUpdate {
         assertFalse(updatedDeck.isBlocked(), "Deck got blocked although this should not be possible via update-deck");
         assertFalse(updatedDeck.isDeleted(), "Deck got deleted although this should not be possible via update-deck");
 
-        assertEquals(numberOfCardsToUpdate + numberOfCardsToCreate, updatedDeck.getCards().size(), "Found an unexpected number of cards");
+        if (updateCards) {
+            assertEquals(numberOfCardsToUpdate + numberOfCardsToCreate, updatedDeck.getCards().size(), "Found an unexpected number of cards");
 
-        for (int i = 0; i < numberOfCardsToUpdate; i++) {
-            assertTrue(updatedDeck.getCards().contains(initialDeck.getCards().get(i)), "Did not find a card that should have been updated");
-        }
-        for (int i = numberOfCardsToUpdate; i < numberOfCardsToUpdate + numberOfCardsToDelete; i++) {
-            assertFalse(updatedDeck.getCards().contains(initialDeck.getCards().get(i)), "Found a card that should have been deleted");
-        }
+            for (int i = 0; i < numberOfCardsToUpdate; i++) {
+                assertTrue(updatedDeck.getCards().contains(initialDeck.getCards().get(i)), "Did not find a card that should have been updated");
+            }
+            for (int i = numberOfCardsToUpdate; i < numberOfCardsToUpdate + numberOfCardsToDelete; i++) {
+                assertFalse(updatedDeck.getCards().contains(initialDeck.getCards().get(i)), "Found a card that should have been deleted");
+            }
 
-        for (int i = 0; i < numberOfCardsToUpdate + numberOfCardsToCreate; i++) {
-            assertEquals(cardFrontTexts.get(i), updatedDeck.getCards().get(i).getFrontText(), "Front text of card not correct");
-            assertEquals(cardBackTexts.get(i), updatedDeck.getCards().get(i).getBackText(), "Back text of card not correct");
-            assertEquals(cardsFinallyFlipped, updatedDeck.getCards().get(i).isFlipped(), "Card did (not) get flipped");
+            for (int i = 0; i < numberOfCardsToUpdate + numberOfCardsToCreate; i++) {
+                assertEquals(cardFrontTexts.get(i), updatedDeck.getCards().get(i).getFrontText(), "Front text of card not correct");
+                assertEquals(cardBackTexts.get(i), updatedDeck.getCards().get(i).getBackText(), "Back text of card not correct");
+                assertEquals(cardsFinallyFlipped, updatedDeck.getCards().get(i).isFlipped(), "Card did (not) get flipped");
+            }
+        } else {
+            assertEquals(initialCards.size(), updatedDeck.getCards().size(), "Found an unexpected number of cards");
+
+            for (Card card : initialCards) {
+                assertTrue(updatedDeck.getCards().contains(card), "Did not find all cards");
+            }
         }
     }
 }
