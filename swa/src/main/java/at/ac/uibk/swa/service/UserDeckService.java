@@ -369,4 +369,19 @@ public class UserDeckService {
             return false;
         }
     }
+
+    /**
+     * Returns name of Deck as String, if Deck can be found by its ID
+     *
+     * @param deckId ID of Deck whose name is searched
+     * @return deckName of searched Deck if Deck is present
+     */
+    public String getDeckNameIfPresent(UUID deckId) {
+        String deckName = "";
+        Optional<Deck> maybeDeck = findById(deckId);
+        if (maybeDeck.isPresent()) {
+            deckName = maybeDeck.get().getName();
+        }
+        return deckName;
+    }
 }
