@@ -9,16 +9,17 @@
 	import Spinner from '$components/Spinner.svelte';
 	import Form from '$components/Form.svelte';
 	import DualSideCard from '$components/dualSideCard.svelte';
-	import { jwt } from "$stores/jwtStore";
+	import EditDeckModal from './editDeckModal.svelte';
+
 
 	import { fly } from 'svelte/transition';
+
+	import { jwt } from "$stores/jwtStore";
 	import { addToast, addToastByRes } from '$utils/addToToastStore';
 	import { redirect } from "$utils/redirect";
 	import { userPermissionsStore } from '$stores/userPermissionsStore';
-	import { handleLogout } from '$utils/handleLogout';
 	import { userSelectedDeckStore } from '$stores/userSelectedDeckStore';
   	import { fetching } from '$utils/fetching';
-	import type { IDeck } from '$utils/types';
 
 	$: if(!$jwt || $jwt?.expired) redirect("login");
 	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
@@ -26,7 +27,7 @@
 	$: getSubscribedDecks();
 	$: getPublicDecks();
 
-	let allDecks: IDeck[] = [];
+	let allDecks = [];
 	let userDecks = [];
 	let subscribedDecks = [];
 	let publicDecks = [];

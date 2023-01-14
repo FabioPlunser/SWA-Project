@@ -7,15 +7,15 @@ export default defineConfig({
   plugins: [svelte()],
   resolve: {
     alias: {
+      $lib: path.resolve('./src/lib'),
+      $src: path.resolve('./src'),
       $components: path.resolve('./src/lib/components'),
       $stores: path.resolve('./src/lib/stores'),
       $utils: path.resolve('./src/lib/utils'),
-      $src: path.resolve('./src'),
       $assets: path.resolve('./src/lib/assets'),
     }
   },
-  // root: "./src/",
-  // publicDir: './public',
+
   build: {
     outDir: "../swa/src/main/resources/static/",
     emptyOutDir: true,
