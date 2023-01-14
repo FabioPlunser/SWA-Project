@@ -4,16 +4,13 @@
     import SvelteToast from "$components/SvelteToast.svelte";
 	import DualSideCard from '$components/dualSideCard.svelte';
     import Form from "$components/Form.svelte";
-
-    import { fly } from "svelte/transition";
-    import { redirect } from '$utils/redirect';
-    import { userSelectedDeckStore } from "$stores/userSelectedDeckStore";
-    import { handleLogout } from '$utils/handleLogout';
-    import { addToastByRes } from "$utils/addToToastStore";
-    import { fetching } from "$utils/fetching";
     
+    import { fly } from "svelte/transition";
+    import { userSelectedDeckStore } from "$stores/userSelectedDeckStore";
+    import { addToastByRes } from "$utils/addToToastStore";
+    import { fetching, type Params } from "$utils/fetching";
+
     $: getCardsFromDeck();
-    $: console.log("cards", cards);
     let navButtons = [
         { text: "Home", href: "/" },
     ];
@@ -50,9 +47,7 @@
     
 
     async function handleDeleteCard(card) {
-        console.log("card", card);
         if(card.newCard){
-            console.log("card", card);
             newCards = newCards.filter(c => c.id !== card.id);
             newCards = [...newCards];
         }else{
@@ -71,6 +66,11 @@
         newCards = [];
     }
 
+    window.onbeforeunload = confirmExit;
+    function confirmExit() {
+        return "You have attempted to leave this page. Are you sure?";
+    }
+
     $: data = {
         deckId: $userSelectedDeckStore.deckId,
         name: $userSelectedDeckStore.name,
@@ -78,9 +78,7 @@
         isPublished: $userSelectedDeckStore.isPublished,
         cards: cards
     }
-
 </script>
-
 
 <svelte:head>
     <link rel="icon" type="image/png" href={favicon}/>
@@ -92,7 +90,7 @@
 <SvelteToast/>
 <main class="mt-20 m-16">
     <div class="flex justify-center">
-        <Form url="/api/update-deck" method="POST" on:preFetch={()=>cards.push(...newCards)} addJSONData={[data]} on:postFetch={handlePostFetch}>
+        <Form url="/api/update-deck?update-cards=true" method="POST" on:preFetch={()=>cards.push(...newCards)} addJSONData={[data]} on:postFetch={handlePostFetch}>
             <div class="flex justify-center flex-col">
                 <h1 class="text-3xl font-bold">Cards of Deck {$userSelectedDeckStore.name}</h1>
                 <div class="flex justify-center flex-row ">
@@ -105,7 +103,7 @@
     </div>
     <br class="mt-4"/>
 
-    <div class="flex justify-center">
+    <!-- <div class="flex justify-center">
         <div class="card p-5 w-auto bg-slate-900">
             <h1 class="flex justify-center text-3xl font-bold">New Card</h1>
             <br class="mt-4"/>
@@ -120,11 +118,12 @@
                 <button class="btn btn-primary mx-1" on:click={()=>addCard()}>Add Card</button>
             </div>
         </div>
-    </div>
-
-    <br class="mt-4"/>
+    </div> -->
     <div class="">
-        <h1 class="flex justify-center text-3xl font-bold">Cards</h1>
+        <!-- <h1 class="flex justify-center text-3xl font-bold">Cards</h1> -->
+        <div class="card-action flex justify-center">
+            <button class="btn btn-secondary mx-1" on:click={()=>addCard()}>Add Card</button>
+        </div>
         <br class="pt-4"/>
         <div class="flex justify-center gap-4">
             <div class="flex items-center">
@@ -148,7 +147,7 @@
             {#if showExistingCards}
                 {#each cards as card, i (card.cardId)}
                     <div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 100}}>
-                        <DualSideCard title="Existing Card" {card} index={i+1} editable={true} on:deleteCard={()=>handleDeleteCard(card)}/>
+                        <DualSideCard flippable={true} title="Existing Card" {card} index={i+1} editable={true} on:deleteCard={()=>handleDeleteCard(card)}/>
                     </div>
                 {/each}
             {/if}

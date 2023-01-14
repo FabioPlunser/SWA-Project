@@ -8,6 +8,7 @@
     import { personIdStore } from "$stores/personIdStore";
     import { userPermissionsStore } from "$stores/userPermissionsStore";
     import { Validators} from "$utils/Validators";
+  import { formFormat } from '$lib/types/formFormat';
     
     $: if($jwt && !$jwt.expired) redirect("");
     $: {
@@ -49,7 +50,7 @@
 <main class="flex justify-center items-center mx-auto h-screen text-white">
     <div class="rounded-xl shadow-2xl bg-slate-900 max-w-fit p-10">
         <h1 class="underline text-2xl mx-auto flex justify-center p-2">Register</h1>
-        <Form url="/api/register" method="POST" dataFormat="FormData" {formValidators} bind:errors on:postFetch={handlePostFetch}>
+        <Form url="/api/register" method="POST" dataFormat={formFormat.FORM} {formValidators} bind:errors on:postFetch={handlePostFetch}>
             <div class="flex flex-col">
                 <div class="form-control">
                     <label class="input-group">

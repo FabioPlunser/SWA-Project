@@ -9,6 +9,7 @@
     import { userPermissionsStore } from "$stores/userPermissionsStore";
     import { Validators} from "$utils/Validators";
     import { addToast, addToastByRes } from '$utils/addToToastStore';
+  import { formFormat } from '$lib/types/formFormat';
 
     $: if($jwt && !$jwt.expired) redirect("");
     $: {
@@ -59,7 +60,7 @@
             <h1 class="items-center text-2xl font-bold flex justify-center">Memory</h1>
         </div>
         <h1 class="font-bold text-2xl flex justify-center p-2">Login</h1>
-        <Form url="/api/login" method="POST" dataFormat="FormData" {formValidators} bind:errors on:postFetch={handlePostFetch}>
+        <Form url="/api/login" method="POST" dataFormat={formFormat.FORM} {formValidators} bind:errors on:postFetch={handlePostFetch}>
             <div class="form-control">
                 <label class="input-group">
                   <span>Username</span>

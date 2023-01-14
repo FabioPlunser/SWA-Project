@@ -4,11 +4,15 @@
 	import SvelteToast from '$components/SvelteToast.svelte';
   import DualSideCard from '$components/dualSideCard.svelte';
   import Form from '$components/Form.svelte';
-  import SvelteMarkdown from 'svelte-markdown'
+  import Markdown from '$components/markdown.svelte';
+  import FormError from '$components/formError.svelte';
+  import autosize from 'svelte-autosize';
+
 
   import { fly } from "svelte/transition";
   import { addToastByRes } from '$utils/addToToastStore';
   import { Validators } from "$utils/Validators";
+  import { formFormat } from '$lib/types/formFormat';
   
   let buttons = [
     { text: "Home", href: "/" },
@@ -16,6 +20,14 @@
 
   let cards = [];
   let id = 0;
+  let formValidators = {
+    name: {
+      validators: [Validators.required, Validators.maxLength(255)],
+    },
+    description: {
+      validators: [Validators.required],
+    }
+  };
   
   function addCard() {
     cards.push({id: id, frontText: "", backText: "", isFlipped: false});
@@ -42,18 +54,6 @@
 
   }
 
-  let errors = {};
-  let formValidators = {
-    name: {
-      validators: [Validators.required],
-    },
-    description: {
-      validators: [Validators.required],
-    },
-    isPublished: {
-      validators: [Validators.required],
-    },
-  };
 
   async function handlePostFetch(data){
     data.detail.e.target.reset();
@@ -62,8 +62,6 @@
   }
 
 
-
-  let MaxNumberChars = 255;
   let name = "";
   let description = "";
   let descriptionFocus = false;
@@ -80,7 +78,7 @@
 <main class="mt-20 m-8">
   <h1 class="flex justify-center text-3xl font-bold">Create Deck</h1>
   <br class="pt-4"/>
-  <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat="JSON" formValidators={formValidators} bind:errors addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
+  <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat={formFormat.JSON} {formValidators} addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
     <div class="max-w-full">
       <div class="bg-slate-900 p-5 rounded-xl">
         <div class="flex flex-col">
@@ -88,32 +86,27 @@
             <span class="w-40">Name</span>
             <input name="name" type="text" bind:value={name} placeholder="Softwarearchitecture" class="input w-full bg-slate-800" />
           </label>
-          <div class="relative flex justify-between">
-            {#if errors?.name?.required?.error}
-              <span class="text-red-500">{errors.name.required.message}</span>
-            {/if}
-            <p class="absolute text-sm text-gray-400 right-0">{name.length}/{MaxNumberChars}</p>
-          </div>
-      
+          <FormError name="name" key="required" message="Name is required"/>
+          <FormError name="name" key="maxLength" message="Max length is 255"/>
+
           <br class="pt-4"/>
-
-          <input name="description" type="hidden" bind:value={description} />
-
+          
           <!-- svelte-ignore a11y-label-has-associated-control -->
           <label class="input-group">
             <span class="w-40">Description</span>
+            <input type="hidden" name="description" bind:value={description}/>
             {#if descriptionFocus}
-              <textarea on:blur={()=>descriptionFocus=false} contenteditable id="divTextarea" bind:value={description} placeholder="Description" class="bg-slate-800  min-h-full  w-full p-2 rounded-xl"/>
+              <textarea use:autosize on:mouseleave={()=>descriptionFocus=false} name="description" contenteditable id="divTextarea" bind:value={description} placeholder="Description" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2 rounded-l-none  resize"/>
             {:else}
-              <!-- svelte-ignore a11y-click-events-have-key-events -->
-              <div on:click={()=>descriptionFocus=true} id="divTextarea" placeholder="Description" class="bg-slate-800 min-h-full w-full p-2 rounded-xl prose prose-sm"><SvelteMarkdown source={description}/></div>  
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <div on:click={()=>descriptionFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2 rounded-l-none">
+                    <div>
+                        <Markdown data={description}/>
+                    </div>
+                </div>  
             {/if}
           </label>
-          <div class="relative flex justify-between">
-            {#if errors?.description?.required?.error}
-              <span class="text-red-500">{errors.description.required.message}</span>
-            {/if}
-          </div>
+          <FormError name="description" key="required" message="Description is required"/>
           
           <br class="pt-4"/>
           
@@ -124,9 +117,6 @@
               <option value={true}>true</option>
           </select>
           </label>
-          {#if errors?.isPublished?.required?.error}
-            <span class="text-red-500">{errors.isPublished.required.message}</span>
-          {/if} 
       
           <br class="pt-4"/>
 
@@ -155,13 +145,3 @@
     {/each}
   </div>
 </main>
-
-<style>
-  #divTextarea {
-      -moz-appearance: textfield-multiline;
-      -webkit-appearance: textarea;
-      /* border: 1px solid gray; */
-      /* font: medium -moz-fixed; */
-      /* font: -webkit-small-control; */
-  }
-</style>

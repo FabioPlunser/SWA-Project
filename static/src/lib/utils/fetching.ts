@@ -5,7 +5,7 @@ import { handleLogout } from "$utils/handleLogout";
 
 export interface Params {
   name: string;
-  value: string;
+  value: string | boolean;
 }
 
 /**
@@ -18,11 +18,11 @@ export interface Params {
  * @returns the response
  * @example fetching('http://localhost:3000/api/v1/users', 'GET', null, false, [{limit: 10}, {offset: 0}])
  */
-export async function fetching(url: string, method: string, params?: Params[], data?, json?:boolean){
+export async function fetching(url: string, method: string, params?: Params[], data?, json?:boolean): json{
   let requestOptions;
   let myHeaders = new Headers(); 
   myHeaders.append("Authorization", JSON.stringify(get(jwt)));
-
+  
   if(params){
     for(let i=0; i<params.length; i++){
       if(i === 0){

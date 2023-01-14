@@ -5,10 +5,7 @@
 	import Deck from '$components/deck.svelte';
 	import AdminDeck from '$components/adminDeck.svelte';
 	import SubscribedDeck from '$components/subscribedDeck.svelte';
-	import Modal from '$components/modal.svelte';
 	import Spinner from '$components/Spinner.svelte';
-	import Form from '$components/Form.svelte';
-	import DualSideCard from '$components/dualSideCard.svelte';
 	import EditDeckModal from './editDeckModal.svelte';
 
 
@@ -20,27 +17,23 @@
 	import { userPermissionsStore } from '$stores/userPermissionsStore';
 	import { userSelectedDeckStore } from '$stores/userSelectedDeckStore';
   	import { fetching } from '$utils/fetching';
+	import ListCardsModal from './listCardsModal.svelte';
+	import PublicDecksModal from './publicDecksModal.svelte';
 
 	$: if(!$jwt || $jwt?.expired) redirect("login");
 	$: if($userPermissionsStore.includes("ADMIN")) getAllDecks();
 	$: getUserDecks();
 	$: getSubscribedDecks();
-	$: getPublicDecks();
 
 	let allDecks = [];
 	let userDecks = [];
 	let subscribedDecks = [];
-	let publicDecks = [];
-
-	$: console.log(userDecks);
 
 	let showEditDeckModal = false;
-	let selectedDeck: IDeck = null;
+	let selectedDeck = null;
 	let listCards = false;
 	
 	let showPublicDecks = false;
-	let selectedPublicDeck = null;
-	let searchPublicDeckName = "";
 	let searchDeck = "";
 	let showMyDecks = true;
 	let showSubscribedDecks = true;
@@ -51,7 +44,7 @@
 	let page = 'my-decks';
 
 	let navButtons = [
-		{ text: `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`, action: ()=>{showPublicDecks=true; getPublicDecks()}},
+		{ text: `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`, action: ()=>showPublicDecks=true},
 		{ text: "Create Deck", href: "create-deck" },
 	]
 
@@ -63,7 +56,7 @@
 	}
 
 	if ($userPermissionsStore.includes("ADMIN")) {
-		navButtons.splice(2, 0, { text: "Admin", action: () => redirect("admin") });
+		navButtons.splice(2, 0, { text: "Admin", href: "admin" });
 	}
 	
 	async function getAllDecks(){
@@ -78,11 +71,11 @@
 	}
 	
 
-	
 	async function getUserDecks(){
 		let res = await fetching("/api/get-created-decks", "GET");
 		if(res.success){
 			userDecks = res.items;
+			userDecks=[...userDecks];
 			return res.items;
 		} 
 		else{
@@ -102,17 +95,6 @@
 			addToast("Error fetching subscribed decks", "alert-error");
 		}
 	}
-	
-	async function getPublicDecks(){
-		let res = await fetching("/api/get-published-decks", "GET");
-		if(res.success){
-			publicDecks = res.items;
-			return res.items;
-		} 
-		else{
-			addToast("Error fetching public decks", "alert-error");
-		}
-	}
 
 	
 	async function getDecks(){
@@ -121,21 +103,17 @@
 		}
 		getUserDecks();
 		getSubscribedDecks();
-		getPublicDecks();
 	}
 
-
-	async function handleSubscribe(deck){
-		let res = await fetching(`/api/subscribe-deck`, "POST", [{name: "deckId", value: deck.deckId}]);
-		addToastByRes(res);
-		getSubscribedDecks();
-		getPublicDecks();
+	$: {
+		if(selectedDeck){
+			let index = userDecks.findIndex(deck => deck.deckId == selectedDeck.deckId);
+			if(index != -1){
+				userDecks[index] = selectedDeck;
+				userDecks = [...userDecks];
+			}
+		}
 	}
-	
-	async function getCardsFromDeck(deck){
-        let res = await fetching("/api/get-cards-of-deck", "GET", [{name: "deckId", value: deck.deckId}]);
-        return res.items;
-    }
 </script>
 
 <svelte:head>
@@ -148,111 +126,13 @@
 <Nav title="Decks" buttons={navButtons} />
 <main class="m-20">
 	{#if showEditDeckModal}
-		<Modal open={showEditDeckModal} on:close={()=> showEditDeckModal = false} closeOnBodyClick={false}>
-			<div class="max-w-full">
-				<h1 class="flex justify-center text-2xl font-bold">Edit Deck</h1>
-				<br class="pt-4"/>
-				<Form url="/api/update-deck" method="POST" dataFormat="JSON" on:postFetch={getDecks}>
-					<input name="deckId" bind:value={selectedDeck.deckId} type="hidden" required>
-					<div class="flex flex-col">
-						<div class="form-control">
-							<label class="input-group">
-							<span class="w-36">Name</span>
-							<input bind:value={selectedDeck.name} name="name" required type="text" placeholder="Softwarearchitecture" class="input input-bordered w-full" />
-							</label>
-						</div>
-						<br class="pt-4"/>
-						<div class="form-control">
-							<label class="input-group">
-							<span class="w-36">Description</span>
-							<textarea bind:value={selectedDeck.description} name="description" required placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full" />
-							</label>
-						</div>
-						<br class="pt-2"/>
-						<button class="btn btn-primary" type="button" on:click={()=>{$userSelectedDeckStore = selectedDeck; redirect("edit-cards")}}>Edit Cards</button>
-						<br class="pt-4"/>
-						<div class="flex justify-between">
-							<button type="submit" class="btn btn-primary" on:click={()=>showEditDeckModal=false}>Update</button>
-							<input type="reset" class="btn btn-primary" value="Clear"/>
-							<!-- svelte-ignore a11y-click-events-have-key-events -->
-							<button type="button" class="btn btn-primary" on:click={()=> showEditDeckModal = false}>Close</button>
-						</div>
-					</div>
-					
-				</Form>
-			</div>
-		</Modal>
+		<EditDeckModal bind:showEditDeckModal getDecks={getUserDecks} bind:selectedDeck />
 	{/if}
 	{#if showPublicDecks}
-		<Modal open={showPublicDecks} on:close={()=>showPublicDecks=false} closeOnBodyClick={false}>
-			<div class="flex flex-col min-w-fit">
-				<h1 class="flex justify-center text-2xl font-bold">Public Decks</h1>
-				<br class="mt-4"/>
-				<input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
-				<br class="mt-4"/>
-				{#await publicDecks}
-					<Spinner/>
-				{:then publicDecks}
-					{#if publicDecks.length == 0}
-						<h1 class="text-2xl flex justify-center">No Decks Found</h1>
-					{:else}
-						<div class="grid grid-cols-4 gap-2">
-							{#each publicDecks as deck}
-								{#if deck.name.toLowerCase().includes(searchPublicDeckName.toLowerCase()) || deck.description.toLowerCase().includes(searchPublicDeckName.toLowerCase())} 
-									<div class="card bg-gray-700 p-5 w-fit min-w-fit">
-										<h1 class="card-title">{deck.name}</h1>
-										<p class="card-subtitle">{deck.description}</p>
-										{#if deck.numCards > 0}
-											<div class="badge badge-primary">Number of cards: {deck.numCards} </div>
-											{:else}
-											<div class="badge badge-error">No cards</div>
-										{/if}
-										<br class="pt-4"/>
-										<div class="card-actions">
-											<button class="btn btn-primary" on:click={()=> {handleSubscribe(deck)}}>Subscribe</button>
-											<button class="btn btn-secondary" on:click={()=> {showPublicDecks=false; selectedDeck=deck; listCards=true}}>Cards</button>
-										</div>
-									</div>
-								{:else}
-									<h1 class="flex justify-center text-3xl">No deck found</h1>
-								{/if}
-							{/each}
-						</div>
-					{/if}
-				{/await}
-			</div>
-			<div class="mt-12 modal-action">
-				<div class="flex fixed bottom-0 right-0 m-2">
-					{#if selectedPublicDeck}
-						<button class="btn btn-secondary m-1" on:click={()=> selectedPublicDeck=null}>Back</button>
-					{/if}
-					<button class="btn btn-primary m-1" on:click={()=> showPublicDecks = false}>Close</button>
-				</div>
-			</div>
-		</Modal>
+		<PublicDecksModal bind:showPublicDecks bind:selectedDeck bind:listCards on:refresh={getDecks} />
 	{/if}
 	{#if listCards}
-		<Modal open={listCards} on:close={()=>listCards=false} closeOnBodyClick={true}>
-			<div class="relative max-w-full">
-				<div class="flex flex-col min-w-fit">
-					<h1 class="flex justify-center text-2xl font-bold">Cards of Deck {selectedDeck.name}</h1>
-					<div class="absolute right-0">
-						<button class="btn btn-primary" on:click={()=> listCards = false}>Close</button>
-					</div>
-					<div class="grid grid-cols-4 gap-2 mt-6">
-						{#await getCardsFromDeck(selectedDeck)}
-							<Spinner/>
-						{:then cards}
-							{#each cards as card, index (card.cardId)}
-								<div>
-									<DualSideCard {card} {index} editable={false} cardBg="bg-slate-800" textBg="bg-slate-700"/>
-								</div>
-							{/each}
-						{/await}
-					</div>
-				</div>
-			</div>
-		</Modal>
+		<ListCardsModal bind:listCards {selectedDeck} />
 	{/if}
 
 	{#if $userPermissionsStore.includes('ADMIN')}
@@ -287,13 +167,16 @@
 							{#each userDecks as deck (deck.deckId)}
 								{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
 									<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
+										{#key deck}
 										<Deck 
 											{deck}
 											on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+											on:editCards={()=> {$userSelectedDeckStore = deck; redirect("edit-cards")}}
 											on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
 											on:listCards={()=> {listCards=true; selectedDeck = deck}}
 											on:deleteDeck={async ()=> {await getUserDecks(); userDecks=[...userDecks];}}
 										/>
+										{/key}
 									</div>
 								{:else}
 									<h1>No deck found</h1>
