@@ -57,16 +57,12 @@
         <div class="{hover ? "hidden" : "block"} max-h-full" >
             <h1 class="font-bold flex justify-center text-3xl">{name}</h1>
             <br class="pt-4"/>
-            <!-- <div id="divTextarea" class="prose prose-dark prose-sm prose-invert overflow-auto max-h-fit h-fit">
-                {@html marked(description)}
-            </div> -->
+
             <div class="max-h-full overflow-hidden break-all">
                 <div id="divTextarea" class="break-all overflow-hidden min-h-[60px] w-full p-2 rounded-xl prose prose-sm prose-dark">
-                    {@html marked(description)}
-                    <!-- <SvelteMarkdown bind:source={description}/> -->
+                    <SvelteMarkdown bind:source={description}/>
                 </div>
             </div>
-            <!-- <textarea class="resize-none bg-transparent" readonly>{description}</textarea> -->
             <br class="pt-8"/>
 
             <div class="bottom-0 absolute mb-4 mt-4">

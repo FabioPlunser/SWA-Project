@@ -4,9 +4,11 @@
 
     import { addToastByRes } from '$utils/addToToastStore';
     import { fetching } from '$utils/fetching';
+    import SvelteMarkdown from 'svelte-markdown';
 
     export let deck; 
-    let { deckId, name, description, published, blocked, cards} = deck;
+    console.log(deck);
+    let { deckId, name, description, published, blocked, numCards, numCardsToRepeat, numNotLearnedCards} = deck;
     
     $: getAllCardsToLearn();
     $: getCardsOfDeck();
@@ -55,25 +57,33 @@
         <div class="{hover ? "hidden" : "block"}" >
             <h1 class="underline flex justify-center text-xl">{name}</h1>
             <br class="my-4"/>
-            <p>{description}</p>
+            <div class="max-h-full overflow-hidden break-all">
+                <div id="divTextarea" class="break-all overflow-hidden min-h-[60px] w-full p-2 rounded-xl prose prose-sm prose-dark">
+                    <SvelteMarkdown bind:source={description}/>
+                </div>
+            </div>
             <br class="my-4"/>
-            <div class="bottom-0 absolute mb-4">
+            <div class="bottom-0 absolute mb-4 mt-4">
                 <div class="grid grid-rows gap-2">
-                    {#if cards}
-                        <div class="badge badge-primary">Number of cards: {cards.length} </div>
+                    <div class="gird grid-cols gap-2">
+                        {#if numCards > 0}
+                            <div class="badge badge-primary">Cards: {numCards} </div>
+                            {:else}
+                            <div class="badge badge-error">No cards</div>
+                        {/if}
+                        {#if numCardsToRepeat >0}
+                            <div class="badge badge-primary">To repeat: {numCardsToRepeat} </div>
                         {:else}
-                        <div class="badge badge-error">No cards</div>
-                    {/if}
-                    {#if cardsToLearn}
-                        <div class="badge badge-primary">Number of cards to learn: {cardsToLearn.length} </div>
+                            <div class="badge badge-error">Nothing to repeat</div>
+                        {/if}
+                    </div>
+                    <div class="gird grid-cols gap-2">
+                        {#if numNotLearnedCards > 0}
+                            <div class="badge badge-primary">To learn: {numNotLearnedCards} </div>
                         {:else}
-                        <div class="badge badge-error">No cards to learn</div>
-                    {/if}
-                    <!-- {#if cards && cardsToLearn}
-                        Progress: <progress class="progress progress-success bg-gray-700" value={cards.length - cardsToLearn.length} max={cards.length}></progress>
-                    {:else}
-                        <div class="badge badge-error">No cards to learn</div>
-                    {/if} -->
+                            <div class="badge badge-error">No cards to learn</div>
+                        {/if}
+                    </div>
                 </div>
             </div>
         </div>
@@ -92,7 +102,11 @@
     <div>
         <h1 class="underline flex justify-center text-xl">{name}</h1>
         <br class="mt-4"/>
-        <p class="flex justify-center">{description}</p>
+        <div class="max-h-full overflow-hidden break-all">
+            <div id="divTextarea" class="break-all overflow-hidden min-h-[60px] w-full p-2 rounded-xl prose prose-sm prose-dark">
+                <SvelteMarkdown bind:source={description}/>
+            </div>
+        </div>
     </div>
     <br class="mt-4"/>
 

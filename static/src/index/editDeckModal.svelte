@@ -66,10 +66,10 @@
                     <span class="w-36">Description</span>
                     <input type="hidden" name="description" bind:value={selectedDeck.description}>
                     {#if descriptionFocus}
-                        <textarea use:autosize on:mouseleave={()=>descriptionFocus=false} name="description" contenteditable id="divTextarea" bind:value={selectedDeck.description} placeholder="Description" class="bg-slate-800  min-h-full max-w-full  w-full p-2 rounded-xl resize"/>
+                        <textarea use:autosize on:blur={()=>descriptionFocus=false} name="description" contenteditable id="divTextarea" bind:value={selectedDeck.description} placeholder="Description" class="bg-slate-800  min-h-full max-w-full  w-full p-2 rounded-xl resize break-all"/>
                     {:else}
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
-                        <div on:click={()=>descriptionFocus=true} id="divTextarea" placeholder="Description" class="bg-slate-800 min-h-full w-full p-2 rounded-xl prose prose-dark prose-sm"><SvelteMarkdown source={selectedDeck.description}/></div>  
+                        <div on:click={()=>descriptionFocus=true} id="divTextarea" placeholder="Description" class="bg-slate-800 min-h-full w-full p-2 rounded-xl prose prose-dark prose-sm break-all"><SvelteMarkdown source={selectedDeck.description}/></div>  
                     {/if}
                     </label>
                 </div>

@@ -10,7 +10,6 @@
   import { fly } from "svelte/transition";
   import { addToastByRes } from '$utils/addToToastStore';
   import { Validators } from "$utils/Validators";
-  import type { ValidatorFn, ValidatorResult } from '$utils/Validators';
   import { formFormat } from '$lib/types/formFormat';
   
   let buttons = [
