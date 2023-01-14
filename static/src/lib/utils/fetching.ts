@@ -5,7 +5,7 @@ import { handleLogout } from "$utils/handleLogout";
 
 export interface Params {
   name: string;
-  value: string;
+  value: string | boolean;
 }
 
 /**

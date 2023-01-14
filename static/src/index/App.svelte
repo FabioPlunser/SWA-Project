@@ -164,6 +164,7 @@
 										<Deck 
 											{deck}
 											on:editDeck={()=> {selectedDeck = deck; showEditDeckModal = true}}
+											on:editCards={()=> {$userSelectedDeckStore = deck; redirect("edit-cards")}}
 											on:learnDeck={()=> {$userSelectedDeckStore = deck; redirect("learn")}}
 											on:listCards={()=> {listCards=true; selectedDeck = deck}}
 											on:deleteDeck={async ()=> {await getUserDecks(); userDecks=[...userDecks];}}

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import { setContext } from 'svelte';
-    import { fetching } from "$utils/fetching";
+    import { fetching, type Params } from "$utils/fetching";
     import { writable } from 'svelte/store';
 
     let dispatch = createEventDispatcher();
@@ -13,6 +13,7 @@
     export let url = "";
     export let method = "";
     export let addJSONData = [{}];
+    export let params: Params[] = null;
     // export let errors = {};
     export let formValidators = {};
     export let id = "";
@@ -39,11 +40,11 @@
                 data = {...data, ...JSONData};
             }
 
-            res = await fetching(url, method, null, data, true);
+            res = await fetching(url, method, params, data, true);
             dispatch("postFetch", {e, res});
             return res;
         }else{
-            res = await fetching(url, method, null, formData, false);
+            res = await fetching(url, method, params, formData, false);
             dispatch("postFetch", {e, res});
             return res;
         }

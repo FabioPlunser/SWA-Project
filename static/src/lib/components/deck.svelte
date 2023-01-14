@@ -5,7 +5,6 @@
     import { addToastByRes } from '$utils/addToToastStore';
     import { fetching } from '$utils/fetching';
     import SvelteMarkdown from 'svelte-markdown'
-    import { marked } from 'marked';
 
     export let deck; 
     let { deckId, name, description, published, blocked, numCards, numCardsToRepeat, numNotLearnedCards} = deck;
@@ -20,7 +19,11 @@
     }
     
     function handleEditDeck() {
-        dispatch('editDeck', "editDeck");
+        dispatch('editDeck');
+    }
+
+    function handleEditCards(){
+        dispatch('editCards');
     }
 
     async function handlePublishDeck(){
@@ -101,6 +104,7 @@
             <button class="btn btn-primary" on:click={handleLearnDeck}>Learn Deck</button>
             <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
             <button class="btn btn-primary" on:click={handleEditDeck}>Edit Deck</button>
+            <button class="btn btn-primary" on:click={handleEditCards}>Edit Cards</button>
             <button class="btn {published ? "btn-secondary" : "btn-primary"}" on:click={handlePublishDeck}>Publish Deck</button>
             <button class="btn btn-primary" on:click={handleDeleteDeck}>Delete Deck</button>
         </div>       
