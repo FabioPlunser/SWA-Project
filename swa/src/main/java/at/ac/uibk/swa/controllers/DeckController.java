@@ -201,6 +201,8 @@ public class DeckController {
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (adminDeckService.unblock(deckId)) {
+            Deck deck = userDeckService.findById(deckId).get();
+            mailService.notifyUnblockedDeck(deck);
             return MessageResponse.builder()
                     .ok()
                     .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " unblocked")
