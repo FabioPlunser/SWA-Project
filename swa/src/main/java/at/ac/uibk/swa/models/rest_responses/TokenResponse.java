@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.models.rest_responses;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,8 +15,9 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.MODULE)
 @AllArgsConstructor
 public class TokenResponse extends RestResponse implements Serializable {
-
-    private static String type = "TokenExpired";
+    @Override
+    @JsonInclude
+    public String getType() { return "TokenExpired"; }
 
     private UUID token;
 

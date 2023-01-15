@@ -1,29 +1,51 @@
 <script lang="ts">
-  import favicon from '../assets/favicon.png';
-  import Nav from '../lib/components/nav.svelte';
-	import SvelteToast from '../lib/components/SvelteToast.svelte';
-  import DualSideCard from './../lib/components/dualSideCard.svelte';
-  import Form from '../lib/components/Form.svelte';
-
-  import { redirect } from "../lib/utils/redirect";
-  import { handleLogout } from '../lib/utils/handleLogout';
-  import { addToastByRes } from '../lib/utils/addToToastStore';
-  import { tokenStore } from "../lib/stores/tokenStore";
-  import { Validators, validateForm, isFormValid} from "../lib/utils/Validators";
+  import favicon from '$assets/favicon.png';
+  import Nav from '$components/nav.svelte';
+	import SvelteToast from '$components/SvelteToast.svelte';
+  import DualSideCard from '$components/dualSideCard.svelte';
+  import Form from '$components/Form.svelte';
+  import Markdown from '$components/markdown.svelte';
+  import FormError from '$components/formError.svelte';
+  import autosize from 'svelte-autosize';
 
 
+  import { fly } from "svelte/transition";
+  import { addToastByRes } from '$utils/addToToastStore';
+  import { Validators } from "$utils/Validators";
+  import { formFormat } from '$lib/types/formFormat';
+  
   let buttons = [
-    { text: "Home", action: () => redirect("") },
-    { text: "Logout", action: () => handleLogout()}
+    { text: "Home", href: "/" },
   ]
 
   let cards = [];
   let id = 0;
-
+  let formValidators = {
+    name: {
+      validators: [Validators.required, Validators.maxLength(255)],
+    },
+    description: {
+      validators: [Validators.required],
+    }
+  };
+  
   function addCard() {
-    cards.push({id: id, frontText: "", backText: ""});
+    cards.push({id: id, frontText: "", backText: "", isFlipped: false});
     cards = [...cards];
     id++;
+  }
+
+  /**
+   * When isFlipped is checked two cards need to be created one flipped and one not flipped
+   */
+  function updateCard(data){
+    let card = data.detail;
+    cards.map(c => {
+      if(c.id === card.id){
+        c = card;
+      }
+    });
+    cards = [...cards];
   }
 
   function handleDeleteCard(card) {
@@ -32,18 +54,6 @@
 
   }
 
-  let errors = {};
-  let formValidators = {
-    name: {
-      validators: [Validators.required],
-    },
-    description: {
-      validators: [Validators.required],
-    },
-    isPublished: {
-      validators: [Validators.required],
-    },
-  };
 
   async function handlePostFetch(data){
     data.detail.e.target.reset();
@@ -51,73 +61,86 @@
     cards=[];
   }
 
+
+  let name = "";
+  let description = "";
+  let descriptionFocus = false;
 </script>
 
 <svelte:head>
   <title>Create Deck</title>
   <link rel="icon" type="image/png" href={favicon}>
+  <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <SvelteToast />
 <Nav title="Decks" {buttons}/>
-<main class="mt-20 m-2">
-  <h1 class="flex justify-center text-2xl font-bold">Create Deck</h1>
+<main class="mt-20 m-8">
+  <h1 class="flex justify-center text-3xl font-bold">Create Deck</h1>
   <br class="pt-4"/>
-  <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat="JSON" formValidators={formValidators} bind:errors  addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
-    <div class="flex flex-col">
-      <div class="form-control">
-        <label class="input-group">
-        <span class="w-36">Name</span>
-        <input name="name" type="text" placeholder="Softwarearchitecture" class="input input-bordered w-full bg-slate-900" />
-        </label>
-        {#if errors?.name?.required?.error}
-          <span class="text-red-500">{errors.name.required.message}</span>
-        {/if}
-      </div>
-      <br class="pt-4"/>
-      <div class="form-control">
-        <label class="input-group">
-        <span class="w-36">Description</span>
-        <textarea name="description" placeholder="A deck to learn softwarearchitecture" class="textarea input-bordered w-full bg-slate-900" />
-        </label>
-        {#if errors?.description?.required?.error}
-          <span class="text-red-500">{errors.description.required.message}</span>
-        {/if}
-      </div>
-      <br class="pt-4"/>
-      <div class="form-control">
-        <label class="input-group">
-        <span class="w-36">Publish</span>
-        <select name="published" class="flex input w-full bg-slate-900">
-            <option value={false}>false</option>
-            <option value={true}>true</option>
-        </select>
-        </label>
-        {#if errors?.isPublished?.required?.error}
-          <span class="text-red-500">{errors.isPublished.required.message}</span>
-        {/if}
-      </div>
+  <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat={formFormat.JSON} {formValidators} addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
+    <div class="max-w-full">
+      <div class="bg-slate-900 p-5 rounded-xl">
+        <div class="flex flex-col">
+          <label class="input-group">
+            <span class="w-40">Name</span>
+            <input name="name" type="text" bind:value={name} placeholder="Softwarearchitecture" class="input w-full bg-slate-800" />
+          </label>
+          <FormError name="name" key="required" message="Name is required"/>
+          <FormError name="name" key="maxLength" message="Max length is 255"/>
 
-      <br class="pt-4"/>
+          <br class="pt-4"/>
+          
+          <!-- svelte-ignore a11y-label-has-associated-control -->
+          <label class="input-group">
+            <span class="w-40">Description</span>
+            <input type="hidden" name="description" bind:value={description}/>
+            {#if descriptionFocus}
+              <textarea use:autosize on:mouseleave={()=>descriptionFocus=false} name="description" contenteditable id="divTextarea" bind:value={description} placeholder="Description" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2 rounded-l-none  resize"/>
+            {:else}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <div on:click={()=>descriptionFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2 rounded-l-none">
+                    <div>
+                        <Markdown data={description}/>
+                    </div>
+                </div>  
+            {/if}
+          </label>
+          <FormError name="description" key="required" message="Description is required"/>
+          
+          <br class="pt-4"/>
+          
+          <label class="input-group">
+          <span class="w-40">Publish</span>
+          <select name="published" class="flex input w-full bg-slate-800">
+              <option value={false}>false</option>
+              <option value={true}>true</option>
+          </select>
+          </label>
+      
+          <br class="pt-4"/>
 
+          <div class="flex justify-center">
+            <button class="btn btn-primary" type="submit">Submit Deck</button>
+            
+          </div>
+      </div>
+      <br class="pt-4"/>
+      <h1 class="flex justify-center text-3xl font-bold">Cards</h1>
+      <br class="pt-4"/>
       <div class="flex justify-center">
-        <button class="btn btn-primary" type="submit">Submit</button>
-      </div>
-
-      <br class="pt-4"/>
-      <h1 class="flex justify-center text-2xl font-bold">Cards</h1>
-      <br class="pt-4"/>
-      <div class="tooltip" data-tip="Add Card">
-        <button class="btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>
+        <div class="tooltip flex justify-center" data-tip="Add Card">
+          <button class="flex justify-center btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>
+        </div>
       </div>
     </div>
   </Form>
   
   <br class="mt-4"/>
-  <div class="grid grid-cols-3 gap-2">
-    {#each cards as card}
-      <div>
-        <DualSideCard {card} editable={true} on:deleteCard={()=>handleDeleteCard(card)} />
+  <div class="grid grid-cols-4 gap-2">
+    {#each cards as card, i (card.id)}
+      <div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
+        <DualSideCard {card} flippable={true} on:isFlipped={updateCard} index={i+1} editable={true} on:deleteCard={()=>handleDeleteCard(card)} />
       </div>
     {/each}
   </div>

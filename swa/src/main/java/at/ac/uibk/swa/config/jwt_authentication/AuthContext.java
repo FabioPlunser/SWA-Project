@@ -1,4 +1,4 @@
-package at.ac.uibk.swa.config.person_authentication;
+package at.ac.uibk.swa.config.jwt_authentication;
 
 import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.Person;

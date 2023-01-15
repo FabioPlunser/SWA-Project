@@ -1,9 +1,13 @@
 package at.ac.uibk.swa.models.rest_responses;
 
-import at.ac.uibk.swa.config.person_authentication.AuthContext;
+import at.ac.uibk.swa.config.jwt_authentication.AuthContext;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.LearningProgress;
 import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.util.DoubleCounter;
+import at.ac.uibk.swa.util.DoublePredicateCountingCollector;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
@@ -16,9 +20,13 @@ import java.util.Optional;
 @Getter
 @SuperBuilder
 public class UserDeckListResponse extends ListResponse<UserDeckListResponse.UserDeckInfo> implements Serializable {
+    @Override
+    @JsonInclude
+    public String getType() { return "UserDeckList"; }
 
     public UserDeckListResponse(List<Deck> decks) {
-        this(decks, AuthContext.getCurrentPerson().get());
+        this(decks, AuthContext.getCurrentPerson().orElseThrow(() -> new NullPointerException("Could not find Person")));
+
     }
 
     public UserDeckListResponse(List<Deck> decks, Person person) {
@@ -27,25 +35,30 @@ public class UserDeckListResponse extends ListResponse<UserDeckListResponse.User
 
     @Getter
     public static class UserDeckInfo implements Serializable {
+        @JsonUnwrapped
         private Deck deck;
         private int numCards;
-        private long numCardsToLearn;
+        private long numCardsToRepeat;
+        private long numNotLearnedCards;
 
         public UserDeckInfo(Deck deck) throws CredentialException {
-            this(deck, AuthContext.getCurrentPerson().orElseThrow(() -> new CredentialException()));
+            this(deck, AuthContext.getCurrentPerson().orElseThrow((CredentialException::new)));
         }
 
         public UserDeckInfo(Deck deck, Person person) {
             this.deck = deck;
             this.numCards = this.deck.getCards().size();
+
             LocalDateTime now = LocalDateTime.now();
-            this.numCardsToLearn = deck.getCards().stream()
+            DoubleCounter counter = deck.getCards().stream()
                     .map(card -> card.getLearningProgress(person))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .map(LearningProgress::getNextLearn)
-                    .filter(nl -> nl.isAfter(now))
-                    .count();
+                    .collect(new DoublePredicateCountingCollector<Optional<LearningProgress>>(
+                            Optional::isEmpty,
+                            lp -> lp.map(learningProgress -> learningProgress.getNextLearn().isBefore(now)).orElse(false)
+                    ));
+
+            this.numNotLearnedCards = counter.getMatchesFirst();
+            this.numCardsToRepeat = counter.getMatchesSecond();
         }
     }
 }

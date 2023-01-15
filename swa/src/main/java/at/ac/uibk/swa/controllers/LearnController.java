@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.controllers;
 
 import at.ac.uibk.swa.models.Card;
+import at.ac.uibk.swa.models.annotations.ApiRestController;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RestResponse;
 import at.ac.uibk.swa.service.CardService;
@@ -15,13 +16,13 @@ import java.util.UUID;
  *
  * @author Fabian Magreiter
  */
-@RestController
+@ApiRestController
 public class LearnController {
 
     @Autowired
     private CardService cardService;
 
-    @PostMapping("/api/learn")
+    @PostMapping("/learn")
     @ResponseStatus(HttpStatus.OK)
     public RestResponse learn(
             @RequestParam(name = "cardId") final UUID cardId,

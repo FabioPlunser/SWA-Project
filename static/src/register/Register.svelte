@@ -1,18 +1,22 @@
 <script lang="ts">
-    import favicon  from '../assets/favicon.png';
-    import SvelteToast from "../lib/components/SvelteToast.svelte";
-    import Form from "../lib/components/Form.svelte";
+    import favicon  from '$assets/favicon.png';
+    import SvelteToast from "$components/SvelteToast.svelte";
+    import Form from "$components/Form.svelte";
 
-	import { redirect } from '../lib/utils/redirect';
-    import { tokenStore } from "../lib/stores/tokenStore";
-    import { personIdStore } from "../lib/stores/personIdStore";
-    import { userPermissionsStore } from "../lib/stores/userPermissionsStore";
-    import { Validators} from "../lib/utils/Validators";
-  import { addToastByRes } from '../lib/utils/addToToastStore';
-
-    $: if($tokenStore.length > 30) redirect("");
-    $: document.cookie = `Token=${$tokenStore}`;
+	import { redirect } from '$utils/redirect';
+    import { jwt } from "$stores/jwtStore";
+    import { personIdStore } from "$stores/personIdStore";
+    import { userPermissionsStore } from "$stores/userPermissionsStore";
+    import { Validators} from "$utils/Validators";
+  import { formFormat } from '$lib/types/formFormat';
     
+    $: if($jwt && !$jwt.expired) redirect("");
+    $: {
+        document.cookie = `token=${$jwt?.token}`;
+        document.cookie = `username=${$jwt?.username}`;
+    }
+    let username = "";
+
     let errors = {};
     let formValidators = {
         username: {
@@ -28,10 +32,9 @@
 
     function handlePostFetch(data){
         let res = data.detail.res;
-        addToastByRes(res);
         if(res.success){
-            $tokenStore = res.token;
-            $personIdStore = res.id;
+            $jwt = {token: res.token, username: username}
+            $personIdStore = res.personId;
             $userPermissionsStore= res.permissions;
         }
     }
@@ -40,18 +43,19 @@
 <svelte:head>
 	<link rel="icon" type="image/png" href={favicon}/>
 	<title>Register</title>
+    <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <SvelteToast/>
 <main class="flex justify-center items-center mx-auto h-screen text-white">
     <div class="rounded-xl shadow-2xl bg-slate-900 max-w-fit p-10">
         <h1 class="underline text-2xl mx-auto flex justify-center p-2">Register</h1>
-        <Form url="/api/register" method="POST" dataFormat="FormData" {formValidators} bind:errors on:postFetch={handlePostFetch}>
+        <Form url="/api/register" method="POST" dataFormat={formFormat.FORM} {formValidators} bind:errors on:postFetch={handlePostFetch}>
             <div class="flex flex-col">
                 <div class="form-control">
                     <label class="input-group">
                     <span class="w-36">Username</span>
-                    <input name="username" type="text" placeholder="Max" class="input input-bordered w-full" />
+                    <input name="username" bind:value={username} type="text" placeholder="Max" class="input input-bordered w-full" />
                     </label>
                     {#if errors?.username?.required?.error}
                         <p class="text-red-500">Username is required</p>
@@ -61,7 +65,7 @@
                 <div class="form-control">
                     <label class="input-group">
                     <span class="w-36">Email</span>
-                    <input name="email" type="email" placeholder="test@example" class="flex input input-bordered w-full" />
+                    <input name="email" type="email" placeholder="google@gmail.com" class="flex input input-bordered w-full" />
                     </label>
                     {#if errors?.email?.required?.error}
                         <p class="text-red-500">Email is required</p>

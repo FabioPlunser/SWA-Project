@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.controllers.error_controllers;
 
+import at.ac.uibk.swa.models.exceptions.TokenExpiredException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,15 @@ public class SwaExceptionHandlerController extends ResponseEntityExceptionHandle
     @Autowired
     private SwaErrorController errorController;
 
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
+    @ExceptionHandler(TokenExpiredException.class)
+    public void handleTokenExpiredException(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            TokenExpiredException authException
+    ) throws IOException {
+        errorController.handleErrorManual(request, response, authException);
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public void handleAuthenticationException(
             HttpServletRequest request,

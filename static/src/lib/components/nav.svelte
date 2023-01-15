@@ -1,5 +1,7 @@
 <script lang="ts">
-  import favicon  from '../../assets/favicon.png';
+  import favicon  from '$assets/favicon.png';
+	import { handleLogout } from '$utils/handleLogout';
+ 
   export let title = "";
   export let buttons = [];
 </script>
@@ -12,7 +14,12 @@
 
     <div class="menu menu-horizontal">
       {#each buttons as button}
-        <button class="flex justify-center btn btn-primary mx-2" on:click={button.action}>{@html button.text}</button>
+        {#if button?.href}
+          <a class="flex justify-center btn btn-primary mx-2" href={button.href}>{@html button.text}</a>
+        {:else}
+          <button class="flex justify-center btn btn-primary mx-2" on:click={button.action}>{@html button.text}</button>
+        {/if}
       {/each}
+      <button class="flext justify-center btn btn-secondary mx-2" on:click={() => handleLogout()}>Logout</button>
     </div>
 </div>

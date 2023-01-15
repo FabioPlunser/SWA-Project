@@ -24,9 +24,9 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
  * @author David Rieser
  * @see AbstractAuthenticationProcessingFilter
  */
-public class BearerTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class HeaderTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    public BearerTokenAuthenticationFilter(final RequestMatcher requiresAuth) {
+    public HeaderTokenAuthenticationFilter(final RequestMatcher requiresAuth) {
         super(requiresAuth);
     }
 
@@ -39,12 +39,9 @@ public class BearerTokenAuthenticationFilter extends AbstractAuthenticationProce
         Optional<UsernamePasswordAuthenticationToken> authenticationToken =
                 // Get the Authorization Header
                 Optional.ofNullable(httpServletRequest.getHeader(AUTHORIZATION))
-                        // The Bearer Token is a UUID and stored in the Authorization Header
-                        // It has the form: "Bearer <Token>"
-                        .map(header -> header.substring("Bearer".length()).trim())
-                        // Try to convert the Token given in the Authorization-Header to a UUID
-                        .map(ConversionUtil::tryConvertUUID)
-                        // If the Token is a valid UUID then pass it onto the AuthenticationFilter
+                        // The Jwt Token is stored in the Authorization Header
+                        .map(ConversionUtil::tryConvertJwtToken)
+                        // If the JwtToken is a valid UUID then pass it onto the AuthenticationFilter
                         .map(token -> new UsernamePasswordAuthenticationToken(null, token));
 
         // If a Cookie-Token was found, pass it to the AuthenticationManager/AuthenticationProvider.

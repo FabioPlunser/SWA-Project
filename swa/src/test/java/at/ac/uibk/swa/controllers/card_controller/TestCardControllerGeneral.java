@@ -101,11 +101,11 @@ public class TestCardControllerGeneral {
             userDeckService.delete(deck.getDeckId());
         }
 
-        String token = "Bearer ";
+        Person person;
         if (userIsOwner) {
-             token += deck.getCreator().getToken();
+            person = deck.getCreator();
         } else {
-            token += createUserAndLogin(userIsAdminIfNotOwner).getToken();
+            person = createUserAndLogin(userIsAdminIfNotOwner);
         }
 
         boolean userIsAdmin = (userIsOwner && creatorIsAlsoAdmin) || (!userIsOwner && userIsAdminIfNotOwner);
@@ -113,7 +113,7 @@ public class TestCardControllerGeneral {
 
         // when: getting all cards for that deck
         mockMvc.perform(MockMvcRequestBuilders.get("/api/get-cards-of-deck")
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(person))
                 .param("deckId", deck.getDeckId().toString())
                 .contentType(MediaType.APPLICATION_JSON)
         )

@@ -2,6 +2,7 @@ package at.ac.uibk.swa.models.rest_responses;
 
 import at.ac.uibk.swa.util.SerializationUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,14 @@ public abstract class RestResponse implements Serializable {
     @Setter(AccessLevel.PROTECTED)
     @Builder.Default
     private boolean success = false;
+
+    /**
+     * Indicate the Type of the Response.
+     *
+     * @return The Type of the Response.
+     */
+    @JsonInclude
+    public abstract String getType();
 
     //region Status Code
     @JsonIgnore
