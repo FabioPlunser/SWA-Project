@@ -39,7 +39,7 @@
 {#if !blocked}
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
         <div class="{hover ? "hidden" : "block"}" >
-            <h1 class="underline flex justify-center text-xl">{name}</h1>
+            <h1 class="flex justify-center text-xl font-bold">{name}</h1>
             <br class="my-4"/>
             <div class="max-h-[200px] overflow-clip">
                 <Markdown data={description}/>
@@ -71,7 +71,7 @@
 <!-- svelte-ignore a11y-mouse-events-have-key-events -->
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative opacity-50" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
     <div class="{hover ? "hidden" : "block"}" >
-        <h1 class="underline flex justify-center text-xl">{name}</h1>
+        <h1 class="flex justify-center text-xl font-bold">{name}</h1>
         <br class="my-4"/>
         <div class="max-h-[200px] overflow-clip">
             <Markdown data={description}/>
