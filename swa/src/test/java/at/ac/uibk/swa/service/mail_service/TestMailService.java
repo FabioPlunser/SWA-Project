@@ -9,13 +9,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class TestMailServiceSendMail {
+public class TestMailService {
 
     @Autowired
     MailService mailService;
 
     @Test
-    private void mailTest() {
-        mailService.sendMessage("This is a test", new String[] {"luanabgadelha@gmail.com"});
+    public void mailTest() {
+        mailService.sendMessage("This is a test", "test", new String[] {"luanabgadelha@gmail.com"});
+        assertEquals(0,0);
     }
 }

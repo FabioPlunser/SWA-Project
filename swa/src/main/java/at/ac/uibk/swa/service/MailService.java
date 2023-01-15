@@ -19,14 +19,15 @@ public class MailService {
 
     public void notifyBlockedDeck(Deck deck) {
         String[] recipients = deck.getSubscribedPersons().stream().map(Person::getEmail).toArray(String[]::new);
-        sendMessage(String.format("Deck \"%s\" has been blocked!", deck.getName()), recipients);
+        sendMessage(String.format("Deck \"%s\" has been blocked!", deck.getName()), "Deck blocked", recipients);
     }
 
-    public void sendMessage(String text, String[] recipients) {
+    public void sendMessage(String text, String subject, String[] recipients) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("simpson-lisa@gmx.at");
         message.setTo(recipients);
-        message.setSubject(text);
-        message.setText("");
+        message.setSubject(subject);
+        message.setText(text);
 
         mailSender.send(message);
     }

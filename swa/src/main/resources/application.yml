@@ -50,5 +50,5 @@ spring:
           protocol: smtp
         smtp:
           auth: true
-        starttls:
-          enable: true
+          starttls:
+            enable: true
