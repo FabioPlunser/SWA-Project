@@ -120,11 +120,12 @@
       
           <br class="pt-4"/>
 
-          <div class="flex justify-center">
+          <div class="flex flex-row justify-between">
+            <button class="btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>
             <button class="btn btn-primary" type="submit">Submit Deck</button>
-            
           </div>
       </div>
+      <!--
       <br class="pt-4"/>
       <h1 class="flex justify-center text-3xl font-bold">Cards</h1>
       <br class="pt-4"/>
@@ -133,6 +134,7 @@
           <button class="flex justify-center btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>
         </div>
       </div>
+    -->
     </div>
   </Form>
   
