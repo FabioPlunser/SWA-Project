@@ -1,6 +1,7 @@
 <script lang="ts">
     import { addToastByRes } from '$utils/addToToastStore';
     import { fetching } from '$utils/fetching';
+  import Markdown from './markdown.svelte';
 
     export let deck; 
     let { deckId, name, description, published, blocked, cards} = deck;
@@ -40,7 +41,9 @@
         <div class="{hover ? "hidden" : "block"}" >
             <h1 class="underline flex justify-center text-xl">{name}</h1>
             <br class="my-4"/>
-            <p>{description}</p>
+            <div class="max-h-[200px] overflow-clip">
+                <Markdown data={description}/>
+            </div>
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4">
                 <div class="grid grid-rows-3 gap-2">
@@ -70,7 +73,9 @@
     <div class="{hover ? "hidden" : "block"}" >
         <h1 class="underline flex justify-center text-xl">{name}</h1>
         <br class="my-4"/>
-        <p>{description}</p>
+        <div class="max-h-[200px] overflow-clip">
+            <Markdown data={description}/>
+        </div>
     </div>
 
     <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">

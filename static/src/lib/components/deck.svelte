@@ -62,15 +62,12 @@
 
 
 <!-- svelte-ignore a11y-mouse-events-have-key-events -->
-{#if !blocked}
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative overflow-clip" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
         <div class="{hover ? "hidden" : "block"} max-h-full" >
             <h1 class="font-bold flex justify-center text-3xl">{name}</h1>
             <br class="pt-2"/>
-            <div class="max-h-full overflow-clip ">
-                <div id="divTextarea" class="max-h-[200px] overflow-clip w-full p-2 rounded-xl prose prose-sm prose-dark">
-                    <Markdown data={description}/>
-                </div>
+            <div class="max-h-[200px] overflow-clip">
+                <Markdown data={description}/>
             </div>
 
             <br class="pt-8"/>
@@ -84,24 +81,35 @@
                             <div class="badge badge-error">No cards</div>
                         {/if}
                         {#if numCardsToRepeat >0}
+                        <div class="tooltip" data-tip="Number of cards you have already learned once and the time came to repeat them">
                             <div class="badge badge-primary">To repeat: {numCardsToRepeat} </div>
+                        </div>
                         {:else}
                             <div class="badge badge-error">Nothing to repeat</div>
                         {/if}
                     </div>
                     <div class="gird grid-cols gap-2">
                         {#if numNotLearnedCards > 0}
+                        <div class="tooltip" data-tip="Number of cards you have never learned">
                             <div class="badge badge-primary">To learn: {numNotLearnedCards} </div>
+                        </div>
                         {:else}
                             <div class="badge badge-error">No cards to learn</div>
                         {/if}
-                        {#if published}
-                        <div class="badge badge-info">Published</div>
-                        {:else}
-                        <div class="badge badge-error">Not Published</div>
+                        {#if blocked}
+                        <div class="tooltip" data-tip="Deck got blocked by admin therefore it will not be shown in public decks">
+                            <div class="badge badge-error">Blocked by admin</div>
+                        </div>
+                        {:else if published}
+                        <div class="tooltip" data-tip="Deck is published and can be seen by everyone">
+                            <div class="badge badge-info">Published</div>
+                        </div>
+                        {:else} 
+                        <div class="tooltip" data-tip="Deck is not published and can not be seen by everyone">
+                            <div class="badge badge-error">Not Published</div>
+                        </div>
                         {/if}
                     </div>
-                    <!-- Progress: <progress class="progress progress-success bg-gray-700" value={numCards - numCardsToLearn} max={numCards}></progress> -->
                 </div>
             </div>
         </div>
@@ -116,16 +124,3 @@
             <button class="btn btn-error" on:click={handleDeleteDeck}>Delete Deck</button>
         </div>       
 </div>
-{/if}
-
-{#if blocked}
-<div class="bg-slate-900 rounded-xl shadow-xl p-5 relative opacity-50">
-    <div >
-        <h1 class="flex justify-center text-xl">{name}</h1>
-        <br class="mt-4"/>
-        <p>{description}</p>
-        <br class="mt-4"/>
-        <button class="btn btn-primary" on:click={handleDeleteDeck}>Delete Deck</button>
-    </div>
-</div>
-{/if}
