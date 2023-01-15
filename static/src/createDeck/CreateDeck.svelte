@@ -74,14 +74,14 @@
 </svelte:head>
 
 <SvelteToast />
-<Nav title="Decks" {buttons}/>
+<Nav title="CreateDeck" {buttons}/>
 <main class="mt-20 m-8">
   <h1 class="flex justify-center text-3xl font-bold">Create Deck</h1>
   <br class="pt-4"/>
   <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat={formFormat.JSON} {formValidators} addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
     <div class="max-w-full">
       <div class="bg-slate-900 p-5 rounded-xl">
-        <div class="flex flex-col">
+        <div class="flex flex-col gap-1">
           <label class="input-group">
             <span class="w-40">Name</span>
             <input name="name" type="text" bind:value={name} placeholder="Softwarearchitecture" class="input w-full bg-slate-800" />
@@ -111,10 +111,10 @@
           <br class="pt-4"/>
           
           <label class="input-group">
-          <span class="w-40">Publish</span>
+          <span class="w-40">Visibility</span>
           <select name="published" class="flex input w-full bg-slate-800">
-              <option value={false}>false</option>
-              <option value={true}>true</option>
+              <option value={false}>private</option>
+              <option value={true}>public</option>
           </select>
           </label>
       
