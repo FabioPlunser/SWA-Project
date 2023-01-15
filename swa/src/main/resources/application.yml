@@ -54,13 +54,15 @@ spring:
     static-locations: 'classpath:/static/'
 
   mail:
-    host: smtp.gmail.com
+    host: mail.gmx.net
     port: 587
-    username: test
-    password: password
+    username: simpson-lisa@gmx.at
+    password: p1a2s3s4!
     properties:
       mail:
+        transport:
+          protocol: smtp
         smtp:
           auth: true
-        starttls:
-          enable: true
+          starttls:
+            enable: true
