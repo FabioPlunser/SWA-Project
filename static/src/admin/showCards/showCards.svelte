@@ -11,8 +11,8 @@
 
   let buttons = [
     { text: "Back", href: "/admin/show-decks" },
+    { text: "Home", href: "/" },
     { text: "Admin", href: "/admin" },
-    { text: "Home", href: "/" }
   ];
 
   async function getCardsOfDeck(){ 

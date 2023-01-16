@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+    let dispatch = createEventDispatcher();
     import { addToastByRes } from '$utils/addToToastStore';
     import { fetching } from '$utils/fetching';
-  import Markdown from './markdown.svelte';
+    import Markdown from './markdown.svelte';
 
     export let deck; 
     let { deckId, name, description, published, blocked, cards} = deck;
@@ -16,6 +18,9 @@
         hover = true
     }
     
+    function handleListCards(){
+        dispatch("listCards");
+    }
     async function handleBlockDeck(){
         blocked = !blocked;
         if(blocked){
@@ -62,7 +67,8 @@
         </div>
 
         <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
-                <button class="btn btn-primary" on:click={handleBlockDeck}>Block Deck</button>
+            <button class="btn btn-primary" on:click={handleBlockDeck}>Block Deck</button>
+            <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
         </div>
 </div>
 {/if}

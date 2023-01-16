@@ -10,13 +10,14 @@
 	import { adminSelectedDeckStore } from '$stores/adminSelectedDeckStore';
   import { fetching } from "$utils/fetching";
   import Markdown from '$lib/components/markdown.svelte';
+  import { addToastByRes } from '$lib/utils/addToToastStore';
 
   $: selectedUser = $adminSelectedUserStore;
   $: fetchDecks();
 
   let buttons = [
-    { text: "Admin", href: "/admin" },
     { text: "Home",  href: "/" },
+    { text: "Admin", href: "/admin" },
   ];
   
   async function fetchDecks(){
@@ -32,11 +33,13 @@
 
   async function blockDeck(deck){
     let res = await fetching("/api/block-deck", "POST", [{name:"deckId", value: deck.deckId}]);
-    if(res.success) fetchDecks();
+    addToastByRes(res);
+    if(res.success)fetchDecks();
   }
 
   async function unblockDeck(deck){
     let res = await fetching("/api/unblock-deck", "POST", [{name:"deckId", value: deck.deckId}]);
+    addToastByRes(res);
     if(res.success) fetchDecks();
   }
 

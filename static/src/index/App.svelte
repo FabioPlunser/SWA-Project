@@ -291,11 +291,11 @@
 							{#each allDecks as deck}
 								{#if deck.name.toLowerCase().includes(adminSearch.toLowerCase()) || deck.description.toLowerCase().includes(adminSearch.toLowerCase())}
 									{#if adminShowBlockedDecks && deck.blocked}
-										<AdminDeck {deck}/>
+										<AdminDeck on:listCards={()=> {listCards=true; selectedDeck = deck}} {deck}/>
 									{:else if adminShowDeletedDecks && deck.deleted}
-										<AdminDeck {deck}/>
+										<AdminDeck on:listCards={()=> {listCards=true; selectedDeck = deck}} {deck}/>
 									{:else if !deck.blocked && !deck.deleted}
-										<AdminDeck {deck}/>
+										<AdminDeck on:listCards={()=> {listCards=true; selectedDeck = deck}} {deck}/>
 									{/if}
 								{:else}
 									<h1>No deck found</h1>
