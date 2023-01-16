@@ -42,7 +42,7 @@
 	let adminShowDeletedDecks = true;
 	let adminSearch = "";
 	let page = 'my-decks';
-	let filterOptions = "";
+	let filterOptions = "Sort Decks";
 
 	let navButtons = [
 		{ text: `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`, action: ()=>showPublicDecks=true},
@@ -190,7 +190,7 @@
 					<input type="checkbox" class="flex items-center toggle toggle-info" bind:checked={showMyDecks} />
 				</div>
 			</div>
-			<select name="sort decks" bind:value={filterOptions} class="select w-full max-w-xs bg-slate-900 text-white">
+			<select title="Sort Decks" bind:value={filterOptions} class="select w-full max-w-xs bg-slate-900 text-white">
 				<option disabled selected>Sort Decks</option>
 				<option>None</option>
 				<option>Most cards to repeat</option>
