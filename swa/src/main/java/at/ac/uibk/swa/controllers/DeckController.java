@@ -175,13 +175,15 @@ public class DeckController {
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (adminDeckService.block(deckId)) {
-            //no need to check if deck is present because block() already does that
-            Deck deck = userDeckService.findById(deckId).get();
-            mailService.notifyBlockedDeck(deck);
-            return MessageResponse.builder()
-                    .ok()
-                    .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " blocked")
-                    .build();
+            Optional<Deck> maybeDeck = userDeckService.findById(deckId);
+            if (maybeDeck.isPresent()) {
+                Deck deck = maybeDeck.get();
+                mailService.notifyBlockedDeck(deck);
+                return MessageResponse.builder()
+                        .ok()
+                        .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " blocked")
+                        .build();
+            }
         }
         return MessageResponse.builder()
                 .error()
@@ -201,12 +203,15 @@ public class DeckController {
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (adminDeckService.unblock(deckId)) {
-            Deck deck = userDeckService.findById(deckId).get();
-            mailService.notifyUnblockedDeck(deck);
-            return MessageResponse.builder()
-                    .ok()
-                    .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " unblocked")
-                    .build();
+            Optional<Deck> maybeDeck = userDeckService.findById(deckId);
+            if (maybeDeck.isPresent()) {
+                Deck deck = maybeDeck.get();
+                mailService.notifyUnblockedDeck(deck);
+                return MessageResponse.builder()
+                        .ok()
+                        .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " unblocked")
+                        .build();
+            }
         }
         return MessageResponse.builder()
                 .error()

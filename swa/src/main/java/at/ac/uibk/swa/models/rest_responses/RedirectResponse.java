@@ -1,6 +1,5 @@
 package at.ac.uibk.swa.models.rest_responses;
 
-import at.ac.uibk.swa.models.Person;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
