@@ -61,6 +61,17 @@
     cards=[];
   }
 
+  $: {
+        if(cards.length > 0){
+            window.onbeforeunload = confirmExit;
+            function confirmExit() {
+                return "You have attempted to leave this page. Are you sure?";
+            }
+        }else{
+            window.onbeforeunload = null;
+        }
+    }
+   
 
   let name = "";
   let description = "";
