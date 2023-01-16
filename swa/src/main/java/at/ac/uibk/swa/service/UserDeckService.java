@@ -230,6 +230,7 @@ public class UserDeckService {
      * @param deckId id of the deck to be deleted
      * @return true if deck has been deleted, false otherwise
      */
+    @Transactional
     public boolean delete(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
@@ -265,7 +266,7 @@ public class UserDeckService {
      * @param deckId if of the deck to publish
      * @return true if deck has been published, false otherwise
      */
-    //TODO: if deck already published, why should it return false and not just do nothing?
+    @Transactional
     public boolean publish(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
@@ -290,6 +291,7 @@ public class UserDeckService {
      * @param deckId id of the deck to unpublish
      * @return true if deck has been unpublished, false otherwise
      */
+    @Transactional
     public boolean unpublish(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
@@ -314,6 +316,7 @@ public class UserDeckService {
      * @param deckId id of the deck to subscribe to
      * @return true if the person has been subscribed, false otherwise
      */
+    @Transactional
     public boolean subscribe(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
@@ -347,6 +350,7 @@ public class UserDeckService {
      * @param deckId id of the deck to unsubscribe from
      * @return true if the person has been unsubscribed, false otherwise
      */
+    @Transactional
     public boolean unsubscribe(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
