@@ -59,6 +59,12 @@
 	if ($userPermissionsStore.includes("ADMIN")) {
 		navButtons.splice(2, 0, { text: "Admin", href: "admin" });
 	}
+
+	function handleKeyDown(e){
+		if(e.key == "k" && (e.ctrlKey || e.metaKey)){
+			showPublicDecks = !showPublicDecks;
+		}
+	}
 	
 	async function getAllDecks(){
 		let res = await fetching("/api/get-all-decks", "GET");
@@ -141,6 +147,7 @@
 	$: console.log(userDecks);
 </script>
 
+<svelte:window on:keydown={handleKeyDown}/>
 <svelte:head>
 	<link rel="icon" type="image/png" href="/favicon.png"/>
 	<title>Decks overview</title>

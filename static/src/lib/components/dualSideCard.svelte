@@ -30,10 +30,10 @@
     {/if}
     <br class="mt-4"/>
     {#if cardQuestionFocus}
-    <textarea use:autosize on:mouseleave={()=>cardQuestionFocus=false} name="description" contenteditable id="divTextarea" bind:value={card.frontText} placeholder="Description" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2  resize"/>
+    <textarea tabindex="6" use:autosize on:mouseleave={()=>cardQuestionFocus=false} name="qustion" contenteditable id="divTextarea" bind:value={card.frontText} placeholder="Question" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2  resize"/>
     {:else}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div on:click={()=>cardQuestionFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2">
+        <div tabindex="6" on:click={()=>cardQuestionFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2">
             <div>
                 <Markdown data={card.frontText}/>
             </div>
@@ -43,10 +43,10 @@
     <br class="mt-4"/>
 
     {#if cardAnswerFocus}
-      <textarea use:autosize on:mouseleave={()=>cardAnswerFocus=false} name="description" contenteditable id="divTextarea" bind:value={card.backText} placeholder="Description" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2  resize"/>
+      <textarea tabindex="6" use:autosize on:mouseleave={()=>cardAnswerFocus=false} name="answer" contenteditable id="divTextarea" bind:value={card.backText} placeholder="Answer" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2  resize"/>
     {:else}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div on:click={()=>cardAnswerFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2">
+        <div tabindex="6" on:click={()=>cardAnswerFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2">
             <div>
                 <Markdown data={card.backText}/>
             </div>
@@ -61,13 +61,13 @@
         <div class="flex justify-center">
           <span class="ml-4">Learn both sides:</span>
           <div class="flex justify-center">
-            <input type="checkbox" bind:checked={card.flipped} class="ml-4 flex mx-auto justify-center items-center checkbox checkbox-primary"/>
+            <input tabindex="6" type="checkbox" bind:checked={card.flipped} class="ml-4 flex mx-auto justify-center items-center checkbox checkbox-primary"/>
           </div>
         </div>
       {/if}
       <br class="mt-2"/>
       <div class="flex justify-center">
-        <button class="btn btn-accent" type="button" on:click={()=>handleDeleteCard(card)}>Delete Card</button>
+        <button tabindex="6" class="btn btn-accent" type="button" on:click={()=>handleDeleteCard(card)}>Delete Card</button>
       </div>
     </div>
   </div>
