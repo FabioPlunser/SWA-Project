@@ -32,7 +32,7 @@ public class MailService {
     public void sendMessage(String text, String subject, String[] recipients) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("simpson-lisa@gmx.at");
-        message.setTo(recipients);
+        message.setBcc(recipients);
         message.setSubject(subject);
         message.setText(text);
 
