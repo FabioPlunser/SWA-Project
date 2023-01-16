@@ -9,6 +9,7 @@
   import { adminSelectedUserStore } from '$stores/adminSelectedUserStore';
 	import { adminSelectedDeckStore } from '$stores/adminSelectedDeckStore';
   import { fetching } from "$utils/fetching";
+  import Markdown from '$lib/components/markdown.svelte';
 
   $: selectedUser = $adminSelectedUserStore;
   $: fetchDecks();
@@ -67,7 +68,7 @@
                   <div class="card bg-slate-900 rounded-xl shadow-xl opacity-50">
                     <div class="card-body">
                       <h2 class="card-title">{deck.name}</h2>
-                      <p class="card-text">{deck.description}</p>
+                      <Markdown data={deck.description}/>
                       <div class="card-actions">
                         <button class="btn btn-primary" on:click={()=>unblockDeck(deck)}>Unblock</button>
                         <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
@@ -78,7 +79,7 @@
                 <div class="card bg-slate-900 rounded-xl shadow-xl">
                     <div class="card-body">
                       <h2 class="card-title">{deck.name}</h2>
-                      <p class="card-text">{deck.description}</p>
+                      <Markdown data={deck.description}/>
                       <div class="card-actions">
                         <button class="btn btn-primary" on:click={()=>blockDeck(deck)}>Block</button>
                         <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
