@@ -50,7 +50,7 @@
     
   }
 
-  let createForm = {
+  let formValidators = {
     username: {
       validators: [Validators.required],
     },
@@ -65,17 +65,7 @@
     },
   };
   
-  let updateForm = {
-    username: {
-      validators: [Validators.required],
-    },
-    email: {
-      validators: [Validators.required, Validators.email],
-    },
-    permissions: {
-      validators: [Validators.required],
-    },
-  };
+
 
   async function handleCreatePostFetch(){
     showCreateModal = false, 
@@ -109,7 +99,7 @@
     <Modal open={showCreateModal} on:close={()=>showCreateModal=false} closeOnBodyClick={false}>
         <h1 class="flex justify-center text-2xl font-bold">Create User</h1>
         <br class="pt-4"/>
-        <Form url="/api/create-user" method="POST" dataFormat={formFormat.FORM} formValidators={createForm} on:postFetch={handleCreatePostFetch}>
+        <Form url="/api/create-user" method="POST" dataFormat={formFormat.FORM} {formValidators} on:postFetch={handleCreatePostFetch}>
             <div class="flex flex-col gap-1">
               <div class="form-control">
                   <label class="input-group">
@@ -178,7 +168,7 @@
   <Modal open={showEditModal} on:close={()=>showEditModal=false} closeOnBodyClick={false}>
       <h1 class="flex justify-center text-2xl font-bold">Edit User</h1>
       <br class="pt-4"/>
-      <Form url="/api/update-user" method="POST" dataFormat={formFormat.FORM} formValidators={updateForm} on:postFetch={handleUpdatePostFetch} >
+      <Form url="/api/update-user" method="POST" dataFormat={formFormat.FORM} {formValidators} on:postFetch={handleUpdatePostFetch} >
         <input name="personId" type="hidden" bind:value={selectedUser.personId} required>
         <div class="flex flex-col gap-1">
           <div class="form-control">
