@@ -140,17 +140,6 @@
                       {/if}
                     {/each}
                   </select>
-                  <!--
-                  <select multiple name="permissions" class="flex input w-full" required>
-                    {#each permissions as permission}
-                      {#if permission === "USER"}
-                        <option selected>{permission}</option>
-                      {:else}
-                        <option>{permission}</option>
-                      {/if}
-                    {/each}
-                  </select>
-                  -->
                 </label>
               </div>
               <br class="pt-4"/>
