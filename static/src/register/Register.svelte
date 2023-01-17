@@ -6,6 +6,7 @@
 	import { redirect } from '$utils/redirect';
     import { jwt } from "$stores/jwtStore";
     import { personIdStore } from "$stores/personIdStore";
+    import { addToastByRes } from '$utils/addToToastStore';
     import { userPermissionsStore } from "$stores/userPermissionsStore";
     import { Validators} from "$utils/Validators";
     import { formFormat } from '$lib/types/formFormat';
@@ -36,6 +37,9 @@
             $jwt = {token: res.token, username: username}
             $personIdStore = res.personId;
             $userPermissionsStore= res.permissions;
+        }
+        else{
+            addToastByRes(res) 
         }
     }
 </script>
