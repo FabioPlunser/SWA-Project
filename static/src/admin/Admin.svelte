@@ -176,11 +176,11 @@
 
 {#if showEditModal}
   <Modal open={showEditModal} on:close={()=>showEditModal=false} closeOnBodyClick={false}>
-      <h1 class="flex justify-center">Edit User</h1>
+      <h1 class="flex justify-center text-2xl font-bold">Edit User</h1>
       <br class="pt-4"/>
       <Form url="/api/update-user" method="POST" dataFormat={formFormat.FORM} formValidators={updateForm} on:postFetch={handleUpdatePostFetch} >
         <input name="personId" type="hidden" bind:value={selectedUser.personId} required>
-        <div class="flex flex-col">
+        <div class="flex flex-col gap-1">
           <div class="form-control">
               <label class="input-group">
               <span class="w-36">Username</span>
@@ -209,8 +209,8 @@
           <br class="pt-4"/>
           <div class="form-control">
             <label class="input-group">
-              <span class="w-36">Admin</span>
-              <select multiple name="permissions" class="flex input w-full">
+              <span class="w-36">Role</span>
+              <select name="permissions" class="flex input w-full">
                 {#each permissions as permission}
                   {#if selectedUser.permissions.includes(permission)}
                     <option selected>{permission}</option>
