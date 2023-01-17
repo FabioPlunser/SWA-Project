@@ -107,10 +107,10 @@
 <Nav title="Admin" {buttons}/>
 {#if showCreateModal}
     <Modal open={showCreateModal} on:close={()=>showCreateModal=false} closeOnBodyClick={false}>
-        <h1 class="flex justify-center underline text-2xl">Create User</h1>
+        <h1 class="flex justify-center text-2xl font-bold">Create User</h1>
         <br class="pt-4"/>
         <Form url="/api/create-user" method="POST" dataFormat={formFormat.FORM} formValidators={createForm} on:postFetch={handleCreatePostFetch}>
-            <div class="flex flex-col">
+            <div class="flex flex-col gap-1">
               <div class="form-control">
                   <label class="input-group">
                     <span class="w-36">Username</span>
@@ -140,7 +140,17 @@
               <br class="pt-4"/>
               <div class="form-control">
                 <label class="input-group min-h-fit">
-                  <span class="w-36 min-h-fit">Admin</span>
+                  <span class="w-36 min-h-fit">Role</span>
+                  <select name="permissions" class="flex input w-full" required>
+                    {#each permissions as permission}
+                      {#if permission === "USER"}
+                        <option selected>{permission}</option>
+                      {:else}
+                        <option>{permission}</option>
+                      {/if}
+                    {/each}
+                  </select>
+                  <!--
                   <select multiple name="permissions" class="flex input w-full" required>
                     {#each permissions as permission}
                       {#if permission === "USER"}
@@ -150,6 +160,7 @@
                       {/if}
                     {/each}
                   </select>
+                  -->
                 </label>
               </div>
               <br class="pt-4"/>
