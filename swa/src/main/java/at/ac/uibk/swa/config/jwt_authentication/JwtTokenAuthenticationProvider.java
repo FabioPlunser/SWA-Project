@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.config.jwt_authentication;
 
-import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.models.Authenticable;
 import at.ac.uibk.swa.models.exceptions.TokenExpiredException;
 import at.ac.uibk.swa.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +51,9 @@ public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthentic
         JwtToken token = (JwtToken) usernamePasswordAuthenticationToken.getCredentials();
 
         // Try to find the User with the given Session Token
-        Optional<Person> maybePerson = loginService.findByUsernameAndToken(token);
-        return maybePerson
-                .map(person -> {this.checkTokenExpired(person); return person;})
+        Optional<? extends Authenticable> maybeAuthenticable = loginService.findByUsernameAndToken(token);
+        return maybeAuthenticable
+                .map(authenticable -> {this.checkTokenExpired(authenticable); return authenticable;})
                 .orElseThrow(() -> new BadCredentialsException(formatTokenError(token.getToken())));
     }
 
@@ -61,7 +61,7 @@ public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthentic
         return String.format("Cannot find user with authentication token: <%s>", token.toString());
     }
 
-    private void checkTokenExpired(Person person)
+    private void checkTokenExpired(Authenticable person)
         throws TokenExpiredException
     {
         LocalDateTime expirationDate = (LocalDateTime) tokenExpirationDuration.addTo(person.getTokenCreationDate());
