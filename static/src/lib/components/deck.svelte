@@ -64,7 +64,7 @@
 <!-- svelte-ignore a11y-mouse-events-have-key-events -->
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative overflow-clip" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
         <div class="{hover ? "hidden" : "block"} max-h-full" >
-            <h1 class="font-bold flex justify-center text-3xl">{name}</h1>
+            <h1 class="font-bold flex justify-center text-2xl">{name}</h1>
             <br class="pt-2"/>
             <div class="max-h-[200px] overflow-clip">
                 <Markdown data={description}/>

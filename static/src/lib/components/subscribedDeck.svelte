@@ -54,7 +54,7 @@
 {#if !blocked && published}
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
         <div class="{hover ? "hidden" : "block"}" >
-            <h1 class="flex justify-center text-xl font-bold">{name}</h1>
+            <h1 class="flex justify-center text-2xl font-bold">{name}</h1>
             <br class="my-4"/>
             <div class="max-h-full overflow-hidden break-all">
                <Markdown data={description}/>
