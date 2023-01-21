@@ -73,7 +73,7 @@
             <br class="pt-8"/>
 
             <div class="bottom-0 absolute mb-4">
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-1">
                     <div class="gap-2">
                         {#if numCards > 0}
                             <div class="badge badge-primary">Cards: {numCards} </div>

@@ -226,7 +226,9 @@
 			</div>
 			{/if}
 		</div>
-
+		
+		<br class="pt-4"/>
+		
 		<div>
 			<div class="flex">
 				<h1 class="text-4xl font-bold m-2">Subscribed Decks</h1>

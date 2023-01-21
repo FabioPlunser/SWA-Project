@@ -44,7 +44,7 @@
 {#if !blocked}
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
         <div class="{hover ? "hidden" : "block"}" >
-            <h1 class="flex justify-center text-xl font-bold">{name}</h1>
+            <h1 class="flex justify-center text-2xl font-bold">{name}</h1>
             <br class="my-4"/>
             <div class="max-h-[200px] overflow-clip">
                 <Markdown data={description}/>
@@ -58,9 +58,9 @@
                         <div class="badge badge-error">No cards</div>
                     {/if}
                     {#if published}
-                    <div class="badge badge-info">Published</div>
+                        <div class="badge badge-info">Published</div>
                     {:else}
-                    <div class="badge badge-error">Not Published</div>
+                        <div class="badge badge-error">Not Published</div>
                     {/if}
                 </div>
             </div>
