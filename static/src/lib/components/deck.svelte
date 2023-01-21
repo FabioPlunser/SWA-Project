@@ -73,41 +73,41 @@
             <br class="pt-8"/>
 
             <div class="bottom-0 absolute mb-4">
-                <div class="grid grid-rows gap-2">
-                    <div class="gird grid-cols gap-2">
+                <div class="flex flex-col gap-2">
+                    <div class="gap-2">
                         {#if numCards > 0}
                             <div class="badge badge-primary">Cards: {numCards} </div>
-                            {:else}
+                        {:else}
                             <div class="badge badge-error">No cards</div>
                         {/if}
-                        {#if numCardsToRepeat >0}
-                        <div class="tooltip" data-tip="Number of cards you have already learned once and the time came to repeat them">
-                            <div class="badge badge-primary">To repeat: {numCardsToRepeat} </div>
-                        </div>
+                        {#if numCardsToRepeat > 0}
+                            <div class="tooltip" data-tip="Number of cards you have already learned once and the time came to repeat them">
+                                <div class="badge badge-primary">To repeat: {numCardsToRepeat} </div>
+                            </div>
                         {:else}
                             <div class="badge badge-error">Nothing to repeat</div>
                         {/if}
                     </div>
-                    <div class="gird grid-cols gap-2">
+                    <div class="gap-2">
                         {#if numNotLearnedCards > 0}
-                        <div class="tooltip" data-tip="Number of cards you have never learned">
-                            <div class="badge badge-primary">To learn: {numNotLearnedCards} </div>
-                        </div>
+                            <div class="tooltip" data-tip="Number of cards you have never learned">
+                                <div class="badge badge-primary">To learn: {numNotLearnedCards} </div>
+                            </div>
                         {:else}
                             <div class="badge badge-error">No cards to learn</div>
                         {/if}
                         {#if blocked}
-                        <div class="tooltip" data-tip="Deck got blocked by admin therefore it will not be shown in public decks">
-                            <div class="badge badge-error">Blocked by admin</div>
-                        </div>
+                            <div class="tooltip" data-tip="Deck got blocked by admin therefore it will not be shown in public decks">
+                                <div class="badge badge-error">Blocked by admin</div>
+                            </div>
                         {:else if published}
-                        <div class="tooltip" data-tip="Deck is published and can be seen by everyone">
-                            <div class="badge badge-info">Published</div>
-                        </div>
+                            <div class="tooltip" data-tip="Deck is published and can be seen by everyone">
+                                <div class="badge badge-info">Published</div>
+                            </div>
                         {:else} 
-                        <div class="tooltip" data-tip="Deck is not published and can not be seen by everyone">
-                            <div class="badge badge-error">Not Published</div>
-                        </div>
+                            <div class="tooltip" data-tip="Deck is not published and can not be seen by everyone">
+                                <div class="badge badge-error">Not Published</div>
+                            </div>
                         {/if}
                     </div>
                 </div>

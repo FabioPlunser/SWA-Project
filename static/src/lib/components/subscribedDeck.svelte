@@ -61,8 +61,8 @@
             </div>
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4 mt-4">
-                <div class="grid grid-rows gap-2">
-                    <div class="gird grid-cols gap-2">
+                <div class="flex flex-col gap-2">
+                    <div class="gap-2">
                         {#if numCards > 0}
                             <div class="badge badge-primary">Cards: {numCards} </div>
                             {:else}
@@ -74,13 +74,11 @@
                             <div class="badge badge-error">Nothing to repeat</div>
                         {/if}
                     </div>
-                    <div class="gird grid-cols gap-2">
-                        {#if numNotLearnedCards > 0}
-                            <div class="badge badge-primary">To learn: {numNotLearnedCards} </div>
-                        {:else}
-                            <div class="badge badge-error">No cards to learn</div>
-                        {/if}
-                    </div>
+                    {#if numNotLearnedCards > 0}
+                        <div class="badge badge-primary">To learn: {numNotLearnedCards} </div>
+                    {:else}
+                        <div class="badge badge-error">No cards to learn</div>
+                    {/if}
                 </div>
             </div>
         </div>
