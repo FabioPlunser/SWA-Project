@@ -71,6 +71,10 @@ public class TestRouteAuthentication {
     //endregion
 
     //region Helper Methods
+    private Person createUserWithToken() {
+        return createUserWithToken(false);
+    }
+
     private Person createUserWithToken(boolean alsoAdmin) {
         String username = StringGenerator.username();
         String password = StringGenerator.password();
@@ -343,7 +347,7 @@ public class TestRouteAuthentication {
     @Test
     public void testNotExpiredToken() throws Exception {
         // given: A Person created with a Token
-        Person person = createUserWithToken(true);
+        Person person = createUserWithToken();
 
         // when: Accessing a secured Page with the expired Token
         mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
@@ -359,7 +363,7 @@ public class TestRouteAuthentication {
     @Test
     public void testExpiredToken() throws Exception {
         // given: A Person created with a Token
-        Person person = createUserWithToken(true);
+        Person person = createUserWithToken();
 
         // given: Setting the Token Creation Date to be expired
         setTokenCreationDate(person, LocalDateTime.now().minus(tokenExpirationDuration));
