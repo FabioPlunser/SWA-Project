@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -397,5 +396,52 @@ public class TestCardServiceGetFromDeck {
         for (Card card : cards) {
             assertTrue(loadedCards.contains(card), "Unable to find card");
         }
+    }
+
+    @Test
+    public void getCardsToLearnAfterAddingCards() {
+        // given: a deck with a card, where all cards are learnt
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
+        Card originalCard = new Card(StringGenerator.cardText(), StringGenerator.cardText(), false);
+        cardService.create(originalCard, deck.getDeckId());
+        cardService.learn(originalCard.getCardId(), 5);
+
+        // when: adding a new card and getting all cards to learn
+        Card newCard = new Card(StringGenerator.cardText(), StringGenerator.cardText(), false);
+        cardService.create(newCard, deck.getDeckId());
+        Optional<List<Card>> maybeCardsToLearn = cardService.getAllCardsToLearn(deck.getDeckId());
+
+        // then: only the new cards must be returned
+        assertTrue(maybeCardsToLearn.isPresent(), "Unable to load cards to learn");
+        List<Card> cardsToLearn = maybeCardsToLearn.get();
+        assertEquals(1, cardsToLearn.size(), "Got a different number of cards than expected");
+        assertTrue(cardsToLearn.contains(newCard), "Did not find the new card");
+    }
+
+    @Test
+    public void getCardsToLearnAfterAddingCardsViaUpdateDeck() {
+        // given: a deck with a card, where all cards are learnt
+        Person creator = createUserAndLogin();
+        Deck deck = createDeck();
+        Card originalCard = new Card(StringGenerator.cardText(), StringGenerator.cardText(), false);
+        cardService.create(originalCard, deck.getDeckId());
+        cardService.learn(originalCard.getCardId(), 5);
+        MockAuthContext.setLoggedInUser(personService.findById(creator.getPersonId()).orElse(null));
+
+        // when: adding a new card via update deck and getting all cards to learn
+        Card newCard = new Card(StringGenerator.cardText(), StringGenerator.cardText(), false);
+        List<Card> allCards = new ArrayList<>();
+        allCards.add(originalCard);
+        allCards.add(newCard);
+        deck.setCards(allCards);
+        userDeckService.update(deck, true);
+        Optional<List<Card>> maybeCardsToLearn = cardService.getAllCardsToLearn(deck.getDeckId());
+
+        // then: only the new cards must be returned
+        assertTrue(maybeCardsToLearn.isPresent(), "Unable to load cards to learn");
+        List<Card> cardsToLearn = maybeCardsToLearn.get();
+        assertEquals(1, cardsToLearn.size(), "Got a different number of cards than expected");
+        assertTrue(cardsToLearn.contains(newCard), "Did not find the new card");
     }
 }

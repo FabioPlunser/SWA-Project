@@ -125,4 +125,12 @@ public class Card implements Serializable {
         // NOTE: This will intentionally throw an Exception if cardId is null.
         return this.cardId.hashCode();
     }
+
+    public Card updateAllExceptLearningProgresses(Card newCard) {
+        this.cardId = newCard.cardId;
+        this.frontText = newCard.frontText;
+        this.backText = newCard.backText;
+        this.isFlipped = newCard.isFlipped;
+        return this;
+    }
 }
