@@ -5,16 +5,14 @@
   import Spinner from "$components/Spinner.svelte";
 	import SvelteToast from '$components/SvelteToast.svelte';
   
-  import { redirect } from '$utils/redirect';
-  import { handleLogout } from "$utils/handleLogout";
 	import { adminSelectedDeckStore } from '$stores/adminSelectedDeckStore';
   import { addToastByRes } from "$utils/addToToastStore";
   import { fetching } from "$utils/fetching";
 
   let buttons = [
-    { text: "Back", href: "admin/show-decks" },
-    { text: "Admin", href: "admin" },
-    { text: "Home", href: "/" }
+    { text: "Back", href: "/admin/show-decks" },
+    { text: "Home", href: "/" },
+    { text: "Admin", href: "/admin" },
   ];
 
   async function getCardsOfDeck(){ 

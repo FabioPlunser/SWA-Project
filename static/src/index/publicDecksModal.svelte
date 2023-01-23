@@ -37,7 +37,7 @@
 </script>
 
 <Modal open={showPublicDecks} on:close={()=>showPublicDecks=false} closeOnBodyClick={false}>
-    <div class="flex flex-col min-w-fit">
+    <div class="max-w-fit">
         <h1 class="flex justify-center text-2xl font-bold">Public Decks</h1>
         <br class="mt-4"/>
         <input bind:value={searchPublicDeckName} placeholder="name" class="input w-full"/>
@@ -48,15 +48,14 @@
             {#if publicDecks.length == 0}
                 <h1 class="text-2xl flex justify-center">No Decks Found</h1>
             {:else}
-                <div class="grid grid-cols-4 gap-2">
+                <div class="grid grid-cols-4 gap-2 mt-8">
                     {#each publicDecks as deck}
                         {#if deck.name.toLowerCase().includes(searchPublicDeckName.toLowerCase()) || deck.description.toLowerCase().includes(searchPublicDeckName.toLowerCase())} 
-                            <div class="card bg-gray-700 p-5 w-fit min-w-fit">
+                            <div class="card bg-gray-700 p-5 w-fit">
                                 <h1 class="card-title">{deck.name}</h1>
-                                <p class="card-subtitle" >
+                                <p class="card-subtitle break-all max-w-fit" >
                                     <Markdown data={deck.description}/>
                                 </p>
-                                <!-- <p class="card-subtitle">{deck.description}</p> -->
                                 {#if deck.numCards > 0}
                                     <div class="badge badge-primary">Number of cards: {deck.numCards} </div>
                                     {:else}

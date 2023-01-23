@@ -42,6 +42,7 @@
 	let adminShowDeletedDecks = true;
 	let adminSearch = "";
 	let page = 'my-decks';
+	let filterOptions = "Sort Decks";
 
 	let navButtons = [
 		{ text: `Public Decks  <kbd class="ml-2 kbd">⌘+k</kbd>`, action: ()=>showPublicDecks=true},
@@ -57,6 +58,12 @@
 
 	if ($userPermissionsStore.includes("ADMIN")) {
 		navButtons.splice(2, 0, { text: "Admin", href: "admin" });
+	}
+
+	function handleKeyDown(e){
+		if(e.key == "k" && (e.ctrlKey || e.metaKey)){
+			showPublicDecks = !showPublicDecks;
+		}
 	}
 	
 	async function getAllDecks(){
@@ -114,8 +121,33 @@
 			}
 		}
 	}
+
+	$: {
+		if(filterOptions === "Most cards to repeat"){
+			userDecks.sort((a, b) => {
+				return b.numCardsToRepeat - a.numCardsToRepeat;
+			});
+			userDecks = [...userDecks];
+		}
+		if(filterOptions === "Most cards to learn"){
+			userDecks.sort((a, b) => {
+				return b.numNotLearnedCards - a.numNotLearnedCards;
+			});
+			userDecks = [...userDecks];
+
+		}
+		if(filterOptions === "None"){
+			userDecks.sort((a, b) => {
+				return a.deckId - b.deckId;
+			});
+			userDecks = [...userDecks];
+		}
+	}
+
+	$: console.log(userDecks);
 </script>
 
+<svelte:window on:keydown={handleKeyDown}/>
 <svelte:head>
 	<link rel="icon" type="image/png" href="/favicon.png"/>
 	<title>Decks overview</title>
@@ -158,14 +190,23 @@
 					<input type="checkbox" class="flex items-center toggle toggle-info" bind:checked={showMyDecks} />
 				</div>
 			</div>
+			<select title="Sort Decks" bind:value={filterOptions} class="select w-full max-w-xs bg-slate-900 text-white">
+				<option disabled selected>Sort Decks</option>
+				<option>None</option>
+				<option>Most cards to repeat</option>
+				<option>Most cards to learn</option>
+			</select>
+			
+			<br class="pt-4"/>
+			
 			{#if showMyDecks}
-			<div>
+			<div class="pt-4">
 				{#if userDecks.length == 0}
 					<h1 class="text-2xl m-2">No Decks Found</h1>
 				{:else}
 					<div class="grid grid-cols-4 gap-4">
 							{#each userDecks as deck (deck.deckId)}
-								{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
+								{#if deck.name.toLowerCase().includes(searchDeck.toLowerCase()) || deck.description.toLowerCase().includes(searchDeck.toLowerCase())}
 									<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
 										{#key deck}
 										<Deck 
@@ -178,8 +219,6 @@
 										/>
 										{/key}
 									</div>
-								{:else}
-									<h1>No deck found</h1>
 								{/if}
 							{/each}
 					</div>
@@ -187,7 +226,9 @@
 			</div>
 			{/if}
 		</div>
-
+		
+		<br class="pt-4"/>
+		
 		<div>
 			<div class="flex">
 				<h1 class="text-4xl font-bold m-2">Subscribed Decks</h1>
@@ -202,7 +243,7 @@
 				{:else}
 					<div class="grid grid-cols-4 gap-4">
 						{#each subscribedDecks as deck (deck.deckId)}
-							{#if deck.name.includes(searchDeck) && deck.name.includes(searchDeck)}
+							{#if deck.name.toLowerCase().includes(searchDeck.toLowerCase()) || deck.description.toLowerCase().includes(searchDeck.toLowerCase())}
 								<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
 									<SubscribedDeck
 										{deck}
@@ -211,8 +252,6 @@
 										on:unsubscribe={()=>getSubscribedDecks()}										
 									/>
 								</div>
-								{:else}
-								<h1>No deck found</h1>
 							{/if}
 						{/each}
 					</div>	
@@ -230,13 +269,6 @@
 					<input type="checkbox" class="toggle toggle-info toggle-lg" bind:checked={adminShowBlockedDecks} />
 					</label>
 				</div>
-				<div class="form-control w-auto">
-					<label class="cursor-pointer label">
-					<h1 class="text-xl mx-2">Show deleted Decks:</h1> 
-					<input type="checkbox" class="toggle toggle-info toggle-lg" bind:checked={adminShowDeletedDecks}  />
-					</label>
-				</div>
-				
 			</div>
 			
 			<div class="flex justify-center mx-auto w-full">
@@ -259,13 +291,13 @@
 					{#key allDecks}
 						<div class="grid grid-cols-4 gap-4">
 							{#each allDecks as deck}
-								{#if deck.name.includes(adminSearch) || deck.description.includes(adminSearch)}
+								{#if deck.name.toLowerCase().includes(adminSearch.toLowerCase()) || deck.description.toLowerCase().includes(adminSearch.toLowerCase())}
 									{#if adminShowBlockedDecks && deck.blocked}
-										<AdminDeck {deck}/>
+										<AdminDeck on:listCards={()=> {listCards=true; selectedDeck = deck}} {deck}/>
 									{:else if adminShowDeletedDecks && deck.deleted}
-										<AdminDeck {deck}/>
+										<AdminDeck on:listCards={()=> {listCards=true; selectedDeck = deck}} {deck}/>
 									{:else if !deck.blocked && !deck.deleted}
-										<AdminDeck {deck}/>
+										<AdminDeck on:listCards={()=> {listCards=true; selectedDeck = deck}} {deck}/>
 									{/if}
 								{:else}
 									<h1>No deck found</h1>

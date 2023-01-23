@@ -66,11 +66,17 @@
         newCards = [];
     }
 
-    window.onbeforeunload = confirmExit;
-    function confirmExit() {
-        return "You have attempted to leave this page. Are you sure?";
+    $: {
+        if(newCards.length > 0){
+            window.onbeforeunload = confirmExit;
+            function confirmExit() {
+                return "You have attempted to leave this page. Are you sure?";
+            }
+        }else{
+            window.onbeforeunload = null;
+        }
     }
-
+   
     $: data = {
         deckId: $userSelectedDeckStore.deckId,
         name: $userSelectedDeckStore.name,
@@ -140,7 +146,7 @@
             {#if showNewCards}
                 {#each newCards as card, i (card.id)}
                     <div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 100}}>
-                        <DualSideCard title="New Card" cardBg="bg-slate-700"  {card} index={i+1} editable={true} on:deleteCard={()=>handleDeleteCard(card)}/>
+                        <DualSideCard flippable={true} title="New Card" cardBg="bg-slate-700"  {card} index={i+1} editable={true} on:deleteCard={()=>handleDeleteCard(card)}/>
                     </div>
                 {/each}
             {/if}

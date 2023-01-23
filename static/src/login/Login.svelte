@@ -2,6 +2,7 @@
     import favicon  from '$assets/favicon.png';
     import SvelteToast from "$components/SvelteToast.svelte";
     import Form from "$components/Form.svelte";
+    import FormError from '$components/formError.svelte';
 
     import { redirect } from "$utils/redirect";
     import { jwt } from "$stores/jwtStore";
@@ -19,7 +20,6 @@
 
     let username = "";
 
-    let errors = {};
     let formValidators = {
         username: {
             validators: [Validators.required],
@@ -57,38 +57,30 @@
         {/if}
         <div class="flex justify-center">
             <img class="flex justify-center w-24" src={favicon} alt="favicon"/>
-            <h1 class="items-center text-2xl font-bold flex justify-center">Memory</h1>
+            <h1 class="items-center text-3xl font-bold flex justify-center">Memori</h1>
         </div>
-        <h1 class="font-bold text-2xl flex justify-center p-2">Login</h1>
-        <Form url="/api/login" method="POST" dataFormat={formFormat.FORM} {formValidators} bind:errors on:postFetch={handlePostFetch}>
-            <div class="form-control">
-                <label class="input-group">
-                  <span>Username</span>
-                  <input name="username" bind:value={username} type="text" placeholder="Max" class="input input-bordered" />
-                </label>
-                {#if errors?.username?.required?.error}
-                    <p class="text-red-500">Username is required</p>
-                {/if}
-                {#if errors?.username?.minLength?.error}
-                <p class="text-red-500">{errors.username.minLength.message}</p>
-            {/if}
-            </div>
-            <br class="pt-4"/>
-            <div class="form-control">
-                <label class="input-group">
-                  <span>Password</span>
-                  <input name="password" type="password" placeholder="1234" class="input input-bordered" />
-                </label>
-                {#if errors?.password?.required?.error}
-                    <p class="text-red-500">Password is required</p>
-                {/if}
-                {#if errors?.password?.minLength?.error}
-                    <p class="text-red-500">{errors.password.minLength.message}</p>
-                {/if}
-            </div>
-            <div class="flex justify-between pt-4">
-                <button type="submit" class="btn btn-primary">Login</button>
-                <button type="button" class="btn btn-primary" on:click={()=>redirect("register")}>Create Account</button>
+        <h1 class="flex font-bold text-2xl justify-center pt-6 pb-2">Login</h1>
+        <Form url="/api/login" method="POST" dataFormat={formFormat.FORM} {formValidators} on:postFetch={handlePostFetch}>
+            <div class="flex flex-col gap-2">
+                <div class="form-control">
+                    <label class="input-group">
+                    <span class="w-28">Username</span>
+                    <input name="username" bind:value={username} type="text" placeholder="Max" class="input input-bordered" />
+                    </label>
+                    <FormError name="username" key="required" message="Username is required"/>
+                </div>
+                <div class="form-control">
+                    <label class="input-group">
+                    <span class="w-28">Password</span>
+                    <input name="password" type="password" placeholder="1234" class="input input-bordered" />
+                    </label>
+                    <FormError name="password" key="required" message="Password is required"/>
+                    <FormError name="password" key="minLength" message="Password must be at least 8 characters"/>
+                </div>
+                <div class="flex justify-between">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="button" class="btn btn-primary" on:click={()=>redirect("register")}>Create Account</button>
+                </div>
             </div>
         </Form>
     </div>

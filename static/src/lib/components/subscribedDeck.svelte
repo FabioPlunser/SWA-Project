@@ -54,15 +54,15 @@
 {#if !blocked && published}
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
         <div class="{hover ? "hidden" : "block"}" >
-            <h1 class="underline flex justify-center text-xl">{name}</h1>
+            <h1 class="flex justify-center text-2xl font-bold">{name}</h1>
             <br class="my-4"/>
             <div class="max-h-full overflow-hidden break-all">
                <Markdown data={description}/>
             </div>
             <br class="my-4"/>
             <div class="bottom-0 absolute mb-4 mt-4">
-                <div class="grid grid-rows gap-2">
-                    <div class="gird grid-cols gap-2">
+                <div class="flex flex-col gap-2">
+                    <div class="gap-2">
                         {#if numCards > 0}
                             <div class="badge badge-primary">Cards: {numCards} </div>
                             {:else}
@@ -74,13 +74,11 @@
                             <div class="badge badge-error">Nothing to repeat</div>
                         {/if}
                     </div>
-                    <div class="gird grid-cols gap-2">
-                        {#if numNotLearnedCards > 0}
-                            <div class="badge badge-primary">To learn: {numNotLearnedCards} </div>
-                        {:else}
-                            <div class="badge badge-error">No cards to learn</div>
-                        {/if}
-                    </div>
+                    {#if numNotLearnedCards > 0}
+                        <div class="badge badge-primary">To learn: {numNotLearnedCards} </div>
+                    {:else}
+                        <div class="badge badge-error">No cards to learn</div>
+                    {/if}
                 </div>
             </div>
         </div>
@@ -97,7 +95,7 @@
 {#if blocked || !published}
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-auto relative opacity-50">
     <div>
-        <h1 class="underline flex justify-center text-xl">{name}</h1>
+        <h1 class="flex justify-center text-xl font-bold">{name}</h1>
         <br class="mt-4"/>
         <div class="max-h-full overflow-hidden break-all">
             <Markdown data={description}/>

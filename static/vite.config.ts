@@ -28,7 +28,6 @@ export default defineConfig({
         register: resolve(__dirname, "src", "register", "index.html"),
         error: resolve(__dirname, "src", "error", "index.html"),
         learn: resolve(__dirname, "src", "learn", "index.html"),
-        listCards: resolve(__dirname, "src", "listCards", "index.html"),
         editCards: resolve(__dirname, "src", "editCards", "index.html"),
         createDeck: resolve(__dirname, "src", "createDeck", "index.html"),
         admin: resolve(__dirname, "src", "admin", "index.html"),

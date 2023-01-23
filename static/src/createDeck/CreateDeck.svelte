@@ -61,6 +61,17 @@
     cards=[];
   }
 
+  $: {
+        if(cards.length > 0){
+            window.onbeforeunload = confirmExit;
+            function confirmExit() {
+                return "You have attempted to leave this page. Are you sure?";
+            }
+        }else{
+            window.onbeforeunload = null;
+        }
+    }
+   
 
   let name = "";
   let description = "";
@@ -74,17 +85,17 @@
 </svelte:head>
 
 <SvelteToast />
-<Nav title="Decks" {buttons}/>
+<Nav title="CreateDeck" {buttons}/>
 <main class="mt-20 m-8">
   <h1 class="flex justify-center text-3xl font-bold">Create Deck</h1>
   <br class="pt-4"/>
   <Form style="flex justify-center" url="/api/create-deck" method="POST" dataFormat={formFormat.JSON} {formValidators} addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
     <div class="max-w-full">
       <div class="bg-slate-900 p-5 rounded-xl">
-        <div class="flex flex-col">
+        <div class="flex flex-col gap-1">
           <label class="input-group">
             <span class="w-40">Name</span>
-            <input name="name" type="text" bind:value={name} placeholder="Softwarearchitecture" class="input w-full bg-slate-800" />
+            <input tabindex="1" name="name" type="text" bind:value={name} placeholder="Softwarearchitecture" class="input w-full bg-slate-800" />
           </label>
           <FormError name="name" key="required" message="Name is required"/>
           <FormError name="name" key="maxLength" message="Max length is 255"/>
@@ -96,10 +107,10 @@
             <span class="w-40">Description</span>
             <input type="hidden" name="description" bind:value={description}/>
             {#if descriptionFocus}
-              <textarea use:autosize on:mouseleave={()=>descriptionFocus=false} name="description" contenteditable id="divTextarea" bind:value={description} placeholder="Description" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2 rounded-l-none  resize"/>
+              <textarea tabindex="2" use:autosize on:mouseleave={()=>descriptionFocus=false} name="description" contenteditable id="divTextarea" bind:value={description} placeholder="Description" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2 rounded-l-none  resize"/>
             {:else}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <div on:click={()=>descriptionFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2 rounded-l-none">
+                <div tabindex="2" on:click={()=>descriptionFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2 rounded-l-none">
                     <div>
                         <Markdown data={description}/>
                     </div>
@@ -111,27 +122,19 @@
           <br class="pt-4"/>
           
           <label class="input-group">
-          <span class="w-40">Publish</span>
-          <select name="published" class="flex input w-full bg-slate-800">
-              <option value={false}>false</option>
-              <option value={true}>true</option>
+          <span class="w-40">Visibility</span>
+          <select tabindex="3" name="published" class="flex input w-full bg-slate-800">
+              <option value={false}>private</option>
+              <option value={true}>public</option>
           </select>
           </label>
       
           <br class="pt-4"/>
 
-          <div class="flex justify-center">
-            <button class="btn btn-primary" type="submit">Submit Deck</button>
-            
+          <div class="flex flex-row justify-between">
+            <button tabindex="4" class="btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>
+            <button tabindex="5" class="btn btn-primary" type="submit">Submit Deck</button>
           </div>
-      </div>
-      <br class="pt-4"/>
-      <h1 class="flex justify-center text-3xl font-bold">Cards</h1>
-      <br class="pt-4"/>
-      <div class="flex justify-center">
-        <div class="tooltip flex justify-center" data-tip="Add Card">
-          <button class="flex justify-center btn btn-accent" type="button" on:click={()=>{addCard()}}>Add Card</button>
-        </div>
       </div>
     </div>
   </Form>

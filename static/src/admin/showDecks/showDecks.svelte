@@ -9,13 +9,15 @@
   import { adminSelectedUserStore } from '$stores/adminSelectedUserStore';
 	import { adminSelectedDeckStore } from '$stores/adminSelectedDeckStore';
   import { fetching } from "$utils/fetching";
+  import Markdown from '$lib/components/markdown.svelte';
+  import { addToastByRes } from '$lib/utils/addToToastStore';
 
   $: selectedUser = $adminSelectedUserStore;
   $: fetchDecks();
 
   let buttons = [
-    { text: "Admin", href: "/admin" },
     { text: "Home",  href: "/" },
+    { text: "Admin", href: "/admin" },
   ];
   
   async function fetchDecks(){
@@ -31,11 +33,13 @@
 
   async function blockDeck(deck){
     let res = await fetching("/api/block-deck", "POST", [{name:"deckId", value: deck.deckId}]);
-    if(res.success) fetchDecks();
+    addToastByRes(res);
+    if(res.success)fetchDecks();
   }
 
   async function unblockDeck(deck){
     let res = await fetching("/api/unblock-deck", "POST", [{name:"deckId", value: deck.deckId}]);
+    addToastByRes(res);
     if(res.success) fetchDecks();
   }
 
@@ -67,7 +71,7 @@
                   <div class="card bg-slate-900 rounded-xl shadow-xl opacity-50">
                     <div class="card-body">
                       <h2 class="card-title">{deck.name}</h2>
-                      <p class="card-text">{deck.description}</p>
+                      <Markdown data={deck.description}/>
                       <div class="card-actions">
                         <button class="btn btn-primary" on:click={()=>unblockDeck(deck)}>Unblock</button>
                         <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>
@@ -78,7 +82,7 @@
                 <div class="card bg-slate-900 rounded-xl shadow-xl">
                     <div class="card-body">
                       <h2 class="card-title">{deck.name}</h2>
-                      <p class="card-text">{deck.description}</p>
+                      <Markdown data={deck.description}/>
                       <div class="card-actions">
                         <button class="btn btn-primary" on:click={()=>blockDeck(deck)}>Block</button>
                         <button class="btn btn-primary" on:click={()=>{$adminSelectedDeckStore=deck; redirect("admin/show-cards")}}>ShowCards</button>

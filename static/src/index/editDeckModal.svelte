@@ -58,7 +58,7 @@
         <div>
             <Form url="/api/update-deck" method="POST" {formValidators} dataFormat={formFormat.JSON} addJSONData={[{cards: cards}]} on:postFetch={handlePostFetch}>
                 <input name="deckId" bind:value={selectedDeck.deckId} type="hidden" required>
-                <div class="flex flex-col">
+                <div class="flex flex-col gap-1">
                     <div class="form-control">
                         <label class="input-group">
                         <span class="w-36">Name</span>
