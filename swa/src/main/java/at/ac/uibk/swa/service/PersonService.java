@@ -19,7 +19,6 @@ import java.util.function.Function;
 @Slf4j
 @Service
 public class PersonService {
-
     @Autowired
     private PersonRepository personRepository;
 
@@ -32,7 +31,7 @@ public class PersonService {
      * @return list of found persons
      */
     public List<Person> getPersons() {
-        return personRepository.findAll();
+        return personRepository.findAll().stream().filter(p -> !p.isDeleted()).toList();
     }
 
     //region Login/Logout
@@ -49,7 +48,7 @@ public class PersonService {
             return Optional.empty();
 
         Person person = maybePerson.get();
-        if(!passwordEncoder.matches(password, person.getPassword()))
+        if(!passwordEncoder.matches(password, person.getPassword()) || person.isDeleted())
             return Optional.empty();
 
         person.setToken(UUID.randomUUID());
@@ -201,10 +200,12 @@ public class PersonService {
      * @return true if the person was deleted, false otherwise.
      */
     public boolean delete(UUID personId) {
-        try {
-            this.personRepository.deleteById(personId);
-            return true;
-        } catch (Exception e) {
+        Optional<Person> maybePerson = personRepository.findById(personId);
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
+            person.delete();
+            return this.save(person) != null;
+        } else {
             return false;
         }
     }
