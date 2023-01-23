@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -428,6 +427,7 @@ public class TestCardServiceGetFromDeck {
         Card originalCard = new Card(StringGenerator.cardText(), StringGenerator.cardText(), false);
         cardService.create(originalCard, deck.getDeckId());
         cardService.learn(originalCard.getCardId(), 5);
+        MockAuthContext.setLoggedInUser(personService.findById(creator.getPersonId()).orElse(null));
 
         // when: adding a new card via update deck and getting all cards to learn
         Card newCard = new Card(StringGenerator.cardText(), StringGenerator.cardText(), false);

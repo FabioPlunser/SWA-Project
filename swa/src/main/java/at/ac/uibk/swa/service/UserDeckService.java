@@ -195,9 +195,8 @@ public class UserDeckService {
                 if (deck.getDescription() != null) savedDeck.setDescription(deck.getDescription());
                 savedDeck.setPublished(deck.isPublished());
                 if (updateCards) {
-                    List<Card> cardsToUpdate = deck.getCards().stream()
-                            .filter(c -> c.getCardId() != null)
-                            .filter(c -> savedDeck.getCards().contains(c))
+                    List<Card> cardsToUpdate = savedDeck.getCards().stream()
+                            .filter(c -> deck.getCards().contains(c))
                             .toList();
                     List<Card> cardsToDelete = savedDeck.getCards().stream()
                             .filter(c -> !deck.getCards().contains(c))
