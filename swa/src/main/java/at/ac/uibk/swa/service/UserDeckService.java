@@ -57,9 +57,9 @@ public class UserDeckService {
     /**
      * Gets all decks to which the currently logged in user has subscribed, but might alter description, depending on
      * deck status
-     *  - isDeleted: info, that deck has been deleted
-     *  - isBlocked: info, that deck has been blocked
-     *  - !isPublished: info, that deck has been unpublished, if not creator
+     * - isDeleted: info, that deck has been deleted
+     * - isBlocked: info, that deck has been blocked
+     * - !isPublished: info, that deck has been unpublished, if not creator
      *
      * @return a list of all decks to which that person has subscribed or nothing if nobody is logged in
      */
@@ -68,9 +68,24 @@ public class UserDeckService {
         if (maybePerson.isPresent()) {
             Person person = maybePerson.get();
             return Optional.of(person.getSavedDecks().stream()
-                    .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) { d.setDescription(DECK_UNPUBLISHED_INFO); } return d;})
-                    .map(d -> {if (d.isBlocked()) { d.setDescription(DECK_BLOCKED_INFO); } return d;})
-                    .map(d -> {if (d.isDeleted()) { d.setDescription(DECK_DELETED_INFO); } return d;})
+                    .map(d -> {
+                        if (!d.getCreator().equals(person) && !d.isPublished()) {
+                            d.setDescription(DECK_UNPUBLISHED_INFO);
+                        }
+                        return d;
+                    })
+                    .map(d -> {
+                        if (d.isBlocked()) {
+                            d.setDescription(DECK_BLOCKED_INFO);
+                        }
+                        return d;
+                    })
+                    .map(d -> {
+                        if (d.isDeleted()) {
+                            d.setDescription(DECK_DELETED_INFO);
+                        }
+                        return d;
+                    })
                     .toList());
         } else {
             return Optional.empty();
@@ -88,7 +103,12 @@ public class UserDeckService {
             Person person = maybePerson.get();
             return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
-                    .map(d -> {if (d.isBlocked()) { d.setDescription(DECK_BLOCKED_INFO); } return d;})
+                    .map(d -> {
+                        if (d.isBlocked()) {
+                            d.setDescription(DECK_BLOCKED_INFO);
+                        }
+                        return d;
+                    })
                     .toList());
         } else {
             return Optional.empty();
@@ -98,9 +118,9 @@ public class UserDeckService {
     /**
      * Gets all decks to which the currently logged-in user has subscribed to but did not create, but might alter description, depending on
      * deck status
-     *  - isDeleted: info, that deck has been deleted
-     *  - isBlocked: info, that deck has been blocked
-     *  - !isPublished: info, that deck has been unpublished, if not creator
+     * - isDeleted: info, that deck has been deleted
+     * - isBlocked: info, that deck has been blocked
+     * - !isPublished: info, that deck has been unpublished, if not creator
      *
      * @return a list of all decks to which that person has subscribed to (but did not create) or nothing if nobody is logged in
      */
@@ -115,20 +135,27 @@ public class UserDeckService {
 
     /**
      * Gets all decks a given user has created
+     *
      * @param personId
      * @return
      */
-    public Optional<List<Deck>> getDecksOfGivenPerson(UUID personId){
+    public Optional<List<Deck>> getDecksOfGivenPerson(UUID personId) {
         Optional<Person> maybeUser = personService.findById(personId);
         if (maybeUser.isPresent()) {
             Person person = maybeUser.get();
             return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
-                    .map(d -> {if (d.isBlocked()) { d.setDescription(DECK_BLOCKED_INFO); } return d;})
+                    .map(d -> {
+                        if (d.isBlocked()) {
+                            d.setDescription(DECK_BLOCKED_INFO);
+                        }
+                        return d;
+                    })
                     .toList());
         }
         return Optional.empty();
     }
+
     /**
      * Saves a deck to the repository
      *
@@ -175,11 +202,11 @@ public class UserDeckService {
      * Deleted and blocked decks cannot be updated
      * Will change name, description and publicity of deck if given
      * Will also update/create/delete cards in the given deck if updateCards is set
-     *  - cards with given id:  update, if part of the deck, ignore otherwise
-     *  - cards without id:     create
-     *  - deletes all cards from the deck, that are not given
+     * - cards with given id:  update, if part of the deck, ignore otherwise
+     * - cards without id:     create
+     * - deletes all cards from the deck, that are not given
      *
-     * @param deck deck to be updated -  at least deckId must be given
+     * @param deck        deck to be updated -  at least deckId must be given
      * @param updateCards true if cards should be update, false otherwise
      * @return true if the deck was updated, false otherwise
      */
@@ -197,6 +224,7 @@ public class UserDeckService {
                 if (updateCards) {
                     List<Card> cardsToUpdate = savedDeck.getCards().stream()
                             .filter(c -> deck.getCards().contains(c))
+                            .map(c -> c.updateAllExceptLearningProgresses(deck.getCards().get(deck.getCards().indexOf(c))))
                             .toList();
                     List<Card> cardsToDelete = savedDeck.getCards().stream()
                             .filter(c -> !deck.getCards().contains(c))
