@@ -63,7 +63,7 @@ public class Card implements Serializable {
     // NOTE: This JsonIgnore is ok, because this is a Map which we don't want to override in any case.
     @JsonIgnore
     @Setter(AccessLevel.PRIVATE)
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @Builder.Default
     @JoinTable(
             name = "card_progress_mapping",

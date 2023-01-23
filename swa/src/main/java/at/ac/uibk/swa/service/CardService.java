@@ -171,7 +171,6 @@ public class CardService {
      * @return true if card has been created, false otherwise
      */
     @Transactional
-    // TODO: Check if required - card creation via UserDeckService (create/update)
     public boolean create(Card card, UUID deckId) {
         if (card != null && card.getCardId() == null) {
             Deck deck = getDeckIfWriteAccess(deckId).orElse(null);
@@ -239,7 +238,6 @@ public class CardService {
      * @param cardId id of the card to be deleted
      * @return true if card has been updated, false otherwise
      */
-    // TODO: Check if required - card deletion via UserDeckService (update)
     public boolean delete(UUID cardId) {
         Optional<Card> maybeCard = findById(cardId);
         if (maybeCard.isPresent()) {
