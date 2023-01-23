@@ -7,7 +7,8 @@
     import { fetching } from '$utils/fetching';
 
     export let deck; 
-    let { deckId, name, description, published, blocked, numCards, numCardsToRepeat, numNotLearnedCards} = deck;
+    console.log(deck);
+    let { deckId, name, description, deleted, published, blocked, numCards, numCardsToRepeat, numNotLearnedCards} = deck;
     
     $: getAllCardsToLearn();
     $: getCardsOfDeck();
@@ -85,10 +86,14 @@
 
 
         <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
-            <button class="btn btn-primary" on:click={handleLearnDeck}>Learn Deck</button>
-            <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
-            <button class="btn btn-primary" on:click={handleUnsubscribe}>Unsubscribe</button>
-        </div>       
+            {#if !deleted}
+                <button class="btn btn-primary" on:click={handleLearnDeck}>Learn Deck</button>
+                <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
+                <button class="btn btn-primary" on:click={handleUnsubscribe}>Unsubscribe</button>
+            {:else}
+                <button class="btn btn-primary" on:click={handleUnsubscribe}>Unsubscribe</button>
+            {/if}
+        </div>      
 </div>
 {/if}
 
