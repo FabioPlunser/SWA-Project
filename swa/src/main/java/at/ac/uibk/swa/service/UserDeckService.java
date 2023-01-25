@@ -274,30 +274,36 @@ public class UserDeckService {
     @Transactional
     public boolean delete(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
-        if (maybePerson.isPresent()) {
-            Person person = maybePerson.get();
-            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
-            if (deck != null && deck.getDeckId() != null) {
-                if (deck.isDeleted()) return false;
-                deck.setDeleted(true);
-                Deck savedDeck = save(deck);
-                if (savedDeck != null) {
-                    person.getSavedDecks().remove(savedDeck);
-                    try {
-                        personService.save(person);
-                    } catch (Exception e) {
-                        return false;
-                    }
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
+        // nobody logged in
+        if (maybePerson.isEmpty()) {
             return false;
         }
+
+        Person person = maybePerson.get();
+        Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
+        // deck not found in decks created by logged-in user
+        if (deck == null) {
+            return false;
+        }
+        // deck already deleted
+        if (deck.isDeleted()) {
+            return false;
+        }
+        // soft delete
+        deck.setDeleted(true);
+        Deck savedDeck = save(deck);
+        // soft delete not successful
+        if (savedDeck == null) {
+            return false;
+        }
+        // remove from overview of logged in user
+        person.getSavedDecks().remove(savedDeck);
+        try {
+            personService.save(person);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     /**
