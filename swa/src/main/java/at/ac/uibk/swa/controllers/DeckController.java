@@ -37,7 +37,7 @@ public class DeckController {
     private MailService mailService;
 
 
-    private final String deckLoadErrorMessage = "Unable to get decks.";
+    private final static String DECK_LOAD_ERROR_MESSAGE = "Unable to get decks.";
 
     /**
      * Generates a string to describe the action done on a deck
@@ -286,7 +286,7 @@ public class DeckController {
         }
         return MessageResponse.builder()
                 .error()
-                .message(deckLoadErrorMessage)
+                .message(DECK_LOAD_ERROR_MESSAGE)
                 .build();
     }
 
@@ -306,7 +306,7 @@ public class DeckController {
         }
         return MessageResponse.builder()
                 .error()
-                .message(deckLoadErrorMessage)
+                .message(DECK_LOAD_ERROR_MESSAGE)
                 .build();
     }
 
@@ -323,7 +323,7 @@ public class DeckController {
         }
         return MessageResponse.builder()
                 .error()
-                .message(deckLoadErrorMessage)
+                .message(DECK_LOAD_ERROR_MESSAGE)
                 .build();
     }
 
@@ -340,7 +340,7 @@ public class DeckController {
         }
         return MessageResponse.builder()
                 .error()
-                .message(deckLoadErrorMessage)
+                .message(DECK_LOAD_ERROR_MESSAGE)
                 .build();
     }
 
