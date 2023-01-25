@@ -36,9 +36,31 @@ public class DeckController {
     @Autowired
     private MailService mailService;
 
+    /**
+     * Generates a string to describe the action done on a deck
+     * Example:
+     * - name of deck:     "example deck"
+     * - actionDone:       "was created"
+     * - returned string:  "Deck example deck was created."
+     *
+     * @param deckName   name of the deck on which the action was performed
+     * @param actionDone description of the action that was performed on the deck
+     * @return a message describing what was done on which deck
+     */
+    private String generateMessage(String deckName, String actionDone) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Deck ");
+        sb.append(deckName);
+        sb.append(" ");
+        sb.append(actionDone);
+        sb.append(".");
+        return sb.toString();
+    }
+
 
     /**
      * Creates a new Deck with all the given Cards.
+     *
      * @param deck
      * @return A MessageResponse indicating success or failure.
      */
@@ -47,39 +69,42 @@ public class DeckController {
             @RequestBody final Deck deck
     ) {
         if (!userDeckService.create(deck)) {
-            return MessageResponse.builder().error().message("Deck " + deck.getName() + " could not be created.").build();
+            return MessageResponse.builder().error()
+                    .message(generateMessage(deck.getName(), "could not be created")).build();
         }
 
-        return MessageResponse.builder().ok().message("Deck " + deck.getName() + " created successfully.").build();
+        return MessageResponse.builder().ok()
+                .message(generateMessage(deck.getName(), "created successfully")).build();
     }
 
     /**
      * Updates the given Deck and - if specified - cards of that Deck.
      * The Deck must be owned by the current User.
      *
-     * @param deck The Deck to update.
+     * @param deck        The Deck to update.
      * @param updateCards if true, updates the cards of the deck (default value is false)
      * @return A MessageResponse indicating success or failure.
      */
     @PostMapping("/update-deck")
     public RestResponse updateDeck(
             @RequestBody final Deck deck,
-            @RequestParam(name="update-cards", defaultValue = "false") final boolean updateCards
+            @RequestParam(name = "update-cards", defaultValue = "false") final boolean updateCards
     ) {
         if (userDeckService.update(deck, updateCards)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + deck.getName() + " updated")
+                    .message(generateMessage(deck.getName(), "updated"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + deck.getName() + " not updated")
+                .message(generateMessage(deck.getName(), "not updated"))
                 .build();
     }
 
     /**
      * Sets given deck to public.
+     *
      * @param deckId
      * @return
      */
@@ -90,17 +115,18 @@ public class DeckController {
         if (userDeckService.publish(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " published")
+                    .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "published"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " publicity not changed")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "publicity not changed"))
                 .build();
     }
 
     /**
      * Sets given deck to private.
+     *
      * @param deckId
      * @return
      */
@@ -111,18 +137,19 @@ public class DeckController {
         if (userDeckService.unpublish(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " unpublished")
+                    .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "unpublished"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " publicity not changed")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), " publicity not changed"))
                 .build();
     }
 
 
     /**
      * Subscribes the current User to the given Deck.
+     *
      * @param deckId
      * @return
      */
@@ -133,17 +160,18 @@ public class DeckController {
         if (userDeckService.subscribe(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " subscribed")
+                    .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "subscribed"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " not subscribed")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "not subscribed"))
                 .build();
     }
 
     /**
      * Unsubscribes the current User from the given Deck.
+     *
      * @param deckId
      * @return
      */
@@ -154,18 +182,19 @@ public class DeckController {
         if (userDeckService.unsubscribe(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " unsubscribed")
+                    .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "unsubscribed"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " not unsubscribed")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "not unsubscribed"))
                 .build();
     }
 
     /**
      * Blocks the given Deck.
      * Only Admins can block Decks.
+     *
      * @param deckId
      * @return
      */
@@ -181,19 +210,20 @@ public class DeckController {
                 mailService.notifyBlockedDeck(deck);
                 return MessageResponse.builder()
                         .ok()
-                        .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " blocked")
+                        .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "blocked"))
                         .build();
             }
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " not blocked")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), " not blocked"))
                 .build();
     }
 
     /**
      * Unblocks the given Deck.
      * Only Admins can unblock Decks.
+     *
      * @param deckId
      * @return
      */
@@ -209,18 +239,19 @@ public class DeckController {
                 mailService.notifyUnblockedDeck(deck);
                 return MessageResponse.builder()
                         .ok()
-                        .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " unblocked")
+                        .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "unblocked"))
                         .build();
             }
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " not unblocked")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "not unblocked"))
                 .build();
     }
 
     /**
      * Deletes the given Deck.
+     *
      * @param deckId
      * @return
      */
@@ -231,21 +262,22 @@ public class DeckController {
         if (userDeckService.delete(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " deleted")
+                    .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "deleted"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + userDeckService.getDeckNameIfPresent(deckId) + " not deleted")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), " not deleted"))
                 .build();
     }
 
     /**
      * Gets all Decks that the current User is subscribed to or created.
+     *
      * @return A List of Decks.
      */
     @GetMapping("/get-user-decks")
-    public RestResponse getUserDecks()  {
+    public RestResponse getUserDecks() {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
         if (maybeDecks.isPresent()) {
             return new UserDeckListResponse(maybeDecks.get());
@@ -258,13 +290,14 @@ public class DeckController {
 
     /**
      * Gets all Decks that given user has subscribed to or created.
+     *
      * @return A List of Decks.
      */
     @AnyPermission(Permission.ADMIN)
     @GetMapping("/get-given-user-decks")
     public RestResponse getGivenUserDecks(
             @RequestParam(name = "personId") final UUID personId
-    ){
+    ) {
         Optional<List<Deck>> maybeDecks = userDeckService.getDecksOfGivenPerson(personId);
         if (maybeDecks.isPresent()) {
             return new UserDeckListResponse(maybeDecks.get());
@@ -277,10 +310,11 @@ public class DeckController {
 
     /**
      * Gets all Decks that the current User is subscribed to.
+     *
      * @return A List of Decks.
      */
     @GetMapping("/get-subscribed-decks")
-    public RestResponse getSubscribedDecks()  {
+    public RestResponse getSubscribedDecks() {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSubscribedDecks();
         if (maybeDecks.isPresent()) {
             return new UserDeckListResponse(maybeDecks.get());
@@ -293,10 +327,11 @@ public class DeckController {
 
     /**
      * Gets all Decks that the current User created.
+     *
      * @return A List of Decks.
      */
     @GetMapping("/get-created-decks")
-    public RestResponse getCreatedDecks()  {
+    public RestResponse getCreatedDecks() {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllOwnedDecks();
         if (maybeDecks.isPresent()) {
             return new UserDeckListResponse(maybeDecks.get());
@@ -316,11 +351,12 @@ public class DeckController {
      */
     @GetMapping("/get-published-decks")
     public RestResponse getPublishedDecks() {
-        return  new DeckListResponse(userDeckService.findAllAvailableDecks());
+        return new DeckListResponse(userDeckService.findAllAvailableDecks());
     }
 
     /**
      * Gets all Decks.
+     *
      * @return A List of Decks.
      */
     @AnyPermission(Permission.ADMIN)
