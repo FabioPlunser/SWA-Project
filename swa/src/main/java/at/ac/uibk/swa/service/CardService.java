@@ -211,7 +211,6 @@ public class CardService {
      * @param isFlipped card flipped or not flipped
      * @return true if card has been updated, false otherwise
      */
-    // TODO: Check if required - card updating via UserDeckService (update)
     public boolean update(UUID cardId, String frontText, String backText, boolean isFlipped) {
         Optional<Card> maybeCard = findById(cardId);
         if (maybeCard.isPresent()) {
