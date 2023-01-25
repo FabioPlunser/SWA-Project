@@ -213,41 +213,55 @@ public class UserDeckService {
     @Transactional
     public boolean update(Deck deck, boolean updateCards) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
-        if (maybePerson.isPresent()) {
-            Person person = maybePerson.get();
-            Deck savedDeck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deck.getDeckId())).findFirst().orElse(null);
-            if (savedDeck != null) {
-                if (savedDeck.isBlocked() || savedDeck.isDeleted()) return false;
-                if (deck.getName() != null) savedDeck.setName(deck.getName());
-                if (deck.getDescription() != null) savedDeck.setDescription(deck.getDescription());
-                savedDeck.setPublished(deck.isPublished());
-                if (updateCards) {
-                    List<Card> cardsToUpdate = savedDeck.getCards().stream()
-                            .filter(c -> deck.getCards().contains(c))
-                            .map(c -> c.updateAllExceptLearningProgresses(deck.getCards().get(deck.getCards().indexOf(c))))
-                            .toList();
-                    List<Card> cardsToDelete = savedDeck.getCards().stream()
-                            .filter(c -> !deck.getCards().contains(c))
-                            .toList();
-                    List<Card> cardsToCreate = deck.getCards().stream()
-                            .filter(c -> c.getCardId() == null)
-                            .toList();
-                    savedDeck.setCards(Stream.concat(cardsToUpdate.stream(), cardsToCreate.stream()).toList());
-                    for (Card card : cardsToDelete) {
-                        try {
-                            cardRepository.delete(card);
-                        } catch (Exception e) {
-                            return false;
-                        }
-                    }
-                }
-                return save(savedDeck) != null;
-            } else {
-                return false;
-            }
-        } else {
+        // nobody logged in
+        if (maybePerson.isEmpty()) {
             return false;
         }
+
+        Person person = maybePerson.get();
+        Deck savedDeck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deck.getDeckId())).findFirst().orElse(null);
+        // deck with given id not found in created decks of logged in person
+        if (savedDeck == null) {
+            return false;
+        }
+
+        // deck is blocked or deleted - not updating allowed
+        if (savedDeck.isBlocked() || savedDeck.isDeleted()) {
+            return false;
+        }
+
+        // check which properties of the deck have been passed for updating
+        if (deck.getName() != null) {
+            savedDeck.setName(deck.getName());
+        }
+        if (deck.getDescription() != null) {
+            savedDeck.setDescription(deck.getDescription());
+        }
+        savedDeck.setPublished(deck.isPublished());
+
+        // updating of cards desired
+        // CAUTION: learning progresses are never passed with updated deck info - therefore do not overwrite
+        if (updateCards) {
+            List<Card> cardsToUpdate = savedDeck.getCards().stream()
+                    .filter(c -> deck.getCards().contains(c))
+                    .map(c -> c.updateAllExceptLearningProgresses(deck.getCards().get(deck.getCards().indexOf(c))))
+                    .toList();
+            List<Card> cardsToDelete = savedDeck.getCards().stream()
+                    .filter(c -> !deck.getCards().contains(c))
+                    .toList();
+            List<Card> cardsToCreate = deck.getCards().stream()
+                    .filter(c -> c.getCardId() == null)
+                    .toList();
+            savedDeck.setCards(Stream.concat(cardsToUpdate.stream(), cardsToCreate.stream()).toList());
+            for (Card card : cardsToDelete) {
+                try {
+                    cardRepository.delete(card);
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+        }
+        return save(savedDeck) != null;
     }
 
     /**
