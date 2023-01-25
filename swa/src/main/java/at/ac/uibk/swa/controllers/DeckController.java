@@ -36,6 +36,9 @@ public class DeckController {
     @Autowired
     private MailService mailService;
 
+
+    private final String DECK_LOAD_ERROR = "Unable to get decks.";
+
     /**
      * Generates a string to describe the action done on a deck
      * Example:
@@ -56,7 +59,6 @@ public class DeckController {
         sb.append(".");
         return sb.toString();
     }
-
 
     /**
      * Creates a new Deck with all the given Cards.
@@ -284,7 +286,7 @@ public class DeckController {
         }
         return MessageResponse.builder()
                 .error()
-                .message("Could not get decks")
+                .message(DECK_LOAD_ERROR)
                 .build();
     }
 
@@ -304,7 +306,7 @@ public class DeckController {
         }
         return MessageResponse.builder()
                 .error()
-                .message("Could not get decks")
+                .message(DECK_LOAD_ERROR)
                 .build();
     }
 
@@ -321,7 +323,7 @@ public class DeckController {
         }
         return MessageResponse.builder()
                 .error()
-                .message("Could not get decks")
+                .message(DECK_LOAD_ERROR)
                 .build();
     }
 
@@ -338,7 +340,7 @@ public class DeckController {
         }
         return MessageResponse.builder()
                 .error()
-                .message("Could not get decks")
+                .message(DECK_LOAD_ERROR)
                 .build();
     }
 
