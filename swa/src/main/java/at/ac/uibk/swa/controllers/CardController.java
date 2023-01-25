@@ -82,7 +82,6 @@ public class CardController {
     public RestResponse deleteCard(
             @RequestParam(name = "cardId") final UUID cardId
     ) {
-        // TODO: Also delete associated LearningProgresses (maybe cascade delete using orm?)
         if (cardService.delete(cardId)){
             return MessageResponse.builder()
                 .ok()
