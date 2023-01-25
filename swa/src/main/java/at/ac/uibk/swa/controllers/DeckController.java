@@ -37,7 +37,7 @@ public class DeckController {
     private MailService mailService;
 
 
-    private final static String DECK_LOAD_ERROR_MESSAGE = "Unable to get decks.";
+    private static final String DECK_LOAD_ERROR_MESSAGE = "Unable to get decks.";
 
     /**
      * Generates a string to describe the action done on a deck
