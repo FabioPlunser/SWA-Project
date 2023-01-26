@@ -109,7 +109,9 @@ public class TestCardControllerGeneral {
         }
 
         boolean userIsAdmin = (userIsOwner && creatorIsAlsoAdmin) || (!userIsOwner && userIsAdminIfNotOwner);
-        boolean expectCards = !deleted && !(blocked && !userIsAdmin) && (published || userIsOwner || userIsAdmin);
+        boolean expectCards = !deleted &&
+                !(blocked && !(userIsAdmin || userIsOwner)) &&
+                (published || userIsOwner || userIsAdmin);
 
         // when: getting all cards for that deck
         mockMvc.perform(MockMvcRequestBuilders.get("/api/get-cards-of-deck")

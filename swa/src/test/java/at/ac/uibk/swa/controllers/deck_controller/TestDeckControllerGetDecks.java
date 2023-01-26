@@ -204,7 +204,7 @@ public class TestDeckControllerGetDecks {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/get-created-decks")
                 .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(person))
                 .contentType(MediaType.APPLICATION_JSON)
-        // then: only the created decks must be returned, description must be changed if applicable
+        // then: only the created decks must be returned, description must be changed if applicable (deck deleted)
         ).andExpectAll(
                 status().isOk(),
                 jsonPath("$.items").isArray(),
@@ -217,10 +217,7 @@ public class TestDeckControllerGetDecks {
                 jsonPath("$.items[*].description").value(
                         delete ?
                                 Matchers.anything() :
-                                Matchers.contains(block ?
-                                        Matchers.containsString(expectedDescription) :
-                                        Matchers.is(createdDeck.getDescription())
-                                )
+                                Matchers.contains(Matchers.is(createdDeck.getDescription()))
                 )
         );
     }

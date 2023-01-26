@@ -95,10 +95,10 @@ public class TestCardServiceGetFromDeck {
         // when: retrieving all cards for that user and deck
         Optional<List<Card>> maybeLoadedCards = cardService.getAllCards(deck.getDeckId());
 
-        // then: no cards must be loaded
+        // then: all cards must be loaded
         assertTrue(maybeLoadedCards.isPresent(), "Unable to load cards");
         List<Card> loadedCards = maybeLoadedCards.get();
-        assertEquals(0, loadedCards.size(), "Got wrong number of cards");
+        assertEquals(numCardsPerDeck, loadedCards.size(), "Got wrong number of cards");
     }
 
     @Test

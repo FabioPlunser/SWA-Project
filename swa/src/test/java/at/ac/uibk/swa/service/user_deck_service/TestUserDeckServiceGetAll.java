@@ -98,14 +98,12 @@ public class TestUserDeckServiceGetAll {
         // when: loading all decks for that user
         Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
 
-        // then: the user should be able to see that deck (and only that), but the description should be changed
-        // and contain info on the blocking
+        // then: the user should be able to see that deck normally
         assertTrue(maybeDecks.isPresent(), "Unable to load decks");
         List<Deck> decks = maybeDecks.get();
         assertTrue(decks.contains(deck), "Unable to find deck");
         assertEquals(1, decks.size(), "Found more decks than expected");
-        assertNotEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has not changed");
-        assertTrue(decks.get(decks.indexOf(deck)).getDescription().contains("blocked"), "Missing info on blocking");
+        assertEquals(deckDescription, decks.get(decks.indexOf(deck)).getDescription(), "Description has changed");
     }
 
     @Test
