@@ -2,11 +2,14 @@ package at.ac.uibk.swa.service;
 
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Person;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service("mailService")
 public class MailService {
 
@@ -51,6 +54,10 @@ public class MailService {
         message.setSubject(subject);
         message.setText(text);
 
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (MailSendException e) {
+            log.warn("Unable to send all mails - user email probably not validated");
+        }
     }
 }
