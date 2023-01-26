@@ -27,7 +27,12 @@
 
 	function checkIsFlipped()
 	{
-		let flippableCards = Array.of(cards.find(c => c.isFlipped));
+
+		let flippableCards = [];
+		for(let card of cards){
+			if(card.flipped) flippableCards.push(card);
+		}
+
 		if(flippableCards){
 			for(let card of flippableCards){
 				cards.push({cardId: card.cardId, frontText: card.frontText, backText: card.backText, isFlipped: false});
