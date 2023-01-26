@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Service("cardService")
@@ -71,27 +68,44 @@ public class CardService {
      */
     public Optional<List<Card>> getAllCardsToLearn(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
-        if (maybePerson.isPresent()) {
-            Person person = maybePerson.get();
-            if (person.getSavedDecks().stream().anyMatch(d -> d.getDeckId().equals(deckId))) {
-                return getAllCards(deckId).map(cards -> cards.stream()
-                            .filter(card -> card.getLearningProgress(person)
-                                    .map(
-                                            // If a Learning Progress is present, check if it's nextLearn is due.
-                                            // If it is due, return null => Optional will be empty
-                                            lp -> lp.getNextLearn().isBefore(LocalDateTime.now()) ? null : lp
-                                    )
-                                    // If no Learning Progress is present, the card hasn't been learned.
-                                    .isEmpty()
-                        ).toList()).or(() -> Optional.of(new ArrayList<>()));
-            } else {
-                // user has not subscribed to deck
-                return Optional.empty();
-            }
-        } else {
-            // no user authenticated
+        // nobody logged in
+        if (maybePerson.isEmpty()) {
             return Optional.empty();
         }
+        Person person = maybePerson.get();
+
+        // logged in person does not have requested deck in saved decks
+        if (person.getSavedDecks().stream().noneMatch(d -> d.getDeckId().equals(deckId))) {
+            return Optional.empty();
+        }
+
+        return getAllCards(deckId).map(cards -> cards.stream()
+                .filter(c -> {
+                    // cards that have already been learnt and are due for learning now
+                    if (c.getLearningProgress(person).isPresent()) {
+                        return c.getLearningProgress(person).get().getNextLearn().isBefore(LocalDateTime.now());
+                    }
+                    // cards that have never been learnt
+                    else {
+                        return true;
+                    }
+                })
+                .sorted(
+                        // order cards from oldest nextLearnDate to newest
+                        Comparator.comparing(c -> {
+                            if (c.getLearningProgress(person).isPresent()) {
+                                return c.getLearningProgress(person).get().getNextLearn();
+                            }
+                            // cards without learningProgress (= never learnt) are assumed to be due right now
+                            else {
+                                return LocalDateTime.now();
+                            }
+                        })
+                )
+                .toList()
+        )
+        // return an empty list if no cards are found
+        .or(() -> Optional.of(new ArrayList<>()));
     }
 
     /**
