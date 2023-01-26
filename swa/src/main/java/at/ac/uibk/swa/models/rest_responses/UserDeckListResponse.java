@@ -57,8 +57,8 @@ public class UserDeckListResponse extends ListResponse<UserDeckListResponse.User
                             lp -> lp.map(learningProgress -> learningProgress.getNextLearn().isBefore(now)).orElse(false)
                     ));
 
-            this.numNotLearnedCards = counter.getMatchesFirst();
-            this.numCardsToRepeat = counter.getMatchesSecond();
+            this.numCardsToRepeat = counter.getMatchesFirst();
+            this.numNotLearnedCards = counter.getMatchesSecond();
         }
     }
 }
