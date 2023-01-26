@@ -75,7 +75,7 @@ public class UserDeckService {
                         return d;
                     })
                     .map(d -> {
-                        if (d.isBlocked()) {
+                        if (!d.getCreator().equals(person) && d.isBlocked()) {
                             d.setDescription(DECK_BLOCKED_INFO);
                         }
                         return d;
@@ -103,12 +103,6 @@ public class UserDeckService {
             Person person = maybePerson.get();
             return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
-                    .map(d -> {
-                        if (d.isBlocked()) {
-                            d.setDescription(DECK_BLOCKED_INFO);
-                        }
-                        return d;
-                    })
                     .toList());
         } else {
             return Optional.empty();
