@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from 'svelte'
   import { tweened } from 'svelte/motion'
   import { linear } from 'svelte/easing'
-  import { toast } from '../stores/toastStore'
+  import { toast } from '$stores/toastStore'
   
   export let item
   

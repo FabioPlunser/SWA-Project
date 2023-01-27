@@ -1,8 +1,8 @@
 <script>
   import { fade, fly } from 'svelte/transition'
   import { flip } from 'svelte/animate'
-  import { toast } from '../stores/toastStore'
-  import ToastItem from './ToastItem.svelte'
+  import { toast } from '$stores/toastStore'
+  import ToastItem from '$components/ToastItem.svelte'
   
   export let options = {}
   export let target = 'default'

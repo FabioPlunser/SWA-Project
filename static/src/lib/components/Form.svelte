@@ -1,40 +1,37 @@
 <script lang="ts">
-    /**
-     * @param {string} dataFormat - "JSON" or "FormData"
-    */
     import { createEventDispatcher } from "svelte";
-    import { fetching } from "../utils/fetching";
-    import { tokenStore } from "../stores/tokenStore";
+    import { setContext } from 'svelte';
+    import { fetching, type Params } from "$utils/fetching";
+    import { writable } from 'svelte/store';
 
     let dispatch = createEventDispatcher();
-    import { validateForm, isFormValid } from "../utils/Validators";
+    import { validateForm, isFormValid } from "$utils/Validators";
+    import { formFormat } from "$types/formFormat";
 
     export let style = "";
-    export let dataFormat = "JSON";
+    export let dataFormat: formFormat = formFormat.JSON;
     export let url = "";
     export let method = "";
     export let addJSONData = [{}];
-    export let errors = {};
+    export let params: Params[] = null;
+    // export let errors = {};
     export let formValidators = {};
     export let id = "";
 
-
-    let myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + $tokenStore);
-
+    let errors = writable({});
 
     async function handleSubmit(e) {
         let res;
         const formData = new FormData(e.target);
 
-        errors = validateForm(e, formValidators);
-        if(!isFormValid(errors)){
+        $errors = validateForm(e, formValidators);
+        if(!isFormValid($errors)){
             return;
         }
                 
         dispatch("preFetch", e);
 
-        if(dataFormat === "JSON"){
+        if(dataFormat === formFormat.JSON){
             let data = formData;
             for (const [key, value] of data.entries()) {
                 data[key] = value;
@@ -43,15 +40,17 @@
                 data = {...data, ...JSONData};
             }
 
-            res = await fetching(url, method, null, data, true);
+            res = await fetching(url, method, params, data, true);
             dispatch("postFetch", {e, res});
             return res;
         }else{
-            res = await fetching(url, method, null, formData, false);
+            res = await fetching(url, method, params, formData, false);
             dispatch("postFetch", {e, res});
             return res;
         }
     }
+    
+    setContext("form", {errors});
 </script>
 
 <!-- @component

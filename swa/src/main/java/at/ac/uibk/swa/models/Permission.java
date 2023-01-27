@@ -2,9 +2,7 @@ package at.ac.uibk.swa.models;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Arrays;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public enum Permission implements GrantedAuthority {
     USER,

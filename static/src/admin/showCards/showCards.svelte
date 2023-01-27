@@ -1,21 +1,18 @@
 <script lang="ts">
-  import favicon  from '../../assets/favicon.png';
-  import Nav from "../../lib/components/nav.svelte";
-  import DualSideCard from "../../lib/components/dualSideCard.svelte";
-  import Spinner from "../../lib/components/Spinner.svelte";
-	import SvelteToast from './../../lib/components/SvelteToast.svelte';
+  import favicon  from '$assets/favicon.png';
+  import Nav from "$components/nav.svelte";
+  import DualSideCard from "$components/dualSideCard.svelte";
+  import Spinner from "$components/Spinner.svelte";
+	import SvelteToast from '$components/SvelteToast.svelte';
   
-  import { redirect } from '../../lib/utils/redirect';
-  import { handleLogout } from "../../lib/utils/handleLogout";
-	import { adminSelectedDeckStore } from '../../lib/stores/adminSelectedDeckStore';
-  import { addToastByRes } from "../../lib/utils/addToToastStore";
-  import { fetching } from "../../lib/utils/fetching";
+	import { adminSelectedDeckStore } from '$stores/adminSelectedDeckStore';
+  import { addToastByRes } from "$utils/addToToastStore";
+  import { fetching } from "$utils/fetching";
 
   let buttons = [
-    { text: "Back", action: () => redirect("admin/show-decks") },
-    { text: "Admin", action: () => redirect("admin") },
-    { text: "Home", action: () => redirect("") },
-    { text: "Logout",action: () => handleLogout()}
+    { text: "Back", href: "/admin/show-decks" },
+    { text: "Home", href: "/" },
+    { text: "Admin", href: "/admin" },
   ];
 
   async function getCardsOfDeck(){ 
@@ -30,6 +27,7 @@
 <svelte:head>
   <title>Admin ShowCards</title>
   <link rel="icon" type="image/png" href="{favicon}" />
+  <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 <Nav title="ShowCards" {buttons}/>
@@ -44,8 +42,8 @@
       <h1 class="flex justify-center text-2xl font-bold">No Cards</h1>
     {:else}
       <div class="grid grid-cols-4 gap-4">
-        {#each cards as card}
-          <DualSideCard {card}/>
+        {#each cards as card, i}
+          <DualSideCard {card} index={i+1}/>
         {/each}
       </div>
     {/if}

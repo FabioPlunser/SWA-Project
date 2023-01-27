@@ -1,6 +1,6 @@
 package at.ac.uibk.swa.service;
 
-import at.ac.uibk.swa.config.person_authentication.AuthContext;
+import at.ac.uibk.swa.config.jwt_authentication.AuthContext;
 import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Person;
@@ -57,9 +57,9 @@ public class UserDeckService {
     /**
      * Gets all decks to which the currently logged in user has subscribed, but might alter description, depending on
      * deck status
-     *  - isDeleted: info, that deck has been deleted
-     *  - isBlocked: info, that deck has been blocked
-     *  - !isPublished: info, that deck has been unpublished, if not creator
+     * - isDeleted: info, that deck has been deleted
+     * - isBlocked: info, that deck has been blocked
+     * - !isPublished: info, that deck has been unpublished, if not creator
      *
      * @return a list of all decks to which that person has subscribed or nothing if nobody is logged in
      */
@@ -68,9 +68,24 @@ public class UserDeckService {
         if (maybePerson.isPresent()) {
             Person person = maybePerson.get();
             return Optional.of(person.getSavedDecks().stream()
-                    .map(d -> {if (!d.getCreator().equals(person) && !d.isPublished()) { d.setDescription(DECK_UNPUBLISHED_INFO); } return d;})
-                    .map(d -> {if (d.isBlocked()) { d.setDescription(DECK_BLOCKED_INFO); } return d;})
-                    .map(d -> {if (d.isDeleted()) { d.setDescription(DECK_DELETED_INFO); } return d;})
+                    .map(d -> {
+                        if (!d.getCreator().equals(person) && !d.isPublished()) {
+                            d.setDescription(DECK_UNPUBLISHED_INFO);
+                        }
+                        return d;
+                    })
+                    .map(d -> {
+                        if (!d.getCreator().equals(person) && d.isBlocked()) {
+                            d.setDescription(DECK_BLOCKED_INFO);
+                        }
+                        return d;
+                    })
+                    .map(d -> {
+                        if (d.isDeleted()) {
+                            d.setDescription(DECK_DELETED_INFO);
+                        }
+                        return d;
+                    })
                     .toList());
         } else {
             return Optional.empty();
@@ -88,7 +103,6 @@ public class UserDeckService {
             Person person = maybePerson.get();
             return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
-                    .map(d -> {if (d.isBlocked()) { d.setDescription(DECK_BLOCKED_INFO); } return d;})
                     .toList());
         } else {
             return Optional.empty();
@@ -98,9 +112,9 @@ public class UserDeckService {
     /**
      * Gets all decks to which the currently logged-in user has subscribed to but did not create, but might alter description, depending on
      * deck status
-     *  - isDeleted: info, that deck has been deleted
-     *  - isBlocked: info, that deck has been blocked
-     *  - !isPublished: info, that deck has been unpublished, if not creator
+     * - isDeleted: info, that deck has been deleted
+     * - isBlocked: info, that deck has been blocked
+     * - !isPublished: info, that deck has been unpublished, if not creator
      *
      * @return a list of all decks to which that person has subscribed to (but did not create) or nothing if nobody is logged in
      */
@@ -115,20 +129,27 @@ public class UserDeckService {
 
     /**
      * Gets all decks a given user has created
+     *
      * @param personId
      * @return
      */
-    public Optional<List<Deck>> getDecksOfGivenPerson(UUID personId){
+    public Optional<List<Deck>> getDecksOfGivenPerson(UUID personId) {
         Optional<Person> maybeUser = personService.findById(personId);
         if (maybeUser.isPresent()) {
             Person person = maybeUser.get();
             return Optional.of(person.getCreatedDecks().stream()
                     .filter(Predicate.not(Deck::isDeleted))
-                    .map(d -> {if (d.isBlocked()) { d.setDescription(DECK_BLOCKED_INFO); } return d;})
+                    .map(d -> {
+                        if (d.isBlocked()) {
+                            d.setDescription(DECK_BLOCKED_INFO);
+                        }
+                        return d;
+                    })
                     .toList());
         }
         return Optional.empty();
     }
+
     /**
      * Saves a deck to the repository
      *
@@ -174,50 +195,67 @@ public class UserDeckService {
      * Updates one of the owned decks of the logged in user in the repository with the given parameters
      * Deleted and blocked decks cannot be updated
      * Will change name, description and publicity of deck if given
-     * Will also update/create/delete cards in the given deck
-     *  - cards with given id:  update, if part of the deck, ignore otherwise
-     *  - cards without id:     create
-     *  - deletes all cards from the deck, that are not given
+     * Will also update/create/delete cards in the given deck if updateCards is set
+     * - cards with given id:  update, if part of the deck, ignore otherwise
+     * - cards without id:     create
+     * - deletes all cards from the deck, that are not given
      *
-     * @param deck deck to be updated -  at least deckId must be given
+     * @param deck        deck to be updated -  at least deckId must be given
+     * @param updateCards true if cards should be update, false otherwise
      * @return true if the deck was updated, false otherwise
      */
     @Transactional
-    public boolean update(Deck deck) {
+    public boolean update(Deck deck, boolean updateCards) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
-        if (maybePerson.isPresent()) {
-            Person person = maybePerson.get();
-            Deck savedDeck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deck.getDeckId())).findFirst().orElse(null);
-            if (savedDeck != null) {
-                if (savedDeck.isBlocked() || savedDeck.isDeleted()) return false;
-                if (deck.getName() != null) savedDeck.setName(deck.getName());
-                if (deck.getDescription() != null) savedDeck.setDescription(deck.getDescription());
-                savedDeck.setPublished(deck.isPublished());
-                List<Card> cardsToUpdate = deck.getCards().stream()
-                        .filter(c -> c.getCardId() != null)
-                        .filter(c -> savedDeck.getCards().contains(c))
-                        .toList();
-                List<Card> cardsToDelete = savedDeck.getCards().stream()
-                        .filter(c -> !deck.getCards().contains(c))
-                        .toList();
-                List<Card> cardsToCreate = deck.getCards().stream()
-                        .filter(c -> c.getCardId() == null)
-                        .toList();
-                savedDeck.setCards(Stream.concat(cardsToUpdate.stream(), cardsToCreate.stream()).toList());
-                for (Card card : cardsToDelete) {
-                    try {
-                        cardRepository.delete(card);
-                    } catch (Exception e) {
-                        return false;
-                    }
-                }
-                return save(savedDeck) != null;
-            } else {
-                return false;
-            }
-        } else {
+        // nobody logged in
+        if (maybePerson.isEmpty()) {
             return false;
         }
+
+        Person person = maybePerson.get();
+        Deck savedDeck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deck.getDeckId())).findFirst().orElse(null);
+        // deck with given id not found in created decks of logged in person
+        if (savedDeck == null) {
+            return false;
+        }
+
+        // deck is blocked or deleted - not updating allowed
+        if (savedDeck.isBlocked() || savedDeck.isDeleted()) {
+            return false;
+        }
+
+        // check which properties of the deck have been passed for updating
+        if (deck.getName() != null) {
+            savedDeck.setName(deck.getName());
+        }
+        if (deck.getDescription() != null) {
+            savedDeck.setDescription(deck.getDescription());
+        }
+        savedDeck.setPublished(deck.isPublished());
+
+        // updating of cards desired
+        // CAUTION: learning progresses are never passed with updated deck info - therefore do not overwrite
+        if (updateCards) {
+            List<Card> cardsToUpdate = savedDeck.getCards().stream()
+                    .filter(c -> deck.getCards().contains(c))
+                    .map(c -> c.updateAllExceptLearningProgresses(deck.getCards().get(deck.getCards().indexOf(c))))
+                    .toList();
+            List<Card> cardsToDelete = savedDeck.getCards().stream()
+                    .filter(c -> !deck.getCards().contains(c))
+                    .toList();
+            List<Card> cardsToCreate = deck.getCards().stream()
+                    .filter(c -> c.getCardId() == null)
+                    .toList();
+            savedDeck.setCards(Stream.concat(cardsToUpdate.stream(), cardsToCreate.stream()).toList());
+            for (Card card : cardsToDelete) {
+                try {
+                    cardRepository.delete(card);
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+        }
+        return save(savedDeck) != null;
     }
 
     /**
@@ -227,32 +265,39 @@ public class UserDeckService {
      * @param deckId id of the deck to be deleted
      * @return true if deck has been deleted, false otherwise
      */
+    @Transactional
     public boolean delete(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
-        if (maybePerson.isPresent()) {
-            Person person = maybePerson.get();
-            Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
-            if (deck != null && deck.getDeckId() != null) {
-                if (deck.isDeleted()) return false;
-                deck.setDeleted(true);
-                Deck savedDeck = save(deck);
-                if (savedDeck != null) {
-                    person.getSavedDecks().remove(savedDeck);
-                    try {
-                        personService.save(person);
-                    } catch (Exception e) {
-                        return false;
-                    }
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
+        // nobody logged in
+        if (maybePerson.isEmpty()) {
             return false;
         }
+
+        Person person = maybePerson.get();
+        Deck deck = person.getCreatedDecks().stream().filter(d -> d.getDeckId().equals(deckId)).findFirst().orElse(null);
+        // deck not found in decks created by logged-in user
+        if (deck == null) {
+            return false;
+        }
+        // deck already deleted
+        if (deck.isDeleted()) {
+            return false;
+        }
+        // soft delete
+        deck.setDeleted(true);
+        Deck savedDeck = save(deck);
+        // soft delete not successful
+        if (savedDeck == null) {
+            return false;
+        }
+        // remove from overview of logged in user
+        person.getSavedDecks().remove(savedDeck);
+        try {
+            personService.save(person);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -262,7 +307,7 @@ public class UserDeckService {
      * @param deckId if of the deck to publish
      * @return true if deck has been published, false otherwise
      */
-    //TODO: if deck already published, why should it return false and not just do nothing?
+    @Transactional
     public boolean publish(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
@@ -287,6 +332,7 @@ public class UserDeckService {
      * @param deckId id of the deck to unpublish
      * @return true if deck has been unpublished, false otherwise
      */
+    @Transactional
     public boolean unpublish(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
@@ -311,6 +357,7 @@ public class UserDeckService {
      * @param deckId id of the deck to subscribe to
      * @return true if the person has been subscribed, false otherwise
      */
+    @Transactional
     public boolean subscribe(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
@@ -344,6 +391,7 @@ public class UserDeckService {
      * @param deckId id of the deck to unsubscribe from
      * @return true if the person has been unsubscribed, false otherwise
      */
+    @Transactional
     public boolean unsubscribe(UUID deckId) {
         Optional<Person> maybePerson = AuthContext.getCurrentPerson();
         if (maybePerson.isPresent()) {
@@ -368,5 +416,20 @@ public class UserDeckService {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Returns name of Deck as String, if Deck can be found by its ID
+     *
+     * @param deckId ID of Deck whose name is searched
+     * @return deckName of searched Deck if Deck is present
+     */
+    public String getDeckNameIfPresent(UUID deckId) {
+        String deckName = "";
+        Optional<Deck> maybeDeck = findById(deckId);
+        if (maybeDeck.isPresent()) {
+            deckName = maybeDeck.get().getName();
+        }
+        return deckName;
     }
 }

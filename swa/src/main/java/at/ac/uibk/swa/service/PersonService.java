@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.service;
 
-import at.ac.uibk.swa.config.person_authentication.AuthContext;
+import at.ac.uibk.swa.config.jwt_authentication.AuthContext;
+import at.ac.uibk.swa.config.jwt_authentication.JwtToken;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.Person;
 import at.ac.uibk.swa.repositories.PersonRepository;
@@ -16,9 +17,8 @@ import java.util.UUID;
 import java.util.function.Function;
 
 @Slf4j
-@Service("personService")
+@Service
 public class PersonService {
-
     @Autowired
     private PersonRepository personRepository;
 
@@ -31,7 +31,7 @@ public class PersonService {
      * @return list of found persons
      */
     public List<Person> getPersons() {
-        return personRepository.findAll();
+        return personRepository.findAll().stream().filter(p -> !p.isDeleted()).toList();
     }
 
     //region Login/Logout
@@ -48,7 +48,7 @@ public class PersonService {
             return Optional.empty();
 
         Person person = maybePerson.get();
-        if(!passwordEncoder.matches(password, person.getPassword()))
+        if(!passwordEncoder.matches(password, person.getPassword()) || person.isDeleted())
             return Optional.empty();
 
         person.setToken(UUID.randomUUID());
@@ -82,21 +82,23 @@ public class PersonService {
 
     //region Find
     /**
-     * Find a person via its current token
+     * Find a person via its current token and username.
+     *
+     * @param token jwt token of the person to be found
+     * @return person if found, otherwise nothing
+     */
+    public Optional<Person> findByUsernameAndToken(JwtToken token) {
+        return findByUsernameAndToken(token.getUsername(), token.getToken());
+    }
+
+    /**
+     * Find a person via its current token and username.
      *
      * @param token current token of the person to be found
      * @return person if found, otherwise nothing
      */
-    public Optional<Person> findByToken(UUID token) {
-        // TODO: Should this also get a Username and check if the Token is associated with the given username?
-        //       Theoretically not needed because the Token has a unique Constraint
-        //       but would make it even harder to brute force for a Token as you would need to guess the username
-        //       and the Token at the same time.
-        // NOTE: Maybe switch to JWT? UUID is OK, but definitely not the best solution
-
-        return Optional.of(token)
-                .map(personRepository::findByToken)
-                .flatMap(Function.identity());
+    public Optional<Person> findByUsernameAndToken(String username, UUID token) {
+        return personRepository.findByUsernameAndToken(username, token);
     }
 
     /**
@@ -198,10 +200,12 @@ public class PersonService {
      * @return true if the person was deleted, false otherwise.
      */
     public boolean delete(UUID personId) {
-        try {
-            this.personRepository.deleteById(personId);
-            return true;
-        } catch (Exception e) {
+        Optional<Person> maybePerson = personRepository.findById(personId);
+        if (maybePerson.isPresent()) {
+            Person person = maybePerson.get();
+            person.delete();
+            return this.save(person) != null;
+        } else {
             return false;
         }
     }

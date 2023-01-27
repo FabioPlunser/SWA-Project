@@ -1,54 +1,93 @@
 <script lang="ts">
+	import autosize from 'svelte-autosize';
   import { createEventDispatcher } from 'svelte';
   const dispatch = createEventDispatcher();
+  import Markdown from "$components/markdown.svelte";
+
   export let card;
+  export let index = 0;
   export let editable = false;
-  export let cardStyle = "";
-  export let textAreaStyle = "";
+  export let flippable = false;
+  export let cardBg = "bg-slate-900";
+  export let textBg = "bg-slate-800";
+  export let title = "";
+
+  let cardQuestionFocus = false; 
+  let cardAnswerFocus = false;
 
   function handleDeleteCard(card) {
       dispatch('deleteCard', card);
   }
 
-  let frontText = "";
-  let backText = "";
-
-  if (card){
-    frontText = card.frontText;
-    backText = card.backText;
-  }
-
-  $: backTextMinHeight = `${1+backText.split(" ").length}em`;
-  $: frontTextMinHeight = `${1+frontText.split(" ").length}em`
 </script>
 
 {#if editable}
-  <div class="card p-5 w-auto bg-slate-900 {cardStyle}">
-    {#if card.cardId}
-        <h1 class="flex justify-center text-xl">Card {card.cardId.slice(0, 5)}</h1>
+  <div class="card p-5 w-auto {cardBg}">
+    {#if title}
+      <h1 class="flex justify-center text-xl">{title} {index}</h1>
     {:else}
-      <h1 class="flex justify-center text-xl">Card {card.id}</h1>
+      <h1 class="flex justify-center text-xl">Card {index}</h1>
+    {/if}
+    <br class="mt-4"/>
+    {#if cardQuestionFocus}
+    <textarea tabindex="6" use:autosize on:mouseleave={()=>cardQuestionFocus=false} name="qustion" contenteditable id="divTextarea" bind:value={card.frontText} placeholder="Question" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2  resize"/>
+    {:else}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div tabindex="6" on:click={()=>cardQuestionFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2">
+            <div>
+                <Markdown data={card.frontText}/>
+            </div>
+        </div>  
     {/if}
 
-    <textarea bind:value={frontText} placeholder="question" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {frontTextMinHeight}"/>
     <br class="mt-4"/>
-    <textarea bind:value={backText} placeholder="answer" class="textarea p-2 bg-slate-800 w-auto" style="min-height: {backTextMinHeight}" />
 
+    {#if cardAnswerFocus}
+      <textarea tabindex="6" use:autosize on:mouseleave={()=>cardAnswerFocus=false} name="answer" contenteditable id="divTextarea" bind:value={card.backText} placeholder="Answer" class="input bg-slate-800 min-h-[70px] h-auto w-full p-2  resize"/>
+    {:else}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div tabindex="6" on:click={()=>cardAnswerFocus=true} class="input bg-slate-800 min-h-[70px] h-auto w-full p-2">
+            <div>
+                <Markdown data={card.backText}/>
+            </div>
+        </div>  
+    {/if}
+
+    <input type="hidden" bind:value={card.frontText}/>
+    <input type="hidden" bind:value={card.backText}/>
     <br class="mt-4"/>
     <div class="card-action">
-        <button class="btn btn-accent" type="button" on:click={()=>handleDeleteCard(card)}>Delete Card</button>
+      {#if flippable}
+        <div class="flex justify-center">
+          <span class="ml-4">Learn both sides:</span>
+          <div class="flex justify-center">
+            <input tabindex="6" type="checkbox" bind:checked={card.flipped} class="ml-4 flex mx-auto justify-center items-center checkbox checkbox-primary"/>
+          </div>
+        </div>
+      {/if}
+      <br class="mt-2"/>
+      <div class="flex justify-center">
+        <button tabindex="6" class="btn btn-accent" type="button" on:click={()=>handleDeleteCard(card)}>Delete Card</button>
+      </div>
     </div>
   </div>
 {:else}
-  <div class="card p-5 w-auto bg-slate-900 {cardStyle}" >
-    {#if card.cardId}
-        <h1 class="flex justify-center text-xl">Card {card.cardId.slice(0, 5)}</h1>
-    {:else}
-      <h1 class="flex justify-center text-xl">Card {card.id}</h1>
-    {/if}
+  <div class="card p-5 w-auto {cardBg}" >
+    <h1 class="flex justify-center text-xl">Card {index}</h1>
 
-    <textarea bind:value={frontText} readonly class="textarea p-2 bg-slate-800 w-auto {textAreaStyle}" style="min-height: {frontTextMinHeight}"/>
+
+    <div class="input min-h-[70px] h-auto {textBg} p-2 w-auto ">
+      <Markdown data={card.frontText}/>
+    </div>  
     <br class="mt-4"/>
-    <textarea bind:value={backText} readonly class="textarea p-2 bg-slate-800 w-auto {textAreaStyle}" style="min-height: {backTextMinHeight}" />
+    <div class="input min-h-[70px] h-auto {textBg} p-2 w-auto">
+      <Markdown data={card.backText}/>
+    </div> 
+
+    {#if card?.isFlipped}
+      <div class="badge badge-primary">
+        <span>Card is doubled to learn</span>
+      </div>
+    {/if}
   </div>
 {/if}

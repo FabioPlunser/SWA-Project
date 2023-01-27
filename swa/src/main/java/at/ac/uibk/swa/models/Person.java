@@ -1,5 +1,6 @@
 package at.ac.uibk.swa.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -53,6 +54,19 @@ public class Person extends Authenticable implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "subscribedPersons")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Deck> savedDecks = new ArrayList<>();
+
+    @JdbcTypeCode(SqlTypes.BOOLEAN)
+    @JsonIgnore
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
+    public void delete() {
+        for (Deck deck : this.createdDecks) {
+            deck.setDeleted(true);
+        }
+        this.setToken(null);
+        this.isDeleted = true;
+    }
 
     /**
      * Gets the Person's ID.

@@ -1,12 +1,14 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
+    import Markdown from '$components/markdown.svelte';
 
-    import { addToastByRes } from '../utils/addToToastStore';
-    import { fetching } from '../utils/fetching';
+    import { addToastByRes } from '$utils/addToToastStore';
+    import { fetching } from '$utils/fetching';
 
     export let deck; 
-    let { deckId, name, description, published, blocked, cards} = deck;
+    console.log(deck);
+    let { deckId, name, description, deleted, published, blocked, numCards, numCardsToRepeat, numNotLearnedCards} = deck;
     
     $: getAllCardsToLearn();
     $: getCardsOfDeck();
@@ -53,24 +55,28 @@
 {#if !blocked && published}
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-96 relative" on:mouseover={handleMouseOver} on:mouseout={handleMouseOut}>
         <div class="{hover ? "hidden" : "block"}" >
-            <h1 class="underline flex justify-center text-xl">{name}</h1>
+            <h1 class="flex justify-center text-2xl font-bold">{name}</h1>
             <br class="my-4"/>
-            <p>{description}</p>
+            <div class="max-h-full overflow-hidden break-all">
+               <Markdown data={description}/>
+            </div>
             <br class="my-4"/>
-            <div class="bottom-0 absolute mb-4">
-                <div class="grid grid-rows gap-2">
-                    {#if cards}
-                        <div class="badge badge-primary">Number of cards: {cards.length} </div>
+            <div class="bottom-0 absolute mb-4 mt-4">
+                <div class="flex flex-col gap-2">
+                    <div class="gap-2">
+                        {#if numCards > 0}
+                            <div class="badge badge-primary">Cards: {numCards} </div>
+                            {:else}
+                            <div class="badge badge-error">No cards</div>
+                        {/if}
+                        {#if numCardsToRepeat >0}
+                            <div class="badge badge-primary">To repeat: {numCardsToRepeat} </div>
                         {:else}
-                        <div class="badge badge-error">No cards</div>
-                    {/if}
-                    {#if cardsToLearn}
-                        <div class="badge badge-primary">Number of cards to learn: {cardsToLearn.length} </div>
-                        {:else}
-                        <div class="badge badge-error">No cards to learn</div>
-                    {/if}
-                    {#if cards && cardsToLearn}
-                        Progress: <progress class="progress progress-success bg-gray-700" value={cards.length - cardsToLearn.length} max={cards.length}></progress>
+                            <div class="badge badge-error">Nothing to repeat</div>
+                        {/if}
+                    </div>
+                    {#if numNotLearnedCards > 0}
+                        <div class="badge badge-primary">To learn: {numNotLearnedCards} </div>
                     {:else}
                         <div class="badge badge-error">No cards to learn</div>
                     {/if}
@@ -80,19 +86,25 @@
 
 
         <div class="{hover ? "block" : "hidden"} grid grid-row gap-2">
-            <button class="btn btn-primary" on:click={handleLearnDeck}>Learn Deck</button>
-            <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
-            <button class="btn btn-primary" on:click={handleUnsubscribe}>Unsubscribe</button>
-        </div>       
+            {#if !deleted}
+                <button class="btn btn-primary" on:click={handleLearnDeck}>Learn Deck</button>
+                <button class="btn btn-primary" on:click={handleListCards}>List Cards</button>
+                <button class="btn btn-primary" on:click={handleUnsubscribe}>Unsubscribe</button>
+            {:else}
+                <button class="btn btn-primary" on:click={handleUnsubscribe}>Unsubscribe</button>
+            {/if}
+        </div>      
 </div>
 {/if}
 
 {#if blocked || !published}
 <div class="bg-slate-900 rounded-xl shadow-xl p-5 h-auto relative opacity-50">
     <div>
-        <h1 class="underline flex justify-center text-xl">{name}</h1>
+        <h1 class="flex justify-center text-xl font-bold">{name}</h1>
         <br class="mt-4"/>
-        <p class="flex justify-center">{description}</p>
+        <div class="max-h-full overflow-hidden break-all">
+            <Markdown data={description}/>
+        </div>
     </div>
     <br class="mt-4"/>
 

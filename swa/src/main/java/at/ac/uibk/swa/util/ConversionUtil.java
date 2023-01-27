@@ -1,5 +1,8 @@
 package at.ac.uibk.swa.util;
 
+import at.ac.uibk.swa.config.jwt_authentication.JwtToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -25,6 +28,30 @@ public class ConversionUtil {
         try {
             return UUID.fromString(maybeToken);
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Helper Method for parsing a JSON Web Token from a String.
+     *
+     * @param input The input to parse into a {@link JwtToken}.
+     * @return The parsed {@link JwtToken}, or empty if the parsing failed.
+     */
+    public static Optional<JwtToken> tryConvertJwtTokenOptional(String input) {
+        return Optional.ofNullable(tryConvertJwtToken(input));
+    }
+
+    /**
+     * Helper Method for parsing a JSON Web Token from a String.
+     *
+     * @param input The input to parse into a {@link JwtToken}.
+     * @return The parsed {@link JwtToken}, or null if the parsing failed.
+     */
+    public static JwtToken tryConvertJwtToken(String input) {
+        try {
+            return new ObjectMapper().readValue(input, JwtToken.class);
+        } catch (JsonProcessingException e) {
             return null;
         }
     }

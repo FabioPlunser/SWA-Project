@@ -8,10 +8,7 @@ import at.ac.uibk.swa.repositories.DeckRepository;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.PersonService;
 import at.ac.uibk.swa.service.UserDeckService;
-import at.ac.uibk.swa.util.ArgumentGenerator;
-import at.ac.uibk.swa.util.MockAuthContext;
-import at.ac.uibk.swa.util.SetupH2Console;
-import at.ac.uibk.swa.util.StringGenerator;
+import at.ac.uibk.swa.util.*;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.IsNot;
 import org.junit.jupiter.api.Test;
@@ -133,7 +130,7 @@ public class TestDeckControllerGetDecks {
 
         // when: loading all decks available for subscription
         mockMvc.perform(MockMvcRequestBuilders.get("/api/get-published-decks")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + person.getToken())
+                        .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(person))
                         .contentType(MediaType.APPLICATION_JSON)
         // then: returned decks must be as expected
         ).andExpectAll(
@@ -188,7 +185,7 @@ public class TestDeckControllerGetDecks {
 
         // when: loading all decks to which the given user has subscribed
         mockMvc.perform(MockMvcRequestBuilders.get("/api/get-subscribed-decks")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + person.getToken())
+                .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(person))
                 .contentType(MediaType.APPLICATION_JSON)
         // then: only the subscribed deck must be returned, description must be changed if applicable
         ).andExpectAll(
@@ -205,9 +202,9 @@ public class TestDeckControllerGetDecks {
 
         // when: loading all decks that the given user has created
         mockMvc.perform(MockMvcRequestBuilders.get("/api/get-created-decks")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + person.getToken())
+                .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(person))
                 .contentType(MediaType.APPLICATION_JSON)
-        // then: only the created decks must be returned, description must be changed if applicable
+        // then: only the created decks must be returned, description must be changed if applicable (deck deleted)
         ).andExpectAll(
                 status().isOk(),
                 jsonPath("$.items").isArray(),
@@ -220,10 +217,7 @@ public class TestDeckControllerGetDecks {
                 jsonPath("$.items[*].description").value(
                         delete ?
                                 Matchers.anything() :
-                                Matchers.contains(block ?
-                                        Matchers.containsString(expectedDescription) :
-                                        Matchers.is(createdDeck.getDescription())
-                                )
+                                Matchers.contains(Matchers.is(createdDeck.getDescription()))
                 )
         );
     }

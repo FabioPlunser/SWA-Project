@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -36,14 +38,13 @@ public class Card implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private UUID cardId;
 
-    @Lob
-    // @JdbcTypeCode(SqlTypes.NVARCHAR)
+
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "front_text", nullable = false)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String frontText;
 
-    @Lob
-    // @JdbcTypeCode(SqlTypes.NVARCHAR)
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "back_text", nullable = false)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String backText;
@@ -62,7 +63,7 @@ public class Card implements Serializable {
     // NOTE: This JsonIgnore is ok, because this is a Map which we don't want to override in any case.
     @JsonIgnore
     @Setter(AccessLevel.PRIVATE)
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @Builder.Default
     @JoinTable(
             name = "card_progress_mapping",
@@ -70,6 +71,7 @@ public class Card implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "progress_id", referencedColumnName = "progress_id")}
     )
     @MapKeyJoinColumn(name = "person_id")
+    @Fetch(FetchMode.SELECT)
     private Map<Person, LearningProgress> learningProgresses = new HashMap<>();
 
     @JsonIgnore
@@ -122,5 +124,13 @@ public class Card implements Serializable {
     public int hashCode() {
         // NOTE: This will intentionally throw an Exception if cardId is null.
         return this.cardId.hashCode();
+    }
+
+    public Card updateAllExceptLearningProgresses(Card newCard) {
+        this.cardId = newCard.cardId;
+        this.frontText = newCard.frontText;
+        this.backText = newCard.backText;
+        this.isFlipped = newCard.isFlipped;
+        return this;
     }
 }

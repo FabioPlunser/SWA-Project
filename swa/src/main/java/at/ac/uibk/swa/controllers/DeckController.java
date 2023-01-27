@@ -4,11 +4,11 @@ import at.ac.uibk.swa.models.Card;
 import at.ac.uibk.swa.models.Deck;
 import at.ac.uibk.swa.models.Permission;
 import at.ac.uibk.swa.models.annotations.AnyPermission;
-import at.ac.uibk.swa.models.rest_responses.ListResponse;
-import at.ac.uibk.swa.models.rest_responses.MessageResponse;
-import at.ac.uibk.swa.models.rest_responses.RestResponse;
+import at.ac.uibk.swa.models.annotations.ApiRestController;
+import at.ac.uibk.swa.models.rest_responses.*;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
+import at.ac.uibk.swa.service.MailService;
 import at.ac.uibk.swa.service.UserDeckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +23,7 @@ import java.util.UUID;
  *
  * @author Fabian Magreiter
  */
-@RestController
+@ApiRestController
 @SuppressWarnings("unused")
 public class DeckController {
 
@@ -33,264 +33,314 @@ public class DeckController {
     private AdminDeckService adminDeckService;
     @Autowired
     private CardService cardService;
+    @Autowired
+    private MailService mailService;
 
+
+    private static final String DECK_LOAD_ERROR_MESSAGE = "Unable to get decks.";
+
+    /**
+     * Generates a string to describe the action done on a deck
+     * Example:
+     * - name of deck:     "example deck"
+     * - actionDone:       "was created"
+     * - returned string:  "Deck example deck was created."
+     *
+     * @param deckName   name of the deck on which the action was performed
+     * @param actionDone description of the action that was performed on the deck
+     * @return a message describing what was done on which deck
+     */
+    private String generateMessage(String deckName, String actionDone) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Deck ");
+        sb.append(deckName);
+        sb.append(" ");
+        sb.append(actionDone);
+        sb.append(".");
+        return sb.toString();
+    }
 
     /**
      * Creates a new Deck with all the given Cards.
+     *
      * @param deck
      * @return A MessageResponse indicating success or failure.
      */
-    @PostMapping("/api/create-deck")
+    @PostMapping("/create-deck")
     public RestResponse createDeck(
             @RequestBody final Deck deck
     ) {
         if (!userDeckService.create(deck)) {
-            return MessageResponse.builder().error().message("Deck " + deck.getDeckId() + " could not be created.").build();
+            return MessageResponse.builder().error()
+                    .message(generateMessage(deck.getName(), "could not be created")).build();
         }
 
-        return MessageResponse.builder().ok().message("Deck " + deck.getDeckId() + " created successfully.").build();
+        return MessageResponse.builder().ok()
+                .message(generateMessage(deck.getName(), "created successfully")).build();
     }
 
     /**
-     * Updates the given Deck and cards of that Deck.
+     * Updates the given Deck and - if specified - cards of that Deck.
      * The Deck must be owned by the current User.
      *
-     * @param deck The Deck to update.
+     * @param deck        The Deck to update.
+     * @param updateCards if true, updates the cards of the deck (default value is false)
      * @return A MessageResponse indicating success or failure.
      */
-    @PostMapping("/api/update-deck")
+    @PostMapping("/update-deck")
     public RestResponse updateDeck(
-            @RequestBody final Deck deck
+            @RequestBody final Deck deck,
+            @RequestParam(name = "update-cards", defaultValue = "false") final boolean updateCards
     ) {
-        if (userDeckService.update(deck)) {
+        if (userDeckService.update(deck, updateCards)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + deck.getDeckId() + " updated")
+                    .message(generateMessage(deck.getName(), "updated"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + deck.getDeckId() + " not updated")
+                .message(generateMessage(deck.getName(), "not updated"))
                 .build();
     }
 
-
     /**
      * Sets given deck to public.
+     *
      * @param deckId
      * @return
      */
-    @PostMapping("/api/publish-deck")
+    @PostMapping("/publish-deck")
     public RestResponse publish(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.publish(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + deckId + " published")
+                    .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "published"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + deckId + " publicity not changed")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "publicity not changed"))
                 .build();
     }
 
     /**
      * Sets given deck to private.
+     *
      * @param deckId
      * @return
      */
-    @PostMapping("/api/unpublish-deck")
+    @PostMapping("/unpublish-deck")
     public RestResponse unpublish(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.unpublish(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + deckId + " unpublished")
+                    .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "unpublished"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + deckId + " publicity not changed")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), " publicity not changed"))
                 .build();
     }
 
 
     /**
      * Subscribes the current User to the given Deck.
+     *
      * @param deckId
      * @return
      */
-    @PostMapping("/api/subscribe-deck")
+    @PostMapping("/subscribe-deck")
     public RestResponse subscribeDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.subscribe(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + deckId + " subscribed")
+                    .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "subscribed"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + deckId + " not subscribed")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "not subscribed"))
                 .build();
     }
 
     /**
      * Unsubscribes the current User from the given Deck.
+     *
      * @param deckId
      * @return
      */
-    @PostMapping("/api/unsubscribe-deck")
+    @PostMapping("/unsubscribe-deck")
     public RestResponse unsubscribeDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.unsubscribe(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + deckId + " unsubscribed")
+                    .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "unsubscribed"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + deckId + " not unsubscribed")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "not unsubscribed"))
                 .build();
     }
 
     /**
      * Blocks the given Deck.
      * Only Admins can block Decks.
+     *
      * @param deckId
      * @return
      */
     @AnyPermission(Permission.ADMIN)
-    @PostMapping("/api/block-deck")
+    @PostMapping("/block-deck")
     public RestResponse blockDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (adminDeckService.block(deckId)) {
-            return MessageResponse.builder()
-                    .ok()
-                    .message("Deck " + deckId + " blocked")
-                    .build();
+            Optional<Deck> maybeDeck = userDeckService.findById(deckId);
+            if (maybeDeck.isPresent()) {
+                Deck deck = maybeDeck.get();
+                mailService.notifyBlockedDeck(deck);
+                return MessageResponse.builder()
+                        .ok()
+                        .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "blocked"))
+                        .build();
+            }
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + deckId + " not blocked")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), " not blocked"))
                 .build();
     }
 
     /**
      * Unblocks the given Deck.
      * Only Admins can unblock Decks.
+     *
      * @param deckId
      * @return
      */
     @AnyPermission(Permission.ADMIN)
-    @PostMapping("/api/unblock-deck")
+    @PostMapping("/unblock-deck")
     public RestResponse unblockDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (adminDeckService.unblock(deckId)) {
-            return MessageResponse.builder()
-                    .ok()
-                    .message("Deck " + deckId + " unblocked")
-                    .build();
+            Optional<Deck> maybeDeck = userDeckService.findById(deckId);
+            if (maybeDeck.isPresent()) {
+                Deck deck = maybeDeck.get();
+                mailService.notifyUnblockedDeck(deck);
+                return MessageResponse.builder()
+                        .ok()
+                        .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "unblocked"))
+                        .build();
+            }
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + deckId + " not unblocked")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "not unblocked"))
                 .build();
     }
 
     /**
      * Deletes the given Deck.
+     *
      * @param deckId
      * @return
      */
-    @DeleteMapping("/api/delete-deck")
+    @DeleteMapping("/delete-deck")
     public RestResponse deleteDeck(
             @RequestParam(name = "deckId") final UUID deckId
     ) {
         if (userDeckService.delete(deckId)) {
             return MessageResponse.builder()
                     .ok()
-                    .message("Deck " + deckId + " deleted")
+                    .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), "deleted"))
                     .build();
         }
         return MessageResponse.builder()
                 .error()
-                .message("Deck " + deckId + " not deleted")
+                .message(generateMessage(userDeckService.getDeckNameIfPresent(deckId), " not deleted"))
                 .build();
     }
 
     /**
      * Gets all Decks that the current User is subscribed to or created.
+     *
      * @return A List of Decks.
      */
-    @GetMapping("/api/get-user-decks")
-    public RestResponse getUserDecks()  {
+    @GetMapping("/get-user-decks")
+    public RestResponse getUserDecks() {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllViewableDecks();
         if (maybeDecks.isPresent()) {
-            return new ListResponse<>(maybeDecks.get());
+            return new UserDeckListResponse(maybeDecks.get());
         }
         return MessageResponse.builder()
                 .error()
-                .message("Could not get decks")
+                .message(DECK_LOAD_ERROR_MESSAGE)
                 .build();
     }
 
     /**
      * Gets all Decks that given user has subscribed to or created.
+     *
      * @return A List of Decks.
      */
     @AnyPermission(Permission.ADMIN)
-    @GetMapping("/api/get-given-user-decks")
+    @GetMapping("/get-given-user-decks")
     public RestResponse getGivenUserDecks(
             @RequestParam(name = "personId") final UUID personId
-    ){
+    ) {
         Optional<List<Deck>> maybeDecks = userDeckService.getDecksOfGivenPerson(personId);
         if (maybeDecks.isPresent()) {
-            return new ListResponse<>(maybeDecks.get());
+            return new UserDeckListResponse(maybeDecks.get());
         }
         return MessageResponse.builder()
                 .error()
-                .message("Could not get decks")
+                .message(DECK_LOAD_ERROR_MESSAGE)
                 .build();
     }
 
     /**
      * Gets all Decks that the current User is subscribed to.
+     *
      * @return A List of Decks.
      */
-    @GetMapping("/api/get-subscribed-decks")
-    public RestResponse getSubscribedDecks()  {
+    @GetMapping("/get-subscribed-decks")
+    public RestResponse getSubscribedDecks() {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllSubscribedDecks();
         if (maybeDecks.isPresent()) {
-            return new ListResponse<>(maybeDecks.get());
+            return new UserDeckListResponse(maybeDecks.get());
         }
         return MessageResponse.builder()
                 .error()
-                .message("Could not get decks")
+                .message(DECK_LOAD_ERROR_MESSAGE)
                 .build();
     }
 
     /**
      * Gets all Decks that the current User created.
+     *
      * @return A List of Decks.
      */
-    @GetMapping("/api/get-created-decks")
-    public RestResponse getCreatedDecks()  {
+    @GetMapping("/get-created-decks")
+    public RestResponse getCreatedDecks() {
         Optional<List<Deck>> maybeDecks = userDeckService.getAllOwnedDecks();
         if (maybeDecks.isPresent()) {
-            return new ListResponse<>(maybeDecks.get());
+            return new UserDeckListResponse(maybeDecks.get());
         }
         return MessageResponse.builder()
                 .error()
-                .message("Could not get decks")
+                .message(DECK_LOAD_ERROR_MESSAGE)
                 .build();
     }
 
@@ -301,19 +351,20 @@ public class DeckController {
      *
      * @return A List of Decks.
      */
-    @GetMapping("/api/get-published-decks")
+    @GetMapping("/get-published-decks")
     public RestResponse getPublishedDecks() {
-        return new ListResponse<>(userDeckService.findAllAvailableDecks());
+        return new DeckListResponse(userDeckService.findAllAvailableDecks());
     }
 
     /**
      * Gets all Decks.
+     *
      * @return A List of Decks.
      */
     @AnyPermission(Permission.ADMIN)
-    @GetMapping("/api/get-all-decks")
+    @GetMapping("/get-all-decks")
     public RestResponse getAllDecks() {
-        return new ListResponse<>(adminDeckService.findAll());
+        return new DeckListResponse(adminDeckService.findAll());
     }
 
     /**
@@ -322,7 +373,7 @@ public class DeckController {
      *
      * @return A List of Cards that should be learned sorted by nextLearn-Date.
      */
-    @GetMapping("/api/get-all-cards-to-learn")
+    @GetMapping("/get-all-cards-to-learn")
     public RestResponse getAllCardsToLearn(
             @RequestParam(name = "deckId") final UUID deckId
     ) {

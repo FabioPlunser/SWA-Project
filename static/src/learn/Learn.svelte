@@ -1,24 +1,20 @@
 <script lang="ts">
-    import FlipCard from "../lib/components/flipCard.svelte";
-	import Nav from "../lib/components/nav.svelte";
-	import SvelteToast from "../lib/components/SvelteToast.svelte";
-	import { fly, fade } from 'svelte/transition';
+    import FlipCard from "$components/flipCard.svelte";
+	import Nav from "$components/nav.svelte";
+	import SvelteToast from "$components/SvelteToast.svelte";
 	
-	import { redirect } from '../lib/utils/redirect';
-    import { tokenStore } from "../lib/stores/tokenStore";
-	import { handleLogout } from '../lib/utils/handleLogout';
-	import { userSelectedDeckStore } from '../lib/stores/userSelectedDeckStore';
-	import { fetching } from '../lib/utils/fetching';
-	import { addToastByRes } from "../lib/utils/addToToastStore";
-	import type { Params } from "../lib/utils/fetching";
+	import { redirect } from '$utils/redirect';
+	import { userSelectedDeckStore } from '$stores/userSelectedDeckStore';
+	import { fetching } from '$utils/fetching';
+	import { addToastByRes } from "$utils/addToToastStore";
+	import type { Params } from "$utils/fetching";
+	import { fly, fade } from 'svelte/transition';
+
    
-	$: if($tokenStore.length < 30) redirect("login");
 	$: getAllCardsToLearn();
 
-
 	let buttons = [
-		{ tag: "button", id: "", text: "DeckView", action: () => redirect("") },
-		{ tag: "button", id: "", text: "Logout", action: handleLogout }
+		{ text: "Home", href: "/" },
 	];
 
 	let cards = [];
@@ -26,8 +22,23 @@
 	async function getAllCardsToLearn(){
 		let res = await fetching("/api/get-all-cards-to-learn", "GET", [{name:"deckId", value: $userSelectedDeckStore.deckId}]);
 		cards = res.items;	
+		checkIsFlipped();
 	}
 
+	function checkIsFlipped()
+	{
+
+		let flippableCards = [];
+		for(let card of cards){
+			if(card.flipped) flippableCards.push(card);
+		}
+
+		if(flippableCards){
+			for(let card of flippableCards){
+				cards.push({cardId: card.cardId, frontText: card.frontText, backText: card.backText, isFlipped: false});
+			}
+		}	
+	}
 
 	async function nextCard(card, g){
 		let data: Params[] = [
@@ -36,16 +47,16 @@
 		]
 
 		let res = await fetching("/api/learn", "POST", data);
-		addToastByRes(res);
+		// addToastByRes(res);
 
 
 		cards.shift();
-		cards = [...cards];
 
 		if(cards.length == 0){
-			getAllCardsToLearn();
+			await getAllCardsToLearn();	
 		}
 
+		cards = [...cards];
 	}
 	
 </script>
@@ -53,18 +64,26 @@
 <svelte:head>
     <title>Learn View</title>
     <link rel="icon" type="image/gif" href="https://media.giphy.com/avatars/KirstenHurley/kdEReo8fnjUs/200h.gif"/>
+    <script src="http://localhost:35729/livereload.js"></script>
 </svelte:head>
 
 
 <Nav title="LearnView" buttons={buttons}/>
-<SvelteToast/>
+<!-- <SvelteToast/> -->
 <main class="mt-20">
 	{#if cards.length > 0}
-		<div class="grid grid-row gap-6 justify-center">
+		<div class="flex justify-center">
 			{#key cards}
-				<FlipCard card={cards[0]}/>
+				<div in:fly={{y: -100, duration: 300}} out:fly={{y: 100, duration: 300}}>
+					<FlipCard card={cards[0]}/>
+				</div>
 			{/key}
-			<div class="grid grid-cols-6 gap-4">
+		</div>
+
+		<br class="mt-10"/>
+
+		<div class="grid grid-row gap-6 justify-center">
+			<div class="grid grid-cols-6 gap-4 justify-center">
 				<div class="tooltip tooltip-error" data-tip="Keine Ahnung; totales Blackout">
 					<button class="btn btn-error" on:click={()=>nextCard(cards[0], 0)}>0</button>
 				</div>

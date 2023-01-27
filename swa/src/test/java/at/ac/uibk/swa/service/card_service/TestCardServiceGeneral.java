@@ -1,10 +1,8 @@
 package at.ac.uibk.swa.service.card_service;
 
-import at.ac.uibk.swa.models.Card;
-import at.ac.uibk.swa.models.Deck;
-import at.ac.uibk.swa.models.Permission;
-import at.ac.uibk.swa.models.Person;
+import at.ac.uibk.swa.models.*;
 import at.ac.uibk.swa.repositories.CardRepository;
+import at.ac.uibk.swa.repositories.LearningProgressRepository;
 import at.ac.uibk.swa.service.AdminDeckService;
 import at.ac.uibk.swa.service.CardService;
 import at.ac.uibk.swa.service.PersonService;
@@ -34,6 +32,8 @@ public class TestCardServiceGeneral {
     private PersonService personService;
     @Autowired
     private CardRepository cardRepository;
+    @Autowired
+    private LearningProgressRepository learningProgressRepository;
 
     private Person createUserAndLogin() {
         Person person = new Person(StringGenerator.username(), StringGenerator.email(), StringGenerator.password(), Set.of(Permission.USER));
@@ -180,7 +180,7 @@ public class TestCardServiceGeneral {
         // given: a card in the database
         createUserAndLogin();
         Deck deck = createDeck();
-        Card card = new Card( StringGenerator.deckDescription(), StringGenerator.deckDescription(),false);
+        Card card = new Card( StringGenerator.cardText(), StringGenerator.cardText(),false);
         assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
         UUID id = card.getCardId();
 
@@ -189,5 +189,24 @@ public class TestCardServiceGeneral {
 
         // then: card should not be available anymore
         assertTrue(cardService.findById(id).isEmpty(), "Found card");
+    }
+
+    @Test
+    public void deleteLearntCardThenLearningProgressIsDeleted() {
+        // given: a card in the database, learnt once
+        createUserAndLogin();
+        Deck deck = createDeck();
+        Card card = new Card(StringGenerator.cardText(), StringGenerator.cardText(), false);
+        assertTrue(cardService.create(card, deck.getDeckId()), "Unable to create card");
+        UUID id = card.getCardId();
+        assertTrue(cardService.learn(id, 5), "Unable to learn card");
+        long numberOfLearningProgressesBefore = learningProgressRepository.count();
+
+        // when: deleting the card
+        assertTrue(cardService.delete(id));
+
+        // then: learning progress should also be deleted
+        long numberOfLearningProgressesAfter = learningProgressRepository.count();
+        assertEquals(numberOfLearningProgressesBefore - 1, numberOfLearningProgressesAfter, "Did not delete learning progress");
     }
 }

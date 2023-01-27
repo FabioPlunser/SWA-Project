@@ -18,6 +18,10 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.MODULE)
 public class CreatedUserResponse extends RestResponse implements Serializable {
 
+    @Override
+    @JsonInclude
+    public String getType() { return "CreatedUser"; }
+
     private UUID id;
     private String username;
     @JsonInclude(JsonInclude.Include.NON_NULL)
